@@ -7,8 +7,6 @@ import RootNavigation from './navigation/RootNavigation';
 
 import store from './store';
 
-//import CreateTables from './components/CreateTables'
-
 export default class App extends Component {
   state = {
     isLoadingComplete: false,

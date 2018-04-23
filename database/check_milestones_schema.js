@@ -1,12 +1,10 @@
 import { SQLite } from 'expo';
-import schema from './schema.json';
+import schema from './milestones_schema.json';
 
 const db = SQLite.openDatabase('babysteps.db');
 
-getMilestones();
-
-function getMilestones() {
-  console.log('getMilestones function');
+const checkMilestonesSchema = () => {
+  console.log('checkMilestonesSchema function');
 
   // list of tables from schema
   const tables = Object.keys(schema);
@@ -28,10 +26,11 @@ function getMilestones() {
     });
   });
 
-  milestoneList().then( (result) => {
-    console.log(result);
-  });
+  //milestoneList().then( (result) => {
+    //console.log(result);
+  //});
 
+  return true;
 }
 
 function milestoneList() {
@@ -86,3 +85,4 @@ function dropTable(name) {
   });
 }
 
+export default checkMilestonesSchema;
