@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import RootNavigation from './navigation/RootNavigation';
 
-export default class App extends React.Component {
+import store from './store';
+
+//import CreateTables from './components/CreateTables'
+
+export default class App extends Component {
   state = {
     isLoadingComplete: false,
   };
+
+  componentDidMount() {
+
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
@@ -20,10 +29,12 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <RootNavigation />
-        </View>
+        <Provider store={store}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <RootNavigation />
+          </View>
+        </Provider>
       );
     }
   }

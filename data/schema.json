@@ -1,0 +1,58 @@
+{ 
+  "studies": {
+    "sql": "CREATE TABLE IF NOT EXISTS studies ( id INTEGER PRIMARY KEY, name TEXT, description TEXT );",
+    "indexes": []
+  },
+  "milestone_groups": {
+    "sql": "CREATE TABLE IF NOT EXISTS milestone_groups ( id INTEGER PRIMARY KEY, study_id INTEGER, position INTEGER, visible INTEGER, title TEXT );",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS milestone_groups_study_id ON milestone_groups (study_id);",
+      "CREATE INDEX IF NOT EXISTS milestone_groups_position ON milestone_groups (position);"
+    ]
+  },
+  "milestones": {
+    "sql": "CREATE TABLE IF NOT EXISTS milestones ( id INTEGER PRIMARY KEY, milestone_group_id INTEGER, position INTEGER, title TEXT, days_since_baseline INTEGER, always_visible INTEGER, notify INTEGER);",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS milestones_milestone_group_id ON milestones (milestone_group_id)",
+      "CREATE INDEX IF NOT EXISTS milestones_position ON milestones (position);",
+      "CREATE INDEX IF NOT EXISTS milestones_title ON milestones (title);"
+    ]
+  },
+  "tasks": {
+    "sql": "CREATE TABLE IF NOT EXISTS tasks ( id INTEGER PRIMARY KEY, milestone_id INTEGER, task_type TEXT, position INTEGER, study_only INTEGER, baby_book INTEGER, name TEXT);",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS tasks_milestone_id ON tasks (milestone_id);",
+      "CREATE INDEX IF NOT EXISTS tasks_position ON tasks (position);",
+      "CREATE INDEX IF NOT EXISTS tasks_task_type ON tasks (task_type);",
+      "CREATE INDEX IF NOT EXISTS tasks_name ON tasks (name);"
+    ]
+  },
+  "sections": {
+    "sql": "CREATE TABLE IF NOT EXISTS sections ( id INTEGER PRIMARY KEY, task_id INTEGER, section_type TEXT, position INTEGER, title TEXT, body TEXT);",
+    "indexes": [
+       "CREATE INDEX IF NOT EXISTS sections_task_id ON sections (task_id);",
+       "CREATE INDEX IF NOT EXISTS sections_postion ON sections (position);",
+       "CREATE INDEX IF NOT EXISTS sections_section_type ON sections (section_type);"
+    ]
+  },
+  "questions": {
+    "sql": "CREATE TABLE IF NOT EXISTS questions ( id INTEGER PRIMARY KEY, section_id INTEGER, option_group_id INTEGER, position INTEGER, question_number TEXT, title TEXT, body TEXT);",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS questions_section_id ON questions (section_id);",
+      "CREATE INDEX IF NOT EXISTS questions_option_group_id ON questions (option_group_id);"
+    ]
+  },
+  "option_groups": {
+    "sql": "CREATE TABLE IF NOT EXISTS option_groups ( id INTEGER PRIMARY KEY, input_type TEXT, name TEXT);",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS option_groups_input_type ON option_groups (input_type);"
+    ]
+  },
+  "choices": {
+    "sql": "CREATE TABLE IF NOT EXISTS choices ( id INTEGER PRIMARY KEY, question_id INTEGER, position INTEGER, body TEXT, score INTEGER, require_explanation INTEGER, unit_of_measure TEXT);",
+    "indexes": [
+      "CREATE INDEX IF NOT EXISTS choices_question_id ON choices (question_id);",
+      "CREATE INDEX IF NOT EXISTS choices_position ON choices (position);"
+    ]
+  }
+}

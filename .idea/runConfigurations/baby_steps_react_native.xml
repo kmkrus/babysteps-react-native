@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="baby-steps-react-native" type="AppEngineRunConfiguration" factoryName="App Engine DevAppServer" activateToolWindowBeforeRun="false">
+    <module name="babysteps-react-native" />
+    <setting name="serverAddress" value="192.168.56.1" />
+    <setting name="sdkPath" value="file://$USER_HOME$/AppData/Local/Android/Sdk" />
+    <setting name="serverPort" value="19000" />
+    <setting name="vmArgs" value="" />
+    <setting name="warPath" value="C:\Users\Paul\AppData\Local\Android\Sdk" />
+    <setting name="sync" value="false" />
+    <setting name="disableUpdateCheck" value="true" />
+    <method>
+      <option name="AppEngine.Gradle.BeforeRunTask" enabled="false" tasks="" />
+    </method>
+  </configuration>
+</component>

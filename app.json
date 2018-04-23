@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "babysteps-react-native",
-    "description": "A very interesting project.",
+    "description": "Babysteps",
     "slug": "babysteps-react-native",
     "privacy": "public",
     "sdkVersion": "26.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": ["android"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
