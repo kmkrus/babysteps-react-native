@@ -1,4 +1,6 @@
 import { SQLite } from 'expo';
+import axios from "axios";
+import CONSTANTS from '../constants';
 import schema from './milestones_schema.json';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -10,42 +12,56 @@ const checkMilestonesSchema = () => {
   const tables = Object.keys(schema);
 
   // drop tables for testing
-  //tables.forEach( function(name) {
-    //dropTable(name);
-  //});
-
-  tableNames().then( (result) => {
-    // list of tables in SQLite
-    const existing_tables = eval(result).map( a => a.name );
-    
-    // create for missing tables
+  if (CONSTANTS.DROP_TABLES) {
     tables.forEach( function(name) {
-      if (!existing_tables.includes(name)) {
-        createTable(schema[name]);
-      }
+      dropTable(name);
     });
-  });
+  }
 
-  //milestoneList().then( (result) => {
-    //console.log(result);
-  //});
+  tableNames()
+  .then( (result) => {
+    console.log('add tables if needed')
+    return new Promise((resolve, reject) => {
+    
+      // list of tables in SQLite
+      const existing_tables = eval(result).map( a => a.name );
+      
+      // create for missing tables
+      tables.forEach( function(name) {
+        if (!existing_tables.includes(name)) {
+          createTable(name, schema[name]);
+        }
+      })
+      resolve(true);
+    })
+  })
+  .then( (result) => {
+    if (CONSTANTS.REBUILD_MILESTONES) {
+      console.log('rebuild milestones')
+      
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          responseType: 'json',
+          baseURL: CONSTANTS.BASE_URL,
+          url: '/milestones',
+          headers: {
+            "milestone_token": CONSTANTS.MILESTONE_TOKEN
+          }
+        })
+        .then(function (response) {
+          Object.keys(response.data).map( function(name) {
+            insertRows(name, schema[name], response.data[name])
+          })
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
+      }) // return Promise
 
-  return true;
-}
+    } // IF REBUILD_MILESTONES
+  })
 
-function milestoneList() {
-  console.log('milestoneList function');
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql( 
-        `SELECT * FROM milestone_groups 
-          INNER JOIN milestones ON milestones.milestone_group_id = milestone_groups.id 
-          INNER JOIN tasks ON tasks.milestone_id = milestones.id;`, [],
-        (_, result) => resolve(result.rows._array),
-        (_, error) => reject('Error retrieving milestones')
-      );
-    });
-  });
 };
 
 function tableNames() {
@@ -60,21 +76,62 @@ function tableNames() {
   });    
 };
 
-function createTable(table) {
+function createTable(name, schema) {
   db.transaction(tx => {
-    tx.executeSql( table.sql, [], 
-      (_, rows) => console.log('** Execute ' + table.sql), 
-      (_, error) => console.log('*** Error in executing ' + table.sql)
+    sql = 'CREATE TABLE IF NOT EXISTS ' + name + ' ( '
+    Object.keys(schema.columns).forEach( function(column) {
+      sql = sql + column + ' ' + schema.columns[column] + ', '
+    })
+    sql = sql.slice(0, -2)
+    sql = sql + ' );'
+
+    tx.executeSql( sql, [], 
+      (_, rows) => console.log('** Execute ' + sql), 
+      (_, error) => console.log('*** Error in executing ' + sql)
     );
-    table.indexes.forEach( function(sql) {
-      //console.log(sql);
-      tx.executeSql( sql, [], 
-        (_, rows) => console.log('** Execute ' + sql), 
-        (_, error) => console.log('*** Error in executing ' + sql)
+    schema.indexes.forEach( function(sql) {
+      tx.executeSql( 'CREATE INDEX IF NOT EXISTS ' + sql, [], 
+        (_, rows) => console.log('** Execute CREATE INDEX ' + sql), 
+        (_, error) => console.log('*** Error in executing CREATE INDEX ' + sql)
       );
     });
   });
 };
+
+function insertRows(name, schema, data) {
+  db.transaction(tx => {
+    // Clear table
+    tx.executeSql( 'DELETE FROM ' + name, [], 
+      (_, rows) => console.log('** Delete rows from table ' + name), 
+      (_, error) => console.log('*** Error in deleting rows from table ' + name)
+    );
+    
+    //Construct SQL
+    prefix = 'INSERT INTO ' + name + ' ( '
+    Object.keys(schema.columns).forEach( function(column) {
+      prefix = prefix + column + ', '
+    })
+    prefix = prefix.slice(0, -2)
+    prefix = prefix + ' ) VALUES '
+
+    data.forEach( function(row) {
+      values = []
+      sql = prefix 
+      sql = sql + '('
+      Object.keys(schema.columns).forEach( function(column) {
+        sql = sql + ' ?,'
+        values.push( row[column] )
+      })
+      sql = sql.slice(0, -1)
+      sql = sql + ' )'
+      tx.executeSql( sql, values, 
+        (_, rows) => console.log('** Execute ' + sql), 
+        (_, error) => console.log('*** Error in executing ' + sql)
+      )
+    });
+   
+  });
+}
 
 function dropTable(name) {
   db.transaction(tx => {

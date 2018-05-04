@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "babysteps-react-native",
-    "description": "Babysteps",
+    "name": "BabySteps",
+    "description": "Pregnancy and Baby Milestones",
     "slug": "babysteps-react-native",
     "privacy": "public",
     "sdkVersion": "26.0.0",
@@ -11,8 +11,8 @@
     "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#dffaf4"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

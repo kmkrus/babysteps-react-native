@@ -6,16 +6,16 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import MilestonesScreen from '../screens/MilestonesScreen';
 
 export default TabNavigator(
   {
     Home: {
       screen: HomeScreen,
     },
-    Links: {
-      screen: LinksScreen,
+    Milestones: {
+      screen: MilestonesScreen,
     },
     Settings: {
       screen: SettingsScreen,
@@ -33,7 +33,7 @@ export default TabNavigator(
                 ? `ios-information-circle${focused ? '' : '-outline'}`
                 : 'md-information-circle';
             break;
-          case 'Links':
+          case 'Milestones':
             iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link';
             break;
           case 'Settings':
