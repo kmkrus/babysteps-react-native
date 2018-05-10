@@ -2,88 +2,96 @@ import React, { Component } from 'react';
 import { ScrollView, StyleSheet, SectionList } from 'react-native';
 import { Text } from 'react-native-elements';
 import { connect} from 'react-redux';
+import _ from 'lodash';
+import fetchMilestones from '../database/fetch_milestones';
+import { milestonesTable } from '../actions/milestone_actions'
+import {
+  FETCH_MILESTONES_PENDING,
+  FETCH_MILESTONES_FULFILLED,
+  FETCH_MILESTONES_REJECTED
+} from '../actions/types';
 
 class MilestonesScreen extends Component {
   static navigationOptions = {
     title: 'Milestones',
   };
 
+  componentWillMount() {
+
+    if (this.props.milestones.data.length === 0) {
+      
+      // note redux doesn't actually change state until render
+      this.props.milestonesTable(FETCH_MILESTONES_PENDING);
+      fetchMilestones()
+        .then( (response) => { 
+          // dispatch milestones to redux
+          this.props.milestonesTable(FETCH_MILESTONES_FULFILLED, response);
+        })
+        .catch( ( error ) => {
+          this.props.milestonesTable(FETCH_MILESTONES_REJECTED, error)
+        });
+    } // if milestones.data.length
+  }
+
+  renderItem = (item) => {
+    return <Text style={styles.text}>{item.item.name}</Text>
+  }
+  renderSectionHeader = (headerItem) => {
+    return <Text style={styles.section}>{headerItem.section.key}</Text>
+  }  
+
   render() {
+    var milestones = [];
 
-    //const milestones  = [
-    //  {id: '1', milestoneGroup: 'Enrollment', title: 'Demographics Questionaire' },
-    //  {id: '2', milestoneGroup: 'Pregnancy - 1st Trimester', title: 'First Prenatal Check Up'},
-    //  {id: '3', milestoneGroup: 'Pregnancy - 1st Trimester', title: "Bi-weekly Query r: Mother's Feelings"}
-    //]
+    if (this.props.milestones.fetched) {
+      console.log('fetched')
 
-    const milestones = this.props.milestones;
+      milestones = _.filter(this.props.milestones.data._array, function(m) {
+        return m.always_visible;
+      });
+      
+      milestones = _.groupBy(milestones, m => m.milestone_group );
+
+      milestones = _.reduce(milestones, (acc, data, index) => {
+        acc.push({
+          key: index,
+          data: data
+        });
+        return acc;
+      }, []);
+
+      console.log(milestones);
+    }
+
     return (
       <ScrollView style={styles.container}>
-        <MilestoneTable milestones={milestones.data} />
+        <SectionList
+          renderItem={this.renderItem}
+          renderSectionHeader={this.renderSectionHeader}
+          sections={milestones}
+          keyExtractor={(item) => item.id}
+        />
       </ScrollView>
     )
   }
 
 }
 
-class MilestoneTable extends Component {
-
-  render() {
-    var rows = [];
-    var lastMilestoneGroup = null;
-
-    this.props.milestones.forEach((milestone) => {
-      
-      if (milestone.milestoneGroup !== lastMilestoneGroup) {
-        rows.push(
-          <MilestoneGroupRow
-            milestone={milestone}
-            key={milestone.milestoneGroup} />
-        )
-      }
-
-      rows.push(
-        <MilestoneRow
-          milestone={milestone}
-          key={milestone.id} />
-
-      )
-      lastMilestoneGroup = milestone.milestoneGroup;
-      
-    });
-
-    return (
-      <ScrollView>
-        {[rows]}
-      </ScrollView>
-    );
-  }
-}
-
-class MilestoneGroupRow extends Component {
-  render() {
-    return (
-      <Text h4>{ this.props.milestone.milestoneGroup }</Text>
-    );
-  }
-}
-
-class MilestoneRow extends Component {
-  render() {
-    return (
-      <Text h5>{ this.props.milestone.title }</Text>
-    );
-  }
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 15,
+    padding: 20,
     backgroundColor: '#fff',
   },
+  text: {
+    fontSize: 16,
+  },
+  section: {
+    fontSize: 20,
+  }
 });
 
 const mapStateToProps = ({ milestones }) => ({ milestones });
+const mapDispatchToProps = { milestonesTable }
 
-export default connect( mapStateToProps )( MilestonesScreen );
+export default connect( mapStateToProps, mapDispatchToProps )( MilestonesScreen );

@@ -1,25 +1,20 @@
 import React, { Component } from 'react';
-import { Provider } from 'react-redux';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Provider } from 'react-redux';
 import { AppLoading, Asset, Font } from 'expo';
+import Sentry from 'sentry-expo';
+
 import { Ionicons } from '@expo/vector-icons';
 import RootNavigation from './navigation/RootNavigation';
 import checkMilestonesSchema from './database/check_milestones_schema';
-import { fetchMilestones } from './actions/milestone_actions'
-
 import store from './store';
+
+Sentry.config('https://193d4a8c3e6b4b3d974a3f4d1d6f598c@sentry.io/1204085').install();
 
 export default class App extends Component {
 
   state = {
     isLoadingComplete: false,
-  }
-
-  componentWillMount() {
-    // async check of schema
-    checkMilestonesSchema();
-    fetchMilestones();
-
   }
 
   render() {
@@ -55,7 +50,11 @@ export default class App extends Component {
         // We include SpaceMono because we use it in HomeScreen.js. Feel free
         // to remove this if you are not using it in your app
         'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
+        'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
+        'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
+        'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       }),
+      checkMilestonesSchema(), // async check of schema
     ]);
   };
 

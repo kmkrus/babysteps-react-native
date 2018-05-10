@@ -1,8 +1,8 @@
 
 import {
-  FETCH_MILESTONES_PENDING,
-  FETCH_MILESTONES_FULFILLED,
-  FETCH_MILESTONES_REJECTED
+  FETCH_MILESTONE_GROUPS_PENDING,
+  FETCH_MILESTONE_GROUPS_FULFILLED,
+  FETCH_MILESTONE_GROUPS_REJECTED
 } from '../actions/types';
 
 const initialState = {
@@ -14,15 +14,15 @@ const initialState = {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
-    case FETCH_MILESTONES_PENDING: {
+    case FETCH_MILESTONE_GROUPS_PENDING: {
       return {...state, fetching: true}
       break;
     }
-    case FETCH_MILESTONES_FULFILLED: {
+    case FETCH_MILESTONE_GROUPS_FULFILLED: {
       return {...state, fetching: false, fetched: true, data: action.payload}
       break;
     }
-    case FETCH_MILESTONES_REJECTED: {
+    case FETCH_MILESTONE_GROUPS_REJECTED: {
       return {...state, fetching: false, error: action.payload}
       break;
     }
@@ -32,4 +32,3 @@ const reducer = (state=initialState, action) => {
 };
 
 export default reducer;
-

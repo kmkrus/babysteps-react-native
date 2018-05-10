@@ -12,7 +12,7 @@
       "id": "INTEGER PRIMARY KEY", 
       "study_id": "INTEGER", 
       "position": "INTEGER",
-      "visible": "TEXT", 
+      "visible": "INTEGER", 
       "title": "TEXT"
     },
     "indexes": [
@@ -28,8 +28,8 @@
       "title": "TEXT", 
       "message": "TEXT", 
       "days_since_baseline": "INTEGER", 
-      "always_visible": "TEXT", 
-      "notify": "TEXT"
+      "always_visible": "INTEGER", 
+      "notify": "INTEGER"
     },
     "indexes": [
       "milestones_milestone_group_id ON milestones (milestone_group_id)",

@@ -18,57 +18,61 @@ const checkMilestonesSchema = () => {
     });
   }
 
-  tableNames()
-  .then( (result) => {
-    console.log('add tables if needed')
-    return new Promise((resolve, reject) => {
-    
-      // list of tables in SQLite
-      const existing_tables = eval(result).map( a => a.name );
-      
-      // create for missing tables
-      tables.forEach( function(name) {
-        if (!existing_tables.includes(name)) {
-          createTable(name, schema[name]);
-        }
-      })
-      resolve(true);
-    })
-  })
-  .then( (result) => {
-    if (CONSTANTS.REBUILD_MILESTONES) {
-      console.log('rebuild milestones')
-      
+  return new Promise((resolve, reject) => {
+
+    tableNames()
+    .then( (result) => {
+      console.log('add tables if needed')
       return new Promise((resolve, reject) => {
-        axios({
-          method: 'get',
-          responseType: 'json',
-          baseURL: CONSTANTS.BASE_URL,
-          url: '/milestones',
-          headers: {
-            "milestone_token": CONSTANTS.MILESTONE_TOKEN
+      
+        // list of tables in SQLite
+        const existing_tables = eval(result).map( a => a.name );
+        
+        // create for missing tables
+        tables.forEach( function(name) {
+          if (!existing_tables.includes(name)) {
+            createTable(name, schema[name]);
           }
         })
-        .then(function (response) {
-          Object.keys(response.data).map( function(name) {
-            insertRows(name, schema[name], response.data[name])
-          })
-        })
-        .catch(function (error) {
-            console.log(error)
-        });
+        resolve(true);
       }) // return Promise
+    })
+    .then( (result) => {
+      if (CONSTANTS.REBUILD_MILESTONES) {
+        console.log('rebuild milestones')
+        
+        return new Promise((resolve, reject) => {
+          axios({
+            method: 'get',
+            responseType: 'json',
+            baseURL: CONSTANTS.BASE_URL,
+            url: '/milestones',
+            headers: {
+              "milestone_token": CONSTANTS.MILESTONE_TOKEN
+            }
+          })
+          .then(function (response) {
+            Object.keys(response.data).map( function(name) {
+              insertRows(name, schema[name], response.data[name])
+            })
+          })
+          .catch(function (error) {
+              console.log(error)
+          });
+        }) // return Promise
 
-    } // IF REBUILD_MILESTONES
-  })
-
+      } // if REBUILD_MILESTONES
+    }); // then
+    resolve(true)
+  }); // return Promise
 };
 
 function tableNames() {
   console.log('tableNames function');
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
-      tx.executeSql( `SELECT name FROM sqlite_master WHERE type="table";`, [],
+      tx.executeSql( 
+        `SELECT name FROM sqlite_master WHERE type="table";`, [],
         (_, result) => resolve(result.rows._array),
         (_, error) => reject('Error retrieving table names')
       );
@@ -120,7 +124,12 @@ function insertRows(name, schema, data) {
       sql = sql + '('
       Object.keys(schema.columns).forEach( function(column) {
         sql = sql + ' ?,'
-        values.push( row[column] )
+        // need to trap booleans
+        if (typeof(row[column]) == typeof(true)) {
+          values.push( row[column] ? 1 : 0)
+        } else {
+          values.push( row[column] )
+        }
       })
       sql = sql.slice(0, -1)
       sql = sql + ' )'

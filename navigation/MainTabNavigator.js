@@ -6,19 +6,19 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 import Colors from '../constants/Colors';
 
 import HomeScreen from '../screens/HomeScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
+import TourScreen from '../screens/TourScreen';
 
 export default TabNavigator(
   {
-    Home: {
+    Overview: {
       screen: HomeScreen,
     },
     Milestones: {
       screen: MilestonesScreen,
     },
-    Settings: {
-      screen: SettingsScreen,
+    Tour: {
+      screen: TourScreen,
     },
   },
   {
@@ -27,18 +27,18 @@ export default TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         switch (routeName) {
-          case 'Home':
+          case 'Overview':
             iconName =
               Platform.OS === 'ios'
                 ? `ios-information-circle${focused ? '' : '-outline'}`
-                : 'md-information-circle';
+                : 'md-ionic';
+            break;
+          case 'Tour':
+            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-bus';
             break;
           case 'Milestones':
-            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link';
+            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-list';
             break;
-          case 'Settings':
-            iconName =
-              Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options';
         }
         return (
           <Ionicons
