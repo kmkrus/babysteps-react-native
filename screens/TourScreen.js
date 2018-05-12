@@ -10,6 +10,7 @@ import {
 import { Button } from 'react-native-elements'
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
+
 import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 import { TourItem } from '../components/tour_item';
@@ -25,91 +26,122 @@ const items = [
 ];
 
 export default class TourScreen extends Component {
-  
-  static navigationOptions = {
-    header: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentIndex: 0,
+    };
+    this.updateIndex = this.updateIndex.bind(this);
+  }
 
-  state = {
-    currentIndex: 0,
-  };
+  updateIndex() {
+    this.setState({currentIndex: 3 })
+  }
 
   render() {
 
     const offset = (width - TourItem.WIDTH) / 2;
-
+    
     return (
+      
       <ImageBackground 
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
 
-
         <View style={styles.container}>
 
-         
-            <SideSwipe
-              data={items}
-              shouldCapture={() => true}
-              style={[styles.carouselFill,  { width } ]}
-              itemWidth={TourItem.WIDTH}
-              threshold={TourItem.WIDTH / 4}
-              extractKey={ item => item.key}
-              contentOffset={offset}
-              onIndexChange={index =>
-                this.setState(() => ({ currentIndex: index }))}
-              renderItem={({ itemIndex, currentIndex, item, animatedValue }) => (
-          
-                  (item.key != '4') ? 
-                    <TourItem 
-                      item = {item}
-                      index = {itemIndex}
-                      currentIndex = {currentIndex}
-                      animatedValue = {animatedValue}
-                    />
-                  :
-                    <TourItemFour
-                      item = {item}
-                      index = {itemIndex}
-                      currentIndex = {currentIndex}
-                      animatedValue = {animatedValue}
-                    />
+          <SideSwipe
+            data={items}
+            index={this.state.currentIndex}
+            shouldCapture={() => true}
+            style={[styles.carouselFill,  { width } ]}
+            itemWidth={TourItem.WIDTH}
+            threshold={TourItem.WIDTH / 4}
+            extractKey={ item => item.key}
+            contentOffset={offset}
+            onIndexChange={index =>
+              this.setState(() => ({ currentIndex: index }))}
+            renderItem={({ itemIndex, currentIndex, item, animatedValue }) => (
+        
+                (item.key != '4') ? 
+                  <TourItem 
+                    item = {item}
+                    index = {itemIndex}
+                    currentIndex = {currentIndex}
+                    animatedValue = {animatedValue}
+                  />
+                :
+                  <TourItemFour
+                    item = {item}
+                    index = {itemIndex}
+                    currentIndex = {currentIndex}
+                    animatedValue = {animatedValue}
+                  />
 
-              )}
-            />
+            )}
+          />
 
-            <PageControl
-              style={styles.pageControl}
-              numberOfPages={items.length}
-              currentPage={this.state.currentIndex}
-              hidesForSinglePage
-              pageIndicatorTintColor={Colors.lightGrey}
-              currentPageIndicatorTintColor={Colors.grey}
-              indicatorStyle={{borderRadius: 5}}
-              currentIndicatorStyle={{borderRadius: 5}}
-              indicatorSize={{width:8, height:8}}
-              onPageIndicatorPress={this.onItemTap}
-            />
+          <PageControl
+            style={styles.pageControl}
+            numberOfPages={items.length}
+            currentPage={this.state.currentIndex}
+            hidesForSinglePage
+            pageIndicatorTintColor={Colors.lightGrey}
+            currentPageIndicatorTintColor={Colors.grey}
+            indicatorStyle={{borderRadius: 5}}
+            currentIndicatorStyle={{borderRadius: 5}}
+            indicatorSize={{width:8, height:8}}
+            onPageIndicatorPress={this.onItemTap}
+          />
 
-            <View style={styles.buttonContainer}>
-              
-              <Button
-                color={Colors.grey}
-                buttonStyle={styles.buttonOneStyle}
-                titleStyle={styles.buttonTitleStyle}
-                title='No Thanks' />
-
-              <Button
-                color={Colors.pink}
-                buttonStyle={styles.buttonTwoStyle}
-                titleStyle={styles.buttonTitleStyle}
-                title='Join Study' />
-
-            </View>
+          <Buttons  {...this.state} updateIndex = {this.updateIndex} />
 
         </View>
 
       </ImageBackground>
     )
+  }
+}
+
+class Buttons extends Component {
+
+  handleClick(e) {
+    console.log(e);
+
+  }
+
+  render() { 
+
+    if (this.props.currentIndex < 3) {
+      var updateIndex = this.props.updateIndex;
+      return (
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.grey}
+            buttonStyle={styles.buttonThreeStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={this.props.updateIndex}
+            title="Let's Get Started" />
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.grey}
+            buttonStyle={styles.buttonOneStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={this.handleClick}
+            title='No Thanks' />
+          <Button
+            color={Colors.pink}
+            buttonStyle={styles.buttonTwoStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={this.handleClick}
+            title='Join Study' />
+        </View>
+      )
+    }
   }
 }
 
@@ -134,6 +166,13 @@ const styles = StyleSheet.create({
   },
   buttonTwoStyle: {
    width: 200,
+    backgroundColor: Colors.lightPink,
+    borderColor: Colors.pink,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  buttonThreeStyle: {
+   width: 400,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,

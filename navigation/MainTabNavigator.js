@@ -5,9 +5,11 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
+import checkUserPresent from '../database/check_user_present';
+
 import HomeScreen from '../screens/HomeScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
-import TourScreen from '../screens/TourScreen';
+import RegistrationScreen from '../screens/RegistrationScreen';
 
 export default TabNavigator(
   {
@@ -17,9 +19,9 @@ export default TabNavigator(
     Milestones: {
       screen: MilestonesScreen,
     },
-    Tour: {
-      screen: TourScreen,
-    },
+    Registration: {
+      screen: RegistrationScreen,
+    }
   },
   {
     navigationOptions: ({ navigation }) => ({
@@ -32,9 +34,6 @@ export default TabNavigator(
               Platform.OS === 'ios'
                 ? `ios-information-circle${focused ? '' : '-outline'}`
                 : 'md-ionic';
-            break;
-          case 'Tour':
-            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-bus';
             break;
           case 'Milestones':
             iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-list';

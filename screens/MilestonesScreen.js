@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, SectionList } from 'react-native';
 import { Text } from 'react-native-elements';
 import { connect} from 'react-redux';
 import _ from 'lodash';
+import Colors from '../constants/Colors';
+import '@expo/vector-icons';
 import fetchMilestones from '../database/fetch_milestones';
 import { milestonesTable } from '../actions/milestone_actions'
 import {
@@ -44,7 +46,6 @@ class MilestonesScreen extends Component {
     var milestones = [];
 
     if (this.props.milestones.fetched) {
-      console.log('fetched')
 
       milestones = _.filter(this.props.milestones.data._array, function(m) {
         return m.always_visible;
@@ -60,7 +61,6 @@ class MilestonesScreen extends Component {
         return acc;
       }, []);
 
-      console.log(milestones);
     }
 
     return (
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
   text: {
     fontSize: 16,

@@ -1,9 +1,19 @@
 import { Notifications } from 'expo';
-import React from 'react';
+import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
+import { connect} from 'react-redux';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+
+import TourScreen from '../screens/TourScreen';
+import fetchUsers from '../database/fetch_users';
+import { usersTable } from '../actions/registration_actions'
+import {
+  FETCH_USERS_PENDING,
+  FETCH_USERS_FULFILLED,
+  FETCH_USERS_REJECTED
+} from '../actions/types';
 
 const RootStackNavigator = StackNavigator(
   {
@@ -20,7 +30,28 @@ const RootStackNavigator = StackNavigator(
   }
 );
 
-export default class RootNavigator extends React.Component {
+class RootNavigator extends Component {
+
+  componentWillMount() {
+    
+    if (this.props.registration.users.data.length === 0) {
+      
+      // note redux doesn't actually change state until render
+      this.props.usersTable(FETCH_USERS_PENDING);
+      
+      fetchUsers()
+        .then( (response) => { 
+          // dispatch users to redux
+          this.props.usersTable(FETCH_USERS_FULFILLED, response);
+        })
+        .catch( ( error ) => {
+          this.props.milestonesTable(FETCH_USERS_REJECTED, error)
+        });
+      
+    } // if users.data.length
+    
+  }
+
   componentDidMount() {
     this._notificationSubscription = this._registerForPushNotifications();
   }
@@ -30,7 +61,11 @@ export default class RootNavigator extends React.Component {
   }
 
   render() {
-    return <RootStackNavigator />;
+    if (this.props.registration.users.data.length === 0) {
+      return <TourScreen />;
+    } else {
+      return <RootStackNavigator />;
+    }
   }
 
   _registerForPushNotifications() {
@@ -48,3 +83,8 @@ export default class RootNavigator extends React.Component {
     console.log(`Push notification ${origin} with data: ${JSON.stringify(data)}`);
   };
 }
+
+const mapStateToProps = ({ registration }) => ({ registration });
+const mapDispatchToProps = { usersTable }
+
+export default connect( mapStateToProps, mapDispatchToProps )( RootNavigator );

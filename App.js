@@ -5,8 +5,10 @@ import { AppLoading, Asset, Font } from 'expo';
 import Sentry from 'sentry-expo';
 
 import { Ionicons } from '@expo/vector-icons';
+import Colors from './constants/Colors';
 import RootNavigation from './navigation/RootNavigation';
 import checkMilestonesSchema from './database/check_milestones_schema';
+import checkRegistrationSchema from './database/check_registration_schema';
 import store from './store';
 
 Sentry.config('https://193d4a8c3e6b4b3d974a3f4d1d6f598c@sentry.io/1204085').install();
@@ -19,6 +21,7 @@ export default class App extends Component {
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+      
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -26,7 +29,9 @@ export default class App extends Component {
           onFinish={this._handleFinishLoading}
         />
       );
+
     } else {
+      
       return (
         <Provider store={store}>
           <View style={styles.container}>
@@ -34,7 +39,8 @@ export default class App extends Component {
             <RootNavigation />
           </View>
         </Provider>
-      );
+      )
+
     }
   }
 
@@ -54,7 +60,9 @@ export default class App extends Component {
         'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
         'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       }),
-      checkMilestonesSchema(), // async check of schema
+      // async check of schemas
+      checkMilestonesSchema(),
+      checkRegistrationSchema()
     ]);
   };
 
@@ -72,6 +80,6 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
   },
 });

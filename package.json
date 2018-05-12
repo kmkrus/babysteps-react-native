@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
+    "@redux-offline/redux-offline": "^2.3.3",
     "axios": "^0.18.0",
     "expo": "26.0.0",
     "lodash": "^4.17.10",

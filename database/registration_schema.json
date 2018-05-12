@@ -1,0 +1,71 @@
+{ 
+  "users": {
+    "columns": {
+      "id": "INTEGER PRIMARY KEY", 
+      "email": "TEXT", 
+      "password": "TEXT",
+      "first_name": "TEXT",
+      "last_name": "TEXT",
+      "uid": "TEXT",
+      "last_token": "TEXT",
+    },
+    "indexes": [],
+  },
+  "subjects": {
+    "columns": {
+      "first_name": "TEXT",
+      "last_name": "TEXT",
+      "middle_name": "TEXT",
+      "conception_method": "TEXT",
+      "gender": "TEXT",
+      "expected_date_of_birth": "TEXT",
+      "date_of_birth": "TEXT",
+      "days_premature": "INTEGER",
+    },
+    "indexes": [],
+  },
+  "respondents": {
+    "columns": {
+      "respondent_type": "TEXT",
+      "first_name": "TEXT",
+      "last_name": "TEXT",
+      "middle_name": "TEXT",
+      "address_1": "TEXT",
+      "address_2": "TEXT",
+      "city": "TEXT",
+      "state": "TEXT",
+      "zip_code": "TEXT",
+      "country_code": "TEXT",
+      "email": "TEXT",
+      "home_phone": "TEXT",
+      "other_phone": "TEXT",
+      "date_of_birth": "TEXT",
+      "drivers_license_number": "TEXT",
+      "marital_status": "TEXT",
+      "weight": "INTEGER",
+      "height": "INTEGER",
+    },
+    "indexes": [],
+  },
+  "respondents_subjects": {
+    "columns": {
+      "respondent_id": "INTEGER",
+      "subject_id": "INTEGER",
+    },
+    "indexes": [
+      "r_s_respondent_id ON respondents_subjects (respondent_id);",
+      "r_s_subject_id ON respondents_subjects (subject_id);",
+    ],
+  },
+  "attachments": {
+    "columns": {
+      "attachment_type": "TEXT",
+      "attachment_id": "INTEGER",
+      "attachment_url": "TEXT",
+    },
+    "indexes": [
+      "attachments_attachment ON attachments (attachment_type, attachment_id)",
+    ],
+  },
+
+}
