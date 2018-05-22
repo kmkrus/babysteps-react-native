@@ -7,6 +7,7 @@ import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import TourScreen from '../screens/TourScreen';
+import RegistrationScreen from '../screens/RegistrationScreen';
 import fetchUsers from '../database/fetch_users';
 import { usersTable } from '../actions/registration_actions'
 import {
@@ -26,6 +27,41 @@ const RootStackNavigator = StackNavigator(
       headerTitleStyle: {
         fontWeight: 'normal',
       },
+    }),
+  }
+);
+
+
+const RegistrationNavigator = StackNavigator(
+  {
+    Main: {
+      screen: RegistrationScreen,
+    },
+    rootStack: {
+      screen: props => <RootStackNavigator />
+    }
+  },
+  {
+    navigationOptions: () => ({
+      headerTitleStyle: {
+        fontWeight: 'normal',
+      },
+    }),
+  }
+);
+
+const TourNavigator = StackNavigator(
+  {
+    Main: {
+      screen: TourScreen,
+    },
+    Registration: {
+      screen: props => <RegistrationNavigator />
+    }
+  },
+  {
+    navigationOptions: () => ({
+      header: null
     }),
   }
 );
@@ -62,7 +98,7 @@ class RootNavigator extends Component {
 
   render() {
     if (this.props.registration.users.data.length === 0) {
-      return <TourScreen />;
+      return <TourNavigator />
     } else {
       return <RootStackNavigator />;
     }

@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet
+} from 'react-native';
 
 class RegistrationScreen extends Component {
   static navigationOptions = {
-    title: 'Milestones',
+    title: 'Registration',
   };
 
   render() {
     return(
-      <Div></Div>
+      <Text>test</Text>
     )
   }
 };

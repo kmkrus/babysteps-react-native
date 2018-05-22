@@ -94,7 +94,7 @@ export default class TourScreen extends Component {
             onPageIndicatorPress={this.onItemTap}
           />
 
-          <Buttons  {...this.state} updateIndex = {this.updateIndex} />
+          <Buttons  {...this.state} updateIndex = {this.updateIndex} navigation = {this.props.navigation} />
 
         </View>
 
@@ -105,14 +105,15 @@ export default class TourScreen extends Component {
 
 class Buttons extends Component {
 
-  handleClick(e) {
-    console.log(e);
-
+  handleClick = (routeName) => {
+    console.log(routeName);
+    console.log(this.props.navigation);
+    this.props.navigation.navigate(routeName);
   }
 
   render() { 
-
     if (this.props.currentIndex < 3) {
+      
       var updateIndex = this.props.updateIndex;
       return (
         <View style={styles.buttonContainer}>
@@ -124,20 +125,22 @@ class Buttons extends Component {
             title="Let's Get Started" />
         </View>
       )
+
     } else {
+
       return (
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.grey}
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={this.handleClick}
+            onPress={ () => this.handleClick('Registration') }
             title='No Thanks' />
           <Button
             color={Colors.pink}
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={this.handleClick}
+            onPress={ () => this.handleClick('Registration') }
             title='Join Study' />
         </View>
       )

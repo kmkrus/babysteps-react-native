@@ -5,11 +5,9 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
-import checkUserPresent from '../database/check_user_present';
-
 import HomeScreen from '../screens/HomeScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
-import RegistrationScreen from '../screens/RegistrationScreen';
+import TourScreen from '../screens/TourScreen';
 
 export default TabNavigator(
   {
@@ -18,9 +16,6 @@ export default TabNavigator(
     },
     Milestones: {
       screen: MilestonesScreen,
-    },
-    Registration: {
-      screen: RegistrationScreen,
     }
   },
   {
