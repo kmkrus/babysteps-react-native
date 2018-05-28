@@ -9,7 +9,7 @@ import CONSTANTS from '../constants';
 import schema from './milestones_schema.json';
 
 const checkMilestonesSchema = () => {
-  console.log('checkMilestonesSchema function');
+  console.log('checkMilestonesSchema');
 
   // list of tables from schema
   const tables = Object.keys(schema);

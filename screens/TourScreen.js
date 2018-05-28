@@ -106,8 +106,6 @@ export default class TourScreen extends Component {
 class Buttons extends Component {
 
   handleClick = (routeName) => {
-    console.log(routeName);
-    console.log(this.props.navigation);
     this.props.navigation.navigate(routeName);
   }
 

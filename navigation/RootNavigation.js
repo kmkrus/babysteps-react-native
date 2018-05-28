@@ -2,19 +2,17 @@ import { Notifications } from 'expo';
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
 import { connect} from 'react-redux';
+import _ from 'lodash';
 
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import TourScreen from '../screens/TourScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
-import fetchUsers from '../database/fetch_users';
-import { usersTable } from '../actions/registration_actions'
-import {
-  FETCH_USERS_PENDING,
-  FETCH_USERS_FULFILLED,
-  FETCH_USERS_REJECTED
-} from '../actions/types';
+
+import { fetchUser } from '../actions/registration_actions';
+
+import Colors from '../constants/Colors';
 
 const RootStackNavigator = StackNavigator(
   {
@@ -24,9 +22,14 @@ const RootStackNavigator = StackNavigator(
   },
   {
     navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: Colors.headerBackgroundColor, 
+      },
+      headerTintColor: Colors.headerTintColor,
       headerTitleStyle: {
         fontWeight: 'normal',
       },
+      
     }),
   }
 );
@@ -43,6 +46,10 @@ const RegistrationNavigator = StackNavigator(
   },
   {
     navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: Colors.headerBackgroundColor, 
+      },
+      headerTintColor: Colors.headerTintColor,
       headerTitleStyle: {
         fontWeight: 'normal',
       },
@@ -69,23 +76,8 @@ const TourNavigator = StackNavigator(
 class RootNavigator extends Component {
 
   componentWillMount() {
-    
-    if (this.props.registration.users.data.length === 0) {
-      
-      // note redux doesn't actually change state until render
-      this.props.usersTable(FETCH_USERS_PENDING);
-      
-      fetchUsers()
-        .then( (response) => { 
-          // dispatch users to redux
-          this.props.usersTable(FETCH_USERS_FULFILLED, response);
-        })
-        .catch( ( error ) => {
-          this.props.milestonesTable(FETCH_USERS_REJECTED, error)
-        });
-      
-    } // if users.data.length
-    
+    // note redux doesn't actually change state until render
+    this.props.fetchUser();
   }
 
   componentDidMount() {
@@ -97,7 +89,7 @@ class RootNavigator extends Component {
   }
 
   render() {
-    if (this.props.registration.users.data.length === 0) {
+    if (_.isEmpty(this.props.registration.user.data) ) {
       return <TourNavigator />
     } else {
       return <RootStackNavigator />;
@@ -121,6 +113,6 @@ class RootNavigator extends Component {
 }
 
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { usersTable }
+const mapDispatchToProps = { fetchUser }
 
 export default connect( mapStateToProps, mapDispatchToProps )( RootNavigator );

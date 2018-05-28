@@ -61,8 +61,8 @@ export default class App extends Component {
         'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       }),
       // async check of schemas
-      checkMilestonesSchema(),
-      checkRegistrationSchema()
+      checkRegistrationSchema(),
+      checkMilestonesSchema()
     ]);
   };
 

@@ -3,7 +3,6 @@ import { SQLite } from 'expo';
 const db = SQLite.openDatabase('babysteps.db');
 
 export function tableNames() {
-  console.log('tableNames function');
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql( 

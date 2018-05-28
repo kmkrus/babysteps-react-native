@@ -8,7 +8,7 @@ import CONSTANTS from '../constants';
 import schema from './registration_schema.json';
 
 const checkRegistrationSchema = () => {
-  console.log('checkRegistrationSchema function');
+  console.log('checkRegistrationSchema');
 
   // list of tables from schema
   const tables = Object.keys(schema);
