@@ -62,7 +62,7 @@ export default class App extends Component {
       }),
       // async check of schemas
       checkRegistrationSchema(),
-      checkMilestonesSchema()
+      checkMilestonesSchema(),
     ]);
   };
 

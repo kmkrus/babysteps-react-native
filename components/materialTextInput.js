@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
+import InputHelper from '../components/inputHelper';
 import Colors from '../constants/Colors';
 
 export default class MaterialTextInput extends React.PureComponent {
@@ -10,7 +11,7 @@ export default class MaterialTextInput extends React.PureComponent {
   }
 
   render() {
-    const { error, touched, ...props } = this.props;
+    const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
 
     return (
@@ -25,15 +26,13 @@ export default class MaterialTextInput extends React.PureComponent {
           textColor={Colors.textColor}
           {...props}
         />
-        <Text style={{
-            textAlign: 'right',
-            color: displayError ? Colors.errorColor : 'transparent',
-            height: 20,
-          }}
-        >
-          {error}
-        </Text>
+        <InputHelper 
+          displayError={displayError}
+          helper={helper}
+          error={error}
+        />
       </View>
+      
     );
   }
 }

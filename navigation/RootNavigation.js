@@ -1,18 +1,19 @@
 import { Notifications } from 'expo';
 import React, { Component } from 'react';
 import { StackNavigator } from 'react-navigation';
-import { connect} from 'react-redux';
-import _ from 'lodash';
-
 import MainTabNavigator from './MainTabNavigator';
+
+import { connect} from 'react-redux';
+import { fetchSession } from '../actions/session_actions';
+import { fetchUser, fetchRespondent, fetchSubject } from '../actions/registration_actions';
+
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import TourScreen from '../screens/TourScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 
-import { fetchUser } from '../actions/registration_actions';
-
 import Colors from '../constants/Colors';
+import State from '../actions/states';
 
 const RootStackNavigator = StackNavigator(
   {
@@ -33,7 +34,6 @@ const RootStackNavigator = StackNavigator(
     }),
   }
 );
-
 
 const RegistrationNavigator = StackNavigator(
   {
@@ -76,8 +76,10 @@ const TourNavigator = StackNavigator(
 class RootNavigator extends Component {
 
   componentWillMount() {
-    // note redux doesn't actually change state until render
+    this.props.fetchSession();
     this.props.fetchUser();
+    this.props.fetchRespondent();
+    this.props.fetchSubject();
   }
 
   componentDidMount() {
@@ -85,15 +87,23 @@ class RootNavigator extends Component {
   }
 
   componentWillUnmount() {
+      
     this._notificationSubscription && this._notificationSubscription.remove();
   }
 
   render() {
-    if (_.isEmpty(this.props.registration.user.data) ) {
-      return <TourNavigator />
+    if ( State.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
+      return <RootStackNavigator />
     } else {
-      return <RootStackNavigator />;
-    }
+      if (this.props.session.registration_state == State.REGISTERING_AS_IN_STUDY) {
+        return <RegistrationNavigator />
+      } else if (this.props.session.registration_state == State.REGISTERING_AS_NO_STUDY) {
+        return <RegistrationNavigator />
+      } else {
+        return <TourNavigator /> 
+      };
+    };
+
   }
 
   _registerForPushNotifications() {
@@ -112,7 +122,8 @@ class RootNavigator extends Component {
   };
 }
 
-const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { fetchUser }
+const mapStateToProps = ({ session }) => ({ session });
 
-export default connect( mapStateToProps, mapDispatchToProps )( RootNavigator );
+const mapDispatchToProps = { fetchSession, fetchUser, fetchRespondent, fetchSubject };
+
+export default connect( mapStateToProps, mapDispatchToProps )(RootNavigator);

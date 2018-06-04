@@ -1,25 +1,53 @@
 
 import {
+
+  FETCH_SESSION_PENDING,
+  FETCH_SESSION_FULFILLED,
+  FETCH_SESSION_REJECTED,
+
   FETCH_USER_PENDING,
   FETCH_USER_FULFILLED,
   FETCH_USER_REJECTED,
+
   CREATE_USER_PENDING,
   CREATE_USER_FULFILLED,
   CREATE_USER_REJECTED,
-  API_UPDATE_USER_DATA,
+
   API_CREATE_USER_PENDING,
   API_CREATE_USER_FULFILLED,
-  API_CREATE_USER_REJECTED
+  API_CREATE_USER_REJECTED,
+
+  FETCH_RESPONDENT_PENDING,
+  FETCH_RESPONDENT_FULFILLED,
+  FETCH_RESPONDENT_REJECTED,
+
+  CREATE_RESPONDENT_PENDING,
+  CREATE_RESPONDENT_FULFILLED,
+  CREATE_RESPONDENT_REJECTED,
+
+  FETCH_SUBJECT_PENDING,
+  FETCH_SUBJECT_FULFILLED,
+  FETCH_SUBJECT_REJECTED,
+
+  CREATE_SUBJECT_PENDING,
+  CREATE_SUBJECT_FULFILLED,
+  CREATE_SUBJECT_REJECTED,
 } from '../actions/types';
 
 const initialState = {
-  auth: {
-    accessToken: '',
-    client: '',
-    uid: '',
-    user_id: ''
-  },
   user: {
+    fetching: false,
+    fetched: false,
+    data: {},
+    error: null,
+  },
+  respondent: {
+    fetching: false,
+    fetched: false,
+    data: {},
+    error: null,
+  },
+  subject: {
     fetching: false,
     fetched: false,
     data: {},
@@ -34,8 +62,10 @@ const initialState = {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
+    
+    // FETCH USER
     case FETCH_USER_PENDING: {
-      return {...state, user: {...state.user, fetching: true, error: null} }
+      return {...state, user: {...state.user, fetching: true, fetched: false, error: null} }
       break;
     }
     case FETCH_USER_FULFILLED: {
@@ -49,34 +79,39 @@ const reducer = (state=initialState, action) => {
       return {...state, user: {...state.user, fetching: false, error: action.payload} }
       break;
     }
+
+    // CREATE USER
     case CREATE_USER_PENDING: {
-      return {...state, user: {...state.user, fetching: true, error: null} }
+      return {...state, user: {...state.user, fetching: true, fetched: false, error: null} }
       break;
     }
     case CREATE_USER_FULFILLED: {
-      return {...state, user: {...state.user, fetching: true, fetched: true } }
+      return {...state, user: 
+        {...state.user, fetching: false, fetched: true, 
+          data: {...action.formData, id: action.payload.insertId } 
+        } 
+      }
       break;
     }
     case CREATE_USER_REJECTED: {
       return {...state, user: {...state.user, fetching: false, error: action.payload} }
       break;
     }
+
+    // API CREATE USER
     case API_CREATE_USER_PENDING: {
-      return {...state, apiUser: {...state.apiUser, fetching: true, error: null} }
+      return {...state, 
+        apiUser: {...state.apiUser, fetching: true, fetched: false, error: null},
+        user: {...state.user, fetching: false, fetched: false, error: null}
+      }
       break;
     }
     case API_CREATE_USER_FULFILLED: {
       const headers = action.payload.headers;
       const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
       return {...state, 
-        auth: {
-          ...state.auth, 
-          accessToken: accessToken, 
-          client: headers.client, 
-          uid: headers.uid, 
-          user_id: headers.user_id 
-        }, 
-        apiUser: {...state.apiUser, fetching: false, fetched: true, data: action.user}
+        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
+        apiUser: {...state.apiUser, fetching: false, fetched: true, data: action.formData},
       }
       break;
     }
@@ -84,6 +119,79 @@ const reducer = (state=initialState, action) => {
       return {...state, apiUser: {...state.apiUser, fetching: false, error: action.payload} }
       break;
     }
+
+    // FETCH RESPONDENT
+    case FETCH_RESPONDENT_PENDING: {
+      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case FETCH_RESPONDENT_FULFILLED: {
+      const data = action.payload.rows['_array'];
+      return {...state, 
+        respondent: {...state.respondent, fetching: false, fetched: true, data } 
+      }
+      break;
+    }
+    case FETCH_RESPONDENT_REJECTED: {
+      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
+      break;
+    }
+
+    // CREATE RESPONDENT
+    case CREATE_RESPONDENT_PENDING: {
+      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case CREATE_RESPONDENT_FULFILLED: {
+      console.log(action.payload)
+
+      return {...state, respondent: 
+        {...state.respondent, fetching: false, fetched: true, 
+          data: {...action.formData, id: action.payload.insertId } 
+        } 
+      }
+      break;
+    }
+    case CREATE_RESPONDENT_REJECTED: {
+      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
+      break;
+    }
+
+    // FETCH SUBJECT
+    case FETCH_SUBJECT_PENDING: {
+      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case FETCH_SUBJECT_FULFILLED: {
+      const data = action.payload.rows['_array'];
+      return {...state, 
+        subject: {...state.subject, fetching: false, fetched: true, data } 
+      }
+      break;
+    }
+    case FETCH_SUBJECT_REJECTED: {
+      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
+      break;
+    }
+
+    // CREATE SUBJECT
+    case CREATE_SUBJECT_PENDING: {
+      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case CREATE_SUBJECT_FULFILLED: {
+      return {...state, subject: 
+        {...state.subject, fetching: false, fetched: true, 
+          data: {...action.formData, id: action.payload.insertId } 
+        } 
+      }
+      break;
+    }
+    case CREATE_SUBJECT_REJECTED: {
+      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
+      break;
+    }
+
   default:
     return state
   }

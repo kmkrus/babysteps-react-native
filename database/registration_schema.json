@@ -1,4 +1,15 @@
 { 
+  "sessions": {
+    "columns": {
+      "id": "INTEGER PRIMARY KEY",
+      "registration_state": "TEXT",
+      "access_token": "TEXT",
+      "client": "TEXT",
+      "uid": "TEXT",
+      "user_id": "INTEGER",
+    },
+    "indexes": [],
+  },
   "users": {
     "columns": {
       "id": "INTEGER PRIMARY KEY", 

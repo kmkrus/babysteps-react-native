@@ -84,3 +84,13 @@ export function dropTable(name) {
     );
   });
 }
+
+export function createSessionRecord() {
+  db.transaction(tx => {
+    tx.executeSql( 'INSERT INTO sessions (registration_state) VALUES (?);', 
+      ['none'],
+      (_, rows) => console.log('** Add Session Record '), 
+      (_, error) => console.log('*** Error in creating session record ')
+    );
+  });
+}

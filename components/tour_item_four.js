@@ -23,7 +23,8 @@ export class TourItemFour extends Component {
     
     return (
 
-      <Animated.View style={styles.container}>
+      <Animated.View 
+        style={styles.container}>
 
         <Animated.Image
           style={[
@@ -99,7 +100,7 @@ export class TourItemFour extends Component {
 const styles = StyleSheet.create({
   scrollView: {
     paddingTop: 10,
-    width: width - 180,
+    width: width - 40,
     borderTopColor: Colors.grey,
     borderTopWidth: 1,
   },
@@ -114,11 +115,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     paddingBottom: 20,
-    fontSize: 18,
+    fontSize: 12,
   },
   container: {
+    flex: 1,
     width: width,
-    height: width * 1.25,
+    height: width * 1.4,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'visible',
@@ -126,21 +128,21 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: 'contain',
-    width: width - 400,
+    width: width - 200,
     height: undefined,
   },
   textBlock: {
-    width: width - 200,
+    width: width - 40,
     paddingBottom: 10,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 20,
-    fontSize: 22,
+    marginBottom: 10,
+    fontSize: 16,
   },
   body: {
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 14,
   },
   
 });

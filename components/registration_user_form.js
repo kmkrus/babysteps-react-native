@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   View,
   Button,
-  StyleSheet
+  StyleSheet,
+  Platform
 } from 'react-native';
 import { Text } from 'react-native-elements';
 
@@ -14,17 +15,14 @@ import withInputAutoFocus, {
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
-import {
-  CREATE_USER_PENDING,
-  CREATE_USER_FULFILLED,
-  CREATE_USER_REJECTED,
-  API_CREATE_USER_PENDING
-} from '../actions/types';
+import { connect } from 'react-redux';
+import { createUser, fetchUser, apiCreateUser } from '../actions/registration_actions';
+import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import Colors from '../constants/Colors';
 
-const MyInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
@@ -70,23 +68,43 @@ class ErrorText extends Component {
   }
 }
 
-class RegistrationForm extends Component {
+class RegistrationUserForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( 
-      !(nextProps.registration.user.fetching || nextProps.registration.apiUser.fetching) 
-    )
+
+    if ( nextProps.registration.apiUser.fetching) {
+      return false;
+    }
+    if ( nextProps.registration.apiUser.fetched ) {
+      console.log('api use fetched')
+      if (nextProps.registration.auth) {
+        this.props.updateSession({
+          access_token: nextProps.registration.auth.accessToken,
+          client: nextProps.registration.auth.client,
+          uid: nextProps.registration.auth.uid,
+          user_id: nextProps.registration.auth.user_id
+        });
+      }
+      if ( nextProps.registration.user.fetching ) {
+        return false;
+      } else if (  nextProps.registration.user.fetched ) {
+
+        return true;
+      } else {
+        this.props.createUser(
+          {... nextProps.registration.apiUser.data, 
+            api_id:  nextProps.registration.auth.user_id
+          }
+        );
+        
+        return false;
+      }
+
+    }
+    return true;
   }
 
   render() {
-
-    if ( this.props.registration.apiUser.fetched ) {
-      this.props.createUser(
-        {...this.props.registration.apiUser.data, 
-          api_id: this.props.registration.auth.user_id
-        }
-      );
-    }
 
     return (
       <Formik
@@ -98,16 +116,18 @@ class RegistrationForm extends Component {
 
           return (
             <Form>
-              <Text h4>First we'll set up your sign in.</Text>
-              <MyInput label="First Name" name="first_name" type="name" />
-              <MyInput label="Last Name" name="last_name" type="name" />
-              <MyInput label="Email" name="email" type="email" />
-              <MyInput label="Password" name="password" type="password" />
-              <Button 
-                title="NEXT" 
-                onPress={props.handleSubmit} 
-                color={Colors.green}
-              />
+              <Text h4>First let's get you registered...</Text>
+              <TextInput label="First Name" name="first_name" type="name" />
+              <TextInput label="Last Name" name="last_name" type="name" />
+              <TextInput label="Email" name="email" type="email" />
+              <TextInput label="Password" name="password" type="password" />
+  
+                <Button 
+                  title="NEXT" 
+                  onPress={props.handleSubmit} 
+                  color={Colors.green}
+                  disabled={ props.isSubmitting }
+                />
               
                 <ErrorText apiUser={this.props.registration.apiUser} />
 
@@ -119,4 +139,7 @@ class RegistrationForm extends Component {
   }
 };
 
-export default RegistrationForm
+const mapStateToProps = ({ registration }) => ({ registration });
+const mapDispatchToProps = { createUser, fetchUser, apiCreateUser, updateSession };
+
+export default connect( mapStateToProps, mapDispatchToProps )(RegistrationUserForm);

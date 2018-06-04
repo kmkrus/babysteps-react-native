@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
   View,
+  ScrollView,
   Text,
   StyleSheet,
   ImageBackground, 
   Dimensions,
   Platform,
 } from 'react-native';
-import { Button } from 'react-native-elements'
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
 
@@ -15,6 +15,7 @@ import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 import { TourItem } from '../components/tour_item';
 import { TourItemFour } from '../components/tour_item_four';
+import TourButtons from '../components/tour_buttons';
 
 const { width } = Dimensions.get('window');
 
@@ -40,7 +41,7 @@ export default class TourScreen extends Component {
 
   render() {
 
-    const offset = (width - TourItem.WIDTH) / 2;
+    const offset = (width - TourItem.WIDTH) / 6;
     
     return (
       
@@ -48,7 +49,7 @@ export default class TourScreen extends Component {
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
 
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
 
           <SideSwipe
             data={items}
@@ -94,100 +95,30 @@ export default class TourScreen extends Component {
             onPageIndicatorPress={this.onItemTap}
           />
 
-          <Buttons  {...this.state} updateIndex = {this.updateIndex} navigation = {this.props.navigation} />
+        </ScrollView>
 
-        </View>
+        <TourButtons  
+          {...this.state} 
+          updateIndex = {this.updateIndex} 
+          navigation = {this.props.navigation}
+        />
 
       </ImageBackground>
     )
   }
 }
 
-class Buttons extends Component {
-
-  handleClick = (routeName) => {
-    this.props.navigation.navigate(routeName);
-  }
-
-  render() { 
-    if (this.props.currentIndex < 3) {
-      
-      var updateIndex = this.props.updateIndex;
-      return (
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonThreeStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={this.props.updateIndex}
-            title="Let's Get Started" />
-        </View>
-      )
-
-    } else {
-
-      return (
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonOneStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => this.handleClick('Registration') }
-            title='No Thanks' />
-          <Button
-            color={Colors.pink}
-            buttonStyle={styles.buttonTwoStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => this.handleClick('Registration') }
-            title='Join Study' />
-        </View>
-      )
-    }
-  }
-}
-
 const styles = StyleSheet.create({
-  buttonContainer: {
-    justifyContent: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
-  },
-  buttonTitleStyle: {
-    fontWeight: '900',
-  },
-  buttonOneStyle: {
-    width: 200,
-    backgroundColor: Colors.lightGrey,
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
-  buttonTwoStyle: {
-   width: 200,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
-  buttonThreeStyle: {
-   width: 400,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
   pageControl: {
     flex: 1,
     position:'absolute', 
     left:0, 
     right:0, 
-    bottom:100,
+    bottom:80,
   },
   imageBackground: {
     flex: 1,
+    marginTop: 20,
   },
   container: {
     flex: 1,

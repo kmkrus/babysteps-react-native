@@ -61,6 +61,8 @@ export class TourItem extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    marginTop: 20,
     width: width,
     height: width,
     justifyContent: 'center',
@@ -70,20 +72,21 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: 'contain',
-    width: width - 400,
+    width: width - 200,
     height: undefined,
+    marginBottom: 20,
   },
   textBlock: {
-    width: width - 200,
+    width: width - 40,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 20,
-    fontSize: 22,
+    marginBottom: 10,
+    fontSize: 18,
   },
   body: {
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 14,
   }
   
 });

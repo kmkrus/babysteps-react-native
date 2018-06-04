@@ -2,8 +2,10 @@ import axios from "axios";
 import { 
   tableNames, 
   createTable, 
-  dropTable
+  dropTable,
+  createSessionRecord
 } from './common';
+
 import CONSTANTS from '../constants';
 import schema from './registration_schema.json';
 
@@ -34,6 +36,10 @@ const checkRegistrationSchema = () => {
         tables.forEach( function(name) {
           if (!existing_tables.includes(name)) {
             createTable(name, schema[name]);
+            if (name == 'sessions') {
+              // need a session record to initialize app
+              createSessionRecord();
+            }
           }
         })
         resolve(true);
@@ -43,5 +49,7 @@ const checkRegistrationSchema = () => {
   }) // return Promise ;
 
 };
+
+
 
 export default checkRegistrationSchema;
