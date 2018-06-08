@@ -16,8 +16,10 @@ import withInputAutoFocus, {
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
+import { _ } from 'lodash';
+
 import { connect } from 'react-redux';
-import { createRespondent, apiCreateRespondent } from '../actions/registration_actions';
+import { createRespondent } from '../actions/registration_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import DatePickerInput from '../components/datePickerInput';
@@ -58,7 +60,7 @@ const maritalStatuses = [
 class RegistrationRespondentForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !this.props.registration.respondent.fetching )
+    return ( !nextProps.registration.respondent.fetching )
   }
 
   render() {
@@ -70,9 +72,10 @@ class RegistrationRespondentForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
+          user_id: this.props.registration.user.data.id,
           email: this.props.registration.user.data.email,
-          first_name: this.props.registration.user.first_name,
-          last_name: this.props.registration.user.last_name,
+          first_name: this.props.registration.user.data.first_name,
+          last_name: this.props.registration.user.data.last_name,
           respondent_type: 'mother',
           state: 'IA',
           marital_status: 'married'
@@ -149,6 +152,6 @@ class RegistrationRespondentForm extends Component {
 };
 
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createRespondent, apiCreateRespondent };
+const mapDispatchToProps = { createRespondent };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

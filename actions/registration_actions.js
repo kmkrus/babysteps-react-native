@@ -167,6 +167,7 @@ export const createRespondent = (respondent) => {
           (_, error) => console.log('*** Error in clearing respondents table')
         );
         const sql = 'INSERT INTO respondents ( \
+          user_id, \
           respondent_type, \
           first_name, \
           last_name, \
@@ -185,8 +186,9 @@ export const createRespondent = (respondent) => {
           marital_status, \
           weight, \
           height \
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
         const values = [
+          respondent.user_id,
           respondent.respondent_type,
           respondent.first_name,
           respondent.last_name,
@@ -217,6 +219,34 @@ export const createRespondent = (respondent) => {
       })
     )
   };
+}
+
+export const apiCreateRespondent = (session, data) => {
+  
+  delete data.id 
+  delete data.api_id 
+
+  return function (dispatch) {
+    
+    dispatch({
+      type: API_CREATE_RESPONDENT_PENDING,
+      payload: {
+        data: data,
+        session: session
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'POST',
+            url: '/respondents',
+            fulfilled: API_CREATE_RESPONDENT_FULFILLED,
+            rejected: API_CREATE_RESPONDENT_REJECTED,
+          }
+        }
+      }
+    })
+
+  }
 }
 
 export const fetchSubject = () => {
@@ -279,4 +309,31 @@ export const createSubject = (subject) => {
       })
     )
   };
+}
+
+export const apiCreateSubject = (session, data) => {
+  delete data.id 
+  delete data.api_id 
+  
+  return function (dispatch) {
+    
+    dispatch({
+      type: API_CREATE_SUBJECT_PENDING,
+      payload: {
+        data: data,
+        session: session
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'POST',
+            url: '/subjects',
+            fulfilled: API_CREATE_SUBJECT_FULFILLED,
+            rejected: API_CREATE_SUBJECT_REJECTED,
+          }
+        }
+      }
+    })
+
+  }
 }

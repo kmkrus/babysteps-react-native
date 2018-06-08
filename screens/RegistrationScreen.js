@@ -7,6 +7,7 @@ import { Text } from 'react-native-elements';
 
 import { connect} from 'react-redux';
 import { updateSession } from '../actions/session_actions';
+import { apiCreateRespondent, apiCreateSubject } from '../actions/registration_actions';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
@@ -30,9 +31,18 @@ class RegistrationScreen extends Component {
     } else if ( _.isEmpty(this.props.registration.respondent.data) ) {
       return <RegistrationRespondentForm />
     } else if ( _.isEmpty(this.props.registration.subject.data) ) {
+      if (!this.props.registration.apiRespondent.fetching && !this.props.registration.apiRespondent.fetched) {
+        this.props.apiCreateRespondent(this.props.session, this.props.registration.respondent.data)
+      }
       return <RegistrationSubjectForm />
-    } else {
-      this.props.updateSession({registration_state: States.REGISTERED_AS_IN_STUDY})
+    } else if ( this.props.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
+      if (!this.props.registration.apiSubject.fetching) { 
+        if (this.props.registration.apiSubject.fetched && !this.props.session.fetching) {
+          this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+        } else  {
+          this.props.apiCreateSubject(this.props.session, this.props.registration.subject.data)
+        }
+      }
     }
   }
 
@@ -54,8 +64,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ registration }) => ({ registration });
+const mapStateToProps = ({ registration, session }) => ({ registration, session });
 
-const mapDispatchToProps = { updateSession };
+const mapDispatchToProps = { updateSession, apiCreateRespondent, apiCreateSubject };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationScreen);

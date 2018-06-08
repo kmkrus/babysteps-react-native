@@ -1,48 +1,80 @@
 import axios from "axios";
+
+import { apiTokenRefresh, apiUpdateSession} from '../actions/session_actions';
+
 import CONSTANTS from '../constants';
 
-Fulfilled = ( type, response ) => {
-  return {
-    type,
-    response: response
-  }
-}
-Rejected = ( type, error ) => {
-  return {
-    type,
-    response: error
-  }
-}
+import {
+  API_CREATE_USER_PENDING,
+  UPDATE_ACCESS_TOKEN,
+} from '../actions/types';
 
-export const Api = (event, action) => {
-  console.log( event );
-  console.log( action );
+const excludeTypes = [
+  API_CREATE_USER_PENDING
+]
 
-  const headers = {
-    'ACCESS-TOKEN': '', //event.auth.accessToken,
-    'TOKEN-TYPE': 'Bearer',
-    'CLIENT': '', //event.auth.client,
-    'UID': '', //event.auth.uid,
-  }
-  return ( 
-    
-    axios({
-      method: event.method,
-      responseType: 'json',
-      baseURL: CONSTANTS.BASE_URL,
-      url: event.url,
-      headers: headers,
-      data: event.payload,
-    })
-    //.then(function (response) {
-      //console.log(response);
-      //dispatch( Fulfilled(API_CREATE_USER_FULFILLED, response) );
-    //})
-    //.catch(function (error) {
-      //console.log(error);
-      //dispatch( Rejected(API_CREATE_USER_REJECTED, error) );
-    //})
-  
-  ) 
+const Pending = (type) => {
+  return { type }
 };
 
+const Response = ( type, payload, session={} ) => {
+  return { type, payload, session }
+};
+
+export default store => 
+  next => 
+    action => {
+      
+      if ( !(action.type.includes('api_')) || !(action.type.includes('_pending')) ) {
+        // not a pending api call
+        return next(action)
+      } else if ( excludeTypes.includes(action.type) ) {
+        console.log('***** not an offline api call ******')
+        return next(action)
+      }
+
+      const session = store.getState().session;
+      const effect = action.meta.offline.effect;
+
+      const headers = {
+        'ACCESS-TOKEN': session.access_token,
+        'TOKEN-TYPE': 'Bearer',
+        'CLIENT': session.client,
+        'UID': session.uid
+      }
+
+      return (
+
+        axios({
+          method: effect.method,
+          responseType: 'json',
+          baseURL: CONSTANTS.BASE_URL,
+          url: effect.url,
+          headers: headers,
+          data: action.payload.data,
+        })
+        .then( (response) => {
+          // if access-token in header is empty, continue to use existing token
+          if (response.headers['access-token'] !== '') {
+            store.dispatch( Response( UPDATE_ACCESS_TOKEN, response.headers['access-token'] ))
+          }
+      
+          store.dispatch( Response( effect.fulfilled, response ) )
+        }) 
+        .catch( (error) => { 
+          const { request, response } = error;
+          if (!request) throw error; // There was an error creating the request
+          if (!response) return false; // There was no response
+          if (response.status === 401) { // Not signed in
+            // not already getting fresh token
+            if ( !store.getState().session.fetching_token ) {
+              apiTokenRefresh(store.dispatch, session)
+            }
+          } else {
+            store.dispatch( Response( effect.rejected, error ) )
+          }
+        }) // catch
+
+      ) // return
+
+    } // action

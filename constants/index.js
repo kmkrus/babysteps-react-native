@@ -1,4 +1,5 @@
 export default {
+  RESET_STATE: false,
   DROP_MILESTONE_TABLES: false,
   REBUILD_MILESTONES: false,
   DROP_REGISTRATION_TABLES: false,

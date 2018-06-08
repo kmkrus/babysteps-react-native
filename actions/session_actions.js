@@ -5,13 +5,17 @@ import { _ } from 'lodash';
 import CONSTANTS from '../constants';
 
 import {
+  API_TOKEN_REFRESH_PENDING,
+  API_TOKEN_REFRESH_FULFILLED,
+  API_TOKEN_REFRESH_REJECTED,
+
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
   FETCH_SESSION_REJECTED,
 
   UPDATE_SESSION_PENDING,
   UPDATE_SESSION_FULFILLED,
-  UPDATE_SESSION_REJECTED
+  UPDATE_SESSION_REJECTED,
 } from '../actions/types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -45,31 +49,97 @@ export const fetchSession = () => {
   }
 }
 
+const sendSessionUpdate = (dispatch, data) => {
+  dispatch( Pending(UPDATE_SESSION_PENDING) )
+
+  const keys = _.keys(data);
+  const values = _.values(data);
+  var updateSQL = []
+
+  _.forEach( keys, (key) => {
+    updateSQL.push( key + " = '" + data[key] + "'" )
+  })
+
+  return (
+
+    db.transaction(tx => {
+      tx.executeSql(
+        'UPDATE sessions SET ' + updateSQL.join(', ') + ';', 
+        [],
+        (_, response) => { dispatch( Response(UPDATE_SESSION_FULFILLED, response, data) ) },
+        (_, error) => { dispatch( Response(UPDATE_SESSION_REJECTED, error) ) }
+      );
+    })
+    
+  )
+}
+
 export const updateSession = (data) => {
+  return function (dispatch) {
+    sendSessionUpdate(dispatch, data)
+  }
+}
+
+export const apiUpdateSession = (dispatch, data) => {
+  return sendSessionUpdate(dispatch, data)
+}
+
+
+export const apiCreateRespondent = (session, data) => {
+  
+  delete data.id 
+  delete data.api_id 
 
   return function (dispatch) {
-
-    dispatch( Pending(UPDATE_SESSION_PENDING) )
-
-    const keys = _.keys(data);
-    const values = _.values(data);
-    var updateSQL = []
-
-    _.forEach( keys, (key) => {
-      updateSQL.push( key + " = '" + data[key] + "'" )
+    
+    dispatch({
+      type: API_CREATE_RESPONDENT_PENDING,
+      payload: {
+        data: data,
+        session: session
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'POST',
+            url: '/respondents',
+            fulfilled: API_CREATE_RESPONDENT_FULFILLED,
+            rejected: API_CREATE_RESPONDENT_REJECTED,
+          }
+        }
+      }
     })
 
-    return (
-
-      db.transaction(tx => {
-        tx.executeSql(
-          'UPDATE sessions SET ' + updateSQL.join(', ') + ';', 
-          [],
-          (_, response) => { dispatch( Response(UPDATE_SESSION_FULFILLED, response, data) ) },
-          (_, error) => { dispatch( Response(UPDATE_SESSION_REJECTED, error) ) }
-        );
-      })
-      
-    )
   }
+}
+
+export const apiTokenRefresh = (dispatch, session) => {
+
+  return (
+  
+    dispatch( { 
+      type: API_TOKEN_REFRESH_PENDING,
+      
+      payload: {
+        session,
+        data: {
+          email: session.email, 
+          password: session.password 
+        }
+      }, // payload
+
+      meta: {
+        offline: {
+          effect: { 
+            method: 'POST',
+            url: '/user_session',
+            fulfilled: API_TOKEN_REFRESH_FULFILLED,
+            rejected: API_TOKEN_REFRESH_REJECTED
+          }
+        }
+      } // meta
+
+    })
+
+  )
 }

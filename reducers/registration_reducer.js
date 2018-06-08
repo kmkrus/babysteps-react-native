@@ -25,6 +25,10 @@ import {
   CREATE_RESPONDENT_FULFILLED,
   CREATE_RESPONDENT_REJECTED,
 
+  API_CREATE_RESPONDENT_PENDING,
+  API_CREATE_RESPONDENT_FULFILLED,
+  API_CREATE_RESPONDENT_REJECTED,
+
   FETCH_SUBJECT_PENDING,
   FETCH_SUBJECT_FULFILLED,
   FETCH_SUBJECT_REJECTED,
@@ -32,6 +36,11 @@ import {
   CREATE_SUBJECT_PENDING,
   CREATE_SUBJECT_FULFILLED,
   CREATE_SUBJECT_REJECTED,
+
+  API_CREATE_SUBJECT_PENDING,
+  API_CREATE_SUBJECT_FULFILLED,
+  API_CREATE_SUBJECT_REJECTED,
+
 } from '../actions/types';
 
 const initialState = {
@@ -41,10 +50,20 @@ const initialState = {
     data: {},
     error: null,
   },
+  apiUser: {
+    fetching: false,
+    fetched: false,
+    error: null,
+  },
   respondent: {
     fetching: false,
     fetched: false,
     data: {},
+    error: null,
+  },
+  apiRespondent: {
+    fetching: false,
+    fetched: false,
     error: null,
   },
   subject: {
@@ -53,11 +72,11 @@ const initialState = {
     data: {},
     error: null,
   },
-  apiUser: {
+  apiSubject: {
     fetching: false,
     fetched: false,
     error: null,
-  }
+  },
 };
 
 const reducer = (state=initialState, action) => {
@@ -69,7 +88,7 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case FETCH_USER_FULFILLED: {
-      const data = action.payload.rows['_array'];
+      const data = action.payload.rows['_array'][0];
       return {...state, 
         user: {...state.user, fetching: false, fetched: true, data } 
       }
@@ -111,7 +130,7 @@ const reducer = (state=initialState, action) => {
       const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
       return {...state, 
         auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiUser: {...state.apiUser, fetching: false, fetched: true, data: action.formData},
+        apiUser: {...state.apiUser, fetching: false, fetched: true, error: null, data: action.formData},
       }
       break;
     }
@@ -126,7 +145,7 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case FETCH_RESPONDENT_FULFILLED: {
-      const data = action.payload.rows['_array'];
+      const data = action.payload.rows['_array'][0];
       return {...state, 
         respondent: {...state.respondent, fetching: false, fetched: true, data } 
       }
@@ -143,8 +162,6 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case CREATE_RESPONDENT_FULFILLED: {
-      console.log(action.payload)
-
       return {...state, respondent: 
         {...state.respondent, fetching: false, fetched: true, 
           data: {...action.formData, id: action.payload.insertId } 
@@ -157,13 +174,27 @@ const reducer = (state=initialState, action) => {
       break;
     }
 
+    // API_CREATE_RESPONDENT
+    case API_CREATE_RESPONDENT_PENDING: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: true, fetched: false, error: null }}
+      break;
+    }
+    case API_CREATE_RESPONDENT_FULFILLED: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload }}
+      break;
+    }
+    case API_CREATE_RESPONDENT_REJECTED: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
+      break;
+    }
+
     // FETCH SUBJECT
     case FETCH_SUBJECT_PENDING: {
       return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
       break;
     }
     case FETCH_SUBJECT_FULFILLED: {
-      const data = action.payload.rows['_array'];
+      const data = action.payload.rows['_array'][0];
       return {...state, 
         subject: {...state.subject, fetching: false, fetched: true, data } 
       }
@@ -180,6 +211,7 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case CREATE_SUBJECT_FULFILLED: {
+      debugger
       return {...state, subject: 
         {...state.subject, fetching: false, fetched: true, 
           data: {...action.formData, id: action.payload.insertId } 
@@ -192,7 +224,21 @@ const reducer = (state=initialState, action) => {
       break;
     }
 
-  default:
+   // API_CREATE_SUBJECT
+    case API_CREATE_SUBJECT_PENDING: {
+      return {...state, apiSubject: {...state.apiSubject, fetching: true, fetched: false, error: null }}
+      break;
+    }
+    case API_CREATE_SUBJECT_FULFILLED: {
+      return {...state, apiSubject: {...state.apiSubject, fetching: false, fetched: true, data: action.payload }}
+      break;
+    }
+    case API_CREATE_SUBJECT_REJECTED: {
+      return {...state, apiSubject: {...state.apiSubject, fetching: false, fetched: false, error: action.payload }}
+      break;
+    }
+
+  default: 
     return state
   }
 };

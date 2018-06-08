@@ -50,3 +50,9 @@ export const CREATE_SUBJECT_REJECTED = 'create_subject_rejected';
 export const API_CREATE_SUBJECT_PENDING = 'api_create_subject_pending';
 export const API_CREATE_SUBJECT_FULFILLED = 'api_create_subject_fulfilled';
 export const API_CREATE_SUBJECT_REJECTED = 'api_create_subject_rejected';
+
+export const API_TOKEN_REFRESH_PENDING = 'api_token_refresh_pending';
+export const API_TOKEN_REFRESH_FULFILLED = 'api_token_refresh_fulfilled';
+export const API_TOKEN_REFRESH_REJECTED = 'api_token_refresh_rejected';
+
+export const UPDATE_ACCESS_TOKEN = 'update_access_token';

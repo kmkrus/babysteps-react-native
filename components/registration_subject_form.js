@@ -17,7 +17,6 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import { createSubject } from '../actions/registration_actions';
-import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import DatePickerInput from '../components/datePickerInput';
@@ -50,14 +49,7 @@ const conceptionMethods = [
 class RegistrationSubjectForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    
-    if ( nextProps.registration.subject.fetching) {
-      return false;
-    }
-    if ( nextProps.registration.subject.fetched ) {
-        this.props.updateSession(this.props.session.id, {registration_state: States.REGISTERED_AS_IN_STUDY})
-    }
-    return true;
+    return ( !nextProps.registration.subject.fetching)
   }
 
   render() {
@@ -69,6 +61,7 @@ class RegistrationSubjectForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
+          'respondent_ids[]': this.props.registration.respondent.data.id,
           gender: 'female',
           conception_method: 'natural',
           expected_date_of_birth: null,
@@ -132,7 +125,7 @@ class RegistrationSubjectForm extends Component {
   }
 };
 
-const mapStateToProps = ({ registration, session }) => ({ registration, session });
-const mapDispatchToProps = { createSubject, updateSession };
+const mapStateToProps = ({ registration }) => ({ registration });
+const mapDispatchToProps = { createSubject };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationSubjectForm);

@@ -31,6 +31,7 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-promise-middleware": "^5.1.1",
+    "redux-refresh-token": "^0.1.0",
     "redux-thunk": "^2.2.0",
     "sentry-expo": "^1.7.0",
     "yup": "^0.25.1"

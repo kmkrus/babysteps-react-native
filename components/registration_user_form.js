@@ -76,13 +76,14 @@ class RegistrationUserForm extends Component {
       return false;
     }
     if ( nextProps.registration.apiUser.fetched ) {
-      console.log('api use fetched')
       if (nextProps.registration.auth) {
         this.props.updateSession({
           access_token: nextProps.registration.auth.accessToken,
           client: nextProps.registration.auth.client,
           uid: nextProps.registration.auth.uid,
-          user_id: nextProps.registration.auth.user_id
+          user_id: nextProps.registration.auth.user_id,
+          email: nextProps.registration.apiUser.data.email,
+          password: nextProps.registration.apiUser.data.password
         });
       }
       if ( nextProps.registration.user.fetching ) {
@@ -91,12 +92,10 @@ class RegistrationUserForm extends Component {
 
         return true;
       } else {
-        this.props.createUser(
-          {... nextProps.registration.apiUser.data, 
-            api_id:  nextProps.registration.auth.user_id
-          }
-        );
-        
+        this.props.createUser({
+          ... nextProps.registration.apiUser.data, 
+          api_id:  nextProps.registration.auth.user_id
+        })
         return false;
       }
 
@@ -126,7 +125,7 @@ class RegistrationUserForm extends Component {
                   title="NEXT" 
                   onPress={props.handleSubmit} 
                   color={Colors.green}
-                  disabled={ props.isSubmitting }
+                  //disabled={ props.isSubmitting }
                 />
               
                 <ErrorText apiUser={this.props.registration.apiUser} />

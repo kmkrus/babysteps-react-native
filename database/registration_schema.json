@@ -7,6 +7,8 @@
       "client": "TEXT",
       "uid": "TEXT",
       "user_id": "INTEGER",
+      "email": "TEXT",
+      "password": "TEXT"
     },
     "indexes": [],
   },
@@ -42,6 +44,7 @@
     "columns": {
       "id": "INTEGER PRIMARY KEY", 
       "api_id": "INTEGER",
+      "user_id": "INTEGER",
       "respondent_type": "TEXT",
       "first_name": "TEXT",
       "last_name": "TEXT",
