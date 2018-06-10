@@ -11,6 +11,8 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 
 import TourScreen from '../screens/TourScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
+import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
+import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
 
 import Colors from '../constants/Colors';
 import State from '../actions/states';
@@ -63,7 +65,23 @@ const TourNavigator = StackNavigator(
       screen: TourScreen,
     },
     Registration: {
-      screen: props => <RegistrationNavigator />
+      screen: RegistrationNavigator
+    }
+  },
+  {
+    navigationOptions: () => ({
+      header: null
+    }),
+  }
+);
+
+const TourNoStudyNavigator = StackNavigator(
+  {
+    Main: {
+      screen: TourNoStudyConfirmScreen,
+    },
+    Registration: {
+      screen: RegistrationNoStudyScreen, 
     }
   },
   {
@@ -98,7 +116,7 @@ class RootNavigator extends Component {
       if (this.props.session.registration_state == State.REGISTERING_AS_IN_STUDY) {
         return <RegistrationNavigator />
       } else if (this.props.session.registration_state == State.REGISTERING_AS_NO_STUDY) {
-        return <RegistrationNavigator />
+        return <TourNoStudyNavigator />
       } else {
         return <TourNavigator /> 
       };
