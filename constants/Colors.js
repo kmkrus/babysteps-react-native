@@ -12,6 +12,7 @@ const white = '#fff';
 
 export default {
   tintColor,
+  iconDefault: green,
   tabIconDefault: '#ccc',
   tabIconSelected: tintColor,
   tabBar: '#fefefe',

@@ -10,12 +10,13 @@ import { fetchUser, fetchRespondent, fetchSubject } from '../actions/registratio
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import TourScreen from '../screens/TourScreen';
+import ConsentScreen from '../screens/ConsentScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
 import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
 
 import Colors from '../constants/Colors';
-import State from '../actions/states';
+import States from '../actions/states';
 
 const RootStackNavigator = StackNavigator(
   {
@@ -40,6 +41,9 @@ const RootStackNavigator = StackNavigator(
 const RegistrationNavigator = StackNavigator(
   {
     Main: {
+      screen: ConsentScreen,
+    },
+    Registration: {
       screen: RegistrationScreen,
     },
     rootStack: {
@@ -105,21 +109,25 @@ class RootNavigator extends Component {
   }
 
   componentWillUnmount() {
-      
     this._notificationSubscription && this._notificationSubscription.remove();
   }
 
   render() {
-    if ( State.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
+    //return <RootStackNavigator />
+    if ( States.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
       return <RootStackNavigator />
+    } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {
+      return <TourNoStudyNavigator />
+    } else if (this.props.session.registration_state == States.REGISTERING_ELIGIBILITY ) {
+      return <RegistrationNavigator />
+    } else if (this.props.session.registration_state == States.REGISTERING_AS_ELIGIBLE ) {
+      return <RegistrationNavigator />
+    } else if (this.props.session.registration_state == States.REGISTERING_NOT_ELIGIBLE ) {
+      return <TourNoStudyNavigator />
+    } else if (this.props.session.registration_state == States.REGISTERING_AS_IN_STUDY) {
+      return <RegistrationNavigator navigate={'Registration'} />
     } else {
-      if (this.props.session.registration_state == State.REGISTERING_AS_IN_STUDY) {
-        return <RegistrationNavigator />
-      } else if (this.props.session.registration_state == State.REGISTERING_AS_NO_STUDY) {
-        return <TourNoStudyNavigator />
-      } else {
-        return <TourNavigator /> 
-      };
+      return <TourNavigator /> 
     };
 
   }

@@ -47,7 +47,7 @@ class TourButtons extends Component {
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
             onPress={ () => { 
-              this.props.updateSession( {registration_state: States.REGISTERING_AS_IN_STUDY} )
+              this.props.updateSession( {registration_state: States.REGISTERING_ELIGIBILITY} )
             }}
             title='Join Study' />
         </View>

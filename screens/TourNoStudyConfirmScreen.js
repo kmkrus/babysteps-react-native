@@ -3,12 +3,17 @@ import {
   View,
   ScrollView,
   Text,
+  Image,
   Dimensions,
   StyleSheet,
   ImageBackground,
 } from 'react-native';
 import { Button } from 'react-native-elements';
 
+import { connect} from 'react-redux';
+import { updateSession } from '../actions/session_actions';
+
+import States from '../actions/states';
 import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 
@@ -16,13 +21,29 @@ const { width: screenWidth } = Dimensions.get('window');
 const width = screenWidth;
 
 
-export default class TourNoStudyConfirmScreen extends Component {
+class TourNoStudyConfirmScreen extends Component {
 
-  static WIDTH = width;
+  selectText = () => {
+    if (this.props.session.registration_state == States.REGISTERING_NOT_ELIGIBLE ) {
+      return (
+        <Text>Unfortunately, you are not eligible to participate in the research study, but that's okay!  You can still access many of the features including the Baby Book and Milestone Tracking.</Text>
+      )
+    } else {
+      return (
+        <Text>You've chosen not to participate in the research study, and that's okay! Be aware that you will not have access to all the benefits that Baby Steps offers.  I you change your mind, you will be able to join the study later if you wish.</Text>
+      )
+    }
+  }
+
+  selectButtonTitle = () => {
+    if (this.props.session.registration_state == States.REGISTERING_ELIGIBILITY) {
+      return 'Join Study'
+    } else {
+      return 'Go Back'
+    }
+  }
   
   render() {
-
-    console.log(this.props)
     
     return (
       
@@ -32,27 +53,30 @@ export default class TourNoStudyConfirmScreen extends Component {
 
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.textBlock}>
-            <Text>You've chosen not to participate in the research study, and that's okay! Be aware that you will not have access to all the benefits that Baby Steps offers.  I you change your mind, you will be able to join the study later.</Text>
+            <Image
+              style={styles.image}
+              source={require('../assets/images/tour_no_study_confirm.png')} />
+            { this.selectText()}
           </View>
 
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonOneStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={ () => { 
-                this.props.updateSession( {registration_state: States.REGISTERING_AS_IN_STUDY} )
-              }}
-              title='Join Study' />
-            <Button
-              color={Colors.pink}
-              buttonStyle={styles.buttonTwoStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={ () => { 
-                this.props.navigation.navigate('Registration')
-              }}
-              title='I Understand' />
+            color={Colors.grey}
+            buttonStyle={styles.buttonOneStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={ () => { 
+              this.props.updateSession( {registration_state: States.REGISTERING_ELIGIBILITY} )
+            }}
+            title={ this.selectButtonTitle() } />
+          <Button
+            color={Colors.pink}
+            buttonStyle={styles.buttonTwoStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={ () => { 
+              this.props.navigation.navigate('Registration')
+            }}
+            title='I Understand' />
           </View>
 
       </ImageBackground>
@@ -67,13 +91,18 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'visible',
   },
+  image: {
+    width: width - 150,
+    resizeMode: 'contain',
+    marginBottom: 20,
+  },
   textBlock: {
     width: width - 40,
+    alignItems: 'center',
   },
   buttonContainer: {
     justifyContent: 'center',
@@ -101,3 +130,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   }
 })
+
+const mapStateToProps = ({ session }) => ({ session });
+
+const mapDispatchToProps = { updateSession };
+
+export default connect( mapStateToProps, mapDispatchToProps )(TourNoStudyConfirmScreen);
