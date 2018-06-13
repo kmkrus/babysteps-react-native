@@ -41,8 +41,6 @@ class ConsentEligibilityForm extends Component {
       // all yes
       this.props.updateSession({registration_state: States.REGISTERING_AS_ELIGIBLE })
     }
-    
-    console.log('submit')
   }
 
   render() {

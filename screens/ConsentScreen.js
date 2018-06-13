@@ -11,6 +11,7 @@ import { updateSession } from '../actions/session_actions';
 import ConsentEligibilityForm from '../components/consent_eligibility_form';
 import ConsentDisclosureForm from '../components/consent_disclosure_form';
 import ConsentAgreementForm from '../components/consent_agreement_form';
+import ConsentSignatureForm from '../components/consent_signature_form';
 
 import States from '../actions/states';
 
@@ -27,6 +28,8 @@ class ConsentScreen extends Component {
       return <ConsentDisclosureForm />
     } else if ( this.props.session.registration_state == States.REGISTERING_ACCEPT_TERMS ) {
       return <ConsentAgreementForm />
+    } else if ( this.props.session.registration_state == States.REGISTERING_SIGNATURE ) {
+      return <ConsentSignatureForm />
     }
   }
 

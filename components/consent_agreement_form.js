@@ -25,10 +25,7 @@ class ConsentAgreementForm extends Component {
     if ( this.state.bloodSpots == null ) {
       this.setState({errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot."})
     } else {
-      this.setState({errorMessage: ''})
-      console.log('submit')
-      
-      //this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
+      this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
     }
   }
 
@@ -100,6 +97,7 @@ class ConsentAgreementForm extends Component {
             title='No, I do not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose. '
             textStyle={styles.checkboxText}
             checked={this.state.bloodSpots == false}
+            containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
             onPress={() => this.setState({bloodSpots: false, errorMessage: ''})}
            />
            <Text style={styles.header}>Genetic Information Nondiscrimination Act (GINA)</Text>
