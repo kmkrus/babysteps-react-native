@@ -1,5 +1,6 @@
 const tintColor = '#2f95dc';
 const errorColor = 'rgb(239, 51, 64)';
+const errorBackground = 'rgb(239, 175, 179)';
 const green = '#89efd8';
 const darkGreen = '#39e3be';
 const lightGreen = '#d8faf2';
@@ -17,7 +18,7 @@ export default {
   tabIconSelected: tintColor,
   tabBar: '#fefefe',
   textColor: grey,
-  errorBackground: errorColor,
+  errorBackground,
   errorText: white,
   errorColor,
   warningBackground: '#EAEB5E',

@@ -9,6 +9,7 @@ import { connect} from 'react-redux';
 import { updateSession } from '../actions/session_actions';
 
 import ConsentEligibilityForm from '../components/consent_eligibility_form';
+import ConsentDisclosureForm from '../components/consent_disclosure_form';
 import ConsentAgreementForm from '../components/consent_agreement_form';
 
 import States from '../actions/states';
@@ -23,6 +24,8 @@ class ConsentScreen extends Component {
     if ( this.props.session.registration_state == States.REGISTERING_ELIGIBILITY ) {
       return <ConsentEligibilityForm />
     } else if ( this.props.session.registration_state == States.REGISTERING_AS_ELIGIBLE ) {
+      return <ConsentDisclosureForm />
+    } else if ( this.props.session.registration_state == States.REGISTERING_ACCEPT_TERMS ) {
       return <ConsentAgreementForm />
     }
   }

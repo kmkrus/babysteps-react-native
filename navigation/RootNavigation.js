@@ -118,9 +118,7 @@ class RootNavigator extends Component {
       return <RootStackNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {
       return <TourNoStudyNavigator />
-    } else if (this.props.session.registration_state == States.REGISTERING_ELIGIBILITY ) {
-      return <RegistrationNavigator />
-    } else if (this.props.session.registration_state == States.REGISTERING_AS_ELIGIBLE ) {
+    } else if ( States.REGISTERING_IN_STUDY_STATES.includes(this.props.session.registration_state) ) {
       return <RegistrationNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_NOT_ELIGIBLE ) {
       return <TourNoStudyNavigator />
