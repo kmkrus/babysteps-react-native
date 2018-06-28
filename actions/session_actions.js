@@ -84,35 +84,6 @@ export const apiUpdateSession = (dispatch, data) => {
   return sendSessionUpdate(dispatch, data)
 }
 
-
-export const apiCreateRespondent = (session, data) => {
-  
-  delete data.id 
-  delete data.api_id 
-
-  return function (dispatch) {
-    
-    dispatch({
-      type: API_CREATE_RESPONDENT_PENDING,
-      payload: {
-        data: data,
-        session: session
-      },
-      meta: {
-        offline: {
-          effect: { 
-            method: 'POST',
-            url: '/respondents',
-            fulfilled: API_CREATE_RESPONDENT_FULFILLED,
-            rejected: API_CREATE_RESPONDENT_REJECTED,
-          }
-        }
-      }
-    })
-
-  }
-}
-
 export const apiTokenRefresh = (dispatch, session) => {
 
   return (

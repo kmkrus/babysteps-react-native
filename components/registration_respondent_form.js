@@ -6,7 +6,7 @@ import {
   Platform,
   Keyboard
 } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Text, CheckBox } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -19,7 +19,8 @@ import withInputAutoFocus, {
 import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
-import { createRespondent } from '../actions/registration_actions';
+import { createRespondent, updateRespondent, apiCreateRespondent } from '../actions/registration_actions';
+import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import DatePickerInput from '../components/datePickerInput';
@@ -27,6 +28,8 @@ import PickerInput from '../components/pickerInput';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
+
+import ActionStates from '../actions/states';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 
@@ -60,7 +63,36 @@ const maritalStatuses = [
 class RegistrationRespondentForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.registration.respondent.fetching )
+    if ( nextProps.registration.respondent.fetching ) {
+      return false
+    } else if (nextProps.registration.respondent.fetched) {
+
+      if (nextProps.registration.apiRespondent.error != null) {
+        return true
+
+      } else if (!nextProps.registration.apiRespondent.fetching && !nextProps.registration.apiRespondent.fetched) {
+        this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
+        return false
+      } else if (nextProps.registration.apiRespondent.fetched) {
+        // Upload signatture image if we have respondent id
+        //if (this.props.registration.apiRespondent.data.id !== undefined ) {
+        //  const fileName = Expo.FileSystem.cacheDirectory + 'signature/signature.png'
+        //  const image = Expo.FileSystem.readAsStringAsync(fileName)
+        //  const api_id = this.props.registration.apiRespondent.data.id
+        //  const accepted_tos_at = new Date().toISOString()
+        //  this.props.apiUpdateRespondent( { api_id: api_id, respondent: { accepted_tos_at: accepted_tos_at,  'attachments[]': image } } )
+        //}
+        this.props.updateRespondent({ api_id: nextProps.registration.apiRespondent.data.id})
+
+        if (nextProps.registration.respondent.data.pregnant) {
+          this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
+        } else {
+          this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT })
+        }
+      } 
+
+    }
+    return true
   }
 
   render() {
@@ -78,7 +110,8 @@ class RegistrationRespondentForm extends Component {
           last_name: this.props.registration.user.data.last_name,
           respondent_type: 'mother',
           state: 'IA',
-          marital_status: 'married'
+          marital_status: 'married',
+          pregnant: true,
         }}
         render={ (props) => {
           return (
@@ -136,6 +169,13 @@ class RegistrationRespondentForm extends Component {
               <TextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
               <TextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
+              <CheckBox
+                title='Are You Currently Pregnant?'
+                textStyle={styles.checkboxText}
+                checked={props.values.pregnant}
+                onPress={ (value) => props.setFieldValue('pregnant', value) }
+              />
+
               <Button 
                 title="NEXT"
                 onPress={ props.handleSubmit } 
@@ -151,7 +191,13 @@ class RegistrationRespondentForm extends Component {
   }
 };
 
+const styles = StyleSheet.create({
+  checkboxText: {
+    fontSize: 11,
+  }
+})
+
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createRespondent };
+const mapDispatchToProps = { createRespondent, updateRespondent, apiCreateRespondent, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

@@ -1,5 +1,8 @@
 import { SQLite } from 'expo';
 import axios from "axios";
+
+import { _ } from 'lodash';
+
 import CONSTANTS from '../constants';
 
 import {
@@ -24,9 +27,23 @@ import {
   CREATE_RESPONDENT_FULFILLED,
   CREATE_RESPONDENT_REJECTED,
 
+  UPDATE_RESPONDENT_PENDING,
+  UPDATE_RESPONDENT_FULFILLED,
+  UPDATE_RESPONDENT_REJECTED,
+
   API_CREATE_RESPONDENT_PENDING,
   API_CREATE_RESPONDENT_FULFILLED,
   API_CREATE_RESPONDENT_REJECTED,
+
+  API_UPDATE_RESPONDENT_PENDING,
+  API_UPDATE_RESPONDENT_FULFILLED,
+  API_UPDATE_RESPONDENT_REJECTED,
+
+  SAVE_SIGNATURE_PENDING,
+  SAVE_SIGNATURE_FULFILLED,
+  SAVE_SIGNATURE_REJECTED,
+
+  RESET_SUBJECT,
 
   FETCH_SUBJECT_PENDING,
   FETCH_SUBJECT_FULFILLED,
@@ -35,6 +52,10 @@ import {
   CREATE_SUBJECT_PENDING,
   CREATE_SUBJECT_FULFILLED,
   CREATE_SUBJECT_REJECTED,
+
+  UPDATE_SUBJECT_PENDING,
+  UPDATE_SUBJECT_FULFILLED,
+  UPDATE_SUBJECT_REJECTED,
 
   API_CREATE_SUBJECT_PENDING,
   API_CREATE_SUBJECT_FULFILLED,
@@ -231,7 +252,7 @@ export const apiCreateRespondent = (session, data) => {
     dispatch({
       type: API_CREATE_RESPONDENT_PENDING,
       payload: {
-        data: data,
+        data: {respondent: data},
         session: session
       },
       meta: {
@@ -246,6 +267,94 @@ export const apiCreateRespondent = (session, data) => {
       }
     })
 
+  }
+}
+
+export const updateRespondent = (data) => {
+  return function (dispatch) {
+
+    dispatch( Pending(UPDATE_RESPONDENT_PENDING) );
+
+    delete data.id 
+    
+    const keys = _.keys(data);
+    const values = _.values(data);
+    var updateSQL = []
+
+    _.forEach( keys, (key) => {
+      updateSQL.push( key + " = '" + data[key] + "'" )
+    })
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql( 'UPDATE respondents SET ' + updateSQL.join(', ') + ';', 
+          [],
+          (_, response) => { 
+            dispatch( Response(UPDATE_RESPONDENT_FULFILLED, response, data) );
+          },
+          (_, error) => { 
+            dispatch( Response(UPDATE_RESPONDENT_REJECTED, error) ) 
+          }
+        );
+      })
+    )
+  };
+}
+
+export const apiUpdateRespondent = (session, data) => {
+  const api_id = data.api_id
+  delete data.id 
+  delete data.api_id 
+
+  return function (dispatch) {
+    
+    dispatch({
+      type: API_UPDATE_RESPONDENT_PENDING,
+      payload: {
+        data: {respondent: data},
+        session: session
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'PUT',
+            url: '/respondents/' + api_id,
+            fulfilled: API_UPDATE_RESPONDENT_FULFILLED,
+            rejected: API_UPDATE_RESPONDENT_REJECTED,
+          }
+        }
+      }
+    })
+
+  }
+}
+
+export const saveSignature = (image) => {
+  return function (dispatch) {
+    
+    dispatch( Pending(SAVE_SIGNATURE_PENDING) );
+
+    const fileName = Expo.FileSystem.cacheDirectory + 'signature/signature.png'
+    Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
+
+    Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
+    .then( () => { dispatch( Pending(SAVE_SIGNATURE_FULFILLED) ) })
+    .catch( (error) => { 
+      dispatch( Response(SAVE_SIGNATURE_REJECTED, error) ) 
+    }) 
+  }
+}
+
+export const saveScreenBlood = (screenBlood) => {
+  return function (dispatch) {
+    dispatch( Pending(UPDATE_SUBJECT_PENDING) );
+    dispatch( Response(UPDATE_SUBJECT_FULFILLED, screenBlood))
+  }
+}
+
+export const resetSubject = () => {
+  return function (dispatch) {
+    dispatch( Pending(RESET_SUBJECT))
   }
 }
 
@@ -320,7 +429,7 @@ export const apiCreateSubject = (session, data) => {
     dispatch({
       type: API_CREATE_SUBJECT_PENDING,
       payload: {
-        data: data,
+        data: {subject: data},
         session: session
       },
       meta: {

@@ -4,7 +4,7 @@ import { StackNavigator } from 'react-navigation';
 import MainTabNavigator from './MainTabNavigator';
 
 import { connect} from 'react-redux';
-import { fetchSession } from '../actions/session_actions';
+import { updateSession, fetchSession } from '../actions/session_actions';
 import { fetchUser, fetchRespondent, fetchSubject } from '../actions/registration_actions';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
@@ -38,16 +38,29 @@ const RootStackNavigator = StackNavigator(
   }
 );
 
+const ConsentNavigator = StackNavigator(
+  {
+    Consent: {
+      screen: ConsentScreen
+    }
+  },
+  {
+    navigationOptions: () => ({
+      headerStyle: {
+        backgroundColor: Colors.headerBackgroundColor, 
+      },
+      headerTintColor: Colors.headerTintColor,
+      headerTitleStyle: {
+        fontWeight: 'normal',
+      },
+    }),
+  }
+);
+
 const RegistrationNavigator = StackNavigator(
   {
-    Main: {
-      screen: ConsentScreen,
-    },
     Registration: {
-      screen: RegistrationScreen,
-    },
-    rootStack: {
-      screen: props => <RootStackNavigator />
+      screen: RegistrationScreen
     }
   },
   {
@@ -98,10 +111,7 @@ const TourNoStudyNavigator = StackNavigator(
 class RootNavigator extends Component {
 
   componentWillMount() {
-    this.props.fetchSession();
-    this.props.fetchUser();
-    this.props.fetchRespondent();
-    this.props.fetchSubject();
+    this.props.fetchSession()
   }
 
   componentDidMount() {
@@ -114,16 +124,17 @@ class RootNavigator extends Component {
 
   render() {
     //return <RootStackNavigator />
+    
     if ( States.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
       return <RootStackNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {
       return <TourNoStudyNavigator />
-    } else if ( States.REGISTERING_IN_STUDY_STATES.includes(this.props.session.registration_state) ) {
+    } else if ( States.REGISTERING_CONSENT.includes(this.props.session.registration_state) ) {
+      return <ConsentNavigator />
+    } else if ( States.REGISTERING_REGISTRATION.includes(this.props.session.registration_state) ) {
       return <RegistrationNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_NOT_ELIGIBLE ) {
       return <TourNoStudyNavigator />
-    } else if (this.props.session.registration_state == States.REGISTERING_AS_IN_STUDY) {
-      return <RegistrationNavigator navigate={'Registration'} />
     } else {
       return <TourNavigator /> 
     };
@@ -148,6 +159,6 @@ class RootNavigator extends Component {
 
 const mapStateToProps = ({ session }) => ({ session });
 
-const mapDispatchToProps = { fetchSession, fetchUser, fetchRespondent, fetchSubject };
+const mapDispatchToProps = { updateSession, fetchSession, fetchUser, fetchRespondent, fetchSubject };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RootNavigator);

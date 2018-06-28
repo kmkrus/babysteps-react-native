@@ -12,34 +12,31 @@ import ExpoPixi from 'expo-pixi';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
+import { saveSignature, apiUpdateRespondent } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
 class ConsentSignatureForm extends Component {
 
-  handleSubmit = () => {
-    //this.props.updateSession({registration_state: States.REGISTERING_AS_ELIGIBLE })
-    console.log('submit')
+  shouldComponentUpdate(nextProps, nextState) {
+    return ( !nextProps.session.registration_state == States.REGISTERING_SIGNATURE)
+  }
+
+  handleSubmit = async () => {
+
+    let image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
+
+    this.props.saveSignature(image)
+
+    this.props.updateSession({registration_state: States.REGISTERING_USER })
   }
 
   handleReset = () => {
-    console.log('reset')
+    this.sketch.undo();
   }
 
   render() {
-
-    const onChange = async ({ width, height }) => {
-      const options = {
-        format: 'png', /// PNG because the view has a clear background
-        quality: 0.1, /// Low quality works because it's just a line
-        result: 'file',
-        height,
-        width
-      };
-      // Using 'Expo.takeSnapShotAsync', and our view 'this.sketch' we can get a uri of the image
-      //const uri = await Expo.takeSnapshotAsync(this.sketch, options);
-    }
 
     //GLView won't run with remote debugging running.  Shut off remote debugging or you will get a Can't Find Property 0 error message.
 
@@ -138,7 +135,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session }) => ({ session });
-const mapDispatchToProps = { updateSession };
+const mapStateToProps = ({ session, registration }) => ({ session, registration });
+const mapDispatchToProps = { updateSession, saveSignature, apiUpdateRespondent };
 
 export default connect( mapStateToProps, mapDispatchToProps )(ConsentSignatureForm);

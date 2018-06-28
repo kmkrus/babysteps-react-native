@@ -16,7 +16,8 @@ import withInputAutoFocus, {
 } from 'react-native-formik';
 
 import { connect } from 'react-redux';
-import { createSubject } from '../actions/registration_actions';
+import { resetSubject, createSubject, apiCreateSubject } from '../actions/registration_actions';
+import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import DatePickerInput from '../components/datePickerInput';
@@ -29,8 +30,8 @@ const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Mater
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
-  expected_date_of_birth:  Yup.string()
-    .required('Expected Date of Birth is Required'),
+  date_of_birth: Yup.string()
+    .required('Date of Birth is Required'),
 })
 
 const genders = [
@@ -48,8 +49,29 @@ const conceptionMethods = [
 
 class RegistrationSubjectForm extends Component {
 
+  componentWillMount() {
+    this.props.resetSubject()
+    this.props.fetchRespondent()
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.registration.subject.fetching)
+    if ( nextProps.registration.subject.fetching || nextProps.registration.respondent.fetching ) {
+      return false
+    } else if (nextProps.registration.subject.fetched) {
+
+      if (nextProps.registration.apiSubject.error != null) {
+        return true
+
+      } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) { 
+        this.props.apiCreateSubject(this.props.session, this.props.registration.subject.data)
+        return false
+
+      } else if ( nextProps.registration.apiSubject.fetched ) {
+        this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+      }     
+
+    }
+    return true
   }
 
   render() {
@@ -61,10 +83,9 @@ class RegistrationSubjectForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
-          'respondent_ids[]': this.props.registration.respondent.data.id,
+          'respondent_ids[]': this.props.registration.respondent.data.api_id,
           gender: 'female',
           conception_method: 'natural',
-          expected_date_of_birth: null,
           date_of_birth: null,
         }}
         render={ (props) => {
@@ -95,13 +116,6 @@ class RegistrationSubjectForm extends Component {
               />
 
               <DatePickerInput
-                label="Expected Date of Birth" 
-                name="expected_date_of_birth" 
-                date={props.values.expected_date_of_birth}
-                handleChange={ (value) => props.setFieldValue('expected_date_of_birth', value) }
-              />
-
-              <DatePickerInput
                 label="Date of Birth" 
                 name="date_of_birth" 
                 date={props.values.date_of_birth}
@@ -126,6 +140,6 @@ class RegistrationSubjectForm extends Component {
 };
 
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createSubject };
+const mapDispatchToProps = { resetSubject, createSubject, apiCreateSubject, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationSubjectForm);

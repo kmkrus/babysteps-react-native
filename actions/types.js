@@ -35,9 +35,23 @@ export const CREATE_RESPONDENT_PENDING = 'create_respondent_pending';
 export const CREATE_RESPONDENT_FULFILLED = 'create_respondent_fulfilled';
 export const CREATE_RESPONDENT_REJECTED = 'create_respondent_rejected';
 
+export const UPDATE_RESPONDENT_PENDING = 'update_respondent_pending';
+export const UPDATE_RESPONDENT_FULFILLED = 'update_respondent_fulfilled';
+export const UPDATE_RESPONDENT_REJECTED = 'update_respondent_rejected';
+
 export const API_CREATE_RESPONDENT_PENDING = 'api_create_respondent_pending';
 export const API_CREATE_RESPONDENT_FULFILLED = 'api_create_respondent_fulfilled';
 export const API_CREATE_RESPONDENT_REJECTED = 'api_create_respondent_rejected';
+
+export const API_UPDATE_RESPONDENT_PENDING = 'api_update_respondent_pending';
+export const API_UPDATE_RESPONDENT_FULFILLED = 'api_update_respondent_fulfilled';
+export const API_UPDATE_RESPONDENT_REJECTED = 'api_update_respondent_rejected';
+
+export const SAVE_SIGNATURE_PENDING = 'save_signature_pending';
+export const SAVE_SIGNATURE_FULFILLED = 'save_signature_fulfilled';
+export const SAVE_SIGNATURE_REJECTED = 'save_signature_rejected';
+
+export const RESET_SUBJECT = 'reset_subject';
 
 export const FETCH_SUBJECT_PENDING = 'fetch_subject_pending';
 export const FETCH_SUBJECT_FULFILLED = 'fetch_subject_fulfilled';
@@ -46,6 +60,10 @@ export const FETCH_SUBJECT_REJECTED = 'fetch_subject_rejected';
 export const CREATE_SUBJECT_PENDING = 'create_subject_pending';
 export const CREATE_SUBJECT_FULFILLED = 'create_subject_fulfilled';
 export const CREATE_SUBJECT_REJECTED = 'create_subject_rejected';
+
+export const UPDATE_SUBJECT_PENDING = 'update_subject_pending';
+export const UPDATE_SUBJECT_FULFILLED = 'update_subject_fulfilled';
+export const UPDATE_SUBJECT_REJECTED = 'update_subject_rejected';
 
 export const API_CREATE_SUBJECT_PENDING = 'api_create_subject_pending';
 export const API_CREATE_SUBJECT_FULFILLED = 'api_create_subject_fulfilled';

@@ -10,6 +10,7 @@ import { Button, CheckBox } from 'react-native-elements';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
+import { saveScreenBlood } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -25,7 +26,9 @@ class ConsentAgreementForm extends Component {
     if ( this.state.bloodSpots == null ) {
       this.setState({errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot."})
     } else {
-      this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
+      this.props.saveScreenBlood({screen_blood: this.state.bloodSpots})
+      //this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
+      this.props.updateSession({registration_state: States.REGISTERING_USER })
     }
   }
 
@@ -247,6 +250,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ session }) => ({ session });
-const mapDispatchToProps = { updateSession };
+const mapDispatchToProps = { updateSession, saveScreenBlood };
 
 export default connect( mapStateToProps, mapDispatchToProps )(ConsentAgreementForm);

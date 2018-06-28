@@ -21,6 +21,7 @@ import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
 import Colors from '../constants/Colors';
+import States from '../actions/states';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 const Form = withNextInputAutoFocusForm(View);
@@ -72,7 +73,7 @@ class RegistrationUserForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
 
-    if ( nextProps.registration.apiUser.fetching) {
+    if ( nextProps.registration.apiUser.fetching || nextProps.registration.user.fetching ) {
       return false;
     }
     if ( nextProps.registration.apiUser.fetched ) {
@@ -86,19 +87,17 @@ class RegistrationUserForm extends Component {
           password: nextProps.registration.apiUser.data.password
         });
       }
-      if ( nextProps.registration.user.fetching ) {
-        return false;
-      } else if (  nextProps.registration.user.fetched ) {
-
-        return true;
-      } else {
+      
+      if ( !nextProps.registration.user.fetched ) {
         this.props.createUser({
           ... nextProps.registration.apiUser.data, 
           api_id:  nextProps.registration.auth.user_id
         })
-        return false;
+        return false
+        
+      } else if ( nextProps.registration.user.fetched ) {
+        this.props.updateSession( {registration_state: States.REGISTERING_RESPONDENT} )
       }
-
     }
     return true;
   }

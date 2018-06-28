@@ -25,17 +25,35 @@ import {
   CREATE_RESPONDENT_FULFILLED,
   CREATE_RESPONDENT_REJECTED,
 
+  UPDATE_RESPONDENT_PENDING,
+  UPDATE_RESPONDENT_FULFILLED,
+  UPDATE_RESPONDENT_REJECTED,
+
   API_CREATE_RESPONDENT_PENDING,
   API_CREATE_RESPONDENT_FULFILLED,
   API_CREATE_RESPONDENT_REJECTED,
+
+  API_UPDATE_RESPONDENT_PENDING,
+  API_UPDATE_RESPONDENT_FULFILLED,
+  API_UPDATE_RESPONDENT_REJECTED,
+
+  SAVE_SIGNATURE_PENDING,
+  SAVE_SIGNATURE_FULFILLED,
+  SAVE_SIGNATURE_REJECTED,
 
   FETCH_SUBJECT_PENDING,
   FETCH_SUBJECT_FULFILLED,
   FETCH_SUBJECT_REJECTED,
 
+  RESET_SUBJECT,
+
   CREATE_SUBJECT_PENDING,
   CREATE_SUBJECT_FULFILLED,
   CREATE_SUBJECT_REJECTED,
+
+  UPDATE_SUBJECT_PENDING,
+  UPDATE_SUBJECT_FULFILLED,
+  UPDATE_SUBJECT_REJECTED,
 
   API_CREATE_SUBJECT_PENDING,
   API_CREATE_SUBJECT_FULFILLED,
@@ -164,12 +182,30 @@ const reducer = (state=initialState, action) => {
     case CREATE_RESPONDENT_FULFILLED: {
       return {...state, respondent: 
         {...state.respondent, fetching: false, fetched: true, 
-          data: {...action.formData, id: action.payload.insertId } 
+          data:  Object.assign( {}, {id: action.payload.insertId},  action.formData ) 
         } 
       }
       break;
     }
     case CREATE_RESPONDENT_REJECTED: {
+      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
+      break;
+    }
+
+    // CREATE RESPONDENT
+    case UPDATE_RESPONDENT_PENDING: {
+      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case UPDATE_RESPONDENT_FULFILLED: {
+      return {...state, respondent: 
+        {...state.respondent, fetching: false, fetched: true, 
+          data: Object.assign( {}, state.respondent.data, action.payload )
+        } 
+      }
+      break;
+    }
+    case UPDATE_RESPONDENT_REJECTED: {
       return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
       break;
     }
@@ -180,12 +216,47 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case API_CREATE_RESPONDENT_FULFILLED: {
-      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload }}
+      return {...state, 
+        apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload.data }
+      }
       break;
     }
     case API_CREATE_RESPONDENT_REJECTED: {
       return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
       break;
+    }
+
+    // API_UPDATE_RESPONDENT
+    case API_UPDATE_RESPONDENT_PENDING: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: true, fetched: false, error: null }}
+      break;
+    }
+    case API_UPDATE_RESPONDENT_FULFILLED: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload.data }}
+      break;
+    }
+    case API_UPDATE_RESPONDENT_REJECTED: {
+      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
+      break;
+    }
+
+    // SAVE_SIGNATURE
+    case SAVE_SIGNATURE_PENDING: {
+      return {...state }
+      break;
+    }
+    case SAVE_SIGNATURE_FULFILLED: {
+      return {...state }
+      break;
+    }
+    case SAVE_SIGNATURE_REJECTED: {
+      return {...state, respondent: {...state.respondent, error: action.payload} }
+      break;
+    }
+
+    // RESET SUBJECT
+    case RESET_SUBJECT: {
+      return {...state, subject: {...state.subject, fetching: false, fetched: false, error:null}}
     }
 
     // FETCH SUBJECT
@@ -211,7 +282,6 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case CREATE_SUBJECT_FULFILLED: {
-      debugger
       return {...state, subject: 
         {...state.subject, fetching: false, fetched: true, 
           data: {...action.formData, id: action.payload.insertId } 
@@ -224,13 +294,32 @@ const reducer = (state=initialState, action) => {
       break;
     }
 
+
+    // CREATE SUBJECT
+    case UPDATE_SUBJECT_PENDING: {
+      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case UPDATE_SUBJECT_FULFILLED: {
+      return {...state, subject: 
+        {...state.subject, fetching: false, fetched: true, 
+          data: Object.assign( {}, state.subject.data, action.payload ) 
+        } 
+      }
+      break;
+    }
+    case UPDATE_SUBJECT_REJECTED: {
+      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
+      break;
+    }
+
    // API_CREATE_SUBJECT
     case API_CREATE_SUBJECT_PENDING: {
       return {...state, apiSubject: {...state.apiSubject, fetching: true, fetched: false, error: null }}
       break;
     }
     case API_CREATE_SUBJECT_FULFILLED: {
-      return {...state, apiSubject: {...state.apiSubject, fetching: false, fetched: true, data: action.payload }}
+      return {...state, apiSubject: {...state.apiSubject, fetching: false, fetched: true, data: action.payload.data }}
       break;
     }
     case API_CREATE_SUBJECT_REJECTED: {
