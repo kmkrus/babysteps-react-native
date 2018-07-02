@@ -16,7 +16,12 @@ import withInputAutoFocus, {
 } from 'react-native-formik';
 
 import { connect } from 'react-redux';
-import { resetSubject, createSubject, apiCreateSubject } from '../actions/registration_actions';
+import { 
+  fetchRespondent,
+  resetSubject, 
+  createSubject, 
+  apiCreateSubject 
+} from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
@@ -63,11 +68,12 @@ class RegistrationSubjectForm extends Component {
         return true
 
       } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) { 
-        this.props.apiCreateSubject(this.props.session, this.props.registration.subject.data)
+        this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
         return false
 
-      } else if ( nextProps.registration.apiSubject.fetched ) {
+      } else if ( nextProps.registration.apiSubject.fetched && !nextProps.session.fetching && !nextProps.session.fetched) {
         this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+        return false
       }     
 
     }
@@ -75,6 +81,9 @@ class RegistrationSubjectForm extends Component {
   }
 
   render() {
+
+    let respondent_api_id = this.props.registration.respondent.data.api_id
+    let screening_blood = this.props.registration.subject.data.screening_blood
 
     return (
       <Formik
@@ -86,7 +95,7 @@ class RegistrationSubjectForm extends Component {
           'respondent_ids[]': this.props.registration.respondent.data.api_id,
           gender: 'female',
           conception_method: 'natural',
-          date_of_birth: null,
+          screening_blood: this.props.registration.subject.data.screening_blood,
         }}
         render={ (props) => {
 
@@ -139,7 +148,7 @@ class RegistrationSubjectForm extends Component {
   }
 };
 
-const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { resetSubject, createSubject, apiCreateSubject, updateSession };
+const mapStateToProps = ({ session, registration }) => ({ session, registration });
+const mapDispatchToProps = { fetchRespondent, resetSubject, createSubject, apiCreateSubject, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationSubjectForm);

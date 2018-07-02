@@ -64,6 +64,7 @@
       "marital_status": "TEXT",
       "weight": "INTEGER",
       "height": "INTEGER",
+      "accepted_tos_at": "TEXT",
       "pregnant": "INTEGER",
     },
     "indexes": [],

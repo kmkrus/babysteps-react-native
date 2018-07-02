@@ -25,8 +25,8 @@
       "bundleIdentifier": "com.gofullstack.babysteps"
     },
     "android": {
-      "package": "com.gofullstack.babysteps"
-    }
+      "package": "com.gofullstack.babysteps",
+    },
   },
   "hooks": {
     "postPublish": [

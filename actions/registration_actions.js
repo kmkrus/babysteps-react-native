@@ -345,10 +345,10 @@ export const saveSignature = (image) => {
   }
 }
 
-export const saveScreenBlood = (screenBlood) => {
+export const saveScreenBlood = (screeningBlood) => {
   return function (dispatch) {
     dispatch( Pending(UPDATE_SUBJECT_PENDING) );
-    dispatch( Response(UPDATE_SUBJECT_FULFILLED, screenBlood))
+    dispatch( Response(UPDATE_SUBJECT_FULFILLED, screeningBlood))
   }
 }
 
@@ -423,7 +423,6 @@ export const createSubject = (subject) => {
 export const apiCreateSubject = (session, data) => {
   delete data.id 
   delete data.api_id 
-  
   return function (dispatch) {
     
     dispatch({

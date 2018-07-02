@@ -46,11 +46,11 @@ class RegistrationExpectedDOB extends Component {
       if (nextProps.registration.apiSubject.error != null) {
         return true
 
-      } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) { 
-        this.props.apiCreateSubject(this.props.session, this.props.registration.subject.data)
+      } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) {
+        this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
         return false
 
-      } else if ( nextProps.registration.apiSubject.fetched ) {
+      } else if ( nextProps.registration.apiSubject.fetched && !nextProps.session.fetching ) {
         this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
       }     
 
@@ -60,6 +60,8 @@ class RegistrationExpectedDOB extends Component {
 
   render() {
 
+    console.log(this.props.registration.respondent.data.api_id)
+
     return (
       <Formik
         onSubmit={ (values) => {
@@ -68,9 +70,9 @@ class RegistrationExpectedDOB extends Component {
         validationSchema={validationSchema}
         initialValues={{
           'respondent_ids[]': this.props.registration.respondent.data.api_id,
-          expected_date_of_birth: null,
           gender: 'unknown',
           conception_method: 'natural',
+          screening_blood: this.props.registration.subject.data.screening_blood,
         }}
         render={ (props) => {
 
@@ -100,7 +102,7 @@ class RegistrationExpectedDOB extends Component {
   }
 };
 
-const mapStateToProps = ({ registration }) => ({ registration });
+const mapStateToProps = ({ session, registration }) => ({ session, registration });
 const mapDispatchToProps = { resetSubject, createSubject, apiCreateSubject, fetchRespondent, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationExpectedDOB);

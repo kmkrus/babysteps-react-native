@@ -18,15 +18,15 @@ import States from '../actions/states';
 class ConsentAgreementForm extends Component {
 
   state = {
-    bloodSpots: null,
+    screeningBlood: null,
     errorMessage: '',
   }
 
   handleSubmit = () => {
-    if ( this.state.bloodSpots == null ) {
+    if ( this.state.screeningBlood == null ) {
       this.setState({errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot."})
     } else {
-      this.props.saveScreenBlood({screen_blood: this.state.bloodSpots})
+      this.props.saveScreenBlood({screening_blood: this.state.screeningBlood})
       //this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
       this.props.updateSession({registration_state: States.REGISTERING_USER })
     }
@@ -91,17 +91,17 @@ class ConsentAgreementForm extends Component {
           <CheckBox
             title='Yes, I allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose.'
             textStyle={styles.checkboxText}
-            checked={this.state.bloodSpots == true}
+            checked={this.state.screeningBlood == true}
             containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({bloodSpots: true, errorMessage: ''})}
+            onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
            />
 
           <CheckBox
             title='No, I do not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose. '
             textStyle={styles.checkboxText}
-            checked={this.state.bloodSpots == false}
+            checked={this.state.screeningBlood == false}
             containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({bloodSpots: false, errorMessage: ''})}
+            onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
            />
            <Text style={styles.header}>Genetic Information Nondiscrimination Act (GINA)</Text>
            <Text style={styles.text}>A new federal law called the Genetic Information Nondiscrimination Act (GINA) generally makes it illegal for health insurance companies, group health plans, and employers of 15 or more persons to discriminate against you based on your genetic information. Based on this new law, health insurance companies and group health plans are prohibited from requesting your genetic information that we get from this research. This means that they may not use your genetic information when making decisions regarding your eligibility for insurance coverage or the amount of your insurance premiums. Be aware that this new federal law will not protect you against genetic discrimination by companies that sell life insurance, disability insurance, or long-term care insurance.  The law also does not prohibit discrimination if you already have a manifest genetic disease or disorder.</Text>

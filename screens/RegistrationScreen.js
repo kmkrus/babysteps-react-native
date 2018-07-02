@@ -27,6 +27,7 @@ class RegistrationScreen extends Component {
   };
 
   selectForm = () => {
+    
     if ( this.props.session.registration_state == States.REGISTERING_USER ) { 
       return <RegistrationUserForm />
     

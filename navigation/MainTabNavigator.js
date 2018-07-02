@@ -8,11 +8,15 @@ import Colors from '../constants/Colors';
 import HomeScreen from '../screens/HomeScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
 import TourScreen from '../screens/TourScreen';
+import BabyBookScreen from '../screens/BabyBookScreen';
 
 export default TabNavigator(
   {
     Overview: {
       screen: HomeScreen,
+    },
+    BabyBook: {
+      screen: BabyBookScreen,
     },
     Milestones: {
       screen: MilestonesScreen,
@@ -29,6 +33,9 @@ export default TabNavigator(
               Platform.OS === 'ios'
                 ? `ios-information-circle${focused ? '' : '-outline'}`
                 : 'md-ionic';
+            break;
+          case 'BabyBook':
+            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-book';
             break;
           case 'Milestones':
             iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-list';

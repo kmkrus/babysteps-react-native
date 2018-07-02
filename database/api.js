@@ -54,12 +54,11 @@ export default store =>
           data: action.payload.data,
         })
         .then( (response) => {
+          store.dispatch( Response( effect.fulfilled, response ) )
           // if access-token in header is empty, continue to use existing token
           if (response.headers['access-token'] !== '') {
             store.dispatch( Response( UPDATE_ACCESS_TOKEN, response.headers['access-token'] ))
           }
-      
-          store.dispatch( Response( effect.fulfilled, response ) )
         }) 
         .catch( (error) => { 
           const { request, response } = error;

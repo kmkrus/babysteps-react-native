@@ -104,16 +104,18 @@ class RegistrationRespondentForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
-          user_id: this.props.registration.user.data.id,
+          user_id: this.props.registration.user.data.api_id,
           email: this.props.registration.user.data.email,
           first_name: this.props.registration.user.data.first_name,
           last_name: this.props.registration.user.data.last_name,
           respondent_type: 'mother',
           state: 'IA',
           marital_status: 'married',
+          accepted_tos_at: new Date().toISOString(),
           pregnant: true,
         }}
         render={ (props) => {
+
           return (
             <Form>
               <Text h4>Update your profile...</Text>

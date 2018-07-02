@@ -5,7 +5,6 @@ import MainTabNavigator from './MainTabNavigator';
 
 import { connect} from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
-import { fetchUser, fetchRespondent, fetchSubject } from '../actions/registration_actions';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
@@ -111,6 +110,7 @@ const TourNoStudyNavigator = StackNavigator(
 class RootNavigator extends Component {
 
   componentWillMount() {
+    //this.props.updateSession({ registration_state: States.REGISTERING_SUBJECT })
     this.props.fetchSession()
   }
 
@@ -124,7 +124,6 @@ class RootNavigator extends Component {
 
   render() {
     //return <RootStackNavigator />
-    
     if ( States.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
       return <RootStackNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {
@@ -159,6 +158,6 @@ class RootNavigator extends Component {
 
 const mapStateToProps = ({ session }) => ({ session });
 
-const mapDispatchToProps = { updateSession, fetchSession, fetchUser, fetchRespondent, fetchSubject };
+const mapDispatchToProps = { updateSession, fetchSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RootNavigator);
