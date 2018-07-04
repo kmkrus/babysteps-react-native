@@ -5,10 +5,14 @@ import { AppLoading, Asset, Font } from 'expo';
 import Sentry from 'sentry-expo';
 
 import { Ionicons } from '@expo/vector-icons';
+
 import Colors from './constants/Colors';
+
 import RootNavigation from './navigation/RootNavigation';
 import checkMilestonesSchema from './database/check_milestones_schema';
 import checkRegistrationSchema from './database/check_registration_schema';
+import checkBabyBookSchema from './database/check_babybook_schema';
+
 import store from './store';
 
 Sentry.config('https://193d4a8c3e6b4b3d974a3f4d1d6f598c@sentry.io/1204085').install();
@@ -63,6 +67,7 @@ export default class App extends Component {
       // async check of schemas
       checkRegistrationSchema(),
       checkMilestonesSchema(),
+      checkBabyBookSchema(),
     ]);
   };
 

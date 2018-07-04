@@ -10,6 +10,7 @@ import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 
 import BabyBookEntryForm from '../components/babybook_entry_form';
+import BabyBookEntries from '../components/babybook_entries';
 
 
 class BabyBookScreen extends Component {
@@ -17,17 +18,14 @@ class BabyBookScreen extends Component {
     title: 'BabyBook',
   };
 
-  componentWillMount() {
-
-  }
-
-
   render() {
+
+    // <BabyBookEntryForm />
 
     return (
       <KeyboardAwareScrollView enableOnAndroid={true} >
         <View style={ styles.container }>
-          <BabyBookEntryForm />
+          <BabyBookEntries />
         </View>
       </KeyboardAwareScrollView>
     )
@@ -43,6 +41,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ milestones }) => ({ milestones });
+const mapStateToProps = ({ babybook }) => ({ babybook });
 
 export default connect( mapStateToProps )( BabyBookScreen );

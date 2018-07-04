@@ -15,12 +15,13 @@ export default TabNavigator(
     Overview: {
       screen: HomeScreen,
     },
+    
+    Milestones: {
+      screen: MilestonesScreen,
+    },
     BabyBook: {
       screen: BabyBookScreen,
     },
-    Milestones: {
-      screen: MilestonesScreen,
-    }
   },
   {
     navigationOptions: ({ navigation }) => ({

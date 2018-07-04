@@ -3,6 +3,10 @@ export default {
   DROP_MILESTONE_TABLES: false,
   REBUILD_MILESTONES: false,
   DROP_REGISTRATION_TABLES: false,
+  DROP_BABYBOOK_TABLES: false,
+
+  BABYBOOK_DIRECTORY: 'babybook/',
+  SIGNATURE_DIRECTORY: 'signature/',
 
   // API
   BASE_URL: 'https://app-8756.on-aptible.com/api',

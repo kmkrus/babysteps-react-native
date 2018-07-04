@@ -1,0 +1,16 @@
+{ 
+  "babybook_entries": {
+    "columns": {
+      "id": "INTEGER PRIMARY KEY",
+      "title": "TEXT", 
+      "detail": "TEXT",
+      "uri": "TEXT",
+      "file_type": "TEXT",
+      "created_at": "TEXT"
+    },
+    "indexes": [
+       "bb_entries_title ON babybook_entries (title);",
+       "bb_entries_created_at ON babybook_entries (created_at);"
+    ],
+  }
+}

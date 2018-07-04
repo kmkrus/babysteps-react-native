@@ -79,6 +79,15 @@ export const API_TOKEN_REFRESH_REJECTED = 'api_token_refresh_rejected';
 export const UPDATE_ACCESS_TOKEN = 'update_access_token';
 
 // Babybook actions
-export const SAVE_BABYBOOK_FILE_PENDING_PENDING = 'save_babybook_file_pending';
-export const SAVE_BABYBOOK_FILE_PENDING_FULFILLED = 'save_babybook_file_fulfilled';
-export const SAVE_BABYBOOK_FILE_PENDING_REJECTED = 'save_babybook_file_rejected';
+
+export const FETCH_BABYBOOK_ENTRIES_PENDING = 'fetch_babybook_entries_pending';
+export const FETCH_BABYBOOK_ENTRIES_FULFILLED = 'fetch_babybook_entries_fulfilled';
+export const FETCH_BABYBOOK_ENTRIES_REJECTED = 'fetch_babybook_entries_rejected';
+
+export const CREATE_BABYBOOK_ENTRY_PENDING = 'create_babybook_entry_pending';
+export const CREATE_BABYBOOK_ENTRY_FULFILLED = 'create_babybook_entry_fulfilled';
+export const CREATE_BABYBOOK_ENTRY_REJECTED = 'create_babybook_entry_rejected';
+
+export const UPDATE_BABYBOOK_ENTRY_PENDING = 'update_babybook_entry_pending';
+export const UPDATE_BABYBOOK_ENTRY_FULFILLED = 'update_babybook_entry_fulfilled';
+export const UPDATE_BABYBOOK_ENTRY_REJECTED = 'update_babybook_entry_rejected';

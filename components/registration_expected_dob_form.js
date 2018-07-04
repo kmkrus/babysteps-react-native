@@ -60,8 +60,6 @@ class RegistrationExpectedDOB extends Component {
 
   render() {
 
-    console.log(this.props.registration.respondent.data.api_id)
-
     return (
       <Formik
         onSubmit={ (values) => {

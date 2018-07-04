@@ -334,7 +334,7 @@ export const saveSignature = (image) => {
     
     dispatch( Pending(SAVE_SIGNATURE_PENDING) );
 
-    const fileName = Expo.FileSystem.cacheDirectory + 'signature/signature.png'
+    const fileName = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + 'signature.png'
     Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
 
     Expo.FileSystem.copyAsync({from: image.uri, to: fileName})

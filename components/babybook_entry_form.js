@@ -21,6 +21,7 @@ import withInputAutoFocus, {
 import { connect } from 'react-redux';
 
 import { updateSession } from '../actions/session_actions';
+import { createBabyBookEntry } from '../actions/babybook_actions';
 
 import DatePickerInput from '../components/datePickerInput';
 import MaterialTextInput from '../components/materialTextInput';
@@ -36,43 +37,18 @@ const validationSchema = Yup.object().shape({
     .required('Title is Required'),
 })
 
-class ErrorMessage extends Component {
-  render() {
-    //if (this.props.apiUser.error) {
-      //if ( typeof(this.props.apiUser.error.response.data.errors.full_messages) !== 'undefined' ) {
-          //return this.props.apiUser.error.response.data.errors.full_messages.join("\n")
-      //} else {
-        //return this.props.apiUser.error.message
-      //};
-    //}
-    return ''
-  }
-}
-
-class ErrorText extends Component {
-  render() {
-    return (
-      <Text style={{
-          fontSize: 16,
-          margin: 20,
-          textAlign: 'center',
-          color: 'transparent', // this.props.apiUser.error ? Colors.errorColor : 'transparent',
-          height: 24,
-        }}
-      >
-        <ErrorMessage apiUser={' '} />
-      </Text>
-    )
-  }
-}
-
 class BabyBookEntryForm extends Component {
 
   state = {
     image: null,
+    imageError: '',
   };
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.babybook.entries.fetched) {
+      //this.props.navigation.navigate('BabyBook');
+      console.log('babybook navigation')
+    }
     return true;
   }
 
@@ -88,15 +64,10 @@ class BabyBookEntryForm extends Component {
     let permissions = await this.askPermissionsAsync();
 
     if (permissions.cameraRoll.status === 'granted' && permissions.camera.status === 'granted') {
-
       const image = await ImagePicker.launchImageLibraryAsync()
-
-      console.log(permissions, 'SUCCESS', image);
-
       if (!image.cancelled) {
         this.setState({ image: image });
       }
-
     } else {
       // TODO handle no permissions
     }
@@ -109,12 +80,15 @@ class BabyBookEntryForm extends Component {
 
       <Formik
         onSubmit={ (values) => {
-          //this.props.createBabyBookEntry(values);
+          if (this.state.image) {
+            this.props.createBabyBookEntry(values, this.state.image)
+          } else {
+            this.setState({imageError: 'You Must Select an Image.'})
+          }
         }}
         validationSchema={validationSchema}
         initialValues={{
           'created_at': new Date().toISOString(),
-          image: null,
         }}
         render={ (props) => {
 
@@ -134,17 +108,14 @@ class BabyBookEntryForm extends Component {
                 <TouchableOpacity
                   style={styles.pickImage}
                   onPress={this.pickImage}>
-                  <Text style={styles.pickImageText}>Attach Photo or Video</Text>
+                  { !uri && <Text style={styles.pickImageText}>Attach Photo or Video</Text> }
                   <Image 
                     source={{ uri: uri}}
                     style={styles.image}
                   />
                 </TouchableOpacity>
+                <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
-
-          <Text>
-              {JSON.stringify(this.state.image)}
-          </Text>
 
               <View style={styles.textAreaContainer} >
                 <TextInput
@@ -154,7 +125,7 @@ class BabyBookEntryForm extends Component {
                   placeholderTextColor={"grey"}
                   numberOfLines={10}
                   multiline={true}
-                  name={'details'}
+                  name={'detail'}
                 />
               </View>
 
@@ -166,13 +137,10 @@ class BabyBookEntryForm extends Component {
                   titleStyle={styles.buttonTitleStyle}
                   onPress={props.handleSubmit} 
                   color={Colors.pink}
-                  disabled={ props.isSubmitting }
                 />
 
               </View>
               
-                <ErrorText apiUser={' '} />
-
             </Form>
           );
         }} // render
@@ -187,8 +155,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 20,
+    
+    bottom: 10,
+    marginTop: 10,
     width: '100%',
   },
   buttonTitleStyle: {
@@ -224,6 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.transparent,
   },
   image: { 
+    flex: 1,
     width: 200, 
     height: 200,
   },
@@ -235,12 +205,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   textArea: {
+    flex: 1,
     height: 150,
     justifyContent: "flex-start"
+  },
+  textError: {
+    textAlign: 'center',
+    color: Colors.errorColor,
+    fontSize: 11,
+    padding: 5,
   }
 })
 
-const mapStateToProps = ({ session }) => ({ session });
-const mapDispatchToProps = { updateSession };
+const mapStateToProps = ({ session, babybook }) => ({ session, babybook });
+const mapDispatchToProps = { updateSession, createBabyBookEntry };
 
 export default connect( mapStateToProps, mapDispatchToProps )(BabyBookEntryForm);
