@@ -80,6 +80,8 @@ export const UPDATE_ACCESS_TOKEN = 'update_access_token';
 
 // Babybook actions
 
+export const RESET_BABYBOOK_ENTRIES = 'reset_babybook_entries';
+
 export const FETCH_BABYBOOK_ENTRIES_PENDING = 'fetch_babybook_entries_pending';
 export const FETCH_BABYBOOK_ENTRIES_FULFILLED = 'fetch_babybook_entries_fulfilled';
 export const FETCH_BABYBOOK_ENTRIES_REJECTED = 'fetch_babybook_entries_rejected';

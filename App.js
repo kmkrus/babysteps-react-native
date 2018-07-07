@@ -12,6 +12,7 @@ import RootNavigation from './navigation/RootNavigation';
 import checkMilestonesSchema from './database/check_milestones_schema';
 import checkRegistrationSchema from './database/check_registration_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
+import checkCustomDirectories from './components/check_custom_directories';
 
 import store from './store';
 
@@ -68,6 +69,7 @@ export default class App extends Component {
       checkRegistrationSchema(),
       checkMilestonesSchema(),
       checkBabyBookSchema(),
+      checkCustomDirectories(),
     ]);
   };
 

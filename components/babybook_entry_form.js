@@ -19,9 +19,7 @@ import withInputAutoFocus, {
 } from 'react-native-formik';
 
 import { connect } from 'react-redux';
-
-import { updateSession } from '../actions/session_actions';
-import { createBabyBookEntry } from '../actions/babybook_actions';
+import { resetBabyBookEntries, createBabyBookEntry, fetchBabyBookEntries } from '../actions/babybook_actions';
 
 import DatePickerInput from '../components/datePickerInput';
 import MaterialTextInput from '../components/materialTextInput';
@@ -45,9 +43,12 @@ class BabyBookEntryForm extends Component {
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.babybook.entries.fetched) {
-      //this.props.navigation.navigate('BabyBook');
-      console.log('babybook navigation')
+    if (this.props.babybook.entries.fetching) {
+      return false
+    } else if (this.props.babybook.entries.fetched) {
+      this.props.fetchBabyBookEntries()
+      this.props.navigation.navigate('BabyBook');
+      return false
     }
     return true;
   }
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   }
 })
 
-const mapStateToProps = ({ session, babybook }) => ({ session, babybook });
-const mapDispatchToProps = { updateSession, createBabyBookEntry };
+const mapStateToProps = ({ babybook }) => ({ babybook });
+const mapDispatchToProps = { resetBabyBookEntries, createBabyBookEntry, fetchBabyBookEntries};
 
 export default connect( mapStateToProps, mapDispatchToProps )(BabyBookEntryForm);

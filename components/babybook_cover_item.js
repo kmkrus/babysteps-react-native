@@ -12,9 +12,9 @@ import {
 import { _ } from 'lodash';
 
 import { connect} from 'react-redux';
-import { fetchSubject } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
+import CONSTANTS from '../constants';
 
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180 // compensate for header and navbar
@@ -24,15 +24,7 @@ const imageSize = width - widthOffset - 60
 
 class BabyBookCoverItem extends Component {
 
-  componentWillMount() {
-    this.props.fetchSubject()
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return !nextProps.registration.subject.fetching
-  }
-
-  subtitleContent = () => {
+  subtitleContent() {
     const subject = this.props.registration.subject.data
     if ( !_.isEmpty( subject ) ) {
       var name = null
@@ -57,13 +49,19 @@ class BabyBookCoverItem extends Component {
     }
   }
 
-  render = () => {
+  getSource() {
+    if (!this.props.item.file_name) {
+      return require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png')
+    }
+    return {uri: Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY + '/'+ this.props.item.file_name}
+  }
 
-    //require('../assets/images/baby_book_cover_background.png') 
-    //require('../assets/images/baby_book_inside_background.png') 
+  render() {
+
     return (
 
       <View style={styles.container}>
+
         <ImageBackground
           source={ require('../assets/images/baby_book_cover_background.png') }
           imageStyle={styles.backgroundImage}
@@ -73,8 +71,8 @@ class BabyBookCoverItem extends Component {
 
             <Image 
               style={styles.image}
+              source={ this.getSource() }
               resizeMode={'contain'}
-              source={ require( '../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png') } 
             />
 
             <Image 
@@ -101,6 +99,7 @@ class BabyBookCoverItem extends Component {
           </View>
 
         </ImageBackground>
+
       </View>
     );
   };
@@ -117,9 +116,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: width - widthOffset,
+    padding: widthOffset / 2,
   },
   imageBackground: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     height: height - heightOffset,
@@ -131,23 +131,23 @@ const styles = StyleSheet.create({
   },
   imageCornerTopLeft: {
     ...imageCorner,
-    top: 0,
-    left: 0,
+    top: -2,
+    left: -2,
   },
   imageCornerTopRight: {
     ...imageCorner,
-    top: 0,
-    right: 0,
+    top: -2,
+    right: -2,
   },
   imageCornerBottomLeft: {
     ...imageCorner,
-    bottom: 0,
-    left: 0,
+    bottom: -2,
+    left: -2,
   },
   imageCornerBottomRight: {
     ...imageCorner,
-    bottom: 0,
-    right: 0,
+    bottom: -2,
+    right: -2,
   },
   imageContainer: {
     justifyContent: 'center',
@@ -160,8 +160,10 @@ const styles = StyleSheet.create({
     padding: 5
   },
   image: {
-    alignSelf: 'center',
-    width: imageSize,
+    flex: 1,
+    alignSelf: 'stretch',
+    width: undefined,
+    height: undefined,
   },
   subtitle: {
     marginTop: 20,
@@ -177,7 +179,6 @@ const styles = StyleSheet.create({
   
 });
 
-const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { fetchSubject };
+const mapStateToProps = ({ registration, babybook }) => ({ registration, babybook });
 
-export default connect( mapStateToProps, mapDispatchToProps )( BabyBookCoverItem );
+export default connect( mapStateToProps )( BabyBookCoverItem );

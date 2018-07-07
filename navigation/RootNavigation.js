@@ -13,6 +13,9 @@ import ConsentScreen from '../screens/ConsentScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
 import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
+import BabyBookScreen from '../screens/BabyBookScreen';
+import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
+import BabyBookTimelineScreen from '../screens/BabyBookTimelineScreen';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -22,6 +25,15 @@ const RootStackNavigator = StackNavigator(
     Main: {
       screen: MainTabNavigator,
     },
+    BabyBook: {
+      screen: BabyBookScreen,
+    },
+    BabyBookEntry: {
+      screen: BabyBookEntryScreen,
+    },
+    BabyBookTimeline: {
+      screen: BabyBookTimelineScreen,
+    }
   },
   {
     navigationOptions: () => ({
@@ -156,8 +168,7 @@ class RootNavigator extends Component {
   };
 }
 
-const mapStateToProps = ({ session }) => ({ session });
-
-const mapDispatchToProps = { updateSession, fetchSession };
+const mapStateToProps = ({ session }) => ({ session })
+const mapDispatchToProps = { updateSession, fetchSession }
 
 export default connect( mapStateToProps, mapDispatchToProps )(RootNavigator);

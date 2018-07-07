@@ -1,5 +1,7 @@
 import {
 
+  RESET_BABYBOOK_ENTRIES,
+
   FETCH_BABYBOOK_ENTRIES_PENDING,
   FETCH_BABYBOOK_ENTRIES_FULFILLED,
   FETCH_BABYBOOK_ENTRIES_REJECTED,
@@ -25,6 +27,10 @@ const initialState = {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
+
+    case RESET_BABYBOOK_ENTRIES: {
+      return {...state, entries: {...state.entries, fetching: false, fetched: false, error: null}}
+    }
 
     case FETCH_BABYBOOK_ENTRIES_PENDING: {
       return {...state, entries: { ...state.entries, fetching: true, fetched: false, error: null }}

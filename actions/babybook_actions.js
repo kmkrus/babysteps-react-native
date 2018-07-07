@@ -7,6 +7,8 @@ import CONSTANTS from '../constants';
 
 import {
 
+  RESET_BABYBOOK_ENTRIES,
+
   FETCH_BABYBOOK_ENTRIES_PENDING,
   FETCH_BABYBOOK_ENTRIES_FULFILLED,
   FETCH_BABYBOOK_ENTRIES_REJECTED,
@@ -30,6 +32,12 @@ const Pending = (type) => {
 const Response = ( type, payload, formData={} ) => {
   return { type, payload, formData }
 };
+
+export const resetBabyBookEntries = () => {
+  return function (dispatch) {
+    dispatch( Pending(RESET_BABYBOOK_ENTRIES))
+  }
+}
 
 export const fetchBabyBookEntries = () => {
   return function (dispatch) {
@@ -55,20 +63,19 @@ export const createBabyBookEntry = (data, image) => {
 
     dispatch( Pending(CREATE_BABYBOOK_ENTRY_PENDING) );
 
-    const fileName = image.uri.split('/').pop()
     const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
-    const newUri = newDir + fileName
-    
-    data = {...data, uri: newUri, file_type: image.type }
+    const fileName = image.uri.split('/').pop()
+    const newUri = newDir + '/' + fileName
+    data = {...data, file_name: fileName, file_type: image.type }   
     
     return (
 
-      Expo.FileSystem.copyAsync({from: image.uri, to: newDir})
+      Expo.FileSystem.copyAsync({from: image.uri, to: newUri})
       .then( () => { 
         db.transaction(tx => {
           tx.executeSql( 
-            'INSERT INTO babybook_entries (title, detail, uri, file_type, created_at) VALUES (?, ?, ?, ?, ?);', 
-            [data.title, data.detail, data.uri, data.file_type, data.created_at],
+            'INSERT INTO babybook_entries (title, detail, file_name, file_type, created_at) VALUES (?, ?, ?, ?, ?);', 
+            [data.title, data.detail, data.file_name, data.file_type, data.created_at],
             (_, response) => { 
               dispatch( Response(CREATE_BABYBOOK_ENTRY_FULFILLED, response, data) );
             },

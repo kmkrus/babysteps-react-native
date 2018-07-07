@@ -5,8 +5,11 @@ export default {
   DROP_REGISTRATION_TABLES: false,
   DROP_BABYBOOK_TABLES: false,
 
-  BABYBOOK_DIRECTORY: 'babybook/',
-  SIGNATURE_DIRECTORY: 'signature/',
+  // Custom Directories
+  BABYBOOK_DIRECTORY: 'babybook',
+  REMOVE_BABYBOOK_DIRECTORY: false, // will delete all baby book assets!
+  SIGNATURE_DIRECTORY: 'signature',
+  REMOVE_SIGNATURE_DIRECTORY: false, // will delete the signature assets
 
   // API
   BASE_URL: 'https://app-8756.on-aptible.com/api',

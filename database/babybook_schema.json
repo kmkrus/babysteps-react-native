@@ -4,7 +4,7 @@
       "id": "INTEGER PRIMARY KEY",
       "title": "TEXT", 
       "detail": "TEXT",
-      "uri": "TEXT",
+      "file_name": "TEXT",
       "file_type": "TEXT",
       "created_at": "TEXT"
     },
