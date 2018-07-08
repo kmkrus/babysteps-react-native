@@ -5,8 +5,10 @@ import {
   Text,
   Image,
   StyleSheet,
+  Share,
   ImageBackground, 
-  Dimensions 
+  Dimensions,
+  Platform,
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import SideSwipe from 'react-native-sideswipe';
@@ -14,7 +16,7 @@ import PageControl from 'react-native-page-control';
 
 import { _ } from 'lodash';
 
-import { connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 import { resetBabyBookEntries, fetchBabyBookEntries } from '../actions/babybook_actions';
 import { fetchSubject } from '../actions/registration_actions';
@@ -23,17 +25,19 @@ import BabyBookCoverItem from '../components/babybook_cover_item';
 import BabyBookItem from '../components/babybook_item';
 
 import Colors from '../constants/Colors';
+import CONSTANTS from '../constants';
 import '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180 // compensate for header and navbar
 const contentOffset = (width - BabyBookItem.WIDTH) / 2;
-var data = [{id: '1', file_name: null}]
+var data = [{id: '1', file_name: null, file_type: null}]
 
 class BabyBookScreen extends Component {
 
   state = {
     currentIndex: 0,
+    shareAttributes: {content: {}, options: {}}
   };
 
   static navigationOptions = ({navigation}) => {
@@ -43,7 +47,7 @@ class BabyBookScreen extends Component {
         <View style={styles.headerButtonContainer}>
           <Button
             icon={{name: 'share', size: 22, color: 'white'}}
-            onPress={ () => navigation.navigate('BabyBookTimeline') }
+            onPress={ () => navigation.state.params.Share() }
             backgroundColor={Colors.headerBackgroundColor}
             buttonStyle={styles.headerButton}
           />
@@ -71,6 +75,11 @@ class BabyBookScreen extends Component {
     if ( !this.props.babybook.entries.data.length ) {
       this.props.fetchBabyBookEntries()
     }
+    this.props.navigation.setParams({ Share: this.shareOpen.bind(this) })
+  }
+
+  componentDidMount() {
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -78,6 +87,12 @@ class BabyBookScreen extends Component {
       return false
     } 
     return true
+  }
+
+  shareOpen() {
+    if ( this.state.shareAttributes.content ) {
+      Share.share(this.state.shareAttributes.content, this.state.shareAttributes.options)
+    }
   }
 
   render() {
@@ -88,12 +103,37 @@ class BabyBookScreen extends Component {
         item.id = String(item.id) // key needs to be string for SideSwipe
         item.created_at = new Date(item.created_at)
       })
+      data = _.orderBy(data, ['created_at'], ['desc'])
+
+      // select by link from timeline
       const itemId = this.props.navigation.getParam('itemId', '0');
       if (itemId != '0') {
         const selectedIndex = _.indexOf(_.map(data, 'id'), itemId)
         this.setState({currentIndex: selectedIndex})
       }
+
+      // for share
+      const babybookDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
+      const babybookUri = babybookDir + '/' + data[this.state.currentIndex].file_name
+      const item = data[this.state.currentIndex]
+
+      this.setState({
+        shareAttributes: { 
+          content: {
+            title: item.title,
+            message: item.detail,
+            url: babybookUri // ios only
+          },
+          options: {
+            subject: item.title, // for email
+            dialogTitle: 'Share ' + item.title // Android only
+          }
+        }
+      })
+
     }
+
+    console.log(this.state.shareAttributes)
 
     return (
       <View style={styles.container}>
