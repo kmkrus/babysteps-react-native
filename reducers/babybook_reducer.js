@@ -16,6 +16,8 @@ import {
 
 } from '../actions/types';
 
+import { _ } from 'lodash';
+
 const initialState = {
   entries: {
     fetching: false,
@@ -37,7 +39,11 @@ const reducer = (state=initialState, action) => {
       break;
     }
     case FETCH_BABYBOOK_ENTRIES_FULFILLED: {
-      const data = action.payload.rows['_array'];
+      var data = action.payload.rows['_array'];
+      _.forEach(data, function(item) {
+        item.id = String(item.id) // key needs to be string for SideSwipe
+      })
+      data = _.orderBy(data, ['created_at'], ['desc'])
       return {...state, entries: { ...state.entries, fetching: false, fetched: true, data: data }}
       break;
     }

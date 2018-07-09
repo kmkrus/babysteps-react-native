@@ -31,7 +31,6 @@ import '@expo/vector-icons';
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180 // compensate for header and navbar
 const contentOffset = (width - BabyBookItem.WIDTH) / 2;
-var data = [{id: '1', file_name: null, file_type: null}]
 
 class BabyBookScreen extends Component {
 
@@ -75,17 +74,22 @@ class BabyBookScreen extends Component {
     if ( !this.props.babybook.entries.data.length ) {
       this.props.fetchBabyBookEntries()
     }
+
+    // bind function to navigation
     this.props.navigation.setParams({ Share: this.shareOpen.bind(this) })
-  }
 
-  componentDidMount() {
-
+    // set selected item from timeline
+    const itemId = this.props.navigation.getParam('itemId', '0');
+    if (itemId != '0') {
+      const selectedIndex = _.indexOf(_.map(this.props.babybook.entries.data, 'id'), itemId)
+      this.handleIndexChange(selectedIndex) 
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching) {
-      return false
-    } 
+    if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching ) {
+      return false 
+    }
     return true
   }
 
@@ -95,51 +99,37 @@ class BabyBookScreen extends Component {
     }
   }
 
-  render() {
+  handleIndexChange(index) {
+    this.setState({ currentIndex: index })
+  
+    // for share
+    const item = this.props.babybook.entries.data[index]
+    const babybookDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
+    const babybookUri = babybookDir + '/' + item.file_name
 
-    if ( this.props.babybook.entries.data.length ) {
-      data = this.props.babybook.entries.data
-      _.forEach(data, function(item) {
-        item.id = String(item.id) // key needs to be string for SideSwipe
-        item.created_at = new Date(item.created_at)
-      })
-      data = _.orderBy(data, ['created_at'], ['desc'])
-
-      // select by link from timeline
-      const itemId = this.props.navigation.getParam('itemId', '0');
-      if (itemId != '0') {
-        const selectedIndex = _.indexOf(_.map(data, 'id'), itemId)
-        this.setState({currentIndex: selectedIndex})
-      }
-
-      // for share
-      const babybookDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
-      const babybookUri = babybookDir + '/' + data[this.state.currentIndex].file_name
-      const item = data[this.state.currentIndex]
-
-      this.setState({
-        shareAttributes: { 
-          content: {
-            title: item.title,
-            message: item.detail,
-            url: babybookUri // ios only
-          },
-          options: {
-            subject: item.title, // for email
-            dialogTitle: 'Share ' + item.title // Android only
-          }
+    this.setState({
+      shareAttributes: { 
+        content: {
+          title: item.title,
+          message: item.detail,
+          url: babybookUri // ios only
+        },
+        options: {
+          subject: item.title, // for email
+          dialogTitle: 'Share ' + item.title // Android only
         }
-      })
+      }
+    })
 
-    }
+  }
 
-    console.log(this.state.shareAttributes)
+  render() {
 
     return (
       <View style={styles.container}>
         <PageControl
           style={styles.pageControl}
-          numberOfPages={data.length}
+          numberOfPages={this.props.babybook.entries.data.length}
           currentPage={this.state.currentIndex}
           hidesForSinglePage
           pageIndicatorTintColor={Colors.lightGrey}
@@ -147,13 +137,12 @@ class BabyBookScreen extends Component {
           indicatorStyle={{borderRadius: 0}}
           currentIndicatorStyle={{borderRadius: 0}}
           indicatorSize={{width:10, height:10}}
-          onPageIndicatorPress={index =>
-              this.setState(() => ({ currentIndex: index }))}
+          onPageIndicatorPress={ index => this.handleIndexChange(index) }
         />
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
 
           <SideSwipe
-            data={data}
+            data={this.props.babybook.entries.data}
             index={this.state.currentIndex}
             shouldCapture={() => true}
             style={[styles.carouselFill,  { width } ]}
@@ -161,8 +150,7 @@ class BabyBookScreen extends Component {
             threshold={BabyBookItem.WIDTH / 2}
             contentOffset={contentOffset}
             extractKey={ item => item.id }
-            onIndexChange={index =>
-              this.setState(() => ({ currentIndex: index }))}
+            onIndexChange={ (index) => this.handleIndexChange(index) }
             renderItem={ ({ itemIndex, currentIndex, item, animatedValue }) => (
               (currentIndex === 0) ?
                 <BabyBookCoverItem 

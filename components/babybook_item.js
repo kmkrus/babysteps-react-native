@@ -78,7 +78,7 @@ class BabyBookItem extends Component {
         
           <View style={styles.subtitle} >
             <Text style={styles.title}>{ this.props.item.title }</Text>
-            <Text style={styles.date}>{ this.props.item.created_at.toDateString() }</Text>
+            <Text style={styles.date}>{ new Date(this.props.item.created_at).toDateString() }</Text>
             <Text style={styles.detail}>{ this.props.item.detail }</Text>
           </View>
 
