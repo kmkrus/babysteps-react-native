@@ -32,7 +32,7 @@ const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
   title: Yup.string()
-    .required('Title is Required'),
+    .required('Title is Required')
 })
 
 class BabyBookEntryForm extends Component {
@@ -40,24 +40,27 @@ class BabyBookEntryForm extends Component {
   state = {
     image: null,
     imageError: '',
+    submitted: false,
   };
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.babybook.entries.fetching) {
-      return false
-    } else if (this.props.babybook.entries.fetched) {
+    return (!this.props.babybook.entries.fetching) 
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.babybook.entries.fetched && !this.state.submitted) {
+      this.setState({submitted: true})
       this.props.fetchBabyBookEntries()
       this.props.navigation.navigate('BabyBook');
-      return false
     }
-    return true;
   }
 
   askPermissionsAsync = async () => {
     const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     const camera = await Permissions.askAsync(Permissions.CAMERA);
+    const audio_recording = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
       
-    return {cameraRoll: camera_roll, camera: camera}
+    return {cameraRoll: camera_roll, camera: camera, audio_recording: audio_recording}
   };
 
   pickImage = async () => {
@@ -81,11 +84,7 @@ class BabyBookEntryForm extends Component {
 
       <Formik
         onSubmit={ (values) => {
-          if (this.state.image) {
-            this.props.createBabyBookEntry(values, this.state.image)
-          } else {
-            this.setState({imageError: 'You Must Select an Image.'})
-          }
+          this.props.createBabyBookEntry(values, this.state.image)
         }}
         validationSchema={validationSchema}
         initialValues={{
@@ -108,12 +107,15 @@ class BabyBookEntryForm extends Component {
               <View style={styles.pickImageContainer}>
                 <TouchableOpacity
                   style={styles.pickImage}
+                  name='image'
                   onPress={this.pickImage}>
+
                   { !uri && <Text style={styles.pickImageText}>Attach Photo or Video</Text> }
                   <Image 
-                    source={{ uri: uri}}
+                    source={{uri: uri}}
                     style={styles.image}
                   />
+                
                 </TouchableOpacity>
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
@@ -136,6 +138,7 @@ class BabyBookEntryForm extends Component {
                   title="Save Entry"
                   buttonStyle={styles.buttonStyle}
                   titleStyle={styles.buttonTitleStyle}
+                  disabled={ (props.isSubmitting || !this.state.image) }
                   onPress={props.handleSubmit} 
                   color={Colors.pink}
                 />

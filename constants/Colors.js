@@ -11,6 +11,7 @@ const pink = '#a35489';
 const lightPink = '#f7e6f1';
 const white = '#fff';
 const black = '#000';
+const red = 'red';
 const tranparent = 'tranparent';
 
 export default {
@@ -38,6 +39,7 @@ export default {
   lightGreen,
   white,
   black,
+  red,
   headerTintColor: white,
   headerBackgroundColor: darkGreen,
   tranparent,

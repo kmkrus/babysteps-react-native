@@ -10,7 +10,7 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
 
@@ -23,6 +23,7 @@ import { fetchSubject } from '../actions/registration_actions';
 
 import BabyBookCoverItem from '../components/babybook_cover_item';
 import BabyBookItem from '../components/babybook_item';
+import BabyBookGetImage from '../components/babybook_get_image';
 
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
@@ -31,12 +32,33 @@ import '@expo/vector-icons';
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180 // compensate for header and navbar
 const contentOffset = (width - BabyBookItem.WIDTH) / 2;
+const widthOffset = 40
+const imageWidth = BabyBookGetImage.IMAGE_WIDTH
+
+const babybookDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY + '/'
 
 class BabyBookScreen extends Component {
 
   state = {
     currentIndex: 0,
-    shareAttributes: {content: {}, options: {}}
+    data: [{
+      id: '0', 
+      file_name: null,
+      file_uri:  require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
+      type: 'cover', 
+      imageHeight: imageWidth
+    }],
+    shareAttributes: {
+      content: {
+        title: '',
+        message: 'none',
+        url: '' // ios only
+      },
+      options: {
+        subject: 'Nothing to Share', // for email
+        dialogTitle: 'Nothing to Share ' // Android only
+      }
+    }
   };
 
   static navigationOptions = ({navigation}) => {
@@ -44,18 +66,23 @@ class BabyBookScreen extends Component {
       title: 'BabyBook',
       headerRight: (
         <View style={styles.headerButtonContainer}>
+
           <Button
-            icon={{name: 'share', size: 22, color: 'white'}}
+            icon={
+              {name:  (Platform.OS === 'android') ? 'md-share' : 'ios-share', type: 'ionicon', color: Colors.white, size:22 }
+            }
             onPress={ () => navigation.state.params.Share() }
             backgroundColor={Colors.headerBackgroundColor}
             buttonStyle={styles.headerButton}
           />
-          <Button
-            icon={{name: 'timeline', size: 22, color: 'white'}}
-            onPress={ () => navigation.navigate('BabyBookTimeline') }
-            backgroundColor={Colors.headerBackgroundColor}
-            buttonStyle={styles.headerButton}
-          />
+          { false &&
+            <Button
+              icon={{name: 'timeline', size: 22, color: 'white'}}
+              onPress={ () => navigation.navigate('BabyBookTimeline') }
+              backgroundColor={Colors.headerBackgroundColor}
+              buttonStyle={styles.headerButton}
+            />
+          }
           <Button
             icon={{name: 'add-a-photo', size: 22, color: 'white'}}
             onPress={ () => navigation.navigate('BabyBookEntry') }
@@ -81,16 +108,42 @@ class BabyBookScreen extends Component {
     // set selected item from timeline
     const itemId = this.props.navigation.getParam('itemId', '0');
     if (itemId != '0') {
-      const selectedIndex = _.indexOf(_.map(this.props.babybook.entries.data, 'id'), itemId)
-      this.handleIndexChange(selectedIndex) 
+      
+      const selectedIndex = _.indexOf(
+        _.map(this.state.data, 'id'), 
+        String( parseInt(itemId, 10) + 1 ) // increment by 1 to account for cover
+      ) 
+
+      this.setState({ currentIndex: selectedIndex })
+      this.setShareAttributes(selectedIndex)
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching ) {
+    if (nextProps.registration.subject.fetching || nextProps.babybook.entries.fetching ) {
       return false 
     }
     return true
+  }
+
+  componentDidMount() {
+    if ( this.props.babybook.entries.data.length ) {
+      if (this.state.data[0].file_name == null ) {
+        var data = []
+        _.forEach(this.props.babybook.entries.data, (item) => {
+          if (item.file_name) {
+            const uri = babybookDir + item.file_name
+            data.push( {...item, file_uri: {uri: uri} } )
+          }
+        })
+        data = _.sortBy(data, i => i.created_at ).reverse()
+        // add entry for cover
+        data = [{...data[0], id: '0'}].concat( data )
+        this.setState({data: data})
+        // update share for cover page
+        this.setShareAttributes(0)
+      }
+    }
   }
 
   shareOpen() {
@@ -101,18 +154,20 @@ class BabyBookScreen extends Component {
 
   handleIndexChange(index) {
     this.setState({ currentIndex: index })
-  
+    this.setShareAttributes(index)
+  }
+
+  setShareAttributes(index) {
     // for share
-    const item = this.props.babybook.entries.data[index]
-    const babybookDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
-    const babybookUri = babybookDir + '/' + item.file_name
+    const item = this.state.data[index]
+    const uri = babybookDir + item.file_name
 
     this.setState({
       shareAttributes: { 
         content: {
           title: item.title,
           message: item.detail,
-          url: babybookUri // ios only
+          url: uri // ios only
         },
         options: {
           subject: item.title, // for email
@@ -120,7 +175,6 @@ class BabyBookScreen extends Component {
         }
       }
     })
-
   }
 
   render() {
@@ -129,7 +183,7 @@ class BabyBookScreen extends Component {
       <View style={styles.container}>
         <PageControl
           style={styles.pageControl}
-          numberOfPages={this.props.babybook.entries.data.length}
+          numberOfPages={this.state.data.length}
           currentPage={this.state.currentIndex}
           hidesForSinglePage
           pageIndicatorTintColor={Colors.lightGrey}
@@ -139,10 +193,10 @@ class BabyBookScreen extends Component {
           indicatorSize={{width:10, height:10}}
           onPageIndicatorPress={ index => this.handleIndexChange(index) }
         />
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <View style={styles.viewContainer}>
 
           <SideSwipe
-            data={this.props.babybook.entries.data}
+            data={this.state.data}
             index={this.state.currentIndex}
             shouldCapture={() => true}
             style={[styles.carouselFill,  { width } ]}
@@ -165,7 +219,7 @@ class BabyBookScreen extends Component {
             )}
           />
 
-        </ScrollView>
+        </View>
       </View>
     )
   }
@@ -176,7 +230,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollViewContainer: {
+  viewContainer: {
     flex: 1,
     flexGrow: 1,
     marginTop: 10,

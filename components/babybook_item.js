@@ -11,6 +11,8 @@ import {
 
 import { connect} from 'react-redux';
 
+import BabyBookGetImage from '../components/babybook_get_image';
+
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
 
@@ -19,6 +21,7 @@ const heightOffset = 180 // compensate for header and navbar
 const widthOffset = 40
 
 const imageSize = width - widthOffset - 60
+const backgroundImage = require('../assets/images/baby_book_inside_background.png')
 
 class BabyBookItem extends Component {
 
@@ -28,53 +31,23 @@ class BabyBookItem extends Component {
     if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching) {
       return false
     }
-    return false
-  }
-
-  getSource() {
-    if (!this.props.item.file_name) {
-      return require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png')
-    }
-    return {uri: Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY + '/'+ this.props.item.file_name}
+    return true 
   }
 
   render() {
-
+    
     return (
 
       <View style={styles.container}>
 
         <ImageBackground
-          source={ require('../assets/images/baby_book_inside_background.png') }
+          source={ backgroundImage }
           imageStyle={styles.backgroundImage}
           style={styles.imageBackground}>
 
-          <View style={styles.imageContainer}>
-
-            <Image 
-              style={styles.image}
-              source={ this.getSource() }
-              resizeMode={'contain'}
-            />
-
-            <Image 
-              style={styles.imageCornerTopLeft}
-              source={ require('../assets/images/baby_book_picture_frame_top_left.png')}
-            />
-            <Image 
-              style={styles.imageCornerTopRight}
-              source={ require('../assets/images/baby_book_picture_frame_top_right.png')}
-            />
-            <Image 
-              style={styles.imageCornerBottomLeft}
-              source={ require('../assets/images/baby_book_picture_frame_bottom_left.png')}
-            />
-            <Image 
-              style={styles.imageCornerBottomRight}
-              source={ require('../assets/images/baby_book_picture_frame_bottom_right.png')}
-            />
-
-          </View>
+          <BabyBookGetImage 
+            item={ this.props.item }
+          />
         
           <View style={styles.subtitle} >
             <Text style={styles.title}>{ this.props.item.title }</Text>
@@ -113,44 +86,7 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch',
     width: width - widthOffset,
   },
-  imageCornerTopLeft: {
-    ...imageCorner,
-    top: -2,
-    left: -2,
-  },
-  imageCornerTopRight: {
-    ...imageCorner,
-    top: -2,
-    right: -2,
-  },
-  imageCornerBottomLeft: {
-    ...imageCorner,
-    bottom: -2,
-    left: -2,
-  },
-  imageCornerBottomRight: {
-    ...imageCorner,
-    bottom: -2,
-    right: -2,
-  },
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderColor: Colors.lightGrey,
-    borderWidth: 2,
-    height: imageSize,
-    width: imageSize,
-    padding: 5
-  },
-  image: {
-    flex: 1,
-    alignSelf: 'stretch',
-    width: undefined,
-    height: undefined,
-  },
   subtitle: {
-    flex: 1,
     maxHeight: 150,
     width: width - (widthOffset * 2.5),
     marginTop: 20,
