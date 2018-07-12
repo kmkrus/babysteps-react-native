@@ -16,7 +16,7 @@ import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
 import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
 import BabyBookTimelineScreen from '../screens/BabyBookTimelineScreen';
-
+import MilestoneDetailScreen from '../screens/MilestoneDetailScreen';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
@@ -24,6 +24,9 @@ const RootStackNavigator = StackNavigator(
   {
     Main: {
       screen: MainTabNavigator,
+    },
+    MilestoneDetailScreen: {
+      screen: MilestoneDetailScreen,
     },
     BabyBook: {
       screen: BabyBookScreen,
@@ -135,7 +138,7 @@ class RootNavigator extends Component {
   }
 
   render() {
-    //return <RootStackNavigator />
+    return <RootStackNavigator />
     if ( States.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
       return <RootStackNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {
