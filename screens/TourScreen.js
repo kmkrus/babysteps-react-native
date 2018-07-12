@@ -48,7 +48,9 @@ export default class TourScreen extends Component {
       <ImageBackground 
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
-          //<ScrollView contentContainerStyle={styles.container}>
+        
+        <View style={styles.container}>
+        
           <SideSwipe
             data={items}
             index={this.state.currentIndex}
@@ -92,7 +94,9 @@ export default class TourScreen extends Component {
             indicatorSize={{width:8, height:8}}
             onPageIndicatorPress={this.onItemTap}
           />
-//</ScrollView>
+
+        </View>
+
         <TourButtons  
           {...this.state} 
           updateIndex = {this.updateIndex} 
