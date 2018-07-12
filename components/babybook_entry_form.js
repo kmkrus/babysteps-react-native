@@ -63,12 +63,17 @@ class BabyBookEntryForm extends Component {
     return {cameraRoll: camera_roll, camera: camera, audio_recording: audio_recording}
   };
 
-  pickImage = async () => {
+  pickImage = async (source=null) => {
 
     let permissions = await this.askPermissionsAsync();
 
     if (permissions.cameraRoll.status === 'granted' && permissions.camera.status === 'granted') {
-      const image = await ImagePicker.launchImageLibraryAsync()
+      var image = {}
+      if (source === 'library') {
+        image = await ImagePicker.launchImageLibraryAsync()
+      } else {
+        image = await ImagePicker.launchCameraAsync()
+      }
       if (!image.cancelled) {
         this.setState({ image: image });
       }
@@ -76,7 +81,7 @@ class BabyBookEntryForm extends Component {
       // TODO handle no permissions
     }
 
-  };
+  }
 
   render() {
 
@@ -104,19 +109,26 @@ class BabyBookEntryForm extends Component {
                 handleChange={ (value) => props.setFieldValue('created_at', value) }
               />
 
+              <Button
+                  title='Attach Photo or Video'
+                  buttonStyle={styles.libraryButton}
+                  titleStyle={styles.buttonTitleStyle}
+                  color={Colors.darkGreen}
+                  onPress={ () => this.pickImage('library') }
+                   
+              />
+              <Button
+                  title='Take a Photo or Video'
+                  buttonStyle={styles.cameraButton}
+                  titleStyle={styles.buttonTitleStyle}
+                  color={Colors.darkGreen}
+                  onPress={ () => this.pickImage('camera') }
+              />
               <View style={styles.pickImageContainer}>
-                <TouchableOpacity
-                  style={styles.pickImage}
-                  name='image'
-                  onPress={this.pickImage}>
-
-                  { !uri && <Text style={styles.pickImageText}>Attach Photo or Video</Text> }
-                  <Image 
+                <Image 
                     source={{uri: uri}}
                     style={styles.image}
                   />
-                
-                </TouchableOpacity>
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
 
@@ -178,6 +190,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cameraButton: {
+    backgroundColor: Colors.lightGreen,
+    borderColor: Colors.darkGreen,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  libraryButton: {
+    backgroundColor: Colors.lightGreen,
+    borderColor: Colors.darkGreen,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
   },
   pickImage: {
     flex: 1,
