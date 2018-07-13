@@ -119,11 +119,11 @@ const styles = StyleSheet.create({
   imageBackground: {
     flex: 1,
     marginTop: 20,
-  /*},    
-    container: {    
-      flex: 1,    
-      alignItems: 'stretch',    
-      justifyContent: 'center',*/
+  },    
+  container: {    
+    flex: 1,    
+    alignItems: 'stretch',    
+    justifyContent: 'center',
   },
   carouselFill: {
     position: 'absolute',

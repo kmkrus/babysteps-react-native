@@ -13,142 +13,84 @@ import {
 } from 'react-native';
  
 import { WebBrowser } from 'expo';
+import { ViewPager } from 'react-native-viewpager-carousel'
 
 import { connect } from 'react-redux';
+
 import _ from 'lodash';
 
-
 import { MonoText } from '../components/StyledText';
+import { Ionicons } from '@expo/vector-icons';
+
+import { cardsData } from '../data/cards';
+
+import { fetchMilestoneGroups } from '../actions/milestone_actions';
 
 import Colors from '../constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
-import Carousel from 'react-native-snap-carousel';
+import milestoneGroupImages from'../constants/MilestoneGroupImages';
 
-import {imagesData} from '../data/images';
-import {cardsData} from '../data/cards';
+const { width, height } = Dimensions.get('window');
 
-import fetchMilestones from '../database/fetch_milestones';
-import { milestonesTable } from '../actions/milestone_actions'
-import {
-  FETCH_MILESTONES_PENDING,
-  FETCH_MILESTONES_FULFILLED,
-  FETCH_MILESTONES_REJECTED
-} from '../actions/types';
-const { width: viewportWidth, height: viewportHeight } = Dimensions.get('window');
-
-function wp (percentage) {
-    const value = (percentage * viewportWidth) / 100;
+function wp (percentage, direction) {
+    const value = (percentage * direction) / 100;
     return Math.round(value);
 }
 
-const slideHeight = viewportHeight * 0.36;
-const slideWidth = wp(75);
-const itemHorizontalMargin = wp(2);
+const mg_container_height = wp(30, height)
+const mg_slider_width = width - 4
+const mg_image_height = wp(75,  mg_container_height)
+const mg_image_width = wp(75, width)
 
-const sliderWidth = viewportWidth;
-const itemWidth = slideWidth + itemHorizontalMargin * 2;
+const sc_container_height = wp(30, height)
+const sc_slider_width = width - 4
+const sc_card_height = wp(75,  sc_container_height)
+const sc_card_width = wp(90, width)
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
-  constructor(props) {
-    super(props);
-   
-  }
-
   componentWillMount() {
-
-    if (this.props.milestones.data.length === 0) {
-      
-      // note redux doesn't actually change state until render
-      this.props.milestonesTable(FETCH_MILESTONES_PENDING);
-      fetchMilestones()
-        .then( (response) => { 
-          // dispatch milestones to redux
-          this.props.milestonesTable(FETCH_MILESTONES_FULFILLED, response);
-        })
-        .catch( ( error ) => {
-          this.props.milestonesTable(FETCH_MILESTONES_REJECTED, error)
-        });
-    } // if milestones.data.length
+    this.props.fetchMilestoneGroups()
   }
-  _renderCarouselItem({item, index}) {
-    return (
-        <TouchableOpacity key={index} onPress={()=>{this.props.navigation.navigate('Milestones')}} >
-          <View style={styles.slideItem} >
-            <Image source={imagesData[index].image} style={styles.slideItemImage}  />
-            <View style={styles.slideItemFooter} >
-              <Text style={styles.slideItemFooterText} >{item.key} </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-    );
-}
-_renderScreeningCarouselCardItem({item, index}) {
-  const learnMoreButton = (
-            <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-              Get Started
-            </Text>
-            );
-  return (
-    <View style={styles.screeningSlideItem} >
-            <View style={{flex:1, alignContent:'flex-start'}}>
-              <Text numberOfLines={1}  style={styles.title} >{item.title} </Text>
-              <Text numberOfLines={1} style={styles.screeningText}> {item.date}</Text>
-              <Text numberOfLines={3}>{item.number} </Text>
 
-              <View style={{flex:1,justifyContent:'flex-end',alignItems:'flex-start'}}>
-              <TouchableOpacity style={styles.screeningButton}>
-              <Text style={styles.screeningButtonText}> Get Started </Text>
-              </TouchableOpacity>
-              </View>
+  shouldComponentUpdate(nextProps, nextState) {
+    return ( !this.props.milestones.groups.fetching )
+  }
 
-            </View>
-            </View>
-  );
-}
-    _renderCarouselCardItem({item, index}) {
-    const learnMoreButton = (
-              <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-                Get Started
-              </Text>
-              );
-    return (
-          <TouchableOpacity key={index} >
-            <View style={styles.screeningSlideItem} >
-              <Text >Some Title </Text>
-              <Text> January 19, 2018</Text>
-              <Text>itme.number </Text>
-            </View>
-          
+  renderScreeningItem(item) {
+    return(
+      <View style={ styles.screening_slide_container }>
+        <Text numberOfLines={1} style={ styles.screening_title } >{ item.data.title } </Text>
+        <Text numberOfLines={1} style={ styles.screening_text }> { item.data.date }</Text>
+        <Text numberOfLines={3} style={ styles.screening_number }>{ item.data.number } </Text>
+        <View style={ styles.screening_slide_link }>
+          <TouchableOpacity key={item._pageIndex} style={ styles.screening_button }>
+            <Text style={ styles.screening_button_text }> Get Started </Text>
           </TouchableOpacity>
-    );
-}
+        </View>
+      </View>
+    )
+  }
+
+  renderMilestoneItem(item) {
+    return (
+      <TouchableOpacity key={item.data.id} onPress={()=>{this.props.navigation.navigate('Milestones')}} >
+        <View style={styles.slideItem} >
+          <Image source={milestoneGroupImages[item._pageIndex]} style={styles.slideItemImage}  />
+          <View style={styles.slideItemFooter} >
+            <Text style={styles.slideItemFooterText} > {item.data.title} </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   render() {
 
-    var milestones = [];
+   let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, m => m.visible ), m => m.position )
 
-    if (this.props.milestones.fetched) {
-
-      milestones = _.filter(this.props.milestones.data._array, function(m) {
-        return m.always_visible;
-      });
-      
-      milestones = _.groupBy(milestones, m => m.milestone_group );
-
-      milestones = _.reduce(milestones, (acc, data, index) => {
-        acc.push({
-          key: index,
-          data: data
-        });
-        return acc;
-      }, []);
-
-    }
-   
-    
     return (
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -177,50 +119,43 @@ _renderScreeningCarouselCardItem({item, index}) {
           </View>
         </ScrollView>
 
-    <View style={{ height: 215, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.3)', }}>
-          <View style={styles.sc} >
-            <View style={{ flex: 2 }} >
-              <Text style={{ fontSize: 15 }} >Screening Events</Text>
+        <View style={ styles.slider_container }>
+          <View style={ styles.slider_header } >
+            <View style={ styles.slider_title } >
+              <Text style={ styles.slider_title_text } >Screening Events</Text>
             </View>
-            <TouchableOpacity style={styles.opacityStyle} >
-              <Text style={{ marginRight: 5, fontSize: 15, color: '#93ecd9' }} >View all</Text>
-              <Ionicons name='md-arrow-forward' style={{ fontSize: 15, color: '#93ecd9' }} />
+            <TouchableOpacity style={ styles.opacityStyle } >
+              <Text style={ styles.slider_link_text } >View all</Text>
+              <Ionicons name='md-arrow-forward' style={ styles.slider_link_icon } />
             </TouchableOpacity>
           </View>
-          <View style={{ flex: 1, paddingLeft: 5, marginBottom: 10  }} >
-             <Carousel
-                ref={(c) => { this._carousel = c; }}
-                data={cardsData}
-                renderItem={this._renderScreeningCarouselCardItem}
-                sliderWidth={sliderWidth}
-                itemWidth={itemWidth-10}
-                inactiveSlideScale={0.94}
-                inactiveSlideOpacity={0.7}
-              />
+          <View style={ styles.slider } >
+            <ViewPager
+              data={ cardsData }
+              renderPage={ item => this.renderScreeningItem(item) }
+              pageWidth={ sc_slider_width }
+              renderAsCarousel={ false }
+            />
           </View>
         </View>              
         
-
-        <View style={{ height: 200, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.3)', }}>
-          <View style={styles.sc} >
-            <View style={{ flex: 2 }} >
-              <Text style={{ fontSize: 15 }} >Developmentals Milestone</Text>
+        <View style={styles.slider_container}>
+          <View style={styles.slider_header} >
+            <View style={styles.slider_title} >
+              <Text style={styles.slider_title_text} >Developmentals Milestone</Text>
             </View>
             <TouchableOpacity style={styles.opacityStyle} onPress={()=>{this.props.navigation.navigate('Milestones')}} >
-              <Text style={{ marginRight: 5, fontSize: 15, color: '#93ecd9' }} >View all</Text>
-              <Ionicons name='md-arrow-forward' style={{ fontSize: 15, color: '#93ecd9' }} />
+              <Text style={ styles.slider_link_text } >View all</Text>
+              <Ionicons name='md-arrow-forward' style={ styles.slider_link_icon } />
             </TouchableOpacity>
           </View>
-          <View style={{ flex: 1, paddingLeft: 5, marginBottom: 10  }} >
-             <Carousel
-                ref={(c) => { this._carousel = c; }}
-                data={milestones}
-                renderItem={this._renderCarouselItem.bind(this)}
-                sliderWidth={sliderWidth}
-                itemWidth={itemWidth-30}
-                inactiveSlideScale={0.94}
-                inactiveSlideOpacity={0.7}
-              />
+          <View style={ styles.slider }>
+            <ViewPager
+              data={ milestoneGroups }
+              renderPage={ item => this.renderMilestoneItem(item) }
+              pageWidth={ mg_slider_width }
+              renderAsCarousel={ false }
+            />
           </View>
         </View>
 
@@ -285,10 +220,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 50,
   },
-
-  navigationFilename: {
-    marginTop: 5,
-  },
   helpContainer: {
     marginTop: 15,
     alignItems: 'center',
@@ -296,26 +227,18 @@ const styles = StyleSheet.create({
   helpLink: {
     paddingVertical: 15,
   },
+  slider_container: { 
+    height: mg_container_height, 
+    borderTopWidth: 2, 
+    borderTopColor: Colors.lightGrey, 
+  },
   slideItem:{
-     width: 250,
-     height: 150,
+     width: mg_image_width,
+     height: mg_image_height,
      borderRadius: 5,
      overflow: 'hidden',
      marginLeft: 30
-
   },
-  screeningSlideItem:{
-    width: 250,
-    height: 140,
-    borderRadius: 5,
-    overflow: 'hidden',
-    marginLeft: 10,
-    flex:1,
-    flexDirection:'column',
-    borderColor:'grey',
-    borderWidth:1,
-    padding:10,
- },
   slideItemImage : {
     width: null,
     height: null,
@@ -335,50 +258,70 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingLeft: 10,
   },
-  containerStyle: {
+  screening_slide_container:{
+    width: sc_card_width,
+    height: sc_card_height,
+    marginLeft: 10,  
+    borderRadius: 5,
+    borderColor: Colors.lightGrey,
     borderWidth: 1,
-    borderRadius: 2,
-    borderColor: '#ddd',
-    borderBottomWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-    marginLeft: 5,
-    marginRight: 5,
+    padding: 10,
+  },
+  screening_slide_link: {
     marginTop: 10,
-    marginBottom: 10,
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
   },
-  title: {
-    fontSize:14,
-    color:'#3f3e40', 
-    fontWeight:'bold',
+  screening_title: {
+    fontSize: 14,
+    color: Colors.darkGrey, 
+    fontWeight: '900',
   },
-  screeningText: {
+  screening_text: {
     fontSize:15, 
-    color:'#58ead0',
+    color: Colors.darkGrey,
   },
-  screeningButton: {
-    borderBottomColor:Colors.lightPink, 
-    borderBottomWidth:1, 
-    backgroundColor:'#fdf3fa', 
-    padding:5, 
-    borderWidth:1,
-    borderColor:'#f59bdc', 
-    marginBottom:3, 
-    borderRadius:5,
+  screening_number: {
+    fontSize: 12, 
+    color: Colors.darkGrey,
   },
-  screeningButtonText: {
-    fontSize:14, 
-    color:'#f59bdc',
+  screening_button: {
+    padding: 5, 
+    borderWidth: 1,
+    borderColor: Colors.pink, 
+    backgroundColor: Colors.lightPink, 
+    borderRadius: 5,
+    marginBottom: 3, 
   },
-  sc: { 
+  screening_button_text: {
+    fontSize: 14, 
+    color: Colors.darkPink,
+  },
+  slider_header: { 
     width: '90%', 
     alignSelf: 'center', 
     flexDirection: 'row', 
     paddingVertical: 10 
+  },
+  slider_title: {
+    flex: 2
+  },
+  slider_title_text: {
+    fontSize: 15
+  },
+  slider_link_text: { 
+    marginRight: 5, 
+    fontSize: 15, 
+    color: Colors.darkGreen, 
+  },
+  slider_link_icon: { 
+    fontSize: 15, 
+    color: Colors.darkGreen, 
+  },
+  slider: {
+    flex: 1, 
+    paddingLeft: 5, 
+    marginBottom: 10 
   },
   opacityStyle: { 
     flexDirection: 'row', 
@@ -388,7 +331,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ({ session,milestones }) => ({ session,milestones });
-const mapDispatchToProps = { milestonesTable }
+const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
+const mapDispatchToProps = { fetchMilestoneGroups }
 
 export default connect( mapStateToProps, mapDispatchToProps )( HomeScreen );
