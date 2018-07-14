@@ -138,7 +138,6 @@ class RootNavigator extends Component {
   }
 
   render() {
-    return <RootStackNavigator />
     if ( States.REGISTRATION_COMPLETE.includes(this.props.session.registration_state) ) {
       return <RootStackNavigator />
     } else if (this.props.session.registration_state == States.REGISTERING_AS_NO_STUDY) {

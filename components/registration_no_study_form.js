@@ -38,12 +38,15 @@ const validationSchema = Yup.object().shape({
 class RegistrationNoStudyForm extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( !nextProps.registration.respondent.fetching && !nextProps.registration.subject.fetching) {
-      return false
-    } else {
-      this.props.updateSession({registration_state: States.REGISTERED_AS_NO_STUDY});
+    return ( !nextProps.registration.respondent.fetching && !nextProps.registration.subject.fetching )
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if ( !nextProps.registration.respondent.fetching && !nextProps.registration.subject.fetching ) {
+      if ( nextProps.registration.subject.fetched && nextProps.registration.subject.fetched ) {
+        this.props.updateSession({registration_state: States.REGISTERED_AS_NO_STUDY})
+      }
     }
-    return true;
   }
 
   render() {

@@ -95,10 +95,10 @@ class BabyBookScreen extends Component {
   }
 
   componentWillMount() {
-    if ( !this.props.registration.subject.data.length ) {
+    if (_.isEmpty(this.props.registration.subject.data) ) {
       this.props.fetchSubject()
     }
-    if ( !this.props.babybook.entries.data.length ) {
+    if (_.isEmpty(this.props.babybook.entries.data) ) {
       this.props.fetchBabyBookEntries()
     }
 
@@ -115,34 +115,35 @@ class BabyBookScreen extends Component {
       ) 
 
       this.setState({ currentIndex: selectedIndex })
-      this.setShareAttributes(selectedIndex)
+     
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.registration.subject.fetching || nextProps.babybook.entries.fetching ) {
-      return false 
-    }
-    return true
+    return ( !nextProps.registration.subject.fetching && !nextProps.babybook.entries.fetching ) 
   }
 
-  componentDidMount() {
-    if ( this.props.babybook.entries.data.length ) {
-      if (this.state.data[0].file_name == null ) {
-        var data = []
-        _.forEach(this.props.babybook.entries.data, (item) => {
-          if (item.file_name) {
-            const uri = babybookDir + item.file_name
-            data.push( {...item, file_uri: {uri: uri} } )
-          }
-        })
-        data = _.sortBy(data, i => i.created_at ).reverse()
-        // add entry for cover
-        data = [{...data[0], id: '0'}].concat( data )
-        this.setState({data: data})
-        // update share for cover page
-        this.setShareAttributes(0)
-      }
+  componentWillReceiveProps(nextProps, nextState) {
+    if (!nextProps.babybook.entries.fetching ) {
+      this.restructureData()
+    }
+  }
+
+  restructureData() {
+    if (this.state.data[0].file_name == null ) {
+      var data = []
+      _.forEach(this.props.babybook.entries.data, (item) => {
+        if (item.file_name) {
+          const uri = babybookDir + item.file_name
+          data.push( {...item, file_uri: {uri: uri} } )
+        }
+      })
+      data = _.sortBy(data, i => i.created_at ).reverse()
+      // add entry for cover
+      data = [{...data[0], id: '0'}].concat( data )
+      this.setState({data: data})
+      // update share
+      this.setShareAttributes(this.state.currentIndex)
     }
   }
 

@@ -15,7 +15,6 @@ export default TabNavigator(
     Overview: {
       screen: HomeScreen,
     },
-    
     Milestones: {
       screen: MilestonesScreen,
     },
@@ -30,10 +29,7 @@ export default TabNavigator(
         let iconName;
         switch (routeName) {
           case 'Overview':
-            iconName =
-              Platform.OS === 'ios'
-                ? `ios-information-circle${focused ? '' : '-outline'}`
-                : 'md-ionic';
+            iconName = Platform.OS === 'ios' ? `ios-information-circle${focused ? '' : '-outline'}` : 'md-ionic';
             break;
           case 'BabyBook':
             iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-book';

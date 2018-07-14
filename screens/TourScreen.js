@@ -8,7 +8,9 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
+
 import SideSwipe from 'react-native-sideswipe';
+
 import PageControl from 'react-native-page-control';
 
 import Colors from '../constants/Colors';
@@ -31,12 +33,40 @@ export default class TourScreen extends Component {
     super(props);
     this.state = {
       currentIndex: 0,
+      scrollEnabled: true,
     };
     this.updateIndex = this.updateIndex.bind(this);
   }
 
+  handleNestedScrollEvent(value) {
+    this.setState({ scrollEnabled: value });
+  }
+
   updateIndex() {
     this.setState({currentIndex: 3 })
+  }
+
+  renderItem(page) {
+    if (page.item.key != '4') { 
+      return (
+        <TourItem 
+          item = {page.item}
+          index = {page.itemIndex}
+          currentIndex = {page.currentIndex}
+          animatedValue = {page.animatedValue}
+        />
+      )
+    } else {
+      return (
+        <TourItemFour
+          item = {page.item}
+          index = {page.itemIndex}
+          currentIndex = {page.currentIndex}
+          animatedValue = {page.animatedValue}
+          handleNestedScrollEvent={ (value) => this.handleNestedScrollEvent(value) }
+        />
+      )
+    }
   }
 
   render() {
@@ -49,53 +79,32 @@ export default class TourScreen extends Component {
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
         
-        <View style={styles.container}>
-        
-          <SideSwipe
-            data={items}
-            index={this.state.currentIndex}
-            shouldCapture={() => true}
-            style={[styles.carouselFill,  { width } ]}
-            itemWidth={TourItem.WIDTH}
-            threshold={TourItem.WIDTH / 4}
-            extractKey={ item => item.key}
-            contentOffset={offset}
-            onIndexChange={index =>
-              this.setState(() => ({ currentIndex: index }))}
-            renderItem={({ itemIndex, currentIndex, item, animatedValue }) => (
-        
-                (item.key != '4') ? 
-                  <TourItem 
-                    item = {item}
-                    index = {itemIndex}
-                    currentIndex = {currentIndex}
-                    animatedValue = {animatedValue}
-                  />
-                :
-                  <TourItemFour
-                    item = {item}
-                    index = {itemIndex}
-                    currentIndex = {currentIndex}
-                    animatedValue = {animatedValue}
-                  />
+        <SideSwipe
+          data={ items }
+          index={ this.state.currentIndex }
+          shouldCapture={ () => this.state.scrollEnabled }
+          style={ styles.sideSwipe }
+          itemWidth={ TourItem.WIDTH }
+          threshold={ TourItem.WIDTH / 4 }
+          extractKey={ item => item.key }
+          contentOffset={ offset }
+          onIndexChange={index =>
+            this.setState( () => ({ currentIndex: index }) )}
+          renderItem={ (page) => this.renderItem(page) }
+        />
 
-            )}
-          />
-
-          <PageControl
-            style={styles.pageControl}
-            numberOfPages={items.length}
-            currentPage={this.state.currentIndex}
-            hidesForSinglePage
-            pageIndicatorTintColor={Colors.lightGrey}
-            currentPageIndicatorTintColor={Colors.grey}
-            indicatorStyle={{borderRadius: 5}}
-            currentIndicatorStyle={{borderRadius: 5}}
-            indicatorSize={{width:8, height:8}}
-            onPageIndicatorPress={this.onItemTap}
-          />
-
-        </View>
+        <PageControl
+          style={styles.pageControl}
+          numberOfPages={items.length}
+          currentPage={this.state.currentIndex}
+          hidesForSinglePage
+          pageIndicatorTintColor={Colors.lightGrey}
+          currentPageIndicatorTintColor={Colors.grey}
+          indicatorStyle={{borderRadius: 5}}
+          currentIndicatorStyle={{borderRadius: 5}}
+          indicatorSize={{width:8, height:8}}
+          onPageIndicatorPress={this.onItemTap}
+        />
 
         <TourButtons  
           {...this.state} 
@@ -125,7 +134,8 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',    
     justifyContent: 'center',
   },
-  carouselFill: {
+  sideSwipe: {
+    width: width,
     position: 'absolute',
     top: 0,
     left: 0,

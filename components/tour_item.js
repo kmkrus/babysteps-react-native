@@ -18,6 +18,7 @@ export class TourItem extends Component {
   static WIDTH = width;
 
   render = () => {
+    
     const { animatedValue, index } = this.props;
     
     return (

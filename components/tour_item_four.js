@@ -18,47 +18,48 @@ export class TourItemFour extends Component {
   static WIDTH = width;
 
   render = () => {
-    const { animatedValue, index } = this.props;
     
+    const { animatedValue, index } = this.props;
+
     return (
 
       <Animated.View style={styles.container}>
 
-        <View style={styles.animatedContainer}>
+        <Animated.Image
+          style={[
+            styles.image,
+            {
+              transform: [
+                {
+                  scale: animatedValue.interpolate({
+                    inputRange: [index - 1, index, index + 1],
+                    outputRange: [1, 1.1, 1],
+                    extrapolate: 'clamp',
+                  }),
+                },
+                {
+                  rotate: animatedValue.interpolate({
+                    inputRange: [index - 1, index, index + 1],
+                    outputRange: ['90deg', '0deg', '-90deg'],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
+            },
+          ]}
+          source={ require('../assets/images/uofi_logo.png') }
+        />
 
-          <Animated.Image
-            style={[
-              styles.image,
-              {
-                transform: [
-                  {
-                    scale: animatedValue.interpolate({
-                      inputRange: [index - 1, index, index + 1],
-                      outputRange: [1, 1.1, 1],
-                      extrapolate: 'clamp',
-                    }),
-                  },
-                  {
-                    rotate: animatedValue.interpolate({
-                      inputRange: [index - 1, index, index + 1],
-                      outputRange: ['90deg', '0deg', '-90deg'],
-                      extrapolate: 'clamp',
-                    }),
-                  },
-                ],
-              },
-            ]}
-            source={ require('../assets/images/uofi_logo.png') }
-          />
-          <View style={styles.textBlock}>
-            <Text style={styles.title}>Environmental Influences on Child Health Outcomes (ECHO)</Text>
-            <Text style={styles.body}>Powered by Univeristy of Iowa physicians and researchers use of this app will also help us to better understand factors leading to permature birth or developmental disorders such as autism.</Text>
-          </View>
-
+        <View style={styles.textBlock}>
+          <Text style={styles.title}>Environmental Influences on Child Health Outcomes (ECHO)</Text>
+          <Text style={styles.body}>Powered by Univeristy of Iowa physicians and researchers use of this app will also help us to better understand factors leading to permature birth or developmental disorders such as autism.</Text>
         </View>
       
 
-        <ScrollView style={styles.scrollView}>
+        <ScrollView onTouchStart={ () => this.props.handleNestedScrollEvent(false) }
+          onMomentumScrollEnd={ () => this.props.handleNestedScrollEvent(true) }
+          onScrollEndDrag={ () => this.props.handleNestedScrollEvent(false) }
+          style={styles.scrollView}>
           
           <View style={styles.nestedView}>
             <Image 
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     width: width - 40,
-    height: height * 0.4,
+    height: height * 0.3,
     borderTopColor: Colors.grey,
     borderTopWidth: 1,
   },

@@ -36,15 +36,17 @@ function wp (percentage, direction) {
     return Math.round(value);
 }
 
-const mg_container_height = wp(30, height)
-const mg_slider_width = width - 4
-const mg_image_height = wp(75,  mg_container_height)
-const mg_image_width = wp(75, width)
-
 const sc_container_height = wp(30, height)
 const sc_slider_width = width - 4
-const sc_card_height = wp(75,  sc_container_height)
-const sc_card_width = wp(90, width)
+const sc_card_height = wp(70,  sc_container_height)
+const sc_card_width = wp(80, width)
+const sc_card_margin = ((width - sc_card_width) / 2)
+
+const mg_container_height = wp(30, height)
+const mg_slider_width = width - 4
+const mg_image_height = wp(65,  mg_container_height)
+const mg_image_width = wp(60, width)
+const mg_image_margin = ((width - mg_image_width) / 2) 
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -63,8 +65,8 @@ class HomeScreen extends React.Component {
     return(
       <View style={ styles.screening_slide_container }>
         <Text numberOfLines={1} style={ styles.screening_title } >{ item.data.title } </Text>
-        <Text numberOfLines={1} style={ styles.screening_text }> { item.data.date }</Text>
-        <Text numberOfLines={3} style={ styles.screening_number }>{ item.data.number } </Text>
+        <Text numberOfLines={1} style={ styles.screening_date }> { item.data.date }</Text>
+        <Text numberOfLines={3} style={ styles.screening_text }>{ item.data.number } </Text>
         <View style={ styles.screening_slide_link }>
           <TouchableOpacity key={item._pageIndex} style={ styles.screening_button }>
             <Text style={ styles.screening_button_text }> Get Started </Text>
@@ -89,7 +91,7 @@ class HomeScreen extends React.Component {
 
   render() {
 
-   let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, m => m.visible ), m => m.position )
+    let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, m => (m.visible > 0) ), m => m.position )
 
     return (
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
@@ -107,16 +109,8 @@ class HomeScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
-
           </View>
 
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              {
-                //<Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-              }
-            </TouchableOpacity>
-          </View>
         </ScrollView>
 
         <View style={ styles.slider_container }>
@@ -165,12 +159,6 @@ class HomeScreen extends React.Component {
 
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
       return (
         <Text style={styles.developmentModeText}>
           Development mode is enabled...
@@ -185,15 +173,6 @@ class HomeScreen extends React.Component {
     }
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -220,13 +199,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 50,
   },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
   slider_container: { 
     height: mg_container_height, 
     borderTopWidth: 2, 
@@ -237,7 +209,7 @@ const styles = StyleSheet.create({
      height: mg_image_height,
      borderRadius: 5,
      overflow: 'hidden',
-     marginLeft: 30
+     marginLeft: mg_image_margin,
   },
   slideItemImage : {
     width: null,
@@ -261,7 +233,7 @@ const styles = StyleSheet.create({
   screening_slide_container:{
     width: sc_card_width,
     height: sc_card_height,
-    marginLeft: 10,  
+    marginLeft: sc_card_margin,  
     borderRadius: 5,
     borderColor: Colors.lightGrey,
     borderWidth: 1,
@@ -277,24 +249,23 @@ const styles = StyleSheet.create({
     color: Colors.darkGrey, 
     fontWeight: '900',
   },
-  screening_text: {
-    fontSize:15, 
+  screening_date: {
+    fontSize:10, 
     color: Colors.darkGrey,
   },
-  screening_number: {
+  screening_text: {
     fontSize: 12, 
     color: Colors.darkGrey,
   },
   screening_button: {
-    padding: 5, 
+    padding: 3, 
     borderWidth: 1,
     borderColor: Colors.pink, 
     backgroundColor: Colors.lightPink, 
     borderRadius: 5,
-    marginBottom: 3, 
   },
   screening_button_text: {
-    fontSize: 14, 
+    fontSize: 12, 
     color: Colors.darkPink,
   },
   slider_header: { 

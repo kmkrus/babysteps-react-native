@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 
 import { connect} from 'react-redux';
-import { resetBabyBookEntries } from '../actions/babybook_actions';
+import { resetBabyBookEntries, fetchBabyBookEntries } from '../actions/babybook_actions';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
@@ -13,6 +13,10 @@ import '@expo/vector-icons';
 import BabyBookEntryForm from '../components/babybook_entry_form';
 
 class BabyBookEntryScreen extends Component {
+
+  state = {
+    submitted: false,
+  }
 
   static navigationOptions = ({navigation}) => {
     return ({
@@ -41,14 +45,24 @@ class BabyBookEntryScreen extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (!this.props.babybook.entries.fetching) 
+    return ( !nextProps.babybook.entries.fetching ) 
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if ( !nextProps.babybook.entries.fetching && nextProps.babybook.entries.fetched ) {
+      if ( !this.state.submitted ) {
+        this.setState({ submitted: true })
+        this.props.fetchBabyBookEntries()
+        this.props.navigation.navigate('BabyBook')
+      }
+    }
   }
 
   render() {
     return (
       <KeyboardAwareScrollView enableOnAndroid={true} >
         <View style={ styles.container }>
-          <BabyBookEntryForm navigation={this.props.navigation} />
+          <BabyBookEntryForm  />
         </View>
       </KeyboardAwareScrollView>
     )
@@ -74,6 +88,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ babybook }) => ({ babybook });
-const mapDispatchToProps = { resetBabyBookEntries };
+const mapDispatchToProps = { resetBabyBookEntries, fetchBabyBookEntries };
 
 export default connect( mapStateToProps,  mapDispatchToProps )( BabyBookEntryScreen );

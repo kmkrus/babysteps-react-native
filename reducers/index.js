@@ -16,6 +16,7 @@ const appReducer = combineReducers({
 
 export default (state, action) => {
   if (CONSTANTS.RESET_STATE) {
+    console.log(' ###### Resetting State ######')
     state = undefined;
   } 
   return appReducer(state, action)

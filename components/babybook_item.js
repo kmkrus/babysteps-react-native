@@ -46,6 +46,7 @@ class BabyBookItem extends Component {
           style={styles.imageBackground}>
 
           <BabyBookGetImage 
+            navigation={this.props.navigation}
             item={ this.props.item }
           />
         

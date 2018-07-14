@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import {
   View,
   Image,
+  TouchableOpacity,
   Dimensions,
   StyleSheet
 } from 'react-native';
@@ -37,18 +38,26 @@ class BabyBookGetImage extends Component {
     } // if item.file_uri
   }
 
+  handleImageOnPress() {
+    if ( this.props.item.type === 'cover' ) {
+      this.props.navigation.navigate('BabyBookEntry')
+    }
+  }
+
   render() {
 
     const imageContainerHeight = this.state.imageHeight + 2
-
+    
     return(
 
       <View style={[ styles.imageContainer, { height: imageContainerHeight } ]}>
 
-        <Image 
-          style={[ styles.image, { height: this.state.imageHeight } ]}
-          source={ this.props.item.file_uri }
-        />
+        <TouchableOpacity onPress={ () => this.handleImageOnPress() }>
+          <Image 
+            style={[ styles.image, { height: this.state.imageHeight } ]}
+            source={ this.props.item.file_uri }
+          />
+        </TouchableOpacity>
 
         <Image 
           style={styles.imageCornerTopLeft}
