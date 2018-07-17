@@ -1,6 +1,7 @@
 import { Notifications } from 'expo';
 import React, { Component } from 'react';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
+//import { StackNavigator } from 'react-navigation';
 import MainTabNavigator from './MainTabNavigator';
 
 import { connect} from 'react-redux';
@@ -20,7 +21,7 @@ import MilestoneDetailScreen from '../screens/MilestoneDetailScreen';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-const RootStackNavigator = StackNavigator(
+const RootStackNavigator = createStackNavigator(
   {
     Main: {
       screen: MainTabNavigator,
@@ -52,7 +53,7 @@ const RootStackNavigator = StackNavigator(
   }
 );
 
-const ConsentNavigator = StackNavigator(
+const ConsentNavigator = createStackNavigator(
   {
     Consent: {
       screen: ConsentScreen
@@ -71,7 +72,7 @@ const ConsentNavigator = StackNavigator(
   }
 );
 
-const RegistrationNavigator = StackNavigator(
+const RegistrationNavigator = createStackNavigator(
   {
     Registration: {
       screen: RegistrationScreen
@@ -90,7 +91,7 @@ const RegistrationNavigator = StackNavigator(
   }
 );
 
-const TourNavigator = StackNavigator(
+const TourNavigator = createStackNavigator(
   {
     Main: {
       screen: TourScreen,
@@ -106,7 +107,7 @@ const TourNavigator = StackNavigator(
   }
 );
 
-const TourNoStudyNavigator = StackNavigator(
+const TourNoStudyNavigator = createStackNavigator(
   {
     Main: {
       screen: TourNoStudyConfirmScreen,

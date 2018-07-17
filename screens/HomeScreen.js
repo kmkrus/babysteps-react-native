@@ -37,18 +37,19 @@ function wp (percentage, direction) {
 }
 
 const sc_container_height = wp(30, height)
-const sc_slider_width = width - 4
+const sc_slider_width = width - 7
 const sc_card_height = wp(70,  sc_container_height)
 const sc_card_width = wp(80, width)
 const sc_card_margin = ((width - sc_card_width) / 2)
 
 const mg_container_height = wp(30, height)
-const mg_slider_width = width - 4
+const mg_slider_width = width - 7
 const mg_image_height = wp(65,  mg_container_height)
 const mg_image_width = wp(60, width)
 const mg_image_margin = ((width - mg_image_width) / 2) 
 
 class HomeScreen extends React.Component {
+
   static navigationOptions = {
     header: null,
   };
@@ -58,7 +59,7 @@ class HomeScreen extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !this.props.milestones.groups.fetching )
+    return ( !nextProps.milestones.groups.fetching )
   }
 
   renderScreeningItem(item) {
@@ -68,7 +69,7 @@ class HomeScreen extends React.Component {
         <Text numberOfLines={1} style={ styles.screening_date }> { item.data.date }</Text>
         <Text numberOfLines={3} style={ styles.screening_text }>{ item.data.number } </Text>
         <View style={ styles.screening_slide_link }>
-          <TouchableOpacity key={item._pageIndex} style={ styles.screening_button }>
+          <TouchableOpacity key={ item._pageIndex } style={ styles.screening_button }>
             <Text style={ styles.screening_button_text }> Get Started </Text>
           </TouchableOpacity>
         </View>
@@ -77,21 +78,28 @@ class HomeScreen extends React.Component {
   }
 
   renderMilestoneItem(item) {
+    let uri = milestoneGroupImages[item._pageIndex]
     return (
-      <TouchableOpacity key={item.data.id} onPress={()=>{this.props.navigation.navigate('Milestones')}} >
-        <View style={styles.slideItem} >
-          <Image source={milestoneGroupImages[item._pageIndex]} style={styles.slideItemImage}  />
-          <View style={styles.slideItemFooter} >
-            <Text style={styles.slideItemFooterText} > {item.data.title} </Text>
+      <TouchableOpacity 
+        style={ styles.mg_touchable }
+        key={ item._pageIndex } 
+        onPress={ ()=>this.props.navigation.navigate('Milestones') } >
+
+        <View style={ styles.slide_item } >
+
+          <Image source={ uri } style={ styles.slide_item_image } />
+          <View style={ styles.slide_item_footer } >
+            <Text style={ styles.slide_item_footer_text } > { item.data.title } </Text>
           </View>
         </View>
+      
       </TouchableOpacity>
     )
   }
 
   render() {
 
-    let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, m => (m.visible > 0) ), m => m.position )
+    let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position )
 
     return (
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
@@ -145,7 +153,7 @@ class HomeScreen extends React.Component {
           </View>
           <View style={ styles.slider }>
             <ViewPager
-              data={ milestoneGroups }
+              data={ milestoneGroups } //this.state.milestoneGroups }
               renderPage={ item => this.renderMilestoneItem(item) }
               pageWidth={ mg_slider_width }
               renderAsCarousel={ false }
@@ -183,6 +191,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingTop: 30,
   },
+  opacityStyle: { 
+    flex: 1, 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end', 
+    alignItems: 'center',
+  },
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
@@ -204,31 +218,61 @@ const styles = StyleSheet.create({
     borderTopWidth: 2, 
     borderTopColor: Colors.lightGrey, 
   },
-  slideItem:{
-     width: mg_image_width,
-     height: mg_image_height,
-     borderRadius: 5,
-     overflow: 'hidden',
-     marginLeft: mg_image_margin,
+  slide_item:{
+    flex: 1,
+    width: mg_image_width,
+    height: mg_image_height,
+    borderRadius: 5,
+    //overflow: 'hidden',
+    marginLeft: mg_image_margin,
   },
-  slideItemImage : {
-    width: null,
-    height: null,
-    flex: 1
+  slide_item_image : {
+    flex: 1,
+    width: mg_image_width,
+    height: mg_image_height,
   },
-  slideItemFooter: {
+  slide_item_footer: {
     position: 'absolute',
     width: '100%',
     height: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end'
   },
-  slideItemFooterText : {
+  slide_item_footer_text : {
     color: '#fff',
     width: '100%',
     backgroundColor: 'rgba(0,0,0,0.4)',
     paddingVertical: 10,
     paddingLeft: 10,
+  },
+  slider_header: { 
+    width: '90%', 
+    alignSelf: 'center', 
+    flexDirection: 'row', 
+    paddingVertical: 10 
+  },
+  slider_title: {
+    flex: 2
+  },
+  slider_title_text: {
+    fontSize: 15
+  },
+  slider_link_text: { 
+    marginRight: 5, 
+    fontSize: 15, 
+    color: Colors.darkGreen, 
+  },
+  slider_link_icon: { 
+    fontSize: 15, 
+    color: Colors.darkGreen, 
+  },
+  slider: {
+    flex: 1, 
+    paddingLeft: 5, 
+    marginBottom: 10,
+  },
+  mg_touchable: {
+    height: mg_image_height,
   },
   screening_slide_container:{
     width: sc_card_width,
@@ -268,38 +312,6 @@ const styles = StyleSheet.create({
     fontSize: 12, 
     color: Colors.darkPink,
   },
-  slider_header: { 
-    width: '90%', 
-    alignSelf: 'center', 
-    flexDirection: 'row', 
-    paddingVertical: 10 
-  },
-  slider_title: {
-    flex: 2
-  },
-  slider_title_text: {
-    fontSize: 15
-  },
-  slider_link_text: { 
-    marginRight: 5, 
-    fontSize: 15, 
-    color: Colors.darkGreen, 
-  },
-  slider_link_icon: { 
-    fontSize: 15, 
-    color: Colors.darkGreen, 
-  },
-  slider: {
-    flex: 1, 
-    paddingLeft: 5, 
-    marginBottom: 10 
-  },
-  opacityStyle: { 
-    flexDirection: 'row', 
-    flex: 1, 
-    justifyContent: 'flex-end', 
-    alignItems: 'center' 
-  }
 });
 
 const mapStateToProps = ({ session, milestones }) => ({ session, milestones });

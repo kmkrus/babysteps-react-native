@@ -27,8 +27,8 @@ class ConsentAgreementForm extends Component {
       this.setState({errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot."})
     } else {
       this.props.saveScreenBlood({screening_blood: this.state.screeningBlood})
-      //this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
-      this.props.updateSession({registration_state: States.REGISTERING_USER })
+      this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
+      //this.props.updateSession({registration_state: States.REGISTERING_USER })
     }
   }
 

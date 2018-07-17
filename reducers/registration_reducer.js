@@ -17,6 +17,8 @@ import {
   API_CREATE_USER_FULFILLED,
   API_CREATE_USER_REJECTED,
 
+  RESET_RESPONDENT,
+
   FETCH_RESPONDENT_PENDING,
   FETCH_RESPONDENT_FULFILLED,
   FETCH_RESPONDENT_REJECTED,
@@ -36,10 +38,6 @@ import {
   API_UPDATE_RESPONDENT_PENDING,
   API_UPDATE_RESPONDENT_FULFILLED,
   API_UPDATE_RESPONDENT_REJECTED,
-
-  SAVE_SIGNATURE_PENDING,
-  SAVE_SIGNATURE_FULFILLED,
-  SAVE_SIGNATURE_REJECTED,
 
   FETCH_SUBJECT_PENDING,
   FETCH_SUBJECT_FULFILLED,
@@ -158,6 +156,11 @@ const reducer = (state=initialState, action) => {
       break;
     }
 
+     // RESET RESPONDENT
+    case RESET_RESPONDENT: {
+      return {...state, respondent: {...state.respondent, fetching: false, fetched: false, error: null}}
+    }
+
     // FETCH RESPONDENT
     case FETCH_RESPONDENT_PENDING: {
       return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
@@ -240,21 +243,7 @@ const reducer = (state=initialState, action) => {
       return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
       break;
     }
-
-    // SAVE_SIGNATURE
-    case SAVE_SIGNATURE_PENDING: {
-      return {...state }
-      break;
-    }
-    case SAVE_SIGNATURE_FULFILLED: {
-      return {...state }
-      break;
-    }
-    case SAVE_SIGNATURE_REJECTED: {
-      return {...state, respondent: {...state.respondent, error: action.payload} }
-      break;
-    }
-
+    
     // RESET SUBJECT
     case RESET_SUBJECT: {
       return {...state, subject: {...state.subject, fetching: false, fetched: false, error:null}}
@@ -296,12 +285,13 @@ const reducer = (state=initialState, action) => {
     }
 
 
-    // CREATE SUBJECT
+    // UPDATE SUBJECT
     case UPDATE_SUBJECT_PENDING: {
       return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
       break;
     }
     case UPDATE_SUBJECT_FULFILLED: {
+      debugger
       return {...state, subject: 
         {...state.subject, fetching: false, fetched: true, 
           data: Object.assign( {}, state.subject.data, action.payload ) 

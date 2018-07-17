@@ -30,6 +30,8 @@ export const API_CREATE_USER_PENDING = 'api_create_user_pending';
 export const API_CREATE_USER_FULFILLED = 'api_create_user_fulfilled';
 export const API_CREATE_USER_REJECTED = 'api_create_user_rejected';
 
+export const RESET_RESPONDENT = 'reset_respondent';
+
 export const FETCH_RESPONDENT_PENDING = 'fetch_respondent_pending';
 export const FETCH_RESPONDENT_FULFILLED = 'fetch_respondent_fulfilled';
 export const FETCH_RESPONDENT_REJECTED = 'fetch_respondent_rejected';
@@ -49,10 +51,6 @@ export const API_CREATE_RESPONDENT_REJECTED = 'api_create_respondent_rejected';
 export const API_UPDATE_RESPONDENT_PENDING = 'api_update_respondent_pending';
 export const API_UPDATE_RESPONDENT_FULFILLED = 'api_update_respondent_fulfilled';
 export const API_UPDATE_RESPONDENT_REJECTED = 'api_update_respondent_rejected';
-
-export const SAVE_SIGNATURE_PENDING = 'save_signature_pending';
-export const SAVE_SIGNATURE_FULFILLED = 'save_signature_fulfilled';
-export const SAVE_SIGNATURE_REJECTED = 'save_signature_rejected';
 
 export const RESET_SUBJECT = 'reset_subject';
 

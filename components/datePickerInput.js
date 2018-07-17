@@ -6,16 +6,22 @@ import Colors from '../constants/Colors';
 
 export default class DatePickerInput extends React.PureComponent {
 
+  focus() {
+    this.input.onPressDate()
+  }
+
   render() {
     const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
-    const baseColor = displayError ? Colors.errorColor : Colors.darkGrey;
+    const baseColor = displayError ? Colors.errorColor : Colors.darkGrey
+    const styles = {...this.props.style, width: 200, marginBottom: 10 }
 
     return (
       <View>
         <Text>{this.props.label}</Text>
         <DatePicker
-          style={{...this.props.style, width: 200, marginBottom: 10 }}
+          ref={input => (this.input = input)}
+          style={styles}
           mode='date'
           androidMode="spinner"
           format="YYYY-MM-DD"

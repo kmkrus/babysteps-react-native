@@ -1,7 +1,9 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { TabNavigator, TabBarBottom } from 'react-navigation';
+
+import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
+//import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -10,7 +12,8 @@ import MilestonesScreen from '../screens/MilestonesScreen';
 import TourScreen from '../screens/TourScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
 
-export default TabNavigator(
+//export default TabNavigator(
+export default createBottomTabNavigator(
   {
     Overview: {
       screen: HomeScreen,
@@ -48,8 +51,8 @@ export default TabNavigator(
         );
       },
     }),
-    tabBarComponent: TabBarBottom,
-    tabBarPosition: 'bottom',
+    tabBarComponent: BottomTabBar,
+    //tabBarPosition: 'bottom',
     animationEnabled: false,
     swipeEnabled: false,
   }

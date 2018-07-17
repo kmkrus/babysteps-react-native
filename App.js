@@ -64,6 +64,7 @@ export default class App extends Component {
         'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
         'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
         'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
+        'FontAwesome':  require('./assets/fonts/FontAwesome.ttf'),
       }),
       // async check of schemas
       checkRegistrationSchema(),

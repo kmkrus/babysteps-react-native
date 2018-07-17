@@ -114,7 +114,7 @@ class RegistrationUserForm extends Component {
 
           return (
             <Form>
-              <Text h4>First let's get you registered...</Text>
+              <Text style={styles.form_header}>Step 1: Create an Account.</Text>
               <TextInput label="First Name" name="first_name" type="name" />
               <TextInput label="Last Name" name="last_name" type="name" />
               <TextInput label="Email" name="email" type="email" />
@@ -122,12 +122,11 @@ class RegistrationUserForm extends Component {
   
                 <Button 
                   title="NEXT" 
-                  onPress={props.handleSubmit} 
-                  color={Colors.green}
-                  //disabled={ props.isSubmitting }
+                  onPress={ props.handleSubmit } 
+                  color={ Colors.green }
                 />
               
-                <ErrorText apiUser={this.props.registration.apiUser} />
+                <ErrorText apiUser={ this.props.registration.apiUser } />
 
             </Form>
           );
@@ -136,6 +135,13 @@ class RegistrationUserForm extends Component {
     )
   }
 };
+
+const styles = StyleSheet.create({
+  form_header: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+})
 
 const mapStateToProps = ({ registration }) => ({ registration });
 const mapDispatchToProps = { createUser, fetchUser, apiCreateUser, updateSession };

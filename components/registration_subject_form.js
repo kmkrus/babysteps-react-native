@@ -19,24 +19,28 @@ import { connect } from 'react-redux';
 import { 
   fetchRespondent,
   resetSubject, 
-  createSubject, 
+  createSubject,
+  updateSubject,
   apiCreateSubject 
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
-import DatePickerInput from '../components/datePickerInput';
-import PickerInput from '../components/pickerInput';
+import DatePicker from '../components/datePickerInput';
+import Picker from '../components/pickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput)
+const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
+const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
+
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
-  date_of_birth: Yup.string()
-    .required('Date of Birth is Required'),
+  //date_of_birth: Yup.string()
+    //.required('Date of Birth is Required'),
 })
 
 const genders = [
@@ -60,30 +64,34 @@ class RegistrationSubjectForm extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.subject.fetching || nextProps.registration.respondent.fetching ) {
+    if ( nextProps.registration.subject.fetching || 
+      nextProps.registration.respondent.fetching ||
+      nextProps.registration.apiSubject.fetching ||
+      nextProps.session.fetching ) {
       return false
-    } else if (nextProps.registration.subject.fetched) {
-
-      if (nextProps.registration.apiSubject.error != null) {
-        return true
-
-      } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) { 
-        this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
-        return false
-
-      } else if ( nextProps.registration.apiSubject.fetched && !nextProps.session.fetching && !nextProps.session.fetched) {
-        this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
-        return false
-      }     
-
-    }
+    } 
     return true
   }
 
-  render() {
+  componentWillReceiveProps(nextProps, nextState) {
+    debugger
+    if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
+      if ( !nextProps.registration.apiSubject.fetching ) {
+        if (!nextProps.registration.apiSubject.fetched ) {
+          this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
+        } else if ( nextProps.registration.apiSubject.data.id !== undefined ) {
+          const api_id = nextProps.registration.apiSubject.data.id
+          this.props.updateSubject({ api_id: api_id })
 
-    let respondent_api_id = this.props.registration.respondent.data.api_id
-    let screening_blood = this.props.registration.subject.data.screening_blood
+          if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
+            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+          }
+        } // apiSubject fetched 
+      } // apiSubject fetching
+    } // subject fetching
+  }
+
+  render() {
 
     return (
       <Formik
@@ -92,7 +100,7 @@ class RegistrationSubjectForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
-          'respondent_ids[]': this.props.registration.respondent.data.api_id,
+          respondent_ids: this.props.registration.respondent.data.api_id,
           gender: 'female',
           conception_method: 'natural',
           screening_blood: this.props.registration.subject.data.screening_blood,
@@ -101,7 +109,7 @@ class RegistrationSubjectForm extends Component {
 
           return (
             <Form>
-              <Text h4>Add your baby's information...</Text>
+              <Text style={styles.form_header}>Step 3: Update Your Baby's Profile.</Text>
               <TextInput label="First Name" name="first_name" type="name" />
               <TextInput label="Middle Name" name="middle_name" type="name" />
               <TextInput label="Last Name" name="last_name" type="name" />
@@ -146,9 +154,23 @@ class RegistrationSubjectForm extends Component {
       />
     )
   }
-};
+}
+
+const styles = StyleSheet.create({
+  form_header: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+})
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { fetchRespondent, resetSubject, createSubject, apiCreateSubject, updateSession };
+const mapDispatchToProps = { 
+  fetchRespondent, 
+  resetSubject, 
+  createSubject, 
+  updateSubject, 
+  apiCreateSubject, 
+  updateSession 
+};
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationSubjectForm);

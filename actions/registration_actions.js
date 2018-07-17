@@ -19,6 +19,8 @@ import {
   API_CREATE_USER_FULFILLED,
   API_CREATE_USER_REJECTED,
 
+  RESET_RESPONDENT,
+
   FETCH_RESPONDENT_PENDING,
   FETCH_RESPONDENT_FULFILLED,
   FETCH_RESPONDENT_REJECTED,
@@ -38,10 +40,6 @@ import {
   API_UPDATE_RESPONDENT_PENDING,
   API_UPDATE_RESPONDENT_FULFILLED,
   API_UPDATE_RESPONDENT_REJECTED,
-
-  SAVE_SIGNATURE_PENDING,
-  SAVE_SIGNATURE_FULFILLED,
-  SAVE_SIGNATURE_REJECTED,
 
   RESET_SUBJECT,
 
@@ -72,6 +70,21 @@ const Pending = (type) => {
 const Response = ( type, payload, formData={} ) => {
   return { type, payload, formData }
 };
+
+const getUpdateSQL = (data) => {
+  const keys = _.keys(data);
+  const values = _.values(data);
+  var updateSQL = []
+
+  _.forEach( keys, (key) => {
+    if ( data[key].isInteger() ) {
+      updateSQL.push( key + " = " + data[key]  )
+    } else {
+      updateSQL.push( key + " = '" + data[key] + "'" )
+    }
+  })
+  return updateSQL
+}
 
 export const fetchRegistrationData = () => {
   // Thunk middleware knows how to handle functions.
@@ -176,6 +189,12 @@ export const fetchRespondent = () => {
 
 };
 
+export const resetRespondent = (respondent) => {
+  return function (dispatch) {
+     dispatch( Pending(RESET_RESPONDENT) );
+  }
+}
+
 export const createRespondent = (respondent) => {
   return function (dispatch) {
 
@@ -277,13 +296,7 @@ export const updateRespondent = (data) => {
 
     delete data.id 
     
-    const keys = _.keys(data);
-    const values = _.values(data);
-    var updateSQL = []
-
-    _.forEach( keys, (key) => {
-      updateSQL.push( key + " = '" + data[key] + "'" )
-    })
+    const updateSQL = getUpdateSQL(data)
 
     return (
       db.transaction(tx => {
@@ -307,42 +320,32 @@ export const apiUpdateRespondent = (session, data) => {
   delete data.api_id 
 
   return function (dispatch) {
-    
-    dispatch({
-      type: API_UPDATE_RESPONDENT_PENDING,
-      payload: {
-        data: {respondent: data},
-        session: session
-      },
-      meta: {
-        offline: {
-          effect: { 
-            method: 'PUT',
-            url: '/respondents/' + api_id,
-            fulfilled: API_UPDATE_RESPONDENT_FULFILLED,
-            rejected: API_UPDATE_RESPONDENT_REJECTED,
+
+    if ( true ) {
+      console.log('api', data)
+
+    } else {
+
+      dispatch({
+        type: API_UPDATE_RESPONDENT_PENDING,
+        payload: {
+          data: {respondent: data},
+          session: session
+        },
+        meta: {
+          offline: {
+            effect: { 
+              method: 'PUT',
+              url: '/respondents/' + api_id,
+              fulfilled: API_UPDATE_RESPONDENT_FULFILLED,
+              rejected: API_UPDATE_RESPONDENT_REJECTED,
+            }
           }
         }
-      }
-    })
+      })
+    }
 
-  }
-}
-
-export const saveSignature = (image) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(SAVE_SIGNATURE_PENDING) );
-
-    const fileName = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + 'signature.png'
-    Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
-
-    Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
-    .then( () => { dispatch( Pending(SAVE_SIGNATURE_FULFILLED) ) })
-    .catch( (error) => { 
-      dispatch( Response(SAVE_SIGNATURE_REJECTED, error) ) 
-    }) 
-  }
+  } // return function
 }
 
 export const saveScreenBlood = (screeningBlood) => {
@@ -444,4 +447,29 @@ export const apiCreateSubject = (session, data) => {
     })
 
   }
+}
+
+export const updateSubject = (data) => {
+  return function (dispatch) {
+
+    dispatch( Pending(UPDATE_SUBJECT_PENDING) );
+
+    delete data.id 
+
+    const updateSQL = getUpdateSQL(data)
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql( 'UPDATE subjects SET ' + updateSQL.join(', ') + ';', 
+          [],
+          (_, response) => { 
+            dispatch( Response(UPDATE_SUBJECT_FULFILLED, response, data) );
+          },
+          (_, error) => { 
+            dispatch( Response(UPDATE_SUBJECT_REJECTED, error) ) 
+          }
+        );
+      })
+    )
+  };
 }

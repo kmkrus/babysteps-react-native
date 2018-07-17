@@ -13,6 +13,7 @@ export default class MaterialTextInput extends React.PureComponent {
   render() {
     const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
+    const baseColor = displayError ? Colors.errorColor : Colors.darkGrey;
 
     return (
 
@@ -21,7 +22,7 @@ export default class MaterialTextInput extends React.PureComponent {
           ref={input => (this.input = input)}
           labelHeight={14}
           labelFontSize={12}
-          baseColor={displayError ? Colors.errorColor : Colors.darkGrey}
+          baseColor={baseColor}
           tintColor={Colors.darkGrey} 
           textColor={Colors.textColor}
           {...props}

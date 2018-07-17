@@ -124,26 +124,22 @@ class BabyBookScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if (!nextProps.babybook.entries.fetching ) {
-      this.restructureData()
-    }
-  }
-
-  restructureData() {
-    if (this.state.data[0].file_name == null ) {
-      var data = []
-      _.forEach(this.props.babybook.entries.data, (item) => {
-        if (item.file_name) {
-          const uri = babybookDir + item.file_name
-          data.push( {...item, file_uri: {uri: uri} } )
-        }
-      })
-      data = _.sortBy(data, i => i.created_at ).reverse()
-      // add entry for cover
-      data = [{...data[0], id: '0'}].concat( data )
-      this.setState({data: data})
-      // update share
-      this.setShareAttributes(this.state.currentIndex)
+    if (!nextProps.babybook.entries.fetching && nextProps.babybook.entries.fetched ) {
+      if ( !_.isEmpty(nextProps.babybook.entries.data) && _.isEmpty(this.state.data[0].file_name) ) {
+        var data = []
+        _.forEach(nextProps.babybook.entries.data, (item) => {
+          if (item.file_name) {
+            const uri = babybookDir + item.file_name
+            data.push( {...item, file_uri: {uri: uri} } )
+          }
+        })
+        data = _.sortBy(data, i => i.created_at ).reverse()
+        // add entry for cover
+        data = [{...data[0], id: '0'}].concat( data )
+        this.setState({data: data})
+        // update share
+        this.setShareAttributes(this.state.currentIndex)
+      }
     }
   }
 
@@ -178,6 +174,24 @@ class BabyBookScreen extends Component {
     })
   }
 
+  renderItem(page) {
+    if (page.currentIndex === 0) {
+      return(
+        <BabyBookCoverItem 
+          item={page.item}
+          navigation={this.props.navigation}
+        />
+      )
+    } else {
+      return(
+        <BabyBookItem 
+          item={page.item}
+          navigation={this.props.navigation}
+        />
+      )
+    }
+  }
+
   render() {
 
     return (
@@ -206,18 +220,7 @@ class BabyBookScreen extends Component {
             contentOffset={contentOffset}
             extractKey={ item => item.id }
             onIndexChange={ (index) => this.handleIndexChange(index) }
-            renderItem={ ({ itemIndex, currentIndex, item, animatedValue }) => (
-              (currentIndex === 0) ?
-                <BabyBookCoverItem 
-                  item={item}
-                  navigation={this.props.navigation}
-                />
-              :
-                <BabyBookItem 
-                  item={item}
-                  navigation={this.props.navigation}
-                />
-            )}
+            renderItem={ (page) => this.renderItem(page) }
           />
 
         </View>

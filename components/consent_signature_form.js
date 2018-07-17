@@ -16,6 +16,7 @@ import { saveSignature, apiUpdateRespondent } from '../actions/registration_acti
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import CONSTANTS from '../constants';
 
 class ConsentSignatureForm extends Component {
 
@@ -23,13 +24,32 @@ class ConsentSignatureForm extends Component {
     return ( !nextProps.session.registration_state == States.REGISTERING_SIGNATURE)
   }
 
+
   handleSubmit = async () => {
 
-    let image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
+    const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
+  
+    const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY
+    const resultDir = await Expo.FileSystem.getInfoAsync( signatureDir )
+ 
+    if ( resultDir.exists ) {  
+      const fileName =  signatureDir + '/signature.png'
 
-    this.props.saveSignature(image)
+      await Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
+     
+      await Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
 
-    this.props.updateSession({registration_state: States.REGISTERING_USER })
+      const resultFile = await Expo.FileSystem.getInfoAsync( fileName )
+      
+      if ( resultFile.exists ) {
+        this.props.updateSession({registration_state: States.REGISTERING_USER })
+        
+      } else {
+        console.log('Error: file not saved - ', resultFile)
+      }
+    } else {
+      console.log('Error: no directory - ', resultDir )
+    }
   }
 
   handleReset = () => {
@@ -51,14 +71,12 @@ class ConsentSignatureForm extends Component {
             strokeColor={Colors.black}
             strokeWidth={8}
             transparent={false}
-
           />
         </View>
 
         <View style={styles.elevated}>
           <Text style={styles.header}>Your Signature</Text>
           <Text style={styles.text}>Do not sign this form if today’s date is on or after  EXPIRATION DATE: 01/29/19.</Text>
-
         </View>
 
         <View style={styles.buttonContainer}>
@@ -104,12 +122,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',
     borderColor: Colors.grey,
-    borderWidth: 0.8,
+    borderWidth: 1.5,
+    borderRadius: 5,
   },
   signature: {
     height: 150,
     width: '100%',
     backgroundColor: Colors.white, 
+    borderRadius: 5,
   },
   buttonContainer: {
     justifyContent: 'center',

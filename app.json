@@ -4,7 +4,7 @@
     "description": "Pregnancy and Baby Milestones",
     "slug": "babysteps-react-native",
     "privacy": "public",
-    "sdkVersion": "27.0.0",
+    "sdkVersion": "28.0.0",
     "platforms": ["ios", "android"],
     "version": "0.5.2",
     "orientation": "portrait",
@@ -21,6 +21,7 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "0.5.2",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps"
     },

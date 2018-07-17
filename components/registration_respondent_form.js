@@ -19,19 +19,29 @@ import withInputAutoFocus, {
 import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
-import { createRespondent, updateRespondent, apiCreateRespondent } from '../actions/registration_actions';
+import { 
+  fetchUser, 
+  resetRespondent, 
+  createRespondent, 
+  updateRespondent, 
+  apiCreateRespondent,
+  apiUpdateRespondent
+} from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
-import DatePickerInput from '../components/datePickerInput';
-import PickerInput from '../components/pickerInput';
+import DatePicker from '../components/datePickerInput';
+import Picker from '../components/pickerInput';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
+import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
+const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
 
@@ -62,37 +72,62 @@ const maritalStatuses = [
 
 class RegistrationRespondentForm extends Component {
 
+  componentWillMount() {
+    this.props.fetchUser()
+    this.props.resetRespondent()
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.respondent.fetching ) {
+    if ( nextProps.registration.user.fetching || 
+      nextProps.registration.respondent.fetching || 
+      nextProps.registration.apiRespondent.fetching ) {
       return false
-    } else if (nextProps.registration.respondent.fetched) {
-
-      if (nextProps.registration.apiRespondent.error != null) {
-        return true
-
-      } else if (!nextProps.registration.apiRespondent.fetching && !nextProps.registration.apiRespondent.fetched) {
-        this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
-        return false
-      } else if (nextProps.registration.apiRespondent.fetched) {
-        // Upload signatture image if we have respondent id
-        //if (this.props.registration.apiRespondent.data.id !== undefined ) {
-        //  const fileName = Expo.FileSystem.cacheDirectory + 'signature/signature.png'
-        //  const image = Expo.FileSystem.readAsStringAsync(fileName)
-        //  const api_id = this.props.registration.apiRespondent.data.id
-        //  const accepted_tos_at = new Date().toISOString()
-        //  this.props.apiUpdateRespondent( { api_id: api_id, respondent: { accepted_tos_at: accepted_tos_at,  'attachments[]': image } } )
-        //}
-        this.props.updateRespondent({ api_id: nextProps.registration.apiRespondent.data.id})
-
-        if (nextProps.registration.respondent.data.pregnant) {
-          this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
-        } else {
-          this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT })
-        }
-      } 
-
     }
     return true
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    
+    if ( !nextProps.registration.respondent.fetching && nextProps.registration.respondent.fetched ) {
+      if (!nextProps.registration.apiRespondent.fetching) {
+
+        if (!nextProps.registration.apiRespondent.fetched) {
+          this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
+        
+        } else {
+
+          // Upload signatture image if we have respondent id
+          if (nextProps.registration.apiRespondent.data.id !== undefined ) {
+            const api_id = nextProps.registration.apiRespondent.data.id
+            
+            this.apiSaveSignature( api_id )
+
+            this.props.updateRespondent({ api_id: api_id})
+
+            if (nextProps.registration.respondent.data.pregnant) {
+              this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
+            } else {
+              this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT })
+            }
+          } // apiRespondent.id
+        } // apiRespondent.fetched
+      } // apiRespondent.fetching
+    } // respondent.fetching
+  }
+
+  apiSaveSignature = async (api_id) => {
+    const uri = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png'
+    const getResult = await Expo.FileSystem.getInfoAsync(uri, {size: true})
+
+    if ( getResult.exists ) {
+      const maniResult = await Expo.ImageManipulator.manipulate(uri, [], {base64: true})
+      const image = 'data:image/png;base64, ' + maniResult.base64
+      this.props.apiUpdateRespondent(
+        this.props.session, { api_id: api_id, respondent: { attachments: image} }
+      )
+    } else {
+      console.log('no signature available')
+    }
   }
 
   render() {
@@ -112,13 +147,13 @@ class RegistrationRespondentForm extends Component {
           state: 'IA',
           marital_status: 'married',
           accepted_tos_at: new Date().toISOString(),
-          pregnant: true,
+          pregnant: false,
         }}
         render={ (props) => {
 
           return (
             <Form>
-              <Text h4>Update your profile...</Text>
+              <Text style={styles.form_header}>Step 2: Update Your Profile.</Text>
 
               <PickerInput
                 label='Relationship'
@@ -128,10 +163,6 @@ class RegistrationRespondentForm extends Component {
                 selectedValue={props.values.respondent_type}
                 handleChange={ (value) => props.setFieldValue('respondent_type', value) }
               />
-              
-              <TextInput label="First Name" name="first_name" type="name" />
-              <TextInput label="Middle Name" name="middle_name" type="name" />
-              <TextInput label="Last Name" name="last_name" type="name" />
 
               <TextInput label="Address 1" name="address_1" type="text" />
               <TextInput label="Address 2" name="address_2" type="text" />
@@ -145,8 +176,6 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('state', value) }
               />
               <TextInput label="Zip Code" name="zip_code" type="text" />
-
-              <TextInput label="Email" name="email" type="email" />
               <TextInput label="Home Phone" name="home_phone" type="tel" />
               <TextInput label="Other Phone" name="other_phone" type="tel" />
               
@@ -171,20 +200,30 @@ class RegistrationRespondentForm extends Component {
               <TextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
               <TextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
+              <Text style={styles.label}>Are You Currently Pregnant?</Text>
               <CheckBox
-                title='Are You Currently Pregnant?'
-                textStyle={styles.checkboxText}
-                checked={props.values.pregnant}
-                onPress={ (value) => props.setFieldValue('pregnant', value) }
+                title='Yes'
+                checked={ props.values.pregnant }
+                containerStyle={ styles.checkboxContainer }
+                textStyle={ styles.checkboxText }
+                onPress={ (value) => props.setFieldValue('pregnant', true) }
+              />
+              <CheckBox
+                title='No'
+                checked={ !props.values.pregnant }
+                containerStyle={ styles.checkboxContainer }
+                textStyle={ styles.checkboxText }
+                onPress={ (value) => props.setFieldValue('pregnant', false) }
               />
 
-              <Button 
-                title="NEXT"
-                onPress={ props.handleSubmit } 
-                color={Colors.green}
-                disabled={ props.isSubmitting }
-              />
-
+              <View style={styles.buttonContainer}>
+                <Button 
+                  title="NEXT"
+                  onPress={ props.handleSubmit } 
+                  color={Colors.green}
+                  disabled={ props.isSubmitting }
+                />
+              </View>
             </Form>
           );
         }}
@@ -194,12 +233,35 @@ class RegistrationRespondentForm extends Component {
 };
 
 const styles = StyleSheet.create({
+  form_header: {
+    fontSize: 18,
+    marginBottom: 16,
+  },
+  label: {
+    marginTop: 20,
+  },
+  checkboxContainer: {
+    margin: 0,
+    padding:0,
+    backgroundColor: Colors.backgroundColor,
+  },
   checkboxText: {
-    fontSize: 11,
+    fontSize: 12,
+  },
+  buttonContainer: {
+    marginTop: 20,
   }
 })
 
-const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createRespondent, updateRespondent, apiCreateRespondent, updateSession };
+const mapStateToProps = ({ session, registration }) => ({ session, registration });
+const mapDispatchToProps = { 
+  fetchUser, 
+  resetRespondent,
+  createRespondent, 
+  updateRespondent, 
+  apiCreateRespondent,
+  apiUpdateRespondent,
+  updateSession 
+};
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);
