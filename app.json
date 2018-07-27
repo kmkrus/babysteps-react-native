@@ -21,7 +21,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "0.5.2",
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps"
     },

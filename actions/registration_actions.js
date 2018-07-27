@@ -77,7 +77,7 @@ const getUpdateSQL = (data) => {
   var updateSQL = []
 
   _.forEach( keys, (key) => {
-    if ( data[key].isInteger() ) {
+    if ( _.isInteger( data[key] ) ) {
       updateSQL.push( key + " = " + data[key]  )
     } else {
       updateSQL.push( key + " = '" + data[key] + "'" )

@@ -74,7 +74,6 @@ class RegistrationSubjectForm extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    debugger
     if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
       if ( !nextProps.registration.apiSubject.fetching ) {
         if (!nextProps.registration.apiSubject.fetched ) {
