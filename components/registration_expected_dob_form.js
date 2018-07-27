@@ -17,6 +17,7 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import { resetSubject, createSubject, apiCreateSubject, fetchRespondent } from '../actions/registration_actions';
+import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import DatePickerInput from '../components/datePickerInput';
@@ -39,23 +40,30 @@ class RegistrationExpectedDOB extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.subject.fetching || nextProps.registration.respondent.fetching ) {
+    if ( nextProps.registration.subject.fetching || 
+      nextProps.registration.respondent.fetching ||
+      nextProps.registration.apiSubject.fetching ||
+      nextProps.session.fetching ) {
       return false
-    } else if (nextProps.registration.subject.fetched) {
-
-      if (nextProps.registration.apiSubject.error != null) {
-        return true
-
-      } else if (!nextProps.registration.apiSubject.fetching && !nextProps.registration.apiSubject.fetched) {
-        this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
-        return false
-
-      } else if ( nextProps.registration.apiSubject.fetched && !nextProps.session.fetching ) {
-        this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
-      }     
-
-    }
+    } 
     return true
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
+      if ( !nextProps.registration.apiSubject.fetching ) {
+        if (!nextProps.registration.apiSubject.fetched ) {
+          this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
+        } else if ( nextProps.registration.apiSubject.data.id !== undefined ) {
+          const api_id = nextProps.registration.apiSubject.data.id
+          this.props.updateSubject({ api_id: api_id })
+          this.props.apiFetchMilestoneCalendar({ subject_id: api_id })
+          if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
+            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+          }
+        } // apiSubject fetched 
+      } // apiSubject fetching
+    } // subject fetching
   }
 
   render() {
@@ -67,7 +75,7 @@ class RegistrationExpectedDOB extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
-          'respondent_ids[]': this.props.registration.respondent.data.api_id,
+          respondent_ids: this.props.registration.respondent.data.api_id,
           gender: 'unknown',
           conception_method: 'natural',
           screening_blood: this.props.registration.subject.data.screening_blood,
@@ -101,6 +109,13 @@ class RegistrationExpectedDOB extends Component {
 };
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { resetSubject, createSubject, apiCreateSubject, fetchRespondent, updateSession };
+const mapDispatchToProps = { 
+  resetSubject, 
+  createSubject, 
+  apiCreateSubject, 
+  fetchRespondent, 
+  apiFetchMilestoneCalendar,
+  updateSession
+};
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationExpectedDOB);

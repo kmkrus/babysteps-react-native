@@ -69,7 +69,7 @@ export function insertRows(name, schema, data) {
       sql = sql + ' )'
       tx.executeSql( sql, values, 
         (_, rows) => console.log('** Execute ' + sql), 
-        (_, error) => console.log('*** Error in executing ' + sql)
+        (_, error) => console.log('*** Error in executing ' + error)
       )
     });
    

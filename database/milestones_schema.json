@@ -20,6 +20,24 @@
       "milestone_groups_position ON milestone_groups (position);"
     ]
   },
+  "milestone_triggers": {
+    "columns": {
+      "id": "INTEGER PRIMARY KEY",
+      "subject_id": "INTEGER",
+      "milestone_id": "INTEGER",
+      "notify_at": "TEXT",
+      "notify_count": "INTEGER",
+      "available_start_at": "TEXT",
+      "available_end_at": "TEXT",
+      "completed_at": "TEXT"
+    },
+    "indexes": [
+      "milestone_triggers_milestone_id ON milestone_triggers (milestone_id);",
+      "milestone_triggers_notify_at ON milestone_triggers (notify_at);",
+      "milestone_triggers_available_start_at ON milestone_triggers (available_start_at);",
+      "milestone_triggers_available_end_at ON milestone_triggers (available_end_at);",
+    ]
+  },
   "milestones": {
     "columns": {
       "id": "INTEGER PRIMARY KEY", 

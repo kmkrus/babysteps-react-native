@@ -54,6 +54,22 @@ export default class App extends Component {
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),
+        require('./assets/images/baby_book_cover_background.png'),
+        require('./assets/images/baby_book_inside_background.png'),
+        require('./assets/images/baby_book_picture_frame_bottom_left.png'),
+        require('./assets/images/baby_book_picture_frame_bottom_right.png'),
+        require('./assets/images/baby_book_picture_frame_top_left.png'),
+        require('./assets/images/baby_book_picture_frame_top_right.png'),
+        require('./assets/images/background.png'),
+        require('./assets/images/tour_no_study_confirm.png'),
+        require('./assets/images/tour_slide_four_baby.png'),
+        require('./assets/images/tour_slide_four_brain.png'),
+        require('./assets/images/tour_slide_four_face.png'),
+        require('./assets/images/tour_slide_four_video.png'),
+        require('./assets/images/tour_slide_one.png'),
+        require('./assets/images/tour_slide_three.png'),
+        require('./assets/images/tour_slide_two.png'),
+        require('./assets/images/uofi_logo.png'),
       ]),
       Font.loadAsync({
         // This is the font that we are using for our tab bar

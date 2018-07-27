@@ -11,6 +11,7 @@ export default class DatePickerInput extends React.PureComponent {
   }
 
   render() {
+
     const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
     const baseColor = displayError ? Colors.errorColor : Colors.darkGrey

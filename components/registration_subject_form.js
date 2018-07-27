@@ -23,6 +23,7 @@ import {
   updateSubject,
   apiCreateSubject 
 } from '../actions/registration_actions';
+import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
@@ -81,7 +82,7 @@ class RegistrationSubjectForm extends Component {
         } else if ( nextProps.registration.apiSubject.data.id !== undefined ) {
           const api_id = nextProps.registration.apiSubject.data.id
           this.props.updateSubject({ api_id: api_id })
-
+          this.props.apiFetchMilestoneCalendar({ subject_id: api_id })
           if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
             this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
           }
@@ -168,7 +169,8 @@ const mapDispatchToProps = {
   resetSubject, 
   createSubject, 
   updateSubject, 
-  apiCreateSubject, 
+  apiCreateSubject,
+  apiFetchMilestoneCalendar,
   updateSession 
 };
 

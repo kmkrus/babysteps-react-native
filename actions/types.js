@@ -8,6 +8,10 @@ export const FETCH_MILESTONE_GROUPS_PENDING = 'fetch_milestone_groups_pending';
 export const FETCH_MILESTONE_GROUPS_FULFILLED = 'fetch_milestone_groups_fulfilled';
 export const FETCH_MILESTONE_GROUPS_REJECTED = 'fetch_milestone_groups_rejected';
 
+export const API_FETCH_MILESTONE_CALENDAR_PENDING = 'api_fetch_milestone_calendar_pending';
+export const API_FETCH_MILESTONE_CALENDAR_FULFILLED = 'api_fetch_milestone_calendar_fulfilled';
+export const API_FETCH_MILESTONE_CALENDAR_REJECTED = 'api_fetch_milestone_calendar_rejected';
+
 // Session actions
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
 export const FETCH_SESSION_FULFILLED = 'fetch_session_fulfilled';

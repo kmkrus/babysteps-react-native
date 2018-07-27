@@ -17,15 +17,17 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import { createRespondent, createSubject } from '../actions/registration_actions';
+import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
-import DatePickerInput from '../components/datePickerInput';
+import DatePicker from '../components/datePickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
@@ -44,6 +46,9 @@ class RegistrationNoStudyForm extends Component {
   componentWillReceiveProps(nextProps, nextState) {
     if ( !nextProps.registration.respondent.fetching && !nextProps.registration.subject.fetching ) {
       if ( nextProps.registration.subject.fetched && nextProps.registration.subject.fetched ) {
+        if ( nextProps.registration.subject.data.expected_date_of_birth ) {
+          this.props.apiFetchMilestoneCalendar({ base_date: nextProps.registration.subject.data.expected_date_of_birth })
+        }
         this.props.updateSession({registration_state: States.REGISTERED_AS_NO_STUDY})
       }
     }
@@ -103,6 +108,6 @@ class RegistrationNoStudyForm extends Component {
 };
 
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createRespondent, createSubject, updateSession };
+const mapDispatchToProps = { createRespondent, createSubject, apiFetchMilestoneCalendar, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationNoStudyForm);

@@ -6,11 +6,13 @@ import CONSTANTS from '../constants';
 
 import {
   API_CREATE_USER_PENDING,
+  API_FETCH_MILESTONE_CALENDAR_PENDING,
   UPDATE_ACCESS_TOKEN,
 } from '../actions/types';
 
 const excludeTypes = [
-  API_CREATE_USER_PENDING
+  API_CREATE_USER_PENDING,
+  API_FETCH_MILESTONE_CALENDAR_PENDING
 ]
 
 const Pending = (type) => {
