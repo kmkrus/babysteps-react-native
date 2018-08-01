@@ -59,6 +59,10 @@ const conceptionMethods = [
 
 class RegistrationSubjectForm extends Component {
 
+  state = {
+    dobError: null,
+  }
+
   componentWillMount() {
     this.props.resetSubject()
     this.props.fetchRespondent()
@@ -84,7 +88,7 @@ class RegistrationSubjectForm extends Component {
           this.props.updateSubject({ api_id: api_id })
           this.props.apiFetchMilestoneCalendar({ subject_id: api_id })
           if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
-            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+            //this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
           }
         } // apiSubject fetched 
       } // apiSubject fetching
@@ -96,12 +100,17 @@ class RegistrationSubjectForm extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          this.props.createSubject(values);
+          if (values.date_of_birth) {
+            this.props.createSubject(values);
+          } else {
+            this.setState({dobError: 'You must provide the Date of Birth'})
+          }
         }}
         validationSchema={validationSchema}
         initialValues={{
           respondent_ids: this.props.registration.respondent.data.api_id,
           gender: 'female',
+          date_of_birth: null,
           conception_method: 'natural',
           screening_blood: this.props.registration.subject.data.screening_blood,
         }}
@@ -136,8 +145,13 @@ class RegistrationSubjectForm extends Component {
                 label="Date of Birth" 
                 name="date_of_birth" 
                 date={props.values.date_of_birth}
-                handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
+                handleChange={ (value) => {
+                  this.setState({ dobError: null })
+                  props.setFieldValue('date_of_birth', value) 
+                }}
               />
+
+              <Text style={ styles.errorText }>{ this.state.dobError }</Text>
 
               <TextInput label="Days Premature" name="days_premature" type="name" />
 
@@ -145,7 +159,6 @@ class RegistrationSubjectForm extends Component {
                 title="NEXT" 
                 onPress={props.handleSubmit} 
                 color={Colors.green}
-                disabled={ props.isSubmitting }
               />
 
             </Form>
@@ -161,6 +174,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 16,
   },
+  errorText: {
+    fontSize: 12,
+    marginTop: -20,
+    marginBottom: 20,
+    color: Colors.errorColor,
+  }
 })
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });

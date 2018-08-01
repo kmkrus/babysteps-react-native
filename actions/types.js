@@ -4,9 +4,19 @@ export const FETCH_MILESTONES_PENDING = 'fetch_milestones_pending';
 export const FETCH_MILESTONES_FULFILLED = 'fetch_milestones_fulfilled';
 export const FETCH_MILESTONES_REJECTED = 'fetch_milestones_rejected';
 
+export const RESET_API_MILESTONES = 'reset_api_milestones';
+
+export const API_FETCH_MILESTONES_PENDING = 'api_fetch_milestones_pending';
+export const API_FETCH_MILESTONES_FULFILLED = 'api_fetch_milestones_fulfilled';
+export const API_FETCH_MILESTONES_REJECTED = 'api_fetch_milestones_rejected';
+
 export const FETCH_MILESTONE_GROUPS_PENDING = 'fetch_milestone_groups_pending';
 export const FETCH_MILESTONE_GROUPS_FULFILLED = 'fetch_milestone_groups_fulfilled';
 export const FETCH_MILESTONE_GROUPS_REJECTED = 'fetch_milestone_groups_rejected';
+
+export const FETCH_MILESTONE_CALENDAR_PENDING = 'fetch_milestone_calendar_pending';
+export const FETCH_MILESTONE_CALENDAR_FULFILLED = 'fetch_milestone_calendar_fulfilled';
+export const FETCH_MILESTONE_CALENDAR_REJECTED = 'fetch_milestone_calendar_rejected';
 
 export const API_FETCH_MILESTONE_CALENDAR_PENDING = 'api_fetch_milestone_calendar_pending';
 export const API_FETCH_MILESTONE_CALENDAR_FULFILLED = 'api_fetch_milestone_calendar_fulfilled';
@@ -55,6 +65,10 @@ export const API_CREATE_RESPONDENT_REJECTED = 'api_create_respondent_rejected';
 export const API_UPDATE_RESPONDENT_PENDING = 'api_update_respondent_pending';
 export const API_UPDATE_RESPONDENT_FULFILLED = 'api_update_respondent_fulfilled';
 export const API_UPDATE_RESPONDENT_REJECTED = 'api_update_respondent_rejected';
+
+export const API_SAVE_SIGNATURE_PENDING = 'api_save_signature_pending';
+export const API_SAVE_SIGNATURE_FULFILLED = 'api_save_signature_fulfilled';
+export const API_SAVE_SIGNATURE_REJECTED = 'api_save_signature_rejected';
 
 export const RESET_SUBJECT = 'reset_subject';
 

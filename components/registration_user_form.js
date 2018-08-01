@@ -17,6 +17,7 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import { createUser, fetchUser, apiCreateUser } from '../actions/registration_actions';
+import { apiFetchMilestones } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
@@ -71,35 +72,40 @@ class ErrorText extends Component {
 
 class RegistrationUserForm extends Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
+  componentWillMount() {
+    this.props.apiFetchMilestones()
+  }
 
+  shouldComponentUpdate(nextProps, nextState) {
     if ( nextProps.registration.apiUser.fetching || nextProps.registration.user.fetching ) {
       return false;
     }
-    if ( nextProps.registration.apiUser.fetched ) {
-      if (nextProps.registration.auth) {
-        this.props.updateSession({
-          access_token: nextProps.registration.auth.accessToken,
-          client: nextProps.registration.auth.client,
-          uid: nextProps.registration.auth.uid,
-          user_id: nextProps.registration.auth.user_id,
-          email: nextProps.registration.apiUser.data.email,
-          password: nextProps.registration.apiUser.data.password
-        });
-      }
-      
-      if ( !nextProps.registration.user.fetched ) {
-        this.props.createUser({
-          ... nextProps.registration.apiUser.data, 
-          api_id:  nextProps.registration.auth.user_id
-        })
-        return false
-        
-      } else if ( nextProps.registration.user.fetched ) {
-        this.props.updateSession( {registration_state: States.REGISTERING_RESPONDENT} )
+    return true;
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if ( !nextProps.registration.apiUser.fetching && !nextProps.registration.user.fetching ) {
+      if ( nextProps.registration.apiUser.fetched ) {
+        if (nextProps.registration.auth) {
+          this.props.updateSession({
+            access_token: nextProps.registration.auth.accessToken,
+            client: nextProps.registration.auth.client,
+            uid: nextProps.registration.auth.uid,
+            user_id: nextProps.registration.auth.user_id,
+            email: nextProps.registration.apiUser.data.email,
+            password: nextProps.registration.apiUser.data.password
+          });
+        }
+        if ( !nextProps.registration.user.fetched ) {
+          this.props.createUser({
+            ... nextProps.registration.apiUser.data, 
+            api_id:  nextProps.registration.auth.user_id
+          })  
+        } else if ( nextProps.registration.user.fetched ) {
+          this.props.updateSession( {registration_state: States.REGISTERING_RESPONDENT} )
+        }
       }
     }
-    return true;
   }
 
   render() {
@@ -144,6 +150,6 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createUser, fetchUser, apiCreateUser, updateSession };
+const mapDispatchToProps = { createUser, fetchUser, apiCreateUser, apiFetchMilestones, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationUserForm);

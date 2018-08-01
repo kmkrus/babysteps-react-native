@@ -8,7 +8,6 @@ import { resetBabyBookEntries, fetchBabyBookEntries } from '../actions/babybook_
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import Colors from '../constants/Colors';
-import '@expo/vector-icons';
 
 import BabyBookEntryForm from '../components/babybook_entry_form';
 

@@ -26,8 +26,6 @@ class MilestoneDetailScreen extends Component {
 
   constructor(props){
     super(props);
-   
-
   }
 
   componentWillMount() {

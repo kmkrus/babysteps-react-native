@@ -59,7 +59,7 @@ class RegistrationExpectedDOB extends Component {
           this.props.updateSubject({ api_id: api_id })
           this.props.apiFetchMilestoneCalendar({ subject_id: api_id })
           if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
-            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+            //this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
           }
         } // apiSubject fetched 
       } // apiSubject fetching
@@ -71,12 +71,17 @@ class RegistrationExpectedDOB extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          this.props.createSubject(values);
+          if (values.expected_date_of_birth) {
+            this.props.createSubject(values)
+          } else {
+            this.setState({ dobError: 'You must provide the Expected Date of Birth' })
+          }
         }}
         validationSchema={validationSchema}
         initialValues={{
           respondent_ids: this.props.registration.respondent.data.api_id,
           gender: 'unknown',
+          expected_date_of_birth: null,
           conception_method: 'natural',
           screening_blood: this.props.registration.subject.data.screening_blood,
         }}
@@ -90,14 +95,18 @@ class RegistrationExpectedDOB extends Component {
                 label="" 
                 name="expected_date_of_birth" 
                 date={props.values.expected_date_of_birth}
-                handleChange={ (value) => props.setFieldValue('expected_date_of_birth', value) }
+                handleChange={ (value) => {
+                  this.setState({ dobError: null })
+                  props.setFieldValue('expected_date_of_birth', value) 
+                }}
               />
+
+              <Text style={ styles.errorText }>{ this.state.dobError }</Text>
 
               <Button 
                 title="NEXT" 
                 onPress={ props.handleSubmit } 
                 color={Colors.green}
-                disabled={ props.isSubmitting }
               />
 
             </Form>
@@ -107,6 +116,15 @@ class RegistrationExpectedDOB extends Component {
     )
   }
 };
+
+const styles = StyleSheet.create({
+  errorText: {
+    fontSize: 12,
+    marginTop: -20,
+    marginBottom: 20,
+    color: Colors.errorColor,
+  }
+})
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
 const mapDispatchToProps = { 

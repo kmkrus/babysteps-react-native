@@ -23,9 +23,9 @@ export default class DatePickerInput extends React.PureComponent {
         <DatePicker
           ref={input => (this.input = input)}
           style={styles}
-          mode='date'
-          androidMode="spinner"
-          format="YYYY-MM-DD"
+          mode={'date'}
+          androidMode={'spinner'}
+          format={'YYYY-MM-DD'}
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           customStyles={{

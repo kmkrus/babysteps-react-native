@@ -17,7 +17,7 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import { createRespondent, createSubject } from '../actions/registration_actions';
-import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
+import { apiFetchMilestones, apiFetchMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
@@ -39,6 +39,14 @@ const validationSchema = Yup.object().shape({
 
 class RegistrationNoStudyForm extends Component {
 
+  state = {
+    dobError: null,
+  }
+
+  componentWillMount() {
+    this.props.apiFetchMilestones()
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return ( !nextProps.registration.respondent.fetching && !nextProps.registration.subject.fetching )
   }
@@ -59,13 +67,16 @@ class RegistrationNoStudyForm extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          this.props.createRespondent({
-            first_name: values.first_name,
-            last_name: values.last_name,
-            date_of_birth: values.date_of_birth
-          });
-          this.props.createSubject({expected_date_of_birth: values.expected_date_of_birth});
-          
+          if (values.expected_date_of_birth) {
+            this.props.createRespondent({
+              first_name: values.first_name,
+              last_name: values.last_name,
+              date_of_birth: values.date_of_birth
+            });
+            this.props.createSubject({expected_date_of_birth: values.expected_date_of_birth});
+          } else {
+            this.setState({dobError: 'You must provide the Expected Date of Birth'})
+          }
         }}
         validationSchema={validationSchema}
         initialValues={{
@@ -79,24 +90,28 @@ class RegistrationNoStudyForm extends Component {
               <TextInput label="Your Last Name" name="last_name" type="name" />
 
               <DatePickerInput
-                label="Your Date of Birth" 
-                name="date_of_birth" 
-                date={props.values.date_of_birth}
+                label={ 'Your Date of Birth' } 
+                name={ 'date_of_birth' }
+                date={ props.values.date_of_birth }
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
               />
               
               <DatePickerInput
-                label="Your Baby's Due Date" 
-                name="expected_date_of_birth" 
-                date={props.values.expected_date_of_birth}
-                handleChange={ (value) => props.setFieldValue('expected_date_of_birth', value) }
+                label={ "Your Baby's Due Date" } 
+                name={ 'expected_date_of_birth' } 
+                date={ props.values.expected_date_of_birth }
+                handleChange={ (value) => {
+                  this.setState({ dobError: null })
+                  props.setFieldValue( 'expected_date_of_birth', value ) 
+                }}
               />
+
+              <Text style={ styles.errorText }>{ this.state.dobError }</Text>
 
               <Button 
                 title="DONE" 
                 onPress={props.handleSubmit} 
                 color={Colors.green}
-                disabled={ props.isSubmitting }
               />
 
             </Form>
@@ -107,7 +122,16 @@ class RegistrationNoStudyForm extends Component {
   }
 };
 
+const styles = StyleSheet.create({
+  errorText: {
+    fontSize: 12,
+    marginTop: -20,
+    marginBottom: 20,
+    color: Colors.errorColor,
+  }
+})
+
 const mapStateToProps = ({ registration }) => ({ registration });
-const mapDispatchToProps = { createRespondent, createSubject, apiFetchMilestoneCalendar, updateSession };
+const mapDispatchToProps = { createRespondent, createSubject, apiFetchMilestones, apiFetchMilestoneCalendar, updateSession };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationNoStudyForm);

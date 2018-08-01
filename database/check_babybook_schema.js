@@ -25,7 +25,6 @@ const checkBabyBookSchema = () => {
 
     tableNames()
     .then( (result) => {
-      console.log('add babybook tables if needed')
       return new Promise((resolve, reject) => {
       
         // list of tables in SQLite

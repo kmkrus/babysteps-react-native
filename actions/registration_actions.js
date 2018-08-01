@@ -41,6 +41,10 @@ import {
   API_UPDATE_RESPONDENT_FULFILLED,
   API_UPDATE_RESPONDENT_REJECTED,
 
+  API_SAVE_SIGNATURE_PENDING,
+  API_SAVE_SIGNATURE_FULFILLED,
+  API_SAVE_SIGNATURE_REJECTED,
+
   RESET_SUBJECT,
 
   FETCH_SUBJECT_PENDING,
@@ -321,31 +325,58 @@ export const apiUpdateRespondent = (session, data) => {
 
   return function (dispatch) {
 
-    if ( true ) {
-      console.log('api', data)
-
-    } else {
-
-      dispatch({
-        type: API_UPDATE_RESPONDENT_PENDING,
-        payload: {
-          data: {respondent: data},
-          session: session
-        },
-        meta: {
-          offline: {
-            effect: { 
-              method: 'PUT',
-              url: '/respondents/' + api_id,
-              fulfilled: API_UPDATE_RESPONDENT_FULFILLED,
-              rejected: API_UPDATE_RESPONDENT_REJECTED,
-            }
+    dispatch({
+      type: API_UPDATE_RESPONDENT_PENDING,
+      payload: {
+        data: {respondent: data},
+        session: session
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'PUT',
+            url: '/respondents/' + api_id,
+            fulfilled: API_UPDATE_RESPONDENT_FULFILLED,
+            rejected: API_UPDATE_RESPONDENT_REJECTED,
           }
         }
-      })
-    }
+      }
+    })
 
-  } // return function
+  } // return dispatch
+}
+
+export const apiSaveSignature = (session, api_id, uri) => {
+    return function (dispatch) {
+
+    dispatch( Pending(API_SAVE_SIGNATURE_PENDING) );
+
+    const formData = new FormData();
+    formData.append('respondent[attachments][]', { uri, name: 'signature.png', type: 'image/png'} )
+
+    const headers = {
+      'ACCESS-TOKEN': session.access_token,
+      'TOKEN-TYPE': 'Bearer',
+      'CLIENT': session.client,
+      'UID': session.uid,
+      'CONTENT-TYPE': 'multipart/form-data'
+    }
+    
+    axios({
+      method: 'PUT',
+      responseType: 'json',
+      baseURL: CONSTANTS.BASE_URL,
+      url: '/respondents/' + api_id,
+      headers: headers,
+      data: formData,
+    })
+    .then( (response) => {
+      dispatch( Response( API_SAVE_SIGNATURE_FULFILLED, response ) )
+    }) 
+    .catch( (error) => { 
+      dispatch( Response( API_SAVE_SIGNATURE_REJECTED, error ) )
+    }) 
+  } // return dispatch
 }
 
 export const saveScreenBlood = (screeningBlood) => {

@@ -25,7 +25,8 @@ import {
   createRespondent, 
   updateRespondent, 
   apiCreateRespondent,
-  apiUpdateRespondent
+  apiUpdateRespondent,
+  apiSaveSignature,
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
@@ -97,12 +98,12 @@ class RegistrationRespondentForm extends Component {
         } else {
 
           // Upload signatture image if we have respondent id
-          if (nextProps.registration.apiRespondent.data.id !== undefined ) {
+          if ( nextProps.registration.apiRespondent.data.id !== undefined ) {
             const api_id = nextProps.registration.apiRespondent.data.id
-            
-            this.apiSaveSignature( api_id )
 
             this.props.updateRespondent({ api_id: api_id})
+            
+            this.saveSignature(api_id)
 
             if (nextProps.registration.respondent.data.pregnant) {
               this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
@@ -115,19 +116,14 @@ class RegistrationRespondentForm extends Component {
     } // respondent.fetching
   }
 
-  apiSaveSignature = async (api_id) => {
+  saveSignature = async (api_id) => {
     const uri = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png'
-    const getResult = await Expo.FileSystem.getInfoAsync(uri, {size: true})
-
-    if ( getResult.exists ) {
-      const maniResult = await Expo.ImageManipulator.manipulate(uri, [], {base64: true})
-      const image = 'data:image/png;base64, ' + maniResult.base64
-      this.props.apiUpdateRespondent(
-        this.props.session, { api_id: api_id, respondent: { attachments: image} }
-      )
+    const signatureFile = await Expo.FileSystem.getInfoAsync(uri, {size: true})
+    if ( signatureFile.exists ) {
+      this.props.apiSaveSignature(this.props.session, api_id, uri)
     } else {
       console.log('no signature available')
-    }
+    } // signatureFile exists
   }
 
   render() {
@@ -261,6 +257,7 @@ const mapDispatchToProps = {
   updateRespondent, 
   apiCreateRespondent,
   apiUpdateRespondent,
+  apiSaveSignature,
   updateSession 
 };
 

@@ -28,22 +28,16 @@ class ConsentSignatureForm extends Component {
   handleSubmit = async () => {
 
     const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
-  
     const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY
     const resultDir = await Expo.FileSystem.getInfoAsync( signatureDir )
  
     if ( resultDir.exists ) {  
       const fileName =  signatureDir + '/signature.png'
-
       await Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
-     
       await Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
-
       const resultFile = await Expo.FileSystem.getInfoAsync( fileName )
-      
       if ( resultFile.exists ) {
         this.props.updateSession({registration_state: States.REGISTERING_USER })
-        
       } else {
         console.log('Error: file not saved - ', resultFile)
       }

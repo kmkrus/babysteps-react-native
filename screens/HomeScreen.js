@@ -24,7 +24,13 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { cardsData } from '../data/cards';
 
-import { fetchMilestoneGroups } from '../actions/milestone_actions';
+import { 
+  fetchMilestones,
+  resetApiMilestones,
+  apiFetchMilestones,
+  fetchMilestoneGroups, 
+  fetchMilestoneCalendar 
+} from '../actions/milestone_actions';
 
 import Colors from '../constants/Colors';
 import milestoneGroupImages from'../constants/MilestoneGroupImages';
@@ -37,37 +43,46 @@ function wp (percentage, direction) {
 }
 
 const sc_container_height = wp(30, height)
-const sc_slider_width = width - 7
+const sc_slider_width = width - 5
 const sc_card_height = wp(70,  sc_container_height)
 const sc_card_width = wp(80, width)
 const sc_card_margin = ((width - sc_card_width) / 2)
 
 const mg_container_height = wp(30, height)
 const mg_slider_width = width - 7
-const mg_image_height = wp(65,  mg_container_height)
-const mg_image_width = wp(60, width)
+const mg_image_height = wp(70,  mg_container_height)
+const mg_image_width = wp(80, width)
 const mg_image_margin = ((width - mg_image_width) / 2) 
 
 class HomeScreen extends React.Component {
 
-  static navigationOptions = {
-    header: null,
-  };
-
   componentWillMount() {
     this.props.fetchMilestoneGroups()
+    this.props.fetchMilestoneCalendar()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.milestones.groups.fetching )
+    if ( nextProps.milestones.groups.fetching || nextProps.milestones.calendar.fetching ) {
+      return false
+    }
+    return true
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if ( !nextProps.milestones.groups.fetching && nextProps.milestones.groups.fetched ) {
+      if ( _.isEmpty(nextProps.milestones.groups.data) && !nextProps.milestones.api_milestones.fetching ) {
+        this.props.apiFetchMilestones()
+      }
+    }
   }
 
   renderScreeningItem(item) {
+    const date = new Date(item.data.notify_at).toLocaleDateString("en-US", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})
     return(
       <View style={ styles.screening_slide_container }>
         <Text numberOfLines={1} style={ styles.screening_title } >{ item.data.title } </Text>
-        <Text numberOfLines={1} style={ styles.screening_date }> { item.data.date }</Text>
-        <Text numberOfLines={3} style={ styles.screening_text }>{ item.data.number } </Text>
+        <Text numberOfLines={1} style={ styles.screening_date }> { date }</Text>
+        <Text numberOfLines={3} style={ styles.screening_text }>{ item.data.message } </Text>
         <View style={ styles.screening_slide_link }>
           <TouchableOpacity key={ item._pageIndex } style={ styles.screening_button }>
             <Text style={ styles.screening_button_text }> Get Started </Text>
@@ -99,7 +114,7 @@ class HomeScreen extends React.Component {
 
   render() {
 
-    let milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position )
+    const milestoneGroups = _.sortBy( _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position )
 
     return (
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false} >
@@ -113,10 +128,6 @@ class HomeScreen extends React.Component {
               }
               style={styles.welcomeImage}
             />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
           </View>
 
         </ScrollView>
@@ -133,7 +144,7 @@ class HomeScreen extends React.Component {
           </View>
           <View style={ styles.slider } >
             <ViewPager
-              data={ cardsData }
+              data={ this.props.milestones.calendar.data }
               renderPage={ item => this.renderScreeningItem(item) }
               pageWidth={ sc_slider_width }
               renderAsCarousel={ false }
@@ -144,7 +155,7 @@ class HomeScreen extends React.Component {
         <View style={styles.slider_container}>
           <View style={styles.slider_header} >
             <View style={styles.slider_title} >
-              <Text style={styles.slider_title_text} >Developmentals Milestone</Text>
+              <Text style={styles.slider_title_text}>Developmental Milestones</Text>
             </View>
             <TouchableOpacity style={styles.opacityStyle} onPress={()=>{this.props.navigation.navigate('Milestones')}} >
               <Text style={ styles.slider_link_text } >View all</Text>
@@ -163,22 +174,6 @@ class HomeScreen extends React.Component {
 
       </ScrollView>
     );
-  }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled...
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          App not in development mode.
-        </Text>
-      );
-    }
   }
 
 }
@@ -315,6 +310,12 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
-const mapDispatchToProps = { fetchMilestoneGroups }
+const mapDispatchToProps = { 
+  fetchMilestones, 
+  resetApiMilestones, 
+  apiFetchMilestones, 
+  fetchMilestoneGroups, 
+  fetchMilestoneCalendar 
+}
 
 export default connect( mapStateToProps, mapDispatchToProps )( HomeScreen );

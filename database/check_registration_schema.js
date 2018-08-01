@@ -26,7 +26,6 @@ const checkRegistrationSchema = () => {
 
     tableNames()
     .then( (result) => {
-      console.log('add registration tables if needed')
       return new Promise((resolve, reject) => {
       
         // list of tables in SQLite
@@ -49,7 +48,5 @@ const checkRegistrationSchema = () => {
   }) // return Promise ;
 
 };
-
-
 
 export default checkRegistrationSchema;

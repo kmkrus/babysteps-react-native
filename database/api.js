@@ -6,13 +6,17 @@ import CONSTANTS from '../constants';
 
 import {
   API_CREATE_USER_PENDING,
+  API_FETCH_MILESTONES_PENDING,
   API_FETCH_MILESTONE_CALENDAR_PENDING,
+  API_SAVE_SIGNATURE_PENDING,
   UPDATE_ACCESS_TOKEN,
 } from '../actions/types';
 
 const excludeTypes = [
   API_CREATE_USER_PENDING,
-  API_FETCH_MILESTONE_CALENDAR_PENDING
+  API_FETCH_MILESTONES_PENDING,
+  API_FETCH_MILESTONE_CALENDAR_PENDING,
+  API_SAVE_SIGNATURE_PENDING
 ]
 
 const Pending = (type) => {
@@ -42,7 +46,8 @@ export default store =>
         'ACCESS-TOKEN': session.access_token,
         'TOKEN-TYPE': 'Bearer',
         'CLIENT': session.client,
-        'UID': session.uid
+        'UID': session.uid,
+        //'CONTENT-TYPE': 'multipart/form-data'
       }
 
       return (
