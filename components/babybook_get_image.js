@@ -6,6 +6,7 @@ import {
   Dimensions,
   StyleSheet
 } from 'react-native';
+import { Video } from 'expo';
 
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
@@ -39,7 +40,7 @@ class BabyBookGetImage extends Component {
   }
 
   handleImageOnPress() {
-    if ( this.props.item.type === 'cover' ) {
+    if ( this.props.item.type == 'cover' ) {
       this.props.navigation.navigate('BabyBookEntry')
     }
   }
@@ -47,16 +48,27 @@ class BabyBookGetImage extends Component {
   render() {
 
     const imageContainerHeight = this.state.imageHeight + 2
-    
+    const imageFileType = this.props.item.data ? this.props.item.data.file_type : null
+   
     return(
 
       <View style={[ styles.imageContainer, { height: imageContainerHeight } ]}>
 
         <TouchableOpacity onPress={ () => this.handleImageOnPress() }>
-          <Image 
-            style={[ styles.image, { height: this.state.imageHeight } ]}
-            source={ this.props.item.file_uri }
-          />
+          {  imageFileType == 'video/mp4' ? 
+            <Video
+              style={[ styles.image, { width: imageWidth, height: (imageWidth * 0.75) } ]}
+              source={ this.props.item.file_uri }
+              isMuted={true}
+              shouldPlay
+              resizeMode={ Expo.Video.RESIZE_MODE_COVER }
+            />
+          :
+            <Image 
+                source={ this.props.item.file_uri }
+                style={[ styles.image, { height: this.state.imageHeight } ]}
+              />
+          }
         </TouchableOpacity>
 
         <Image 

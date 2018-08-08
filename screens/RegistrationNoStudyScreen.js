@@ -5,10 +5,6 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-elements';
 
-import { connect} from 'react-redux';
-import { updateSession } from '../actions/session_actions';
-import { apiCreateRespondent, apiCreateSubject } from '../actions/registration_actions';
-
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import RegistrationNoStudyForm from '../components/registration_no_study_form';

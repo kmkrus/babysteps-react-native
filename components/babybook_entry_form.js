@@ -5,10 +5,11 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
   Platform
 } from 'react-native';
 import { Button } from 'react-native-elements';
-import { ImagePicker, Permissions } from 'expo';
+import { ImagePicker, Permissions, Video } from 'expo';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -28,6 +29,11 @@ import CameraModal from '../components/camera_modal';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
+const { width, height } = Dimensions.get('window');
+
+const preview_width = width - 40
+const preview_height = width * 0.75
+
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 const Form = withNextInputAutoFocusForm(View);
 
@@ -38,16 +44,20 @@ const validationSchema = Yup.object().shape({
 
 class BabyBookEntryForm extends Component {
 
-  state = {
-    image: null,
-    imageError: '',
-    hasCameraPermission: null,
-    hasCameraRollPermission: null,
-    hasAudioPermission: null,
-   
-    permissionMessage: '',
-    cameraModalVisible: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      image: null,
+      imageError: '',
+      hasCameraPermission: null,
+      hasCameraRollPermission: null,
+      hasAudioPermission: null,
+     
+      permissionMessage: '',
+      cameraModalVisible: false,
+    };
+    this.closeModal = this.closeModal.bind(this);
+  }
 
   async componentWillMount() {
     const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL)
@@ -89,6 +99,7 @@ class BabyBookEntryForm extends Component {
         this.renderNoPermissions(source)
       }
     }
+
     if ( image && !image.cancelled) {
       this.setState({ image: image });
     }
@@ -109,7 +120,8 @@ class BabyBookEntryForm extends Component {
     this.setState({ permissionMessage: message.join(', ') }) 
   }
 
-  closeModal = () => {
+  closeModal = (image) => {
+    this.setState({ image: image })
     this.setState({ cameraModalVisible: false })
   }
 
@@ -127,7 +139,9 @@ class BabyBookEntryForm extends Component {
         }}
         render={ (props) => {
 
-          let uri = this.state.image ? this.state.image.uri : null
+          const uri = this.state.image ? this.state.image.uri : null
+          const uriParts = uri ? uri.split('.') : null
+          const fileType = uriParts ? uriParts[uriParts.length - 1] : null
 
           return (
             <Form>
@@ -164,10 +178,21 @@ class BabyBookEntryForm extends Component {
               <Text>{ this.state.permissionMessage }</Text>
 
               <View style={styles.pickImageContainer}>
-                <Image 
-                    source={{uri: uri}}
-                    style={styles.image}
+                { uri && fileType === 'mp4' ? 
+                  <Video
+                    style={ styles.image }
+                    source={{ uri: uri }}
+                    isMuted={true}
+                    shouldPlay
+                    resizeMode={ Expo.Video.RESIZE_MODE_COVER }
                   />
+                :
+                  <Image 
+                      source={{ uri: uri }}
+                      style={styles.image}
+                    />
+                }
+                
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
 
@@ -198,7 +223,7 @@ class BabyBookEntryForm extends Component {
 
               <CameraModal 
                 modalVisible={ this.state.cameraModalVisible } 
-                closeModal={ ()=> this.closeModal() }
+                closeModal={ (image) => this.closeModal(image) }
               />
               
             </Form>
@@ -268,8 +293,8 @@ const styles = StyleSheet.create({
   },
   image: { 
     flex: 1,
-    width: 200, 
-    height: 200,
+    width: preview_width, 
+    height: preview_height,
   },
   textAreaContainer: {
     flex: 1,

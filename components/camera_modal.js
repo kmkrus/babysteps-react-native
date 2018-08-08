@@ -34,21 +34,19 @@ class CameraModal extends Component {
         maxDuration: 15,
       }
 
-      const data = await this.camera.recordAsync(recordingConfig)
-      
-      console.log( data )
+      const image = await this.camera.recordAsync(recordingConfig)
+
       Vibration.vibrate()
-      
-      //const saveResult = await CameraRoll.saveToCameraRoll(data.uri);
+      console.log( image )
+      this.props.closeModal(image)
       
     }
 
   }
 
   stopVideo = () => {
-    if ( !this.camera ) return;
-    this.camera.stopRecording();
-    this.props.closeModal()
+    if ( !this.camera ) return
+    this.camera.stopRecording()
   }
 
   render() {
@@ -89,6 +87,14 @@ class CameraModal extends Component {
               onPress={ this.stopVideo.bind(this) }
               title='Stop' />
           </View>
+          <View style={styles.buttonContainer}>
+          <Button
+              color={Colors.grey}
+              buttonStyle={styles.buttonThree}
+              titleStyle={styles.buttonTitle}
+              onPress={ () => this.props.closeModal(null) }
+              title='Return' />
+          </View>
 
         </View>
 
@@ -103,12 +109,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   cameraContainer: {
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     margin: 20,
     marginTop: 60,
+    backgroundColor: Colors.white,
   },
   preview: {
     width: preview_width,
@@ -118,8 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: Colors.grey,
-    opacity: 100,
+    borderColor: Colors.darkGrey,
   },
   message : {
     width: '100%',
@@ -129,9 +134,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     justifyContent: 'center',
-    flex: 1,
     flexDirection: 'row',
     marginTop: 10,
+    marginBottom: 20
+  },
+  buttonTitle: {
+    fontSize: 22,
   },
   buttonOne: {
     width: 150,
@@ -142,6 +150,13 @@ const styles = StyleSheet.create({
   },
   buttonTwo: {
     width: 150,
+    backgroundColor: Colors.lightGrey,
+    borderColor: Colors.grey,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  buttonThree: {
+    width: 200,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,

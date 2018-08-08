@@ -66,7 +66,15 @@ export const createBabyBookEntry = (data, image) => {
     const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
     const fileName = image.uri.split('/').pop()
     const newUri = newDir + '/' + fileName
-    data = {...data, file_name: fileName, file_type: image.type }   
+
+    const uriParts = image.uri.split('.')
+    const fileType = uriParts[uriParts.length - 1]
+    var mimeType = 'image/png'
+    if ( fileType == 'mp4' ) {
+      mimeType = 'video/mp4'
+    }
+
+    data = {...data, file_name: fileName, file_type: mimeType }   
     
     return (
 

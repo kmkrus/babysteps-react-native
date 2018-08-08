@@ -76,6 +76,7 @@ class OverviewScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+  
     if ( !nextProps.milestones.groups.fetching && nextProps.milestones.groups.fetched ) {
       if ( _.isEmpty(nextProps.milestones.groups.data) && !nextProps.milestones.api_milestones.fetching ) {
         this.props.apiFetchMilestones()
