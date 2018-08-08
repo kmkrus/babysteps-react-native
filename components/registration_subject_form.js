@@ -26,14 +26,14 @@ import {
 import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MaterialTextInput from '../components/materialTextInput';
+import MTextInput from '../components/materialTextInput';
 import DatePicker from '../components/datePickerInput';
 import Picker from '../components/pickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput)
+const MaterialTextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MTextInput)
 const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
@@ -61,6 +61,7 @@ class RegistrationSubjectForm extends Component {
 
   state = {
     dobError: null,
+    submitted: false,
   }
 
   componentWillMount() {
@@ -81,14 +82,27 @@ class RegistrationSubjectForm extends Component {
   componentWillReceiveProps(nextProps, nextState) {
     if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
       if ( !nextProps.registration.apiSubject.fetching ) {
-        if (!nextProps.registration.apiSubject.fetched ) {
+        if (!nextProps.registration.apiSubject.fetched && !nextState.submitted) {
+          
           this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
+          this.setState({submitted: true})
+
         } else if ( nextProps.registration.apiSubject.data.id !== undefined ) {
-          const api_id = nextProps.registration.apiSubject.data.id
-          this.props.updateSubject({ api_id: api_id })
-          this.props.apiFetchMilestoneCalendar({ subject_id: api_id })
+
+          this.props.updateSubject({ api_id: nextProps.registration.apiSubject.data.id })
+
+          if (this.props.registration.auth != nextProps.registration.auth) {
+            this.props.updateSession({
+              access_token: nextProps.registration.auth.accessToken,
+              client: nextProps.registration.auth.client,
+              uid: nextProps.registration.auth.uid,
+              user_id: nextProps.registration.auth.user_id
+            });
+          }
+        
           if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
-            //this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+            this.props.apiFetchMilestoneCalendar({subject_id: nextProps.registration.apiSubject.data.id})
+            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
           }
         } // apiSubject fetched 
       } // apiSubject fetching
@@ -96,32 +110,39 @@ class RegistrationSubjectForm extends Component {
   }
 
   render() {
-
+    const respondent_ids = this.props.registration.respondent.data.api_id
+    console.log(respondent_ids)
     return (
       <Formik
         onSubmit={ (values) => {
+
           if (values.date_of_birth) {
-            this.props.createSubject(values);
+            const subject = {...values, 
+              respondent_ids:  [this.props.registration.respondent.data.api_id],
+              screening_blood: this.props.registration.subject.data.screening_blood,
+            }
+            this.props.createSubject( subject );
           } else {
             this.setState({dobError: 'You must provide the Date of Birth'})
           }
         }}
         validationSchema={validationSchema}
         initialValues={{
-          respondent_ids: this.props.registration.respondent.data.api_id,
+          respondent_ids: null,
           gender: 'female',
           date_of_birth: null,
           conception_method: 'natural',
-          screening_blood: this.props.registration.subject.data.screening_blood,
+          screening_blood: null,
         }}
         render={ (props) => {
 
           return (
             <Form>
+              
               <Text style={styles.form_header}>Step 3: Update Your Baby's Profile.</Text>
-              <TextInput label="First Name" name="first_name" type="name" />
-              <TextInput label="Middle Name" name="middle_name" type="name" />
-              <TextInput label="Last Name" name="last_name" type="name" />
+              <MaterialTextInput label="First Name" name="first_name" type="name" />
+              <MaterialTextInput label="Middle Name" name="middle_name" type="name" />
+              <MaterialTextInput label="Last Name" name="last_name" type="name" />
               
               <PickerInput
                 label='Gender'
@@ -153,7 +174,7 @@ class RegistrationSubjectForm extends Component {
 
               <Text style={ styles.errorText }>{ this.state.dobError }</Text>
 
-              <TextInput label="Days Premature" name="days_premature" type="name" />
+              <MaterialTextInput label="Days Premature" name="days_premature" type="name" />
 
               <Button 
                 title="NEXT" 

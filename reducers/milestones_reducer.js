@@ -105,7 +105,7 @@ const reducer = (state=initialState, action) => {
     }
 
     case FETCH_MILESTONE_CALENDAR_PENDING: {
-      return {...state, calendar: { ...state.calendar, fetching: true, fetched: false, error: null} }
+      return {...state, calendar: { ...state.calendar, fetching: true, fetched: false, error: null, data: []} }
       break;
     }
     case FETCH_MILESTONE_CALENDAR_FULFILLED: {

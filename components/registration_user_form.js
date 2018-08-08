@@ -86,7 +86,7 @@ class RegistrationUserForm extends Component {
   componentWillReceiveProps(nextProps, nextState) {
     if ( !nextProps.registration.apiUser.fetching && !nextProps.registration.user.fetching ) {
       if ( nextProps.registration.apiUser.fetched ) {
-        if (nextProps.registration.auth) {
+        if (this.props.registration.auth != nextProps.registration.auth) {
           this.props.updateSession({
             access_token: nextProps.registration.auth.accessToken,
             client: nextProps.registration.auth.client,

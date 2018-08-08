@@ -30,7 +30,7 @@ import {
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MaterialTextInput from '../components/materialTextInput';
+import MTextInput from '../components/materialTextInput';
 import DatePicker from '../components/datePickerInput';
 import Picker from '../components/pickerInput';
 
@@ -40,7 +40,7 @@ import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
-const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const MaterialTextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MTextInput);
 const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
@@ -54,7 +54,6 @@ const validationSchema = Yup.object().shape({
   //email: Yup.string()
     //.required('Email Address is Required')
     //.email("Not a Valid Email Address"),
-  
 })
 
 const respondentTypes = [
@@ -73,6 +72,10 @@ const maritalStatuses = [
 
 class RegistrationRespondentForm extends Component {
 
+  state = {
+    signature_submitted: false,
+  }
+  
   componentWillMount() {
     this.props.fetchUser()
     this.props.resetRespondent()
@@ -103,8 +106,20 @@ class RegistrationRespondentForm extends Component {
 
             this.props.updateRespondent({ api_id: api_id})
             
-            this.saveSignature(api_id)
+            if ( !this.state.signature_submitted ) {
+              this.saveSignature(api_id)
+              this.setState({ signature_submitted: true })
+            }
 
+            if (this.props.registration.auth != nextProps.registration.auth) {
+              this.props.updateSession({
+                access_token: nextProps.registration.auth.accessToken,
+                client: nextProps.registration.auth.client,
+                uid: nextProps.registration.auth.uid,
+                user_id: nextProps.registration.auth.user_id
+              });
+            }
+            
             if (nextProps.registration.respondent.data.pregnant) {
               this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
             } else {
@@ -131,18 +146,20 @@ class RegistrationRespondentForm extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          this.props.createRespondent(values)
+          const respondent = {...values, 
+            user_id: this.props.registration.user.data.api_id,
+            email: this.props.registration.user.data.email,
+            first_name: this.props.registration.user.data.first_name,
+            last_name: this.props.registration.user.data.last_name,
+            accepted_tos_at: new Date().toISOString()
+          }
+          this.props.createRespondent(respondent)
         }}
         validationSchema={validationSchema}
         initialValues={{
-          user_id: this.props.registration.user.data.api_id,
-          email: this.props.registration.user.data.email,
-          first_name: this.props.registration.user.data.first_name,
-          last_name: this.props.registration.user.data.last_name,
           respondent_type: 'mother',
           state: 'IA',
           marital_status: 'married',
-          accepted_tos_at: new Date().toISOString(),
           pregnant: false,
         }}
         render={ (props) => {
@@ -160,9 +177,9 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('respondent_type', value) }
               />
 
-              <TextInput label="Address 1" name="address_1" type="text" />
-              <TextInput label="Address 2" name="address_2" type="text" />
-              <TextInput label="City" name="city" type="text" />
+              <MaterialTextInput label="Address 1" name="address_1" type="text" />
+              <MaterialTextInput label="Address 2" name="address_2" type="text" />
+              <MaterialTextInput label="City" name="city" type="text" />
               <PickerInput
                 label='State'
                 prompt='State'
@@ -171,9 +188,9 @@ class RegistrationRespondentForm extends Component {
                 selectedValue={props.values.state}
                 handleChange={ (value) => props.setFieldValue('state', value) }
               />
-              <TextInput label="Zip Code" name="zip_code" type="text" />
-              <TextInput label="Home Phone" name="home_phone" type="tel" />
-              <TextInput label="Other Phone" name="other_phone" type="tel" />
+              <MaterialTextInput label="Zip Code" name="zip_code" type="text" />
+              <MaterialTextInput label="Home Phone" name="home_phone" type="tel" />
+              <MaterialTextInput label="Other Phone" name="other_phone" type="tel" />
               
               <DatePickerInput
                 label="Date of Birth" 
@@ -182,7 +199,7 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
               />
               
-              <TextInput label="Driver's License Number" name="drivers_license_number" type="text" />
+              <MaterialTextInput label="Driver's License Number" name="drivers_license_number" type="text" />
 
               <PickerInput
                 label='Marital Status'
@@ -193,8 +210,8 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('marital_status', value) }
               />
  
-              <TextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
-              <TextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
+              <MaterialTextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
+              <MaterialTextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
               <Text style={styles.label}>Are You Currently Pregnant?</Text>
               <CheckBox

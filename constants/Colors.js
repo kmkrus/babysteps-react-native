@@ -40,7 +40,7 @@ export default {
   white,
   black,
   red,
-  headerTintColor: white,
-  headerBackgroundColor: darkGreen,
+  headerTint: white,
+  headerBackground: darkGreen,
   tranparent,
 };

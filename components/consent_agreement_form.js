@@ -234,14 +234,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonOneStyle: {
-    width: 100,
+    width: 150,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 100,
+    width: 150,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,

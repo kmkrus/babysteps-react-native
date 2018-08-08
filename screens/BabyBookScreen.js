@@ -7,12 +7,14 @@ import {
   StyleSheet,
   Share,
   ImageBackground, 
+  TouchableOpacity,
   Dimensions,
   Platform,
 } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
+import { Ionicons } from '@expo/vector-icons';
 
 import { _ } from 'lodash';
 
@@ -27,7 +29,6 @@ import BabyBookGetImage from '../components/babybook_get_image';
 
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
-import '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180 // compensate for header and navbar
@@ -63,32 +64,29 @@ class BabyBookScreen extends Component {
 
   static navigationOptions = ({navigation}) => {
     return ({
-      title: 'BabyBook',
-      headerRight: (
-        <View style={styles.headerButtonContainer}>
+      headerTitle: (
+        <View style={ styles.headerContainer }>
 
-          <Button
-            icon={
-              {name:  (Platform.OS === 'android') ? 'md-share' : 'ios-share', type: 'ionicon', color: Colors.white, size:22 }
-            }
-            onPress={ () => navigation.state.params.Share() }
-            backgroundColor={Colors.headerBackgroundColor}
-            buttonStyle={styles.headerButton}
-          />
+          <Text style={ styles.headerTitle }>BabyBook</Text>
+
+          <View style={ styles.headerButtonContainer }>
+
+          <TouchableOpacity style={ styles.headerButton } onPress={ () => navigation.state.params.Share() }>
+            <Ionicons name={ (Platform.OS === 'ios') ? 'ios-share': 'md-share' } size={26} color={Colors.white} />
+          </TouchableOpacity>
+
           { false &&
-            <Button
-              icon={{name: 'timeline', size: 22, color: 'white'}}
-              onPress={ () => navigation.navigate('BabyBookTimeline') }
-              backgroundColor={Colors.headerBackgroundColor}
-              buttonStyle={styles.headerButton}
-            />
+            <TouchableOpacity style={ styles.headerButton } onPress={ () => () => navigation.navigate('BabyBookTimeline') }>
+              <Ionicons name='timeline' size={26} color={Colors.white} />
+            </TouchableOpacity>
           }
-          <Button
-            icon={{name: 'add-a-photo', size: 22, color: 'white'}}
-            onPress={ () => navigation.navigate('BabyBookEntry') }
-            backgroundColor={Colors.headerBackgroundColor}
-            buttonStyle={styles.headerButton}
-          />
+
+          <TouchableOpacity style={ styles.headerButton } onPress={ () => navigation.navigate('BabyBookEntry') }>
+            <Ionicons name={ (Platform.OS === 'ios') ? 'ios-camera': 'md-camera' } size={26} color={Colors.white} />
+          </TouchableOpacity>
+
+          </View>
+
         </View>
       )
     })
@@ -254,14 +252,28 @@ const styles = StyleSheet.create({
     height: 20,
     marginTop: 12,
   },
-  headerButtonContainer: {
+  headerContainer: {
+    flex: 1,
     flexDirection: 'row',
+    alignItems:'center',
+    paddingTop: 10,
+    marginLeft: 20,
+    marginRight: 20,
+  },
+  headerTitle: {
+    alignSelf: 'flex-start',
+    fontWeight: '400',
+    fontSize: 18,
+    color: Colors.headerTint,
+  },
+  headerButtonContainer: {
+    flex: 1, 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end',
+    paddingRight: 15,
   },
   headerButton: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    padding: 0,
-    margin: -5,
+    paddingLeft: 20,
   }
 });
 

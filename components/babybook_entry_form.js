@@ -23,6 +23,7 @@ import { resetBabyBookEntries, createBabyBookEntry } from '../actions/babybook_a
 
 import DatePickerInput from '../components/datePickerInput';
 import MaterialTextInput from '../components/materialTextInput';
+import CameraModal from '../components/camera_modal';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -40,38 +41,76 @@ class BabyBookEntryForm extends Component {
   state = {
     image: null,
     imageError: '',
+    hasCameraPermission: null,
+    hasCameraRollPermission: null,
+    hasAudioPermission: null,
+   
+    permissionMessage: '',
+    cameraModalVisible: false,
   };
+
+  async componentWillMount() {
+    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL)
+    const camera = await Permissions.askAsync(Permissions.CAMERA)
+    const audio = await Permissions.askAsync(Permissions.AUDIO_RECORDING)
+    this.setState({ 
+      hasCameraRollPermission: (camera_roll.status == 'granted'), 
+      hasCameraPermission: (camera.status == 'granted'), 
+      hasAudioPermission: (audio.status == 'granted') 
+    })
+  }
 
   shouldComponentUpdate(nextProps, nextState) {
     return ( !nextProps.babybook.entries.fetching )
   }
 
-  askPermissionsAsync = async () => {
-    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    const camera = await Permissions.askAsync(Permissions.CAMERA);
-    const audio_recording = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-      
-    return {cameraRoll: camera_roll, camera: camera, audio_recording: audio_recording}
-  };
-
   pickImage = async (source=null) => {
 
-    let permissions = await this.askPermissionsAsync();
-
-    if (permissions.cameraRoll.status === 'granted' && permissions.camera.status === 'granted') {
-      var image = {}
-      if (source === 'library') {
-        image = await ImagePicker.launchImageLibraryAsync()
+    var image = {}
+    if (source == 'library') {
+      if ( this.state.hasCameraRollPermission ) {
+        image = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: 'All'
+        })
       } else {
-        image = await ImagePicker.launchCameraAsync()
+        this.renderNoPermissions(source)
       }
-      if (!image.cancelled) {
-        this.setState({ image: image });
+
+    } else if (source == 'video') {
+      if ( this.state.hasCameraPermission && this.state.hasAudioPermission ) {
+        this.setState({ cameraModalVisible: true })
+      } else {
+        this.renderNoPermissions(source)
       }
     } else {
-      // TODO handle no permissions
+      if ( this.state.hasCameraPermission ) {
+        image = await ImagePicker.launchCameraAsync()
+      } else {
+        this.renderNoPermissions(source)
+      }
+    }
+    if ( image && !image.cancelled) {
+      this.setState({ image: image });
     }
 
+  }
+
+  renderNoPermissions = ( source ) => {
+    var message = []
+    if ( ['camera', 'video'].includes(source) && !this.state.hasCameraPermission ) {
+      message << 'Camera Permissions not granted - cannot open camera preview' 
+    }
+    if ( source == 'library' && !this.state.hasCameraRollPermission ) {
+      message << 'Camera Roll Permissions not granted - cannot open photo album'
+    }
+    if ( source == 'video' && !this.state.hasAudioPermission ) {
+      message << 'Audio Recording Permissions not granted - cannot open video preview'
+    }
+    this.setState({ permissionMessage: message.join(', ') }) 
+  }
+
+  closeModal = () => {
+    this.setState({ cameraModalVisible: false })
   }
 
   render() {
@@ -109,12 +148,21 @@ class BabyBookEntryForm extends Component {
                    
               />
               <Button
-                  title='Take a Photo or Video'
+                  title='Take a Photo'
                   buttonStyle={styles.cameraButton}
                   titleStyle={styles.buttonTitleStyle}
                   color={Colors.darkGreen}
                   onPress={ () => this.pickImage('camera') }
               />
+              <Button
+                  title='Take a Video'
+                  buttonStyle={styles.cameraButton}
+                  titleStyle={styles.buttonTitleStyle}
+                  color={Colors.darkGreen}
+                  onPress={ () => this.pickImage('video') }
+              />
+              <Text>{ this.state.permissionMessage }</Text>
+
               <View style={styles.pickImageContainer}>
                 <Image 
                     source={{uri: uri}}
@@ -147,6 +195,11 @@ class BabyBookEntryForm extends Component {
                 />
 
               </View>
+
+              <CameraModal 
+                modalVisible={ this.state.cameraModalVisible } 
+                closeModal={ ()=> this.closeModal() }
+              />
               
             </Form>
           );

@@ -1,59 +1,89 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import { createBottomTabNavigator, BottomTabBar } from 'react-navigation-tabs';
-//import { TabNavigator, TabBarBottom } from 'react-navigation';
-
-import Colors from '../constants/Colors';
-
-import HomeScreen from '../screens/HomeScreen';
+import TabBarIcon from '../components/tab_bar_icon';
+import OverviewScreen from '../screens/OverviewScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
 import TourScreen from '../screens/TourScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
+import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
 
-//export default TabNavigator(
-export default createBottomTabNavigator(
-  {
-    Overview: {
-      screen: HomeScreen,
-    },
-    Milestones: {
-      screen: MilestonesScreen,
-    },
-    BabyBook: {
-      screen: BabyBookScreen,
-    },
+import Colors from '../constants/Colors';
+
+const headerOptions = {
+  headerStyle: {
+    backgroundColor: Colors.headerBackground,
   },
-  {
-    navigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused }) => {
-        const { routeName } = navigation.state;
-        let iconName;
-        switch (routeName) {
-          case 'Overview':
-            iconName = Platform.OS === 'ios' ? `ios-information-circle${focused ? '' : '-outline'}` : 'md-ionic';
-            break;
-          case 'BabyBook':
-            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-book';
-            break;
-          case 'Milestones':
-            iconName = Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-list';
-            break;
-        }
-        return (
-          <Ionicons
-            name={iconName}
-            size={28}
-            style={{ marginBottom: -3, width: 25 }}
-            color={focused ? Colors.tabIconSelected : Colors.tabIconDefault}
-          />
-        );
-      },
-    }),
-    tabBarComponent: BottomTabBar,
-    //tabBarPosition: 'bottom',
-    animationEnabled: false,
-    swipeEnabled: false,
-  }
-);
+  headerTintColor: Colors.headerTint,
+  headerTitleStyle: {
+    fontWeight: '900',
+  },
+}
+
+const OverviewStack = createStackNavigator({
+  Overview: OverviewScreen,
+});
+
+OverviewStack.navigationOptions = {
+  tabBarLabel: 'Overview',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}` 
+          : 'md-information-circle'
+      }
+    />
+  ),
+};
+
+const  MilestonesStack = createStackNavigator({
+  screen: MilestonesScreen,
+},
+{
+  navigationOptions: headerOptions ,
+})
+
+MilestonesStack.navigationOptions = {
+  tabBarLabel: 'Milestones',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-list${focused ? '' : '-outline'}` 
+          : 'md-list'
+      }
+    />
+  ),
+};
+
+const BabyBookStack = createStackNavigator({
+  BabyBook: BabyBookScreen,
+  BabyBookEntry: BabyBookEntryScreen,
+},
+{
+  navigationOptions: headerOptions ,
+})
+
+BabyBookStack.navigationOptions = {
+  tabBarLabel: 'BabyBook',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-book${focused ? '' : '-outline'}` 
+          : 'md-book'
+      }
+    />
+  ),
+};
+
+export default createBottomTabNavigator({
+  OverviewStack,
+  MilestonesStack,
+  BabyBookStack,
+});

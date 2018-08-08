@@ -6,7 +6,8 @@ import Sentry from 'sentry-expo';
 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-import RootNavigation from './navigation/RootNavigation';
+import RootNavigator from './navigation/RootNavigator';
+
 import checkMilestonesSchema from './database/check_milestones_schema';
 import checkMilestoneTriggersSchema from './database/check_milestone_triggers_schema';
 import checkRegistrationSchema from './database/check_registration_schema';
@@ -43,7 +44,7 @@ export default class App extends Component {
         <Provider store={store}>
           <View style={styles.container}>
             {Platform.OS === 'android' && <StatusBar barStyle="default" />}
-            <RootNavigation />
+            <RootNavigator />
           </View>
         </Provider>
       )

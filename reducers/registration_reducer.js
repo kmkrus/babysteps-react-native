@@ -104,7 +104,7 @@ const initialState = {
   },
 };
 
-const reducer = (state=initialState, action) => {
+const reducer = (state=initialState, action, formData={}) => {
 
   switch (action.type) {
     
@@ -156,7 +156,7 @@ const reducer = (state=initialState, action) => {
       const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
       return {...state, 
         auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiUser: {...state.apiUser, fetching: false, fetched: true, error: null, data: action.formData},
+        apiUser: {...state.apiUser, fetching: false, fetched: true, error: null, data: action.formData}
       }
       break;
     }
@@ -213,7 +213,7 @@ const reducer = (state=initialState, action) => {
     case UPDATE_RESPONDENT_FULFILLED: {
       return {...state, respondent: 
         {...state.respondent, fetching: false, fetched: true, 
-          data: Object.assign( {}, state.respondent.data, action.payload )
+          data: Object.assign( {}, state.respondent.data, action.formData )
         } 
       }
       break;
@@ -328,7 +328,7 @@ const reducer = (state=initialState, action) => {
     case UPDATE_SUBJECT_FULFILLED: {
       return {...state, subject: 
         {...state.subject, fetching: false, fetched: true, 
-          data: Object.assign( {}, state.subject.data, action.payload ) 
+          data: Object.assign( {}, state.subject.data, action.formData ) 
         } 
       }
       break;

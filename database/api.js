@@ -47,7 +47,6 @@ export default store =>
         'TOKEN-TYPE': 'Bearer',
         'CLIENT': session.client,
         'UID': session.uid,
-        //'CONTENT-TYPE': 'multipart/form-data'
       }
 
       return (

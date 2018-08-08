@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-elements';
+import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { connect} from 'react-redux';
 import { resetBabyBookEntries, fetchBabyBookEntries } from '../actions/babybook_actions';
@@ -22,18 +22,14 @@ class BabyBookEntryScreen extends Component {
       title: 'BabyBook',
       headerRight: (
         <View style={styles.headerButtonContainer}>
-          <Button
-            icon={{name: 'timeline', size: 22, color: 'white'}}
-            onPress={ () => navigation.navigate('BabyBookTimeline') }
-            backgroundColor={Colors.headerBackgroundColor}
-            buttonStyle={styles.headerButton}
-          />
-          <Button
-            icon={{name: 'photo-album', size: 22, color: 'white'}}
-            onPress={ () => navigation.navigate('BabyBook') }
-            backgroundColor={Colors.headerBackgroundColor}
-            buttonStyle={styles.headerButton}
-          />
+          { false &&
+            <TouchableOpacity style={ styles.headerButton } onPress={ () => () => navigation.navigate('BabyBookTimeline') }>
+              <Ionicons name='timeline' size={26} color={Colors.white} />
+            </TouchableOpacity>
+          }
+          <TouchableOpacity style={ styles.headerButton } onPress={ () => navigation.navigate('BabyBook') }>
+            <Ionicons name={ (Platform.OS === 'ios') ? 'ios-albums': 'md-albums' } size={26} color={Colors.white} />
+          </TouchableOpacity>
         </View>
       )
     })
@@ -75,14 +71,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: Colors.background,
   },
-  headerButtonContainer: {
-    flexDirection: 'row',
+   headerButtonContainer: {
+    flex: 1, 
+    flexDirection: 'row', 
+    justifyContent: 'flex-end',
+    paddingRight: 15,
   },
   headerButton: {
-    flexDirection: 'row',
-    alignSelf: 'flex-end',
-    padding: 0,
-    margin: -5,
+    paddingLeft: 20,
   }
 });
 

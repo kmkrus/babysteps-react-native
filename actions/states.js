@@ -11,18 +11,25 @@ const REGISTERING_RESPONDENT = 'registering_respondent'
 const REGISTERING_EXPECTED_DOB = 'registering_expected_dob'
 const REGISTERING_SUBJECT = 'registering_subject'
 
+const REGISTERING_AS_NO_STUDY = 'registering_as_no_study'
+const REGISTERING_AS_IN_STUDY = 'registering_as_in_study'
+
 const REGISTERED_AS_IN_STUDY = 'registered_as_in_study'
 const REGISTERED_AS_NO_STUDY = 'registered_as_no_study'
+
   
 export default {
-  REGISTERING_AS_NO_STUDY: 'registering_as_no_study',
-
-  REGISTERING_AS_IN_STUDY: 'registering_as_in_study',
   REGISTERING_ELIGIBILITY,
   REGISTERING_NOT_ELIGIBLE,
   REGISTERING_AS_ELIGIBLE,
   REGISTERING_ACCEPT_TERMS,
   REGISTERING_SIGNATURE,
+  REGISTERING_AS_IN_STUDY,
+  REGISTERING_AS_NO_STUDY,
+  REGISTERING_NO_STUDY: [
+    REGISTERING_AS_NO_STUDY, 
+    REGISTERING_NOT_ELIGIBLE
+  ],
   REGISTERING_CONSENT: [
     REGISTERING_ELIGIBILITY, 
     REGISTERING_AS_ELIGIBLE,

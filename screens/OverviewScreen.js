@@ -29,10 +29,14 @@ import {
   resetApiMilestones,
   apiFetchMilestones,
   fetchMilestoneGroups, 
-  fetchMilestoneCalendar 
+  fetchMilestoneCalendar,
+  apiFetchMilestoneCalendar
 } from '../actions/milestone_actions';
 
+import { fetchSubject } from '../actions/registration_actions';
+
 import Colors from '../constants/Colors';
+import States from '../actions/states';
 import milestoneGroupImages from'../constants/MilestoneGroupImages';
 
 const { width, height } = Dimensions.get('window');
@@ -54,18 +58,21 @@ const mg_image_height = wp(70,  mg_container_height)
 const mg_image_width = wp(80, width)
 const mg_image_margin = ((width - mg_image_width) / 2) 
 
-class HomeScreen extends React.Component {
+class OverviewScreen extends React.Component {
+
+  state = {
+    apiFetchCalendarSubmitted: false,
+    fetchCalendarCount: 0
+  }
+
+  static navigationOptions = {
+    header: null,
+  };
 
   componentWillMount() {
     this.props.fetchMilestoneGroups()
     this.props.fetchMilestoneCalendar()
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.milestones.groups.fetching || nextProps.milestones.calendar.fetching ) {
-      return false
-    }
-    return true
+    this.props.fetchSubject()
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -74,6 +81,37 @@ class HomeScreen extends React.Component {
         this.props.apiFetchMilestones()
       }
     }
+
+    if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
+      if ( !nextProps.milestones.calendar.fetching && nextProps.milestones.calendar.fetched ) {
+
+        if ( _.isEmpty(nextProps.milestones.calendar.data) ) {
+
+          if  ( !nextProps.milestones.api_calendar.fetching && !this.state.apiFetchCalendarSubmitted ) {
+            if ( nextProps.session.registration_state == States.REGISTERED_AS_IN_STUDY ) {
+              this.props.apiFetchMilestoneCalendar({ subject_id: nextProps.registration.subject.data.api_id })
+            } else {
+              this.props.apiFetchMilestoneCalendar({ base_date: nextProps.registration.subject.expected_date_of_birth })
+            }
+            this.setState({ apiFetchCalendarSubmitted: true })
+          }
+
+          if ( !nextProps.milestones.api_calendar.fetching && nextProps.milestones.api_calendar.fetched  ) {
+            if ( this.state.fetchCalendarCount < 10 ) {
+
+              const wait = this.state.fetchCalendarCount * 2000
+              this.timer = setTimeout( () => this.props.fetchMilestoneCalendar(), wait )
+              this.setState({ fetchCalendarCount: this.state.fetchCalendarCount + 1 })
+            }
+          }
+
+        } // isEmpty calendar data
+      } // calendar fetcbhing
+    } // subject fetching
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.timer);
   }
 
   renderScreeningItem(item) {
@@ -309,13 +347,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
+const mapStateToProps = ({ session, milestones, registration }) => ({ session, milestones, registration });
 const mapDispatchToProps = { 
   fetchMilestones, 
   resetApiMilestones, 
   apiFetchMilestones, 
   fetchMilestoneGroups, 
-  fetchMilestoneCalendar 
+  fetchMilestoneCalendar,
+  apiFetchMilestoneCalendar,
+  fetchSubject,
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( HomeScreen );
+export default connect( mapStateToProps, mapDispatchToProps )( OverviewScreen );

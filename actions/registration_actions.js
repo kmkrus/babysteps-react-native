@@ -457,6 +457,7 @@ export const createSubject = (subject) => {
 export const apiCreateSubject = (session, data) => {
   delete data.id 
   delete data.api_id 
+
   return function (dispatch) {
     
     dispatch({

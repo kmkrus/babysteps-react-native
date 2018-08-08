@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 120,
+    width: 150,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
