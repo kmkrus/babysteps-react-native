@@ -46,12 +46,6 @@ const Response = ( type, payload, formData={} ) => {
   return { type, payload, formData }
 };
 
-export const resetApiMilestones =() => {
-  return function (dispatch) {
-     dispatch( Pending(RESET_API_MILESTONES) );
-  }
-}
-
 export const fetchMilestones = () => {
   return function (dispatch) {
     
@@ -69,6 +63,12 @@ export const fetchMilestones = () => {
   };
 
 };
+
+export const resetApiMilestones =() => {
+  return function (dispatch) {
+     dispatch( Pending(RESET_API_MILESTONES) );
+  }
+}
 
 // this fetches all milestone and related tables
 export const apiFetchMilestones = () => {

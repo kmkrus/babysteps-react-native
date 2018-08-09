@@ -1,19 +1,28 @@
 import React, { Component } from 'react';
-import { ScrollView,View, StyleSheet, SectionList,TouchableOpacity } from 'react-native';
+import { 
+  ScrollView,
+  View, 
+  StyleSheet, 
+  SectionList,
+  Dimensions,
+  TouchableOpacity 
+} from 'react-native';
 import { Text } from 'react-native-elements';
-import { connect} from 'react-redux';
-import _ from 'lodash';
-import Colors from '../constants/Colors';
-import '@expo/vector-icons';
-import { Ionicons,MaterialCommunityIcons } from '@expo/vector-icons';
 
-import fetchMilestones from '../database/fetch_milestones';
-import { milestonesTable } from '../actions/milestone_actions'
-import {
-  FETCH_MILESTONES_PENDING,
-  FETCH_MILESTONES_FULFILLED,
-  FETCH_MILESTONES_REJECTED
-} from '../actions/types';
+import _ from 'lodash';
+
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { connect} from 'react-redux';
+import { fetchMilestoneGroups, fetchMilestones } from '../actions/milestone_actions';
+
+import Colors from '../constants/Colors';
+
+const { width, height } = Dimensions.get('window');
+
+const itemWidth = width - 60
+
+var milestones = [];
 
 class MilestonesScreen extends Component {
   static navigationOptions = {
@@ -21,65 +30,63 @@ class MilestonesScreen extends Component {
   };
 
   componentWillMount() {
-
-    if (this.props.milestones.data.length === 0) {
-      
-      // note redux doesn't actually change state until render
-      this.props.milestonesTable(FETCH_MILESTONES_PENDING);
-      fetchMilestones()
-        .then( (response) => { 
-          // dispatch milestones to redux
-          this.props.milestonesTable(FETCH_MILESTONES_FULFILLED, response);
-        })
-        .catch( ( error ) => {
-          this.props.milestonesTable(FETCH_MILESTONES_REJECTED, error)
-        });
-    } // if milestones.data.length
+    this.props.fetchMilestoneGroups()
+    this.props.fetchMilestones()
   }
 
-  renderItem = (item) => {
-    return  <TouchableOpacity onPress={()=>{this.props.navigation.navigate('MilestoneDetailScreen',{item:item})}}> 
-              <View style={{flexDirection:'row',padding:5,  justifyContent:'space-between', borderBottomWidth:4, borderBottomColor:'#fff'}}>
-              <View style={{flexDirection:'row', justifyContent:'flex-start'}}>
-                <MaterialCommunityIcons name='checkbox-blank-outline' style={{ fontSize: 25, color: '#b9b9b9' }} />
-                <Text style={styles.text}>{item.item.name}</Text> 
-              </View>
-              <View style={{marginRight:5}}>               
-                <Ionicons name='md-arrow-forward' style={{ fontSize: 25, color: '#b9b9b9' }} />
-              </View>
-              </View>
-              </TouchableOpacity>
-  }
-  renderSectionHeader = (headerItem) => {
-    return <Text style={styles.section}>{headerItem.section.key}</Text>
-  }  
+  componentWillReceiveProps(nextProps, nextState) {
+   
+    if ( !nextProps.milestones.milestones.fetching && nextProps.milestones.milestones.fetched ) {
 
-  render() {
-    var milestones = [];
-
-    if (this.props.milestones.fetched) {
-
-      milestones = _.filter(this.props.milestones.data._array, function(m) {
-        return m.always_visible;
+      milestones = _.filter(nextProps.milestones.milestones.data, function(m) {
+        return m.always_visible == 1
       });
+
+      milestones = _.sortBy(milestones, ["milestone_group_id", "position"]);
       
-      milestones = _.groupBy(milestones, m => m.milestone_group );
+      milestones = _.groupBy(milestones, m => m.milestone_group_id );
 
       milestones = _.reduce(milestones, (acc, data, index) => {
+        const group = _.find(this.props.milestones.groups.data, ['id', data[0].milestone_group_id])
         acc.push({
           key: index,
+          title: group.title,
           data: data
         });
         return acc;
       }, []);
 
     }
+  }
 
+  renderItem = (item) => {
+    return  (
+      <TouchableOpacity onPress={()=>{this.props.navigation.navigate('MilestoneDetailScreen',{item:item})}}> 
+
+        <View style={ styles.itemContainer }>
+          <View style={ styles.itemLeft }>
+            <MaterialCommunityIcons name='checkbox-blank-outline' style={ styles.itemCheckBox } />
+            <Text style={styles.item}>{item.item.title}</Text> 
+          </View>
+          <View style={ styles.itemRight}>               
+            <Ionicons name='md-arrow-forward' style={ styles.itemRightArrow } />
+          </View>
+        </View>
+
+      </TouchableOpacity>
+    )
+  }
+
+  renderSectionHeader = (headerItem) => {
+    return <Text style={styles.section}>{ headerItem.section.title }</Text>
+  }  
+
+  render() {
     return (
       <ScrollView style={styles.container}>
         <SectionList
-          renderItem={this.renderItem}
           renderSectionHeader={this.renderSectionHeader}
+          renderItem={this.renderItem}
           sections={milestones}
           keyExtractor={(item) => item.id}
         />
@@ -94,19 +101,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  text: {
-    fontSize: 15,
-    paddingVertical:2,
-  },
   section: {
-    fontSize: 15,
+    fontSize: 16,
     padding:5,
-    color:'#4a4a4a',
-    backgroundColor:'#f2f2f2'
-  }
+    paddingLeft: 10,
+    color: Colors.tint,
+    backgroundColor: Colors.lightGrey,
+  },
+  itemContainer: {
+    flexDirection: 'row', 
+    padding: 5,  
+    justifyContent:'space-between', 
+    borderBottomWidth: 1, 
+    borderBottomColor: Colors.lightGrey,
+  },
+  itemLeft: {
+    flexDirection:'row',
+    justifyContent:'flex-start',
+    width: itemWidth,
+  },
+  itemRight: {
+    marginRight: 5
+  },
+  itemCheckBox: { 
+    fontSize: 22, 
+    color: Colors.lightGrey,
+  },
+  itemRightArrow: { 
+    fontSize: 22, 
+    color: Colors.lightGrey,
+  },
+  item: {
+    fontSize: 14,
+    paddingVertical: 2,
+    paddingLeft: 5,
+    color: Colors.tint,
+  },
 });
 
-const mapStateToProps = ({ milestones }) => ({ milestones });
-const mapDispatchToProps = { milestonesTable }
+const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
+const mapDispatchToProps = { fetchMilestoneGroups, fetchMilestones }
 
 export default connect( mapStateToProps, mapDispatchToProps )( MilestonesScreen );
