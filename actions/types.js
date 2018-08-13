@@ -22,26 +22,6 @@ export const API_FETCH_MILESTONE_CALENDAR_PENDING = 'api_fetch_milestone_calenda
 export const API_FETCH_MILESTONE_CALENDAR_FULFILLED = 'api_fetch_milestone_calendar_fulfilled';
 export const API_FETCH_MILESTONE_CALENDAR_REJECTED = 'api_fetch_milestone_calendar_rejected';
 
-export const FETCH_MILESTONE_TASKS_PENDING = 'fetch_milestone_tasks_pending';
-export const FETCH_MILESTONE_TASKS_FULFILLED = 'fetch_milestone_tasks_fulfilled';
-export const FETCH_MILESTONE_TASKS_REJECTED = 'fetch_milestone_tasks_rejected';
-
-export const FETCH_MILESTONE_SECTIONS_PENDING = 'fetch_milestone_sections_pending';
-export const FETCH_MILESTONE_SECTIONS_FULFILLED = 'fetch_milestone_sections_fulfilled';
-export const FETCH_MILESTONE_SECTIONS_REJECTED = 'fetch_milestone_sections_rejected';
-
-export const RESET_MILESTONE_QUESTIONS = 'reset_milestone_questions';
-
-export const FETCH_MILESTONE_QUESTIONS_PENDING = 'fetch_milestone_questions_pending';
-export const FETCH_MILESTONE_QUESTIONS_FULFILLED = 'fetch_milestone_questions_fulfilled';
-export const FETCH_MILESTONE_QUESTIONS_REJECTED = 'fetch_milestone_questions_rejected';
-
-export const RESET_MILESTONE_CHOICES = 'reset_milestone_choices';
-
-export const FETCH_MILESTONE_CHOICES_PENDING = 'fetch_milestone_choices_pending';
-export const FETCH_MILESTONE_CHOICES_FULFILLED = 'fetch_milestone_choices_fulfilled';
-export const FETCH_MILESTONE_CHOICES_REJECTED = 'fetch_milestone_choices_rejected';
-
 // Session actions
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
 export const FETCH_SESSION_FULFILLED = 'fetch_session_fulfilled';

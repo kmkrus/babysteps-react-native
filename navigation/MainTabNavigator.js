@@ -5,7 +5,6 @@ import { createStackNavigator, createBottomTabNavigator } from 'react-navigation
 import TabBarIcon from '../components/tab_bar_icon';
 import OverviewScreen from '../screens/OverviewScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
-import MilestoneQuestionsScreen from '../screens/MilestoneQuestionsScreen';
 import TourScreen from '../screens/TourScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
 import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
@@ -41,8 +40,7 @@ OverviewStack.navigationOptions = {
 };
 
 const  MilestonesStack = createStackNavigator({
-  Milestones: MilestonesScreen,
-  MilestoneQuestions: MilestoneQuestionsScreen,
+  screen: MilestonesScreen,
 },
 {
   navigationOptions: headerOptions ,
