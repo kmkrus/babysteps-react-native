@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { 
+import {
   View,
   ScrollView,
   Text,
   Image,
   StyleSheet,
   Share,
-  ImageBackground, 
+  ImageBackground,
   TouchableOpacity,
   Dimensions,
   Platform,
@@ -43,10 +43,10 @@ class BabyBookScreen extends Component {
   state = {
     currentIndex: 0,
     data: [{
-      id: '0', 
+      id: '0',
       file_name: null,
       file_uri:  require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
-      type: 'cover', 
+      type: 'cover',
       imageHeight: imageWidth
     }],
     shareAttributes: {
@@ -106,19 +106,19 @@ class BabyBookScreen extends Component {
     // set selected item from timeline
     const itemId = this.props.navigation.getParam('itemId', '0');
     if (itemId != '0') {
-      
+
       const selectedIndex = _.indexOf(
-        _.map(this.state.data, 'id'), 
+        _.map(this.state.data, 'id'),
         String( parseInt(itemId, 10) + 1 ) // increment by 1 to account for cover
-      ) 
+      )
 
       this.setState({ currentIndex: selectedIndex })
-     
+
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.registration.subject.fetching && !nextProps.babybook.entries.fetching ) 
+    return ( !nextProps.registration.subject.fetching && !nextProps.babybook.entries.fetching )
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -158,7 +158,7 @@ class BabyBookScreen extends Component {
     const uri = babybookDir + item.file_name
 
     this.setState({
-      shareAttributes: { 
+      shareAttributes: {
         content: {
           title: item.title,
           message: item.detail,
@@ -172,18 +172,18 @@ class BabyBookScreen extends Component {
     })
   }
 
-  renderItem(page) {
-    if (page.currentIndex === 0) {
+  renderItem({ item, itemIndex }) {
+    if (itemIndex === 0) {
       return(
-        <BabyBookCoverItem 
-          item={page.item}
+        <BabyBookCoverItem
+          item={item}
           navigation={this.props.navigation}
         />
       )
     } else {
       return(
-        <BabyBookItem 
-          item={page.item}
+        <BabyBookItem
+          item={item}
           navigation={this.props.navigation}
         />
       )
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
     color: Colors.headerTint,
   },
   headerButtonContainer: {
-    flex: 1, 
-    flexDirection: 'row', 
+    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingRight: 15,
   },
