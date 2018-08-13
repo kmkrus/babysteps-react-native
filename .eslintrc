@@ -1,0 +1,48 @@
+{
+  "extends": [
+    "airbnb",
+    "standard",
+    "plugin:prettier/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:react/recommended",
+    "prettier",
+    "prettier/react",
+    "prettier/standard"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "plugins": [
+    "prettier",
+    "import",
+    "react",
+    "standard"
+  ],
+  "rules": {
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "trailingComma": "all"
+    }],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "jsx-a11y/label-has-for": [ 2, {
+      "components": [ "Label" ],
+      "required": {
+        "some": [ "nesting", "id" ]
+      },
+      "allowChildren": false
+    }],
+    "react/forbid-prop-types": ["error", { "forbid": ["any"]}]
+    //    "indent": ["error", 2, { "MemberExpression": 0 }]
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": { "config": "./webpack.config.js" }
+    }
+  }
+}
