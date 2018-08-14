@@ -70,16 +70,22 @@ class OverviewScreen extends React.Component {
   };
 
   componentWillMount() {
+    this.props.resetApiMilestones()
     this.props.fetchMilestoneGroups()
     this.props.fetchMilestoneCalendar()
     this.props.fetchSubject()
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-  
     if ( !nextProps.milestones.groups.fetching && nextProps.milestones.groups.fetched ) {
-      if ( _.isEmpty(nextProps.milestones.groups.data) && !nextProps.milestones.api_milestones.fetching ) {
-        this.props.apiFetchMilestones()
+      if ( _.isEmpty(nextProps.milestones.groups.data) ) {
+        if ( !nextProps.milestones.api_milestones.fetching ) {
+          if ( !nextProps.milestones.api_milestones.fetched ) {
+            this.props.apiFetchMilestones()
+          } else {
+            this.props.fetchMilestoneGroups()
+          }
+        }
       }
     }
 
