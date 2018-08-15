@@ -17,8 +17,8 @@ const store = createStore(
     applyMiddleware(promise(), thunk, logger, api),
     offline({
       ...offlineConfig,
-    })
-  )
+    }),
+  ),
 );
 
 export default store;
