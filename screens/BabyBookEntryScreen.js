@@ -2,67 +2,78 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { connect} from 'react-redux';
-import { resetBabyBookEntries, fetchBabyBookEntries } from '../actions/babybook_actions';
-
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { connect } from 'react-redux';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  resetBabyBookEntries,
+  fetchBabyBookEntries,
+} from '../actions/babybook_actions';
 
 import Colors from '../constants/Colors';
 
 import BabyBookEntryForm from '../components/babybook_entry_form';
 
 class BabyBookEntryScreen extends Component {
-
   state = {
     submitted: false,
-  }
+  };
 
-  static navigationOptions = ({navigation}) => {
-    return ({
-      title: 'BabyBook',
-      headerRight: (
-        <View style={styles.headerButtonContainer}>
-          { false &&
-            <TouchableOpacity style={ styles.headerButton } onPress={ () => () => navigation.navigate('BabyBookTimeline') }>
-              <Ionicons name='timeline' size={26} color={Colors.white} />
-            </TouchableOpacity>
-          }
-          <TouchableOpacity style={ styles.headerButton } onPress={ () => navigation.navigate('BabyBook') }>
-            <Ionicons name={ (Platform.OS === 'ios') ? 'ios-albums': 'md-albums' } size={26} color={Colors.white} />
+  static navigationOptions = ({ navigation }) => ({
+    title: 'BabyBook',
+    headerRight: (
+      <View style={styles.headerButtonContainer}>
+        {false && (
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => () => navigation.navigate('BabyBookTimeline')}
+          >
+            <Ionicons name="timeline" size={26} color={Colors.white} />
           </TouchableOpacity>
-        </View>
-      )
-    })
-  }
-  
+        )}
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => navigation.navigate('BabyBook')}
+        >
+          <Ionicons
+            name={Platform.OS === 'ios' ? 'ios-albums' : 'md-albums'}
+            size={26}
+            color={Colors.white}
+          />
+        </TouchableOpacity>
+      </View>
+    ),
+  });
+
   componentWillMount() {
-    this.props.resetBabyBookEntries()
+    this.props.resetBabyBookEntries();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.babybook.entries.fetching ) 
+    return !nextProps.babybook.entries.fetching;
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if ( !nextProps.babybook.entries.fetching && nextProps.babybook.entries.fetched ) {
-      if ( !this.state.submitted ) {
-        this.setState({ submitted: true })
-        this.props.fetchBabyBookEntries()
-        this.props.navigation.navigate('BabyBook')
+    if (
+      !nextProps.babybook.entries.fetching &&
+      nextProps.babybook.entries.fetched
+    ) {
+      if (!this.state.submitted) {
+        this.setState({ submitted: true });
+        this.props.fetchBabyBookEntries();
+        this.props.navigation.navigate('BabyBook');
       }
     }
   }
 
   render() {
     return (
-      <KeyboardAwareScrollView enableOnAndroid={true} >
-        <View style={ styles.container }>
-          <BabyBookEntryForm  />
+      <KeyboardAwareScrollView enableOnAndroid>
+        <View style={styles.container}>
+          <BabyBookEntryForm />
         </View>
       </KeyboardAwareScrollView>
-    )
+    );
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -71,18 +82,21 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: Colors.background,
   },
-   headerButtonContainer: {
-    flex: 1, 
-    flexDirection: 'row', 
+  headerButtonContainer: {
+    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingRight: 15,
   },
   headerButton: {
     paddingLeft: 20,
-  }
+  },
 });
 
 const mapStateToProps = ({ babybook }) => ({ babybook });
 const mapDispatchToProps = { resetBabyBookEntries, fetchBabyBookEntries };
 
-export default connect( mapStateToProps,  mapDispatchToProps )( BabyBookEntryScreen );
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(BabyBookEntryScreen);

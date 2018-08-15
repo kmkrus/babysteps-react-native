@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import {
   View,
   Image,
   TouchableOpacity,
   Dimensions,
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 import { Video } from 'expo';
 
@@ -12,84 +12,89 @@ import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
 
 const { width } = Dimensions.get('window');
-const widthOffset = 40
-const imageOffset = 60
+const widthOffset = 40;
+const imageOffset = 60;
 
-const imageWidth = width - (widthOffset + imageOffset)
+const imageWidth = width - (widthOffset + imageOffset);
 
 class BabyBookGetImage extends Component {
-
-  static IMAGE_WIDTH = imageWidth
+  static IMAGE_WIDTH = imageWidth;
 
   state = {
     imageHeight: imageWidth,
-  }
+  };
 
   componentWillReceiveProps(nextProps, nextState) {
-    const item = nextProps.item
+    const item = nextProps.item;
     if (item.file_name && item.file_uri) {
-      Image.getSize(item.file_uri.uri,
-        (width, height) => { 
-          this.setState({ imageHeight: (imageWidth * ( height / width )) })
+      Image.getSize(
+        item.file_uri.uri,
+        (width, height) => {
+          this.setState({ imageHeight: imageWidth * (height / width) });
         },
-        (error) => {
-          console.log(error)
-        } 
-      ) // Image.getSize
+        error => {
+          console.log(error);
+        },
+      ); // Image.getSize
     } // if item.file_uri
   }
 
-  handleImageOnPress() {
-    if ( this.props.item.type == 'cover' ) {
-      this.props.navigation.navigate('BabyBookEntry')
+  handleImageOnPress = () => {
+    if (this.props.item.type == 'cover') {
+      this.props.navigation.navigate('BabyBookEntry');
     }
-  }
+  };
 
   render() {
+    const imageContainerHeight = this.state.imageHeight + 2;
+    const imageFileType = this.props.item.data
+      ? this.props.item.data.file_type
+      : null;
 
-    const imageContainerHeight = this.state.imageHeight + 2
-    const imageFileType = this.props.item.data ? this.props.item.data.file_type : null
-   
-    return(
-
-      <View style={[ styles.imageContainer, { height: imageContainerHeight } ]}>
-
-        <TouchableOpacity onPress={ () => this.handleImageOnPress() }>
-          {  imageFileType == 'video/mp4' ? 
+    return (
+      <View style={[styles.imageContainer, { height: imageContainerHeight }]}>
+        <TouchableOpacity
+          onPress={() => {
+            this.handleImageOnPress();
+          }}
+        >
+          {imageFileType === 'video/mp4' ? (
             <Video
-              style={[ styles.image, { width: imageWidth, height: (imageWidth * 0.75) } ]}
-              source={ this.props.item.file_uri }
-              isMuted={true}
+              style={[
+                styles.image,
+                { width: imageWidth, height: imageWidth * 0.75 },
+              ]}
+              source={this.props.item.file_uri}
+              isMuted
               shouldPlay
-              resizeMode={ Expo.Video.RESIZE_MODE_COVER }
+              resizeMode={Expo.Video.RESIZE_MODE_COVER}
             />
-          :
-            <Image 
-                source={ this.props.item.file_uri }
-                style={[ styles.image, { height: this.state.imageHeight } ]}
-              />
-          }
+          ) : (
+            <Image
+              source={this.props.item.file_uri}
+              style={[styles.image, { height: this.state.imageHeight }]}
+            />
+          )}
         </TouchableOpacity>
 
-        <Image 
+        <Image
           style={styles.imageCornerTopLeft}
-          source={ require('../assets/images/baby_book_picture_frame_top_left.png')}
+          source={require('../assets/images/baby_book_picture_frame_top_left.png')}
         />
-        <Image 
+        <Image
           style={styles.imageCornerTopRight}
-          source={ require('../assets/images/baby_book_picture_frame_top_right.png')}
+          source={require('../assets/images/baby_book_picture_frame_top_right.png')}
         />
-        <Image 
+        <Image
           style={styles.imageCornerBottomLeft}
-          source={ require('../assets/images/baby_book_picture_frame_bottom_left.png')}
+          source={require('../assets/images/baby_book_picture_frame_bottom_left.png')}
         />
-        <Image 
+        <Image
           style={styles.imageCornerBottomRight}
-          source={ require('../assets/images/baby_book_picture_frame_bottom_right.png')}
+          source={require('../assets/images/baby_book_picture_frame_bottom_right.png')}
         />
-
       </View>
-    )
+    );
   }
 }
 
@@ -97,7 +102,7 @@ const imageCorner = {
   height: 36,
   width: 36,
   position: 'absolute',
-}
+};
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderColor: Colors.lightGrey,
     borderWidth: 2,
-    padding: 5
+    padding: 5,
   },
   image: {
     width: imageWidth,
@@ -132,7 +137,6 @@ const styles = StyleSheet.create({
     bottom: -2,
     right: -2,
   },
+});
 
-})
-
-export default BabyBookGetImage
+export default BabyBookGetImage;
