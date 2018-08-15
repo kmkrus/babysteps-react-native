@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 import { ImagePicker, Permissions, Video } from 'expo';
 

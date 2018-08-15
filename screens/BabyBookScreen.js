@@ -127,22 +127,12 @@ class BabyBookScreen extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      !nextProps.registration.subject.fetching &&
-      !nextProps.babybook.entries.fetching
-    );
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     if (
       !nextProps.babybook.entries.fetching &&
       nextProps.babybook.entries.fetched
     ) {
-      if (
-        !_.isEmpty(nextProps.babybook.entries.data) &&
-        _.isEmpty(this.state.data[0].file_name)
-      ) {
+      if (!_.isEmpty(nextProps.babybook.entries.data)) {
         let data = [];
         _.forEach(nextProps.babybook.entries.data, item => {
           if (item.file_name) {
@@ -158,6 +148,13 @@ class BabyBookScreen extends Component {
         this.setShareAttributes(this.state.currentIndex);
       }
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !nextProps.registration.subject.fetching &&
+      !nextProps.babybook.entries.fetching
+    );
   }
 
   shareOpen() {
