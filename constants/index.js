@@ -3,6 +3,7 @@ export default {
   DROP_MILESTONE_TABLES: false,
   DROP_MILESTONE_TRIGGERS_TABLE: false,
   DROP_REGISTRATION_TABLES: false,
+  DROP_ANSWER_TABLE: false,
   DROP_BABYBOOK_TABLES: false,
 
   // Custom Directories

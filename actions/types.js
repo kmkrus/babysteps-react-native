@@ -42,6 +42,16 @@ export const FETCH_MILESTONE_CHOICES_PENDING = 'fetch_milestone_choices_pending'
 export const FETCH_MILESTONE_CHOICES_FULFILLED = 'fetch_milestone_choices_fulfilled';
 export const FETCH_MILESTONE_CHOICES_REJECTED = 'fetch_milestone_choices_rejected';
 
+export const RESET_MILESTONE_ANSWERS = 'reset_milestone_answers';
+
+export const FETCH_MILESTONE_ANSWERS_PENDING = 'fetch_milestone_answers_pending';
+export const FETCH_MILESTONE_ANSWERS_FULFILLED = 'fetch_milestone_answers_fulfilled';
+export const FETCH_MILESTONE_ANSWERS_REJECTED = 'fetch_milestone_answers_rejected';
+
+export const UPDATE_MILESTONE_ANSWERS_PENDING = 'update_milestone_answers_pending';
+export const UPDATE_MILESTONE_ANSWERS_FULFILLED = 'update_milestone_answers_fulfilled';
+export const UPDATE_MILESTONE_ANSWERS_REJECTED = 'update_milestone_answers_rejected';
+
 // Session actions
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
 export const FETCH_SESSION_FULFILLED = 'fetch_session_fulfilled';

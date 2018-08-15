@@ -1,3 +1,4 @@
+import { _ } from 'lodash';
 
 import {
   FETCH_MILESTONES_PENDING,
@@ -41,6 +42,16 @@ import {
   FETCH_MILESTONE_CHOICES_PENDING,
   FETCH_MILESTONE_CHOICES_FULFILLED,
   FETCH_MILESTONE_CHOICES_REJECTED,
+
+  RESET_MILESTONE_ANSWERS,
+
+  FETCH_MILESTONE_ANSWERS_PENDING,
+  FETCH_MILESTONE_ANSWERS_FULFILLED,
+  FETCH_MILESTONE_ANSWERS_REJECTED,
+
+  UPDATE_MILESTONE_ANSWERS_PENDING,
+  UPDATE_MILESTONE_ANSWERS_FULFILLED,
+  UPDATE_MILESTONE_ANSWERS_REJECTED,
 
 } from '../actions/types';
 
@@ -97,10 +108,16 @@ const initialState = {
     fetched: false,
     data: [],
     error: null,
+  },
+  answers: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
   }
 };
 
-const reducer = (state=initialState, action) => {
+const reducer = (state=initialState, action, formData=[]) => {
   switch (action.type) {
     case FETCH_MILESTONES_PENDING: {
       return {...state, milestones: {...state.milestones, fetching: true, fetched: false, error: null, data: [] } }
@@ -117,7 +134,7 @@ const reducer = (state=initialState, action) => {
     }
 
     case RESET_API_MILESTONES: {
-      return {...state, api_milestones: {...state.api_milestones, fetching: false, fetched: false, error: null } }
+      return {...state, api_milestones: {fetching: false, fetched: false, error: null } }
       break;
     }
 
@@ -204,7 +221,7 @@ const reducer = (state=initialState, action) => {
     }
 
     case RESET_MILESTONE_QUESTIONS: {
-      return {...state, questions: {...state.questions, fetching: false, fetched: false, error: null, data: [] } }
+      return {...state, questions: {fetching: false, fetched: false, error: null, data: [] } }
       break;
     }
 
@@ -223,7 +240,7 @@ const reducer = (state=initialState, action) => {
     }
 
     case RESET_MILESTONE_CHOICES: {
-      return {...state, choices: {...state.choices, fetching: false, fetched: false, error: null, data: [] } }
+      return {...state, choices: { fetching: false, fetched: false, error: null, data: [] } }
       break;
     }
 
@@ -238,6 +255,44 @@ const reducer = (state=initialState, action) => {
     }
     case FETCH_MILESTONE_CHOICES_REJECTED: {
       return {...state, choices: {...state.choices, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case RESET_MILESTONE_ANSWERS: {
+      return {...state, answers: {fetching: false, fetched: false, error: null, data: [] } }
+      break;
+    }
+
+    case FETCH_MILESTONE_ANSWERS_PENDING: {
+      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_ANSWERS_FULFILLED: {
+      let data = action.payload.rows['_array']
+      _.map(data, (answer) => {
+        answer['answer_boolean'] = (answer['answer_boolean'] == 1)
+      })
+
+      return {...state, answers: {...state.answers, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_ANSWERS_REJECTED: {
+      return {...state, answers: {...state.answers, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case UPDATE_MILESTONE_ANSWERS_PENDING: {
+      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case UPDATE_MILESTONE_ANSWERS_FULFILLED: {
+      return {...state, answers: 
+        {...state.answers, fetching: false, fetched: true, error: null, data: action.formData} 
+      }
+      break;
+    }
+    case UPDATE_MILESTONE_ANSWERS_REJECTED: {
+      return {...state, answers: {...state.answers, fetching: false, error: action.payload} }
       break;
     }
 

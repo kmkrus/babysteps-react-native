@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { 
   Text, 
+  Button,
   CheckBox,
   FormLabel,
   FormInput
@@ -24,8 +25,16 @@ import {
   resetMilestoneQuestions,
   fetchMilestoneQuestions, 
   resetMilestoneChoices,
-  fetchMilestoneChoices 
+  fetchMilestoneChoices,
+  resetMilestoneAnswers,
+  fetchMilestoneAnswers,
+  updateMilestoneAnswers,
 } from '../actions/milestone_actions';
+import {
+  fetchUser,
+  fetchRespondent,
+  fetchSubject
+} from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 
@@ -36,7 +45,9 @@ const itemWidth = width - 40
 class MilestoneQuestionsScreen extends Component {
 
   state = {
-    section: {}
+    section: {},
+    answers: [],
+    answersFetched: false,
   }
 
   static navigationOptions = ({ navigation }) => {
@@ -50,8 +61,12 @@ class MilestoneQuestionsScreen extends Component {
   componentWillMount() {
     this.props.resetMilestoneQuestions()
     this.props.resetMilestoneChoices()
+    this.props.resetMilestoneAnswers()
     const task = this.props.navigation.state.params.task
     this.props.fetchMilestoneSections({ task_id: task.id })
+    this.props.fetchUser()
+    this.props.fetchRespondent()
+    this.props.fetchSubject()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -69,9 +84,10 @@ class MilestoneQuestionsScreen extends Component {
         if ( _.isEmpty(this.state.section) ) {
           const section = nextProps.milestones.sections.data[0] 
           this.setState({ section: section })
-          this.props.navigation.setParams({section: section})
+          this.props.navigation.setParams({ section: section })
           this.props.fetchMilestoneQuestions({ section_id: section.id })
           this.props.resetMilestoneChoices()
+          this.props.fetchMilestoneAnswers({ section_id: section.id })
         } else {
           if ( !nextProps.milestones.questions.fetching ) {
             if ( _.isEmpty(nextProps.milestones.questions.data) || nextProps.milestones.questions.data[0].section_id != this.state.section.id ) {
@@ -91,6 +107,13 @@ class MilestoneQuestionsScreen extends Component {
         } // isEmpty state.section 
       } // isEmpty sections.data
     } // sections.fetching
+
+    if ( !nextProps.milestones.answers.fetching && !nextProps.milestones.answers.fetched ) {
+      if ( _.isEmpty(this.state.answers) && !this.state.answersFetched ) {
+        this.setState({ answers: this.props.milestones.answers.data, answersFetched: true })
+      }
+    }
+
   }
 
   renderItem = (item) => {
@@ -102,7 +125,7 @@ class MilestoneQuestionsScreen extends Component {
 
         <View style={ styles.questionContainer }>
           <View style={ styles.questionLeft }>
-            <Text style={styles.question}>{ question_number + '. ' + question.title}</Text> 
+            <Text style={styles.question}>{ question_number + '.  ' + question.title}</Text> 
           </View>
           <View>
             { this.renderChoices(question) }
@@ -116,11 +139,11 @@ class MilestoneQuestionsScreen extends Component {
   renderChoices = (question) => {
     switch( question.rn_input_type ) {
       case 'check_box_multiple': {
-        return this.renderCheckBoxMultiple( question )
+        return this.renderCheckBox( question, 'multiple' )
         break;
       }
       case 'check_box_single': {
-        return this.renderCheckBoxSingle( question )
+        return this.renderCheckBox( question, 'single' )
         break;
       }
       case 'check_box_yes_no': {
@@ -134,79 +157,154 @@ class MilestoneQuestionsScreen extends Component {
     }
   }
 
-  renderCheckBoxMultiple = (question) => {
+  saveResponse = (choice, response, options={}) => {
+    let answer = {}
+    let answers = this.state.answers
+    const format = options.format
+    const preserve = options.preserve
+
+    if ( format == 'single') {
+      // delete all previous answers for this question if only one response allowed.  
+      _.remove(answers, function(answer) {
+        if ( preserve ) {
+          // preserve answer if adding attribute
+          return (answer.question_id === choice.question_id && answer.choice_id !== choice.id )
+        } else {
+          return (answer.question_id === choice.question_id)
+        }
+      })
+    }
+
+    const index = _.findIndex(answers, {choice_id: choice.id})
+
+    if ( index == -1 ) {
+
+      if ( format == 'single' && !response.answer_boolean) {
+        // Do not save response if only single response allowed and answer boolean false
+      } else {  
+        answer = {
+          section_id: this.state.section.id,
+          question_id: choice.question_id,
+          choice_id: choice.id,
+          score: choice.score,
+        }
+        if ( !_.isEmpty(this.props.registration.user.data) ) {
+          answer['user_id'] = this.props.registration.user.data.id
+          answer['user_api_id'] = this.props.registration.user.data.api_id
+        }
+        if ( !_.isEmpty(this.props.registration.respondent.data) ) {
+          answer['respondent_id'] = this.props.registration.respondent.data.id
+          answer['respondent_api_id'] = this.props.registration.respondent.data.api_id
+        }
+        if ( !_.isEmpty(this.props.registration.subject.data) ) {
+          answer['subject_id'] = this.props.registration.subject.data.id
+          answer['subject_api_id'] = this.props.registration.subject.data.api_id
+        }
+        
+        _.assign(answer, response)
+
+        answers.push(answer) 
+      } // format == single
+
+    } else {
+
+      answer = _.find(answers, ['choice_id', choice.id])
+      _.assign(answer, response)
+
+    } // index = -1 
+
+    this.setState({ answers: answers })
+
+  } 
+
+  renderCheckBox = (question, format='multiple') => {
     const collection = _.map(question.choices, (choice) => {
+      let checked = false 
+      let text = ''
+      const answer = _.find(this.state.answers, ['choice_id', choice.id])
+
+      if (answer) {
+        checked = answer.answer_boolean
+        text = answer.answer_text 
+      }
+      const requireExplanation = ( choice.require_explanation == 'if_true'  && checked )
+      
       return (
-        <CheckBox 
-          key={ choice.id }
-          title={ choice.body } 
-          textStyle={ styles.checkBoxChoiceText } 
-          containerStyle={ styles.checkBoxChoiceContainer }
-          onPress={ () => this.setState({choice: true}) }
-        />
+        <View key={ choice.id  } style={styles.checkBoxExplanationContainer}>
+          <CheckBox 
+            title={ choice.body } 
+            textStyle={ styles.checkBoxChoiceText } 
+            containerStyle={ styles.checkBoxChoiceContainer }
+            checked={ checked }
+            onPress={ () => this.saveResponse(choice, { answer_boolean: !checked  }, {format: format}) }
+          />
+          { requireExplanation && 
+            <FormInput 
+              inputStyle={ styles.textInput }
+              defaultValue={ text }
+              onChangeText={ (value) => this.saveResponse(choice, { answer_text: value }, {preserve: true} ) }
+              containerStyle={ { borderBottomColor: Colors.lightGrey }}
+              underlineColorAndroid={Colors.lightGrey}
+            />
+          }
+        </View>
       )
     })
-    return (
-      <View >
-        { collection }
-      </View>
-    )
-  }
-
-  renderCheckBoxSingle = (question) => {
-    const collection = _.map(question.choices, (choice) => {
-      return (
-        <CheckBox 
-          key={ choice.id }
-          title={ choice.body } 
-          textStyle={ styles.checkBoxChoiceText } 
-          containerStyle={ styles.checkBoxChoiceContainer }
-          onPress={ () => this.setState({choice: true}) }
-        />
-       )
-    })
-    return (
-      <View >
-        { collection }
-      </View>
-    )
+    return <View>{ collection }</View> 
   }
 
   renderCheckYesNo = (question) => {
     const collection = _.map(question.choices, (choice) => {
+      let checked = false 
+      const answer = _.find(this.state.answers, ['choice_id', choice.id])     
+      if (answer) {
+        checked = answer.answer_boolean
+      }
       return (
         <CheckBox
           key={ choice.id }
           title={ choice.body } 
           textStyle={ styles.checkBoxChoiceText } 
           containerStyle={ styles.checkBoxChoiceContainer }
-          onPress={ () => this.setState({choice: true}) }
+          checked={ checked }
+          onPress={ () => this.saveResponse(choice, { answer_boolean: !checked  }, {format: "single"}) }
         />
        )
     })
     return (
-      <View style={{flexDirection: 'row'}}>
-        { collection }
-      </View>
+      <View  style={{flexDirection: 'row'}}>{ collection }</View>
     )
   }
 
   renderTextShort = (question) => {
-    const choice = question.choices[0]
-    if ( choice ) {
+    const collection = _.map(question.choices, (choice) => {
+      let text = ''
+      const answer = _.find(this.state.answers, ['choice_id', choice.id])
+      if (answer) {
+        text = answer.answer_text 
+      }
       return (
-        <View>
-          <FormLabel labelStyle={{fontSize: 12, fontWeight: '400'}}>{ choice.body }</FormLabel>
+        <View key={ choice.id }>
+          <FormLabel labelStyle={ styles.textLabel }>{ choice.body }</FormLabel>
           <FormInput 
-            key={ choice.id }
-            inputStyle={{fontSize: 14, fontWeight: '600'}}
-            onChangeText={ (value) => console.log(value) }
+            inputStyle={ styles.textInput }
+            defaultValue={ text }
+            onChangeText={ (value) => this.saveResponse(choice, { answer_text: value }) }
             containerStyle={ { borderBottomColor: Colors.lightGrey }}
             underlineColorAndroid={Colors.lightGrey}
           />
         </View>
       )
-    }
+    })
+    return ( 
+      <View>{ collection }</View>
+    )
+  }
+
+  handleConfirm = () => {
+    // TODO validation
+    // TODO update milestone_triggers completed_at
+    this.props.updateMilestoneAnswers(this.state.section, this.state.answers)
   }
 
   render() {
@@ -216,11 +314,28 @@ class MilestoneQuestionsScreen extends Component {
 
     return (
       <ScrollView style={ styles.container }>
-        <FlatList
-          renderItem={ this.renderItem }
-          data={ data }
-          keyExtractor={ (item) => String(item.id) }
-        />
+        <View style={ styles.listContainer }>
+          <FlatList
+            renderItem={ this.renderItem }
+            data={ data }
+            keyExtractor={ (item) => String(item.id) }
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.grey}
+            buttonStyle={styles.buttonOneStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={ () => this.props.navigation.navigate('Milestones')}
+            title='Cancel' />
+          <Button
+            color={Colors.pink}
+            buttonStyle={styles.buttonTwoStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={ () => this.handleConfirm() }
+            title='Confirm' />
+        </View>
       </ScrollView>
     )
   }
@@ -231,6 +346,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  listContainer: {
+    flex: 1
   },
   questionContainer: {
     flexDirection: 'column', 
@@ -260,16 +378,58 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
   },
+  checkBoxExplanationContainer: {
+    flexDirection: 'column',
+  },
+  textInput: {
+    fontSize: 14, 
+    fontWeight: '600'
+  },
+  textLabel: {
+    fontSize: 12, 
+    fontWeight: '400'
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'center',    
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  buttonTitleStyle: {
+    fontWeight: '900',
+  },
+  buttonOneStyle: {
+    width: 150,
+    backgroundColor: Colors.lightGrey,
+    borderColor: Colors.grey,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  buttonTwoStyle: {
+    width: 150,
+    backgroundColor: Colors.lightPink,
+    borderColor: Colors.pink,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
  
 });
 
-const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
+const mapStateToProps = ({ session, milestones, registration }) => ({ session, milestones, registration });
 const mapDispatchToProps = { 
+  fetchUser,
+  fetchRespondent,
+  fetchSubject,
   fetchMilestoneSections, 
   resetMilestoneQuestions,
   fetchMilestoneQuestions,
   resetMilestoneChoices,
-  fetchMilestoneChoices 
+  fetchMilestoneChoices,
+  resetMilestoneAnswers,
+  fetchMilestoneAnswers,
+  updateMilestoneAnswers
 }
 
 export default connect( mapStateToProps, mapDispatchToProps )( MilestoneQuestionsScreen );

@@ -53,6 +53,16 @@ import {
   FETCH_MILESTONE_CHOICES_FULFILLED,
   FETCH_MILESTONE_CHOICES_REJECTED,
 
+  RESET_MILESTONE_ANSWERS,
+
+  FETCH_MILESTONE_ANSWERS_PENDING,
+  FETCH_MILESTONE_ANSWERS_FULFILLED,
+  FETCH_MILESTONE_ANSWERS_REJECTED,
+
+  UPDATE_MILESTONE_ANSWERS_PENDING,
+  UPDATE_MILESTONE_ANSWERS_FULFILLED,
+  UPDATE_MILESTONE_ANSWERS_REJECTED,
+
 } from './types';
 
 
@@ -282,6 +292,96 @@ export const fetchMilestoneChoices = ( params={} ) => {
           sql, [],
           (_, response) => { dispatch( Response(FETCH_MILESTONE_CHOICES_FULFILLED, response) ) },
           (_, error) => { dispatch( Response(FETCH_MILESTONE_CHOICES_REJECTED, error) ) }
+        );
+      })
+    )
+  };
+
+};
+
+export const resetMilestoneAnswers =() => {
+  return function (dispatch) {
+     dispatch( Pending(RESET_MILESTONE_ANSWERS) );
+  }
+}
+
+export const fetchMilestoneAnswers = ( params={} ) => {
+  return function (dispatch) {
+    
+    dispatch( Pending(FETCH_MILESTONE_ANSWERS_PENDING) );
+
+    var sql = 'SELECT * FROM answers WHERE answers.section_id = ' + params['section_id']
+    sql = sql + ' ORDER BY question_id, choice_id;'
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql( 
+          sql, [],
+          (_, response) => { dispatch( Response(FETCH_MILESTONE_ANSWERS_FULFILLED, response) ) },
+          (_, error) => { dispatch( Response(FETCH_MILESTONE_ANSWERS_REJECTED, error) ) }
+        );
+      })
+    )
+  };
+
+};
+
+export const updateMilestoneAnswers = ( section, answers ) => {
+  return function (dispatch) {
+    
+    dispatch( Pending(UPDATE_MILESTONE_ANSWERS_PENDING) );
+
+    const fields = [
+      "api_id", 
+      "user_id", 
+      "user_api_id",
+      "respondent_id",
+      "respondent_api_id",
+      "subject_id",
+      "subject_api_id", 
+      "milestone_id", 
+      "task_id", 
+      "section_id",
+      "question_id", 
+      "choice_id",
+      "answer_numeric",
+      "answer_boolean",
+      "answer_text",
+      "score",
+    ]
+
+    let values = []
+    let row = []
+    _.map(answers, (answer) => {
+      row = []
+      _.map(fields, (field) => {
+        if (answer[field] === undefined || answer[field] === null) {
+          row.push('null')
+        } else if (answer[field] === true) {
+          row.push(1)
+        } else if (answer[field] === false){
+          row.push(0)
+        } else if (field === 'answer_text' ) {
+          row.push(`"${answer[field]}"`)
+        } else {
+          row.push(answer[field]) 
+        }
+      })
+      values.push( `( ${row.join(', ')} )` )
+    })
+    
+    const sql = `INSERT INTO answers ( ${fields.join(', ')} ) VALUES ${values.join(', ')} `
+    
+    return (
+      db.transaction(tx => {
+        tx.executeSql( 'DELETE FROM answers WHERE section_id = ?', [section.id], 
+          (_, rows) => console.log('** Clear answers table for section ' + section.title ), 
+          (_, error) => console.log('*** Error in clearing answers table for section ' + section.title )
+        );
+        tx.executeSql( 
+          sql, [],
+          (_, response) => { dispatch( Response(UPDATE_MILESTONE_ANSWERS_FULFILLED, response, answers) ) },
+          (_, error) => { dispatch( Response(UPDATE_MILESTONE_ANSWERS_REJECTED, error) ) }
         );
       })
     )
