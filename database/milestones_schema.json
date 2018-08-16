@@ -43,8 +43,8 @@
       "milestone_id": "INTEGER", 
       "task_type": "TEXT", 
       "position": "INTEGER", 
-      "study_only": "TEXT", 
-      "baby_book": "TEXT", 
+      "study_only": "INTEGER", 
+      "baby_book": "INTEGER", 
       "name": "TEXT"
     },
     "indexes": [
@@ -99,6 +99,7 @@
     "columns": {
       "id": "INTEGER PRIMARY KEY", 
       "input_type": "TEXT", 
+      "rn_input_type": "TEXT",
       "name": "TEXT"
     },
     "indexes": [

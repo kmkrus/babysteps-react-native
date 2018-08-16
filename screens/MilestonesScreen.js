@@ -14,15 +14,16 @@ import _ from 'lodash';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { connect} from 'react-redux';
-import { fetchMilestoneGroups, fetchMilestones } from '../actions/milestone_actions';
+import { fetchMilestoneGroups, fetchMilestoneTasks } from '../actions/milestone_actions';
 
 import Colors from '../constants/Colors';
+import States from '../actions/states';
 
 const { width, height } = Dimensions.get('window');
 
 const itemWidth = width - 60
 
-var milestones = [];
+var tasks = [];
 
 class MilestonesScreen extends Component {
   static navigationOptions = {
@@ -31,22 +32,23 @@ class MilestonesScreen extends Component {
 
   componentWillMount() {
     this.props.fetchMilestoneGroups()
-    this.props.fetchMilestones()
+    this.props.fetchMilestoneTasks()
   }
 
   componentWillReceiveProps(nextProps, nextState) {
    
-    if ( !nextProps.milestones.milestones.fetching && nextProps.milestones.milestones.fetched ) {
+    if ( !nextProps.milestones.tasks.fetching && nextProps.milestones.tasks.fetched ) {
 
-      milestones = _.filter(nextProps.milestones.milestones.data, function(m) {
-        return m.always_visible == 1
+      tasks = _.filter(nextProps.milestones.tasks.data, function(task) {
+        if ( nextProps.session.registration_state == States.REGISTERED_AS_NO_STUDY && task.study_only == 1 ) { 
+          return false
+        }
+        return true
       });
 
-      milestones = _.sortBy(milestones, ["milestone_group_id", "position"]);
-      
-      milestones = _.groupBy(milestones, m => m.milestone_group_id );
+      tasks = _.groupBy(tasks, task => task.milestone_group_id );
 
-      milestones = _.reduce(milestones, (acc, data, index) => {
+      tasks = _.reduce(tasks, (acc, data, index) => {
         const group = _.find(this.props.milestones.groups.data, ['id', data[0].milestone_group_id])
         acc.push({
           key: index,
@@ -61,12 +63,12 @@ class MilestonesScreen extends Component {
 
   renderItem = (item) => {
     return  (
-      <TouchableOpacity onPress={()=>{this.props.navigation.navigate('MilestoneDetailScreen',{item:item})}}> 
+      <TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('MilestoneQuestions', {task: item.item} ) } }> 
 
         <View style={ styles.itemContainer }>
           <View style={ styles.itemLeft }>
             <MaterialCommunityIcons name='checkbox-blank-outline' style={ styles.itemCheckBox } />
-            <Text style={styles.item}>{item.item.title}</Text> 
+            <Text style={styles.item}>{`${item.item.milestone_title} - ${item.item.name}`}</Text> 
           </View>
           <View style={ styles.itemRight}>               
             <Ionicons name='md-arrow-forward' style={ styles.itemRightArrow } />
@@ -78,17 +80,17 @@ class MilestonesScreen extends Component {
   }
 
   renderSectionHeader = (headerItem) => {
-    return <Text style={styles.section}>{ headerItem.section.title }</Text>
+    return <Text style={ styles.section }>{ headerItem.section.title }</Text>
   }  
 
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={ styles.container }>
         <SectionList
-          renderSectionHeader={this.renderSectionHeader}
-          renderItem={this.renderItem}
-          sections={milestones}
-          keyExtractor={(item) => item.id}
+          renderSectionHeader={ this.renderSectionHeader }
+          renderItem={ this.renderItem }
+          sections={ tasks }
+          keyExtractor={ (item) => item.id }
         />
       </ScrollView>
     )
@@ -140,6 +142,6 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
-const mapDispatchToProps = { fetchMilestoneGroups, fetchMilestones }
+const mapDispatchToProps = { fetchMilestoneGroups, fetchMilestoneTasks }
 
 export default connect( mapStateToProps, mapDispatchToProps )( MilestonesScreen );
