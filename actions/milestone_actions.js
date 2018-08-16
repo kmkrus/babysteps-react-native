@@ -1,5 +1,5 @@
 import { SQLite } from 'expo';
-import axios from "axios";
+import axios from 'axios';
 
 import { _ } from 'lodash';
 
@@ -72,44 +72,41 @@ import {
 
 const db = SQLite.openDatabase('babysteps.db');
 
-const Pending = (type) => {
-  return { type }
+const Pending = type => {
+  return { type };
 };
 
-const Response = ( type, payload, formData={} ) => {
-  return { type, payload, formData }
+const Response = (type, payload, formData = {}) => {
+  return { type, payload, formData };
 };
 
 export const fetchMilestones = () => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONES_PENDING) );
-
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONES_PENDING));
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           'SELECT * FROM milestones;', [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONES_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONES_REJECTED, error) ) }
+          (_, response) => { dispatch( Response(FETCH_MILESTONES_FULFILLED, response))},
+          (_, error) => {dispatch( Response(FETCH_MILESTONES_REJECTED, error))}
         );
       })
-    )
+    );
   };
 
 };
 
-export const resetApiMilestones =() => {
-  return function (dispatch) {
-     dispatch( Pending(RESET_API_MILESTONES) );
-  }
-}
+export const resetApiMilestones = () => {
+  return dispatch => {
+    dispatch(Pending(RESET_API_MILESTONES));
+  };
+};
 
 // this fetches all milestone and related tables
 export const apiFetchMilestones = () => {
 
-  return function (dispatch) {
-    dispatch( Pending(API_FETCH_MILESTONES_PENDING) );
-   
+  return dispatch => {
+    dispatch(Pending(API_FETCH_MILESTONES_PENDING));
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -117,52 +114,47 @@ export const apiFetchMilestones = () => {
         baseURL: CONSTANTS.BASE_URL,
         url: '/milestones',
         headers: {
-          "milestone_token": CONSTANTS.MILESTONE_TOKEN
+          "milestone_token": CONSTANTS.MILESTONE_TOKEN,
         }
       })
-      .then(function (response) {
-        Object.keys(response.data).map( function(name) {
+      .then( response => {
+        Object.keys(response.data).map( name => {
           insertRows(name, schema[name], response.data[name])
         })
-        dispatch( Response(API_FETCH_MILESTONES_FULFILLED, response) )
+        dispatch(Response(API_FETCH_MILESTONES_FULFILLED, response))
       })
-      .catch(function (error) {
-         dispatch( Response(API_FETCH_MILESTONES_REJECTED, error) )
+      .catch(error => {
+         dispatch(Response(API_FETCH_MILESTONES_REJECTED, error))
       });
-    }) // return Promise
+    }); // return Promise
 
-  } // return dispatch
-}
+  }; // return dispatch
+};
 
 export const fetchMilestoneGroups = () => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONE_GROUPS_PENDING) );
-
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_GROUPS_PENDING));
     return (
       db.transaction(tx => {
         tx.executeSql( 
           'SELECT * FROM milestone_groups;', [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_GROUPS_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_GROUPS_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_GROUPS_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_GROUPS_REJECTED, error))}
         );
       })
     )
   };
-
 };
 
 export const fetchMilestoneCalendar = () => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONE_CALENDAR_PENDING) );
-
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_CALENDAR_PENDING));
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           'SELECT * FROM milestone_triggers INNER JOIN milestones ON milestone_triggers.milestone_id = milestones.id ORDER BY milestones.days_since_baseline;', [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_CALENDAR_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error))}
         );
       })
     )
@@ -170,10 +162,9 @@ export const fetchMilestoneCalendar = () => {
 
 };
 
-export const apiFetchMilestoneCalendar = (params) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(API_FETCH_MILESTONE_CALENDAR_PENDING) );
+export const apiFetchMilestoneCalendar = params => {
+  return dispatch => {
+    dispatch(Pending(API_FETCH_MILESTONE_CALENDAR_PENDING));
 
     return new Promise((resolve, reject) => {
       axios({
@@ -181,201 +172,188 @@ export const apiFetchMilestoneCalendar = (params) => {
         responseType: 'json',
         baseURL: CONSTANTS.BASE_URL,
         url: '/milestone_calendars',
-        params: params,
+        params,
         headers: {
-          "milestone_token": CONSTANTS.MILESTONE_TOKEN
+          "milestone_token": CONSTANTS.MILESTONE_TOKEN,
         }
       })
-      .then(function (response) {
-        insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data) 
-        dispatch( Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response) )
+      .then( response => {
+        insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+        dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
       })
-      .catch(function (error) {
-        dispatch( Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error) )
+      .catch(error => {
+        dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
       });
-    }) // return Promise
+    }); // return Promise
 
-  } // return dispatch
-}
+  }; // return dispatch
+};
 
-export const fetchMilestoneTasks = ( params={} ) => {
-  return function (dispatch) {
-    
+export const fetchMilestoneTasks = (params = {}) => {
+  return dispatch => {
     dispatch( Pending(FETCH_MILESTONE_TASKS_PENDING) );
-
-    var sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts'
-    sql = sql + ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id'
-    sql = sql + ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id'
-    sql = sql + ' WHERE mg.visible = 1 AND ms.always_visible = 1'
-    sql = sql + ' ORDER BY milestone_group_position, milestone_position, position;'
+    var sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
+    sql = sql + ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
+    sql = sql + ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
+    sql = sql + ' WHERE mg.visible = 1 AND ms.always_visible = 1';
+    sql = sql + ' ORDER BY milestone_group_position, milestone_position, position;';
     
     return (
       db.transaction(tx => {
         tx.executeSql( 
           sql, [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_TASKS_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_TASKS_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_TASKS_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_TASKS_REJECTED, error))}
         );
       })
-    )
+    );
   };
 
 };
 
-export const fetchMilestoneSections = ( params={} ) => {
-  return function (dispatch) {
-    
+export const fetchMilestoneSections = (params = {}) => {
+  return dispatch => {
     dispatch( Pending(FETCH_MILESTONE_SECTIONS_PENDING) );
-
-    var sql = 'SELECT * FROM sections'
-    sql = sql + ' WHERE sections.task_id = ' + params['task_id']
-    sql = sql + ' ORDER BY sections.position;'
+    var sql = 'SELECT * FROM sections';
+    sql = sql + ' WHERE sections.task_id = ' + params['task_id'];
+    sql = sql + ' ORDER BY sections.position;';
 
     return (
       db.transaction(tx => {
         tx.executeSql( 
           sql, [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_SECTIONS_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_SECTIONS_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_SECTIONS_FULFILLED, response))},
+          (_, error) => { dispatch( Response(FETCH_MILESTONE_SECTIONS_REJECTED, error))}
         );
       })
-    )
+    );
   };
-
 };
 
-export const resetMilestoneQuestions =() => {
+export const resetMilestoneQuestions = () => {
   return function (dispatch) {
-     dispatch( Pending(RESET_MILESTONE_QUESTIONS) );
+     dispatch(Pending(RESET_MILESTONE_QUESTIONS));
   }
 }
 
-export const fetchMilestoneQuestions = ( params={} ) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONE_QUESTIONS_PENDING) );
-
-    var sql = 'SELECT qs.*, ops.input_type, ops.rn_input_type FROM questions AS qs'
-    sql = sql + ' INNER JOIN option_groups AS ops ON qs.option_group_id = ops.id'
-    sql = sql + ' WHERE qs.section_id = ' + params['section_id']
-    sql = sql + ' ORDER BY qs.position;'
+export const fetchMilestoneQuestions = (params={}) => {
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_QUESTIONS_PENDING));
+    var sql = 'SELECT qs.*, ops.input_type, ops.rn_input_type FROM questions AS qs';
+    sql = sql + ' INNER JOIN option_groups AS ops ON qs.option_group_id = ops.id';
+    sql = sql + ' WHERE qs.section_id = ' + params['section_id'];
+    sql = sql + ' ORDER BY qs.position;';
 
     return (
       db.transaction(tx => {
         tx.executeSql( 
           sql, [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_QUESTIONS_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_QUESTIONS_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_QUESTIONS_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_QUESTIONS_REJECTED, error))}
         );
       })
-    )
+    );
   };
-
 };
 
-export const resetMilestoneChoices =() => {
-  return function (dispatch) {
-     dispatch( Pending(RESET_MILESTONE_CHOICES) );
-  }
-}
+export const resetMilestoneChoices = () => {
+  return dispatch => {
+    dispatch(Pending(RESET_MILESTONE_CHOICES));
+  };
+};
 
-export const fetchMilestoneChoices = ( params={} ) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONE_CHOICES_PENDING) );
+export const fetchMilestoneChoices = (params={}) => {
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_CHOICES_PENDING));
 
-    var question_ids = `( ${ params['question_ids'].join(', ') } )`
+    const question_ids = `( ${params.question_ids.join(', ')} )`;
 
-    var sql = 'SELECT * FROM choices'
-    sql = sql + ' WHERE question_id IN ' + question_ids 
-    sql = sql + ' ORDER BY question_id, position;'
+    let sql = 'SELECT * FROM choices';
+    sql = sql + ' WHERE question_id IN ' + question_ids;
+    sql = sql + ' ORDER BY question_id, position;';
 
     return (
       db.transaction(tx => {
         tx.executeSql( 
           sql, [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_CHOICES_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_CHOICES_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_CHOICES_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_CHOICES_REJECTED, error))}
         );
       })
-    )
+    );
   };
-
 };
 
-export const resetMilestoneAnswers =() => {
-  return function (dispatch) {
-     dispatch( Pending(RESET_MILESTONE_ANSWERS) );
-  }
-}
+export const resetMilestoneAnswers = () => {
+  return dispatch => {
+    dispatch(Pending(RESET_MILESTONE_ANSWERS));
+  };
+};
 
-export const fetchMilestoneAnswers = ( params={} ) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_MILESTONE_ANSWERS_PENDING) );
+export const fetchMilestoneAnswers = (params={}) => {
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_ANSWERS_PENDING));
 
-    var sql = 'SELECT * FROM answers WHERE answers.section_id = ' + params['section_id']
-    sql = sql + ' ORDER BY question_id, choice_id;'
+    var sql = 'SELECT * FROM answers WHERE answers.section_id = ' + params['section_id'];
+    sql = sql + ' ORDER BY question_id, choice_id;';
 
     return (
       db.transaction(tx => {
         tx.executeSql( 
           sql, [],
-          (_, response) => { dispatch( Response(FETCH_MILESTONE_ANSWERS_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_MILESTONE_ANSWERS_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_REJECTED, error))}
         );
       })
-    )
+    );
   };
-
 };
 
-export const updateMilestoneAnswers = ( section, answers ) => {
-  return function (dispatch) {
-    
-    dispatch( Pending(UPDATE_MILESTONE_ANSWERS_PENDING) );
+export const updateMilestoneAnswers = (section, answers) => {
+  return dispatch => {
+    dispatch(Pending(UPDATE_MILESTONE_ANSWERS_PENDING));
 
     const fields = [
-      "api_id", 
-      "user_id", 
-      "user_api_id",
-      "respondent_id",
-      "respondent_api_id",
-      "subject_id",
-      "subject_api_id", 
-      "milestone_id", 
-      "task_id", 
-      "section_id",
-      "question_id", 
-      "choice_id",
-      "answer_numeric",
-      "answer_boolean",
-      "answer_text",
-      "score",
-    ]
+      'api_id',
+      'user_id',
+      'user_api_id',
+      'respondent_id',
+      'respondent_api_id',
+      'subject_id',
+      'subject_api_id',
+      'milestone_id',
+      'task_id',
+      'section_id',
+      'question_id',
+      'choice_id',
+      'answer_numeric',
+      'answer_boolean',
+      'answer_text',
+      'score',
+    ];
 
-    let values = []
-    let row = []
-    _.map(answers, (answer) => {
-      row = []
-      _.map(fields, (field) => {
+    const values = [];
+    const row = [];
+    _.map(answers, answer => {
+      row = [];
+      _.map(fields, field => {
         if (answer[field] === undefined || answer[field] === null) {
-          row.push('null')
+          row.push('null');
         } else if (answer[field] === true) {
-          row.push(1)
-        } else if (answer[field] === false){
-          row.push(0)
-        } else if (field === 'answer_text' ) {
-          row.push(`"${answer[field]}"`)
+          row.push(1);
+        } else if (answer[field] === false) {
+          row.push(0);
+        } else if (field === 'answer_text') {
+          row.push(`"${answer[field]}"`);
         } else {
-          row.push(answer[field]) 
+          row.push(answer[field]) ;
         }
       })
-      values.push( `( ${row.join(', ')} )` )
-    })
-    
-    const sql = `INSERT INTO answers ( ${fields.join(', ')} ) VALUES ${values.join(', ')} `
-    
+      values.push(`( ${row.join(', ')} )`);
+    });
+
+    const sql = `INSERT INTO answers ( ${fields.join(', ')} ) VALUES ${values.join(', ')} `;
+
     return (
       db.transaction(tx => {
         tx.executeSql( 'DELETE FROM answers WHERE section_id = ?', [section.id], 
@@ -388,46 +366,40 @@ export const updateMilestoneAnswers = ( section, answers ) => {
           (_, error) => { dispatch( Response(UPDATE_MILESTONE_ANSWERS_REJECTED, error) ) }
         );
       })
-    )
+    );
   };
-
 };
-<<<<<<< HEAD
-=======
 
 export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
- 
-  let answers = []
-  _.forEach(data, (row) => {
-    let answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id'])
-    answer.id = row.api_id
-    answer.user_id = row.user_api_id 
-    answer.respondent_id = row.respondent_api_id 
-    answer.subject_id = row.subject_api_id
-    answers.push(answer)
-  })
 
-  return function (dispatch) {
+  const answers = [];
+  _.forEach(data, row => {
+    const answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
+    answer.id = row.api_id;
+    answer.user_id = row.user_api_id;
+    answer.respondent_id = row.respondent_api_id;
+    answer.subject_id = row.subject_api_id;
+    answers.push(answer);
+  });
+
+  return dispatch => {
 
     dispatch({
       type: API_UPDATE_MILESTONE_ANSWERS_PENDING,
       payload: {
-        data: { answers: answers },
-        session: session,
+        data: { answers },
+        session,
       },
       meta: {
         offline: {
-          effect: { 
+          effect: {
             method: 'PUT',
             url: '/answers/bulk_update/' + section_id,
             fulfilled: API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
             rejected: API_UPDATE_MILESTONE_ANSWERS_REJECTED,
-          }
-        }
-      }
-    })
-
-  } // return dispatch
->>>>>>> Stashed changes
-}
->>>>>>> milestone answer api
+          },
+        },
+      },
+    });
+  }; // return dispatch
+};
