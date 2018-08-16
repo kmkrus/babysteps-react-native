@@ -333,7 +333,7 @@ export const updateMilestoneAnswers = (section, answers) => {
     ];
 
     const values = [];
-    const row = [];
+    let row = [];
     _.map(answers, answer => {
       row = [];
       _.map(fields, field => {
