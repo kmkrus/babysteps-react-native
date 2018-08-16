@@ -63,6 +63,10 @@ import {
   UPDATE_MILESTONE_ANSWERS_FULFILLED,
   UPDATE_MILESTONE_ANSWERS_REJECTED,
 
+  API_UPDATE_MILESTONE_ANSWERS_PENDING,
+  API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
+  API_UPDATE_MILESTONE_ANSWERS_REJECTED,
+
 } from './types';
 
 
@@ -388,3 +392,42 @@ export const updateMilestoneAnswers = ( section, answers ) => {
   };
 
 };
+<<<<<<< HEAD
+=======
+
+export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
+ 
+  let answers = []
+  _.forEach(data, (row) => {
+    let answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id'])
+    answer.id = row.api_id
+    answer.user_id = row.user_api_id 
+    answer.respondent_id = row.respondent_api_id 
+    answer.subject_id = row.subject_api_id
+    answers.push(answer)
+  })
+
+  return function (dispatch) {
+
+    dispatch({
+      type: API_UPDATE_MILESTONE_ANSWERS_PENDING,
+      payload: {
+        data: { answers: answers },
+        session: session,
+      },
+      meta: {
+        offline: {
+          effect: { 
+            method: 'PUT',
+            url: '/answers/bulk_update/' + section_id,
+            fulfilled: API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
+            rejected: API_UPDATE_MILESTONE_ANSWERS_REJECTED,
+          }
+        }
+      }
+    })
+
+  } // return dispatch
+>>>>>>> Stashed changes
+}
+>>>>>>> milestone answer api

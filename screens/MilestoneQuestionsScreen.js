@@ -1,346 +1,386 @@
 import React, { Component } from 'react';
-import { 
+import {
   ScrollView,
-  View, 
-  StyleSheet, 
+  View,
+  StyleSheet,
   FlatList,
   Dimensions,
-  TouchableOpacity 
+  TouchableOpacity,
 } from 'react-native';
-import { 
-  Text, 
+import {
+  Text,
   Button,
   CheckBox,
   FormLabel,
-  FormInput
+  FormInput,
 } from 'react-native-elements';
 
 import _ from 'lodash';
 
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-
-import { connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
-  fetchMilestoneSections, 
+  fetchMilestoneSections,
   resetMilestoneQuestions,
-  fetchMilestoneQuestions, 
+  fetchMilestoneQuestions,
   resetMilestoneChoices,
   fetchMilestoneChoices,
   resetMilestoneAnswers,
   fetchMilestoneAnswers,
   updateMilestoneAnswers,
+  apiUpdateMilestoneAnswers,
 } from '../actions/milestone_actions';
 import {
   fetchUser,
   fetchRespondent,
-  fetchSubject
+  fetchSubject,
 } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
+import States from '../actions/states';
 
 const { width, height } = Dimensions.get('window');
 
-const itemWidth = width - 40
+const itemWidth = width - 40;
 
 class MilestoneQuestionsScreen extends Component {
 
+  static navigationOptions = ({ navigation }) => {
+    const title = navigation.getParam('section')
+      ? navigation.getParam('section').title
+      : '';
+    return { title };
+  };
+
   state = {
     section: {},
-    answers: [],
+    questionsFetched: false,
     answersFetched: false,
-  }
-
-  static navigationOptions = ({ navigation }) => {
-    const title = navigation.getParam('section') ? navigation.getParam('section').title : ''
-    return {
-      title: title
-    }
-    
+    answers: [],
   };
 
   componentWillMount() {
-    this.props.resetMilestoneQuestions()
-    this.props.resetMilestoneChoices()
-    this.props.resetMilestoneAnswers()
-    const task = this.props.navigation.state.params.task
-    this.props.fetchMilestoneSections({ task_id: task.id })
-    this.props.fetchUser()
-    this.props.fetchRespondent()
-    this.props.fetchSubject()
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.milestones.questions.fetching || 
-      nextProps.milestones.choices.fetching ) {
-      return false
-    }
-    return true
+    this.props.resetMilestoneQuestions();
+    this.props.resetMilestoneChoices();
+    this.props.resetMilestoneAnswers();
+    const task = this.props.navigation.state.params.task;
+    this.props.fetchMilestoneSections({ task_id: task.id });
+    this.props.fetchUser();
+    this.props.fetchRespondent();
+    this.props.fetchSubject();
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-
-    if ( !nextProps.milestones.sections.fetching && nextProps.milestones.sections.fetched ) {
-      if ( !_.isEmpty(nextProps.milestones.sections.data) ) {
-        if ( _.isEmpty(this.state.section) ) {
-          const section = nextProps.milestones.sections.data[0] 
-          this.setState({ section: section })
-          this.props.navigation.setParams({ section: section })
-          this.props.fetchMilestoneQuestions({ section_id: section.id })
-          this.props.resetMilestoneChoices()
-          this.props.fetchMilestoneAnswers({ section_id: section.id })
+    if (
+      !nextProps.milestones.sections.fetching &&
+      nextProps.milestones.sections.fetched) {
+      if (!_.isEmpty(nextProps.milestones.sections.data)) {
+        if (_.isEmpty(this.state.section)) {
+          const section = nextProps.milestones.sections.data[0];
+          this.setState({section: section});
+          this.props.navigation.setParams({ section });
+          this.props.fetchMilestoneQuestions({ section_id: section.id });
+          this.props.resetMilestoneChoices();
+          this.props.fetchMilestoneAnswers({ section_id: section.id });
         } else {
-          if ( !nextProps.milestones.questions.fetching ) {
-            if ( _.isEmpty(nextProps.milestones.questions.data) || nextProps.milestones.questions.data[0].section_id != this.state.section.id ) {
-              this.props.fetchMilestoneQuestions({ section_id: this.state.section.id })
-              this.props.resetMilestoneChoices()
+          if (!nextProps.milestones.questions.fetching) {
+            if (
+              _.isEmpty(nextProps.milestones.questions.data) ||
+              nextProps.milestones.questions.data[0].section_id !== this.state.section.id) {
+              this.props.fetchMilestoneQuestions({
+                section_id: this.state.section.id
+              });
+              this.props.resetMilestoneChoices();
             }
           }
-          if ( !nextProps.milestones.questions.fetching && nextProps.milestones.questions.fetched ) {
-            if ( !nextProps.milestones.choices.fetching ) {
-              if ( _.isEmpty(nextProps.milestones.choices.data) ) {
-                const question_ids = _.map( nextProps.milestones.questions.data, 'id' )
-                this.props.fetchMilestoneChoices({ question_ids: question_ids })
+          if (
+            !nextProps.milestones.questions.fetching &&
+            nextProps.milestones.questions.fetched) {
+            if (!nextProps.milestones.choices.fetching) {
+              if (_.isEmpty(nextProps.milestones.choices.data)) {
+                this.setState({ questionsFetched: true });
+                const question_ids = _.map(nextProps.milestones.questions.data, 'id');
+                this.props.fetchMilestoneChoices({ question_ids });
               }
-            }
+            };
 
           } // questions.fetching
-        } // isEmpty state.section 
+        } // isEmpty state.section
       } // isEmpty sections.data
     } // sections.fetching
 
-    if ( !nextProps.milestones.answers.fetching && !nextProps.milestones.answers.fetched ) {
-      if ( _.isEmpty(this.state.answers) && !this.state.answersFetched ) {
-        this.setState({ answers: this.props.milestones.answers.data, answersFetched: true })
+    if (
+      !nextProps.milestones.answers.fetching &&
+      !nextProps.milestones.answers.fetched) {
+      if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
+        this.setState({
+          answers: this.props.milestones.answers.data,
+          answersFetched: true,
+        });
       }
     }
 
   }
 
-  renderItem = (item) => {
-    const question = item.item
-    const question_number = _.isEmpty(question.question_number) ? String(question.position) : question_number
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      nextProps.milestones.questions.fetching ||
+      nextProps.milestones.choices.fetching) {
+      return false;
+    }
+    return true;
+  }
+
+  renderItem = item => {
+    const question = item.item;
+    const question_number = _.isEmpty(question.question_number)
+      ? String(question.position)
+      : question_number;
 
     return  (
-      <TouchableOpacity onPress={()=>{this.props.navigation.navigate('MilestoneQuestions', {task: item})}}> 
-
+      <TouchableOpacity
+        onPress={() => {
+          this.props.navigation.navigate('MilestoneQuestions', { task: item })
+        }}
+      > 
         <View style={ styles.questionContainer }>
           <View style={ styles.questionLeft }>
             <Text style={styles.question}>{ question_number + '.  ' + question.title}</Text> 
           </View>
-          <View>
-            { this.renderChoices(question) }
-          </View>
+          <View>{this.renderChoices(question)}</View>
         </View>
-
       </TouchableOpacity>
-    )
-  }
+    );
+  };
 
-  renderChoices = (question) => {
-    switch( question.rn_input_type ) {
+  renderChoices = question => {
+    switch(question.rn_input_type) {
       case 'check_box_multiple': {
-        return this.renderCheckBox( question, 'multiple' )
+        return this.renderCheckBox(question, 'multiple')
         break;
-      }
+      };
       case 'check_box_single': {
-        return this.renderCheckBox( question, 'single' )
+        return this.renderCheckBox(question, 'single')
         break;
-      }
+      };
       case 'check_box_yes_no': {
-        return this.renderCheckYesNo( question )
+        return this.renderCheckYesNo(question)
         break;
-      }
+      };
       case 'text_short': {
-        return this.renderTextShort( question )
+        return this.renderTextShort(question)
         break;
-      }
-    }
-  }
+      };
+    };
+  };
 
-  saveResponse = (choice, response, options={}) => {
-    let answer = {}
-    let answers = this.state.answers
-    const format = options.format
-    const preserve = options.preserve
+  saveResponse = (choice, response, options = {}) => {
+    let answer = {};
+    let answers = this.state.answers;
+    const format = options.format;
+    const preserve = options.preserve;
 
-    if ( format == 'single') {
-      // delete all previous answers for this question if only one response allowed.  
-      _.remove(answers, function(answer) {
-        if ( preserve ) {
+    if (format === 'single') {
+      // delete all previous answers for this question if only one response allowed.
+      _.remove(answers, ans => {
+        if (preserve) {
           // preserve answer if adding attribute
-          return (answer.question_id === choice.question_id && answer.choice_id !== choice.id )
+          return (
+            ans.question_id === choice.question_id &&
+            ans.choice_id !== choice.id
+          );
         } else {
-          return (answer.question_id === choice.question_id)
-        }
-      })
+          return ans.question_id === choice.question_id;
+        };
+      });
     }
 
-    const index = _.findIndex(answers, {choice_id: choice.id})
+    const index = _.findIndex(answers, { choice_id: choice.id });
 
-    if ( index == -1 ) {
-
-      if ( format == 'single' && !response.answer_boolean) {
+    if (index === -1) {
+      if (format === 'single' && !response.answer_boolean) {
         // Do not save response if only single response allowed and answer boolean false
-      } else {  
+      } else {
         answer = {
           section_id: this.state.section.id,
           question_id: choice.question_id,
           choice_id: choice.id,
           score: choice.score,
+        };
+        if (!_.isEmpty(this.props.registration.user.data)) {
+          answer.user_id = this.props.registration.user.data.id;
+          answer.user_api_id = this.props.registration.user.data.api_id;
         }
-        if ( !_.isEmpty(this.props.registration.user.data) ) {
-          answer['user_id'] = this.props.registration.user.data.id
-          answer['user_api_id'] = this.props.registration.user.data.api_id
+        if (!_.isEmpty(this.props.registration.respondent.data)) {
+          answer.respondent_id = this.props.registration.respondent.data.id;
+          answer.respondent_api_id = this.props.registration.respondent.data.api_id;
         }
-        if ( !_.isEmpty(this.props.registration.respondent.data) ) {
-          answer['respondent_id'] = this.props.registration.respondent.data.id
-          answer['respondent_api_id'] = this.props.registration.respondent.data.api_id
+        if (!_.isEmpty(this.props.registration.subject.data)) {
+          answer.subject_id = this.props.registration.subject.data.id;
+          answer.subject_api_id = this.props.registration.subject.data.api_id;
         }
-        if ( !_.isEmpty(this.props.registration.subject.data) ) {
-          answer['subject_id'] = this.props.registration.subject.data.id
-          answer['subject_api_id'] = this.props.registration.subject.data.api_id
-        }
-        
-        _.assign(answer, response)
 
-        answers.push(answer) 
+        _.assign(answer, response);
+
+        answers.push(answer);
       } // format == single
 
     } else {
+      answer = _.find(answers, ['choice_id', choice.id]);
+      _.assign(answer, response);
+    } // index = -1
 
-      answer = _.find(answers, ['choice_id', choice.id])
-      _.assign(answer, response)
+    this.setState({ answers });
+  };
 
-    } // index = -1 
-
-    this.setState({ answers: answers })
-
-  } 
-
-  renderCheckBox = (question, format='multiple') => {
-    const collection = _.map(question.choices, (choice) => {
-      let checked = false 
-      let text = ''
-      const answer = _.find(this.state.answers, ['choice_id', choice.id])
+  renderCheckBox = (question, format = 'multiple') => {
+    const collection = _.map(question.choices, choice => {
+      let checked = false;
+      let text = '';
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
 
       if (answer) {
-        checked = answer.answer_boolean
-        text = answer.answer_text 
+        checked = answer.answer_boolean;
+        text = answer.answer_text;
       }
-      const requireExplanation = ( choice.require_explanation == 'if_true'  && checked )
-      
+      const requireExplanation =
+        choice.require_explanation === 'if_true' && checked;
+
       return (
-        <View key={ choice.id  } style={styles.checkBoxExplanationContainer}>
-          <CheckBox 
-            title={ choice.body } 
-            textStyle={ styles.checkBoxChoiceText } 
-            containerStyle={ styles.checkBoxChoiceContainer }
-            checked={ checked }
-            onPress={ () => this.saveResponse(choice, { answer_boolean: !checked  }, {format: format}) }
+        <View key={choice.id} style={styles.checkBoxExplanationContainer}>
+          <CheckBox
+            title={choice.body} 
+            textStyle={styles.checkBoxChoiceText}
+            containerStyle={styles.checkBoxChoiceContainer}
+            checked={checked}
+            onPress={() =>
+              this.saveResponse(
+                choice, 
+                { answer_boolean: !checked },
+                { format },
+              )
+            }
           />
-          { requireExplanation && 
+          {requireExplanation && (
             <FormInput 
-              inputStyle={ styles.textInput }
-              defaultValue={ text }
-              onChangeText={ (value) => this.saveResponse(choice, { answer_text: value }, {preserve: true} ) }
-              containerStyle={ { borderBottomColor: Colors.lightGrey }}
+              inputStyle={styles.textInput}
+              defaultValue={text}
+              onChangeText={value =>
+                this.saveResponse(
+                  choice,
+                  { answer_text: value },
+                  { preserve: true },
+                )
+              }
+              containerStyle={{ borderBottomColor: Colors.lightGrey }}
               underlineColorAndroid={Colors.lightGrey}
             />
-          }
+          )}
         </View>
-      )
-    })
-    return <View>{ collection }</View> 
-  }
+      );
+    });
+    return <View>{collection}</View>;
+  };
 
-  renderCheckYesNo = (question) => {
-    const collection = _.map(question.choices, (choice) => {
-      let checked = false 
-      const answer = _.find(this.state.answers, ['choice_id', choice.id])     
+  renderCheckYesNo = question => {
+    const collection = _.map(question.choices, choice => {
+      let checked = false;
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
       if (answer) {
-        checked = answer.answer_boolean
+        checked = answer.answer_boolean;
       }
       return (
         <CheckBox
-          key={ choice.id }
-          title={ choice.body } 
-          textStyle={ styles.checkBoxChoiceText } 
-          containerStyle={ styles.checkBoxChoiceContainer }
-          checked={ checked }
-          onPress={ () => this.saveResponse(choice, { answer_boolean: !checked  }, {format: "single"}) }
+          key={choice.id}
+          title={choice.body}
+          textStyle={styles.checkBoxChoiceText}
+          containerStyle={styles.checkBoxChoiceContainer}
+          checked={checked}
+          onPress={() =>
+            this.saveResponse(
+              choice,
+              { answer_boolean: !checked },
+              { format: "single" },
+            )
+          }
         />
-       )
-    })
-    return (
-      <View  style={{flexDirection: 'row'}}>{ collection }</View>
-    )
-  }
+      );
+    });
+    return <View style={{ flexDirection: 'row' }}>{collection}</View>;
+  };
 
-  renderTextShort = (question) => {
-    const collection = _.map(question.choices, (choice) => {
-      let text = ''
-      const answer = _.find(this.state.answers, ['choice_id', choice.id])
+  renderTextShort = question => {
+    const collection = _.map(question.choices, choice => {
+      let text = '';
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
       if (answer) {
-        text = answer.answer_text 
+        text = answer.answer_text;
       }
       return (
-        <View key={ choice.id }>
-          <FormLabel labelStyle={ styles.textLabel }>{ choice.body }</FormLabel>
-          <FormInput 
-            inputStyle={ styles.textInput }
-            defaultValue={ text }
-            onChangeText={ (value) => this.saveResponse(choice, { answer_text: value }) }
-            containerStyle={ { borderBottomColor: Colors.lightGrey }}
+        <View key={choice.id}>
+          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
+          <FormInput
+            inputStyle={styles.textInput}
+            defaultValue={text}
+            onChangeText={value =>
+              this.saveResponse(choice, { answer_text: value })
+            }
+            containerStyle={{ borderBottomColor: Colors.lightGrey }}
             underlineColorAndroid={Colors.lightGrey}
           />
         </View>
-      )
-    })
-    return ( 
-      <View>{ collection }</View>
-    )
-  }
+      );
+    });
+    return <View>{collection}</View>;
+  };
 
   handleConfirm = () => {
     // TODO validation
-    // TODO update milestone_triggers completed_at
-    this.props.updateMilestoneAnswers(this.state.section, this.state.answers)
-  }
+    // TODO move to next section if more than one section in this task
+    // TODO update milestone_triggers completed_at if task complete
+    this.props.updateMilestoneAnswers(this.state.section, this.state.answers);
+    if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+      this.props.apiUpdateMilestoneAnswers(this.props.session, this.state.section.id, this.state.answers);
+    }
+    this.props.navigation.navigate('Milestones');
+  };
 
   render() {
-    const data = _.map(this.props.milestones.questions.data, (question) => {
-      return _.extend( {}, question, {choices: _.filter(this.props.milestones.choices.data, ['question_id', question.id ] )} )
-    })
+    const data = _.map(this.props.milestones.questions.data, question => {
+      return _.extend({}, question, {choices: _.filter(this.props.milestones.choices.data, ['question_id', question.id ])})
+    });
 
     return (
-      <ScrollView style={ styles.container }>
-        <View style={ styles.listContainer }>
+      <ScrollView style={styles.container}>
+        <View style={styles.listContainer}>
           <FlatList
-            renderItem={ this.renderItem }
-            data={ data }
-            keyExtractor={ (item) => String(item.id) }
+            renderItem={this.renderItem}
+            data={data}
+            keyExtractor={item => String(item.id)}
           />
         </View>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonOneStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => this.props.navigation.navigate('Milestones')}
-            title='Cancel' />
-          <Button
-            color={Colors.pink}
-            buttonStyle={styles.buttonTwoStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => this.handleConfirm() }
-            title='Confirm' />
-        </View>
+        {this.state.questionsFetched && (
+          <View style={styles.buttonContainer}>
+            <Button
+              color={Colors.grey}
+              buttonStyle={styles.buttonOneStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={() => this.props.navigation.navigate('Milestones')}
+              title="Cancel"
+            />
+            <Button
+              color={Colors.pink}
+              buttonStyle={styles.buttonTwoStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={() => this.handleConfirm()}
+              title="Confirm"
+            />
+          </View>
+        )}
       </ScrollView>
-    )
-  }
-
-}
+    );
+  };
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -348,18 +388,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   listContainer: {
-    flex: 1
+    flex: 1,
   },
   questionContainer: {
-    flexDirection: 'column', 
-    padding: 5,  
-    justifyContent:'space-between', 
-    borderBottomWidth: 1, 
+    flexDirection: 'column',
+    padding: 5,
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
     borderBottomColor: Colors.lightGrey,
   },
   questionLeft: {
-    flexDirection:'row',
-    justifyContent:'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     width: itemWidth,
   },
   question: {
@@ -372,7 +412,7 @@ const styles = StyleSheet.create({
     padding: 0,
     marginLeft: 20,
     backgroundColor: Colors.white,
-    borderWidth: 0
+    borderWidth: 0,
   },
   checkBoxChoiceText: {
     fontSize: 12,
@@ -382,16 +422,16 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   textInput: {
-    fontSize: 14, 
-    fontWeight: '600'
+    fontSize: 14,
+    fontWeight: '600',
   },
   textLabel: {
-    fontSize: 12, 
-    fontWeight: '400'
+    fontSize: 12,
+    fontWeight: '400',
   },
   buttonContainer: {
     flex: 1,
-    justifyContent: 'center',    
+    justifyContent: 'center',
     flexDirection: 'row',
     width: '100%',
     marginTop: 20,
@@ -414,22 +454,29 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
   },
- 
 });
 
-const mapStateToProps = ({ session, milestones, registration }) => ({ session, milestones, registration });
-const mapDispatchToProps = { 
+const mapStateToProps = ({ session, milestones, registration }) => ({
+  session,
+  milestones,
+  registration,
+});
+const mapDispatchToProps = {
   fetchUser,
   fetchRespondent,
   fetchSubject,
-  fetchMilestoneSections, 
+  fetchMilestoneSections,
   resetMilestoneQuestions,
   fetchMilestoneQuestions,
   resetMilestoneChoices,
   fetchMilestoneChoices,
   resetMilestoneAnswers,
   fetchMilestoneAnswers,
-  updateMilestoneAnswers
-}
+  updateMilestoneAnswers,
+  apiUpdateMilestoneAnswers,
+};
 
-export default connect( mapStateToProps, mapDispatchToProps )( MilestoneQuestionsScreen );
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(MilestoneQuestionsScreen);

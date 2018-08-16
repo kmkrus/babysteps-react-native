@@ -1,4 +1,3 @@
-
 // Milestone actions
 export const FETCH_MILESTONES_PENDING = 'fetch_milestones_pending';
 export const FETCH_MILESTONES_FULFILLED = 'fetch_milestones_fulfilled';
@@ -51,6 +50,10 @@ export const FETCH_MILESTONE_ANSWERS_REJECTED = 'fetch_milestone_answers_rejecte
 export const UPDATE_MILESTONE_ANSWERS_PENDING = 'update_milestone_answers_pending';
 export const UPDATE_MILESTONE_ANSWERS_FULFILLED = 'update_milestone_answers_fulfilled';
 export const UPDATE_MILESTONE_ANSWERS_REJECTED = 'update_milestone_answers_rejected';
+
+export const API_UPDATE_MILESTONE_ANSWERS_PENDING = 'api_update_milestone_answers_pending';
+export const API_UPDATE_MILESTONE_ANSWERS_FULFILLED = 'api_update_milestone_answers_fulfilled';
+export const API_UPDATE_MILESTONE_ANSWERS_REJECTED = 'api_update_milestone_answers_rejected';
 
 // Session actions
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
