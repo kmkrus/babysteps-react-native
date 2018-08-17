@@ -54,7 +54,7 @@ class BabyBookGetImage extends Component {
     return (
       <View style={[styles.imageContainer, { height: imageContainerHeight }]}>
         <TouchableOpacity
-          onPress={() => {
+          onPressIn={() => {
             this.handleImageOnPress();
           }}
         >
