@@ -32,6 +32,7 @@ export default {
   grey,
   darkGrey,
   lightGrey,
+  magenta: '#E046BD',
   pink,
   lightPink,
   darkGreen,

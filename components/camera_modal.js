@@ -2,167 +2,273 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
-  TouchableOpacity,
   Modal,
   Vibration,
-  CameraRoll,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
-import { Button } from 'react-native-elements';
-
-import { Constants, Camera } from 'expo';
-
+import { isIphoneX } from 'react-native-iphone-x-helper';
+import { Constants, Camera, Permissions } from 'expo';
 import Colors from '../constants/Colors';
 
-const { width, height } = Dimensions.get('window');
-
-const preview_width = width - 40
-const preview_height = width * 0.75
-
 class CameraModal extends Component {
-
   state = {
-     cameraMessage: null,
+    cameraMessage: null,
+    activeOption: 'photo',
+    type: Camera.Constants.Type.back,
+    flashMode: Camera.Constants.FlashMode.off,
+    isLandscape: false,
+    recording: false,
+  };
+
+  async componentWillMount() {
+    const camera = await Permissions.askAsync(Permissions.CAMERA);
+    if (!(camera.status === 'granted')) {
+      this.props.closeModal();
+    }
   }
 
-  startVideo = async () => {
-    if ( this.camera ) {
+  onSelectVideo = async () => {
+    const audio = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+    if (!(audio.status === 'granted')) {
+      return;
+    }
+    this.setState({ activeOption: 'video' });
+  };
 
-      const recordingConfig = {
-        quality: String( Camera.Constants.VideoQuality['720p'] ),
-        maxDuration: 15,
-      }
+  onLayout = () => {
+    console.log('layout');
+    if (!this.container) return;
 
-      const image = await this.camera.recordAsync(recordingConfig)
-
-      Vibration.vibrate()
-      console.log( image )
-      this.props.closeModal(image)
-      
+    const dim = Dimensions.get('window');
+    const { width, height } = dim;
+    console.log(width, height);
+    if (dim.width >= dim.height) {
+      this.setState({ isLandscape: true });
+      return;
     }
 
-  }
+    this.setState({ isLandscape: false });
+  };
+
+  startVideo = async () => {
+    const recordingConfig = {
+      quality: String(Camera.Constants.VideoQuality['720p']),
+      maxDuration: 15,
+    };
+
+    this.setState({ recording: true });
+    const image = await this.camera.recordAsync(recordingConfig);
+
+    Vibration.vibrate();
+    // TODO: add confirm photo, video screen
+    this.props.closeModal(image);
+  };
 
   stopVideo = () => {
-    if ( !this.camera ) return
-    this.camera.stopRecording()
-  }
+    this.camera.stopRecording();
+  };
+
+  handleTakePicture = async () => {
+    const { activeOption } = this.state;
+
+    if (activeOption === 'video') {
+      if (this.state.recording) {
+        this.stopVideo();
+      } else {
+        this.startVideo();
+      }
+      return;
+    }
+
+    // TODO: add confirm photo, video screen
+    const image = await this.camera.takePictureAsync();
+    this.props.closeModal(image);
+  };
+
+  handleChangeFlashMode = () => {
+    this.setState({
+      flashMode:
+        this.state.flashMode === Camera.Constants.FlashMode.off
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back,
+    });
+  };
+
+  handleChangeCameraType = () => {
+    this.setState({
+      type:
+        this.state.type === Camera.Constants.Type.back
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back,
+    });
+  };
+
+  renderBottomBar = () => (
+    <View style={styles.bottomBar}>
+      <View style={styles.bottomBarActions}>
+        <View style={styles.bottomBarAction}>
+          <TouchableOpacity onPress={this.props.closeModal}>
+            <Image
+              style={{
+                width: 22,
+                height: 22,
+                transform: [
+                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                ],
+              }}
+              source={require('../assets/images/camera_cancel_camera_icon.png')}
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          onPress={this.handleTakePicture}
+          style={styles.takePictureButton}
+        />
+        <View style={styles.bottomBarAction}>
+          <TouchableOpacity onPress={this.handleChangeCameraType}>
+            <Image
+              style={{
+                width: 27,
+                height: 27,
+                marginRight: 26,
+                transform: [
+                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                ],
+              }}
+              source={require('../assets/images/camera_flip_direction_icon.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.handleChangeFlashMode}>
+            <Image
+              style={{
+                width: 27,
+                height: 27,
+                transform: [
+                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                ],
+              }}
+              source={require('../assets/images/camera_toggle_flash_icon.png')}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.bottomBarMenu}>
+        <Text
+          style={{
+            marginRight: 72,
+            fontSize: 15,
+            color:
+              this.state.activeOption === 'photo'
+                ? Colors.magenta
+                : Colors.white,
+          }}
+          onPress={() => this.setState({ activeOption: 'photo' })}
+        >
+          Photo
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            color:
+              this.state.activeOption === 'video'
+                ? Colors.magenta
+                : Colors.white,
+          }}
+          onPress={() => this.setState({ activeOption: 'video' })}
+        >
+          Video
+        </Text>
+      </View>
+    </View>
+  );
 
   render() {
+    const { flashMode, type } = this.state;
+    console.log('islandscape', this.state.isLandscape);
     return (
-
       <Modal
-        animationType={ 'slide'}
-        transparent   = { false }
-        visible={ this.props.modalVisible }
-        onRequestClose={ () => { } } >
-
-        <View style={ styles.container }>
-          <View style={ styles.cameraContainer }>
-            <Camera
-              ref={ (ref) => { this.camera = ref; } }
-              style={ styles.preview }
-              type={ Camera.Constants.Type.back }
-              onCameraReady={ () => { 
-                 this.setState( { cameraMessage : 'Camera Ready!'})
-              }} />
-
-            <Text style={ styles.message }>{ this.state.cameraMessage }</Text>
-
-          </View>
-
-
-          <View style={styles.buttonContainer}>
-             <Button
-              color={Colors.pink}
-              buttonStyle={styles.buttonOne}
-              titleStyle={styles.buttonTitle}
-              onPress={ this.startVideo.bind(this) }
-              title='Record' />
-            <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonTwo}
-              titleStyle={styles.buttonTitle}
-              onPress={ this.stopVideo.bind(this) }
-              title='Stop' />
-          </View>
-          <View style={styles.buttonContainer}>
-          <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonThree}
-              titleStyle={styles.buttonTitle}
-              onPress={ () => this.props.closeModal(null) }
-              title='Return' />
-          </View>
-
+        animationType="slide"
+        transparent={false}
+        visible={this.props.modalVisible}
+        onRequestClose={() => {}}
+      >
+        <View
+          style={styles.camera}
+          ref={r => (this.container = r)}
+          //          onLayout={this.onLayout}
+        >
+          <Camera
+            ref={ref => {
+              this.camera = ref;
+            }}
+            style={styles.camera}
+            type={type}
+            flashMode={flashMode}
+          >
+            {this.renderBottomBar()}
+          </Camera>
         </View>
-
       </Modal>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bottomBar: {
+    backgroundColor: Colors.black,
+    justifyContent: 'space-between',
     flex: 1,
-    backgroundColor: Colors.white,
-  },
-  cameraContainer: {
+    height: 165,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 20,
-    marginTop: 60,
-    backgroundColor: Colors.white,
+    alignSelf: 'flex-end',
   },
-  preview: {
-    width: preview_width,
-    height: preview_height,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: Colors.darkGrey,
-  },
-  message : {
-    width: '100%',
-    fontSize: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonContainer: {
+  bottomBarAction: {
+    flex: 0.3,
     justifyContent: 'center',
     flexDirection: 'row',
-    marginTop: 10,
-    marginBottom: 20
+    alignItems: 'center',
   },
-  buttonTitle: {
-    fontSize: 22,
+  //  bottomBarMainAction: {
+  //    flex: 0.4,
+  //    justifyContent: 'center',
+  //  },
+  bottomBarActions: {
+    height: 110,
+    flex: 1,
+    paddingBottom: 10,
+    paddingTop: 10,
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  buttonOne: {
-    width: 150,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
+  //  bottomBarIcon: {
+  //    width: 34,
+  //    height: 'auto',
+  //  },
+  bottomBarMenu: {
+    height: isIphoneX() ? 50 : 30,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
-  buttonTwo: {
-    width: 150,
-    backgroundColor: Colors.lightGrey,
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    borderRadius: 5,
+  camera: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  buttonThree: {
-    width: 200,
-    backgroundColor: Colors.lightGrey,
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    borderRadius: 5,
+  takePictureButton: {
+    width: 74,
+    height: 74,
+    borderRadius: 38.5,
+    backgroundColor: Colors.magenta,
+    alignSelf: 'center',
+    borderWidth: 4,
+    borderColor: Colors.white,
   },
 });
 
-
-export default CameraModal
+export default CameraModal;

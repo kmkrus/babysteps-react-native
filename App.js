@@ -24,14 +24,12 @@ import Colors from './constants/Colors';
 Sentry.config(CONSTANTS.SENTRY_URL).install();
 
 export default class App extends Component {
-
   state = {
     isLoadingComplete: false,
-  }
+  };
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
-      
       return (
         <AppLoading
           startAsync={this._loadResourcesAsync}
@@ -39,23 +37,23 @@ export default class App extends Component {
           onFinish={this._handleFinishLoading}
         />
       );
-
-    } else {
-      
-      return (
-        <Provider store={store}>
-          <View style={styles.container}>
-            {Platform.OS === 'android' && <StatusBar barStyle="default" />}
-            <RootNavigator />
-          </View>
-        </Provider>
-      )
-
     }
+
+    return (
+      <Provider store={store}>
+        <View
+          style={styles.container}
+          onLayout={() => console.log('layout changed')}
+        >
+          {Platform.OS === 'android' && <StatusBar barStyle="default" />}
+          <RootNavigator />
+        </View>
+      </Provider>
+    );
   }
 
-  _loadResourcesAsync = async () => {
-    return Promise.all([
+  _loadResourcesAsync = async () =>
+    Promise.all([
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
         require('./assets/images/robot-prod.png'),
@@ -79,11 +77,11 @@ export default class App extends Component {
       Font.loadAsync({
         // This is the font that we are using for our tab bar
         ...Ionicons.font,
-        'MaterialIcons': require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
+        MaterialIcons: require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
         'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
         'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
         'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
-        'FontAwesome':  require('./assets/fonts/FontAwesome.ttf'),
+        FontAwesome: require('./assets/fonts/FontAwesome.ttf'),
       }),
       // async check of schemas
       checkRegistrationSchema(),
@@ -93,7 +91,6 @@ export default class App extends Component {
       checkBabyBookSchema(),
       checkCustomDirectories(),
     ]);
-  };
 
   _handleLoadingError = error => {
     // In this case, you might want to report the error to your error

@@ -52,27 +52,22 @@ class BabyBookEntryForm extends Component {
       permissionMessage: '',
       cameraModalVisible: false,
     };
-    this.closeModal = this.closeModal.bind(this);
   }
-
-  async componentWillMount() {
-    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    const camera = await Permissions.askAsync(Permissions.CAMERA);
-    const audio = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    this.setState({
-      hasCameraRollPermission: camera_roll.status == 'granted',
-      hasCameraPermission: camera.status == 'granted',
-      hasAudioPermission: audio.status == 'granted',
-    });
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     return !nextProps.babybook.entries.fetching;
   }
 
+  async componentWillMount() {
+    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.setState({
+      hasCameraRollPermission: camera_roll.status == 'granted',
+    });
+  }
+
   pickImage = async (source = null) => {
+    //    TODO: convert logic for video and photo in same cmp
     let image = {};
-    if (source == 'library') {
+    if (source === 'library') {
       if (this.state.hasCameraRollPermission) {
         image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: 'All',
@@ -80,16 +75,8 @@ class BabyBookEntryForm extends Component {
       } else {
         this.renderNoPermissions(source);
       }
-    } else if (source == 'video') {
-      if (this.state.hasCameraPermission && this.state.hasAudioPermission) {
-        this.setState({ cameraModalVisible: true });
-      } else {
-        this.renderNoPermissions(source);
-      }
-    } else if (this.state.hasCameraPermission) {
-      image = await ImagePicker.launchCameraAsync();
     } else {
-      this.renderNoPermissions(source);
+      this.setState({ cameraModalVisible: true });
     }
 
     if (image && !image.cancelled) {
@@ -117,7 +104,7 @@ class BabyBookEntryForm extends Component {
   };
 
   closeModal = image => {
-    this.setState({ image });
+    if (image) this.setState({ image });
     this.setState({ cameraModalVisible: false });
   };
 
@@ -154,18 +141,11 @@ class BabyBookEntryForm extends Component {
                 onPress={() => this.pickImage('library')}
               />
               <Button
-                title="Take a Photo"
+                title="Take a Photo or Video"
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.darkGreen}
-                onPress={() => this.pickImage('camera')}
-              />
-              <Button
-                title="Take a Video"
-                buttonStyle={styles.cameraButton}
-                titleStyle={styles.buttonTitleStyle}
-                color={Colors.darkGreen}
-                onPress={() => this.pickImage('video')}
+                onPress={() => this.pickImage('new')}
               />
               <Text>{this.state.permissionMessage}</Text>
 
