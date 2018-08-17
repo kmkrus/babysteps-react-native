@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { apiTokenRefresh, apiUpdateSession} from '../actions/session_actions';
+import {apiTokenRefresh, apiUpdateSession} from '../actions/session_actions';
 
 import CONSTANTS from '../constants';
 
@@ -27,7 +27,7 @@ const Response = ( type, payload, session={} ) => {
   return { type, payload, session }
 };
 
-export default store => 
+export default store =>
   next => 
     action => {
       
@@ -65,7 +65,7 @@ export default store =>
           if (response.headers['access-token'] !== '') {
             store.dispatch( Response( UPDATE_ACCESS_TOKEN, response.headers['access-token'] ))
           }
-        }) 
+        })
         .catch( (error) => { 
           const { request, response } = error;
           if (!request) throw error; // There was an error creating the request
