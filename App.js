@@ -11,8 +11,10 @@ import RootNavigator from './navigation/RootNavigator';
 import checkMilestonesSchema from './database/check_milestones_schema';
 import checkMilestoneTriggersSchema from './database/check_milestone_triggers_schema';
 import checkRegistrationSchema from './database/check_registration_schema';
+import checkAnswersSchema from './database/check_answers_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
 import checkCustomDirectories from './components/check_custom_directories';
+
 
 import store from './store';
 
@@ -87,6 +89,7 @@ export default class App extends Component {
       checkRegistrationSchema(),
       checkMilestonesSchema(),
       checkMilestoneTriggersSchema(),
+      checkAnswersSchema(),
       checkBabyBookSchema(),
       checkCustomDirectories(),
     ]);

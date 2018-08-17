@@ -1,3 +1,4 @@
+import { _ } from 'lodash';
 
 import {
   FETCH_MILESTONES_PENDING,
@@ -20,7 +21,37 @@ import {
 
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
-  API_FETCH_MILESTONE_CALENDAR_REJECTED
+  API_FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  FETCH_MILESTONE_TASKS_PENDING,
+  FETCH_MILESTONE_TASKS_FULFILLED,
+  FETCH_MILESTONE_TASKS_REJECTED,
+
+  FETCH_MILESTONE_SECTIONS_PENDING,
+  FETCH_MILESTONE_SECTIONS_FULFILLED,
+  FETCH_MILESTONE_SECTIONS_REJECTED,
+
+  RESET_MILESTONE_QUESTIONS,
+
+  FETCH_MILESTONE_QUESTIONS_PENDING,
+  FETCH_MILESTONE_QUESTIONS_FULFILLED,
+  FETCH_MILESTONE_QUESTIONS_REJECTED,
+
+  RESET_MILESTONE_CHOICES,
+
+  FETCH_MILESTONE_CHOICES_PENDING,
+  FETCH_MILESTONE_CHOICES_FULFILLED,
+  FETCH_MILESTONE_CHOICES_REJECTED,
+
+  RESET_MILESTONE_ANSWERS,
+
+  FETCH_MILESTONE_ANSWERS_PENDING,
+  FETCH_MILESTONE_ANSWERS_FULFILLED,
+  FETCH_MILESTONE_ANSWERS_REJECTED,
+
+  UPDATE_MILESTONE_ANSWERS_PENDING,
+  UPDATE_MILESTONE_ANSWERS_FULFILLED,
+  UPDATE_MILESTONE_ANSWERS_REJECTED,
 
 } from '../actions/types';
 
@@ -49,14 +80,44 @@ const initialState = {
     data: [],
     error: null,
   },
- api_calendar: {
+  api_calendar: {
     fetching: false,
     fetched: false,
+    error: null,
+  },
+  tasks: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
+  },
+  sections: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
+  },
+  questions: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
+  },
+  choices: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
+  },
+  answers: {
+    fetching: false,
+    fetched: false,
+    data: [],
     error: null,
   }
 };
 
-const reducer = (state=initialState, action) => {
+const reducer = (state=initialState, action, formData=[]) => {
   switch (action.type) {
     case FETCH_MILESTONES_PENDING: {
       return {...state, milestones: {...state.milestones, fetching: true, fetched: false, error: null, data: [] } }
@@ -73,7 +134,7 @@ const reducer = (state=initialState, action) => {
     }
 
     case RESET_API_MILESTONES: {
-      return {...state, api_milestones: {...state.api_milestones, fetching: false, fetched: false, error: null } }
+      return {...state, api_milestones: {fetching: false, fetched: false, error: null } }
       break;
     }
 
@@ -128,6 +189,110 @@ const reducer = (state=initialState, action) => {
     }
     case API_FETCH_MILESTONE_CALENDAR_REJECTED: {
       return {...state, api_calendar: {...state.api_calendar, fetching: false, fetched: false, error: action.payload } }
+      break;
+    }
+
+    case FETCH_MILESTONE_TASKS_PENDING: {
+      return {...state, tasks: {...state.tasks, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_TASKS_FULFILLED: {
+      const data = action.payload.rows['_array']
+      return {...state, tasks: {...state.tasks, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_TASKS_REJECTED: {
+      return {...state, tasks: {...state.tasks, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case FETCH_MILESTONE_SECTIONS_PENDING: {
+      return {...state, sections: {...state.sections, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_SECTIONS_FULFILLED: {
+      const data = action.payload.rows['_array']
+      return {...state, sections: {...state.sections, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_SECTIONS_REJECTED: {
+      return {...state, sections: {...state.sections, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case RESET_MILESTONE_QUESTIONS: {
+      return {...state, questions: {fetching: false, fetched: false, error: null, data: [] } }
+      break;
+    }
+
+    case FETCH_MILESTONE_QUESTIONS_PENDING: {
+      return {...state, questions: {...state.questions, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_QUESTIONS_FULFILLED: {
+      const data = action.payload.rows['_array']
+      return {...state, questions: {...state.questions, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_QUESTIONS_REJECTED: {
+      return {...state, questions: {...state.questions, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case RESET_MILESTONE_CHOICES: {
+      return {...state, choices: { fetching: false, fetched: false, error: null, data: [] } }
+      break;
+    }
+
+    case FETCH_MILESTONE_CHOICES_PENDING: {
+      return {...state, choices: {...state.choices, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_CHOICES_FULFILLED: {
+      const data = action.payload.rows['_array']
+      return {...state, choices: {...state.choices, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_CHOICES_REJECTED: {
+      return {...state, choices: {...state.choices, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case RESET_MILESTONE_ANSWERS: {
+      return {...state, answers: {fetching: false, fetched: false, error: null, data: [] } }
+      break;
+    }
+
+    case FETCH_MILESTONE_ANSWERS_PENDING: {
+      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_ANSWERS_FULFILLED: {
+      let data = action.payload.rows['_array']
+      _.map(data, (answer) => {
+        answer['answer_boolean'] = (answer['answer_boolean'] == 1)
+      })
+
+      return {...state, answers: {...state.answers, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_ANSWERS_REJECTED: {
+      return {...state, answers: {...state.answers, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case UPDATE_MILESTONE_ANSWERS_PENDING: {
+      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null} }
+      break;
+    }
+    case UPDATE_MILESTONE_ANSWERS_FULFILLED: {
+      return {...state, answers: 
+        {...state.answers, fetching: false, fetched: true, error: null, data: action.formData} 
+      }
+      break;
+    }
+    case UPDATE_MILESTONE_ANSWERS_REJECTED: {
+      return {...state, answers: {...state.answers, fetching: false, error: action.payload} }
       break;
     }
 
