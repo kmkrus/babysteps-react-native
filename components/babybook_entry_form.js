@@ -53,19 +53,23 @@ class BabyBookEntryForm extends Component {
       cameraModalVisible: false,
     };
   }
-  shouldComponentUpdate(nextProps, nextState) {
+
+  async componentDidMount() {
+    await this.handleCameraRollPermission();
+  }
+
+  shouldComponentUpdate(nextProps) {
     return !nextProps.babybook.entries.fetching;
   }
 
-  async componentWillMount() {
+  handleCameraRollPermission = async () => {
     const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({
-      hasCameraRollPermission: camera_roll.status == 'granted',
+      hasCameraRollPermission: camera_roll.status === 'granted',
     });
-  }
+  };
 
   pickImage = async (source = null) => {
-    //    TODO: convert logic for video and photo in same cmp
     let image = {};
     if (source === 'library') {
       if (this.state.hasCameraRollPermission) {
@@ -73,6 +77,7 @@ class BabyBookEntryForm extends Component {
           mediaTypes: 'All',
         });
       } else {
+        await this.handleCameraRollPermission();
         this.renderNoPermissions(source);
       }
     } else {
@@ -138,19 +143,19 @@ class BabyBookEntryForm extends Component {
                 buttonStyle={styles.libraryButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.darkGreen}
-                onPress={() => this.pickImage('library')}
+                onPressIn={() => this.pickImage('library')}
               />
               <Button
                 title="Take a Photo or Video"
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.darkGreen}
-                onPress={() => this.pickImage('new')}
+                onPressIn={() => this.pickImage('new')}
               />
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-                {uri && fileType === 'mp4' ? (
+                {uri && ['mp4', 'mov'].includes(fileType) ? (
                   <Video
                     style={styles.image}
                     source={uri ? { uri } : null}
