@@ -118,10 +118,15 @@ const initialState = {
     fetched: false,
     data: [],
     error: null,
-  }
+  },
+  apiAnswers: {
+    fetching: false,
+    fetched: false,
+    error: null,
+  },
 };
 
-const reducer = (state=initialState, action, formData=[]) => {
+const reducer = (state = initialState, action, formData = []) => {
   switch (action.type) {
     case FETCH_MILESTONES_PENDING: {
       return {...state, milestones: {...state.milestones, fetching: true, fetched: false, error: null, data: [] } }
@@ -276,7 +281,6 @@ const reducer = (state=initialState, action, formData=[]) => {
       _.map(data, (answer) => {
         answer['answer_boolean'] = (answer['answer_boolean'] == 1)
       })
-
       return {...state, answers: {...state.answers, fetching: false, fetched: true, error: null, data: data } }
       break;
     }
@@ -300,10 +304,27 @@ const reducer = (state=initialState, action, formData=[]) => {
       break;
     }
 
+    case API_UPDATE_MILESTONE_ANSWERS_PENDING: {
+      return {...state, apiAnswers: {...state.apiAnswers, fetching: true, fetched: false, error: null }}
+      break;
+    }
+    case API_UPDATE_MILESTONE_ANSWERS_FULFILLED: {
+      const headers = action.payload.headers;
+      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
+      return {...state, 
+        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
+        apiAnswers: {...state.apiAnswers, fetching: false, fetched: true, error: null }
+      }
+      break;
+    }
+    case API_UPDATE_MILESTONE_ANSWERS_REJECTED: {
+      return {...state, apiAnswers: {...state.apiAnswers, fetching: false, fetched: false, error: action.payload }}
+      break;
+    }
+
   default:
     return state
   }
 };
 
 export default reducer;
-
