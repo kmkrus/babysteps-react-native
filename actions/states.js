@@ -1,23 +1,22 @@
  // Application state constants
 
-const REGISTERING_ELIGIBILITY = 'registering_eligibility'
-const REGISTERING_NOT_ELIGIBLE = 'registering_not_eligible'
-const REGISTERING_AS_ELIGIBLE = 'registering_as_eligible'
-const REGISTERING_ACCEPT_TERMS = 'registering_accept_terms'
-const REGISTERING_SIGNATURE = 'registering_signature'
+const REGISTERING_ELIGIBILITY = 'registering_eligibility';
+const REGISTERING_NOT_ELIGIBLE = 'registering_not_eligible';
+const REGISTERING_AS_ELIGIBLE = 'registering_as_eligible';
+const REGISTERING_ACCEPT_TERMS = 'registering_accept_terms';
+const REGISTERING_SIGNATURE = 'registering_signature';
 
-const REGISTERING_USER = 'registering_user'
-const REGISTERING_RESPONDENT = 'registering_respondent'
-const REGISTERING_EXPECTED_DOB = 'registering_expected_dob'
-const REGISTERING_SUBJECT = 'registering_subject'
+const REGISTERING_USER = 'registering_user';
+const REGISTERING_RESPONDENT = 'registering_respondent';
+const REGISTERING_EXPECTED_DOB = 'registering_expected_dob';
+const REGISTERING_SUBJECT = 'registering_subject';
 
-const REGISTERING_AS_NO_STUDY = 'registering_as_no_study'
-const REGISTERING_AS_IN_STUDY = 'registering_as_in_study'
+const REGISTERING_AS_NO_STUDY = 'registering_as_no_study';
+const REGISTERING_AS_IN_STUDY = 'registering_as_in_study';
 
-const REGISTERED_AS_IN_STUDY = 'registered_as_in_study'
-const REGISTERED_AS_NO_STUDY = 'registered_as_no_study'
+const REGISTERED_AS_IN_STUDY = 'registered_as_in_study';
+const REGISTERED_AS_NO_STUDY = 'registered_as_no_study';
 
-  
 export default {
   REGISTERING_ELIGIBILITY,
   REGISTERING_NOT_ELIGIBLE,
@@ -28,13 +27,13 @@ export default {
   REGISTERING_AS_NO_STUDY,
   REGISTERING_NO_STUDY: [
     REGISTERING_AS_NO_STUDY, 
-    REGISTERING_NOT_ELIGIBLE
+    REGISTERING_NOT_ELIGIBLE,
   ],
   REGISTERING_CONSENT: [
-    REGISTERING_ELIGIBILITY, 
+    REGISTERING_ELIGIBILITY,
     REGISTERING_AS_ELIGIBLE,
     REGISTERING_ACCEPT_TERMS,
-    REGISTERING_SIGNATURE
+    REGISTERING_SIGNATURE,
   ],
   REGISTERING_USER,
   REGISTERING_RESPONDENT,
@@ -44,13 +43,13 @@ export default {
     REGISTERING_USER,
     REGISTERING_RESPONDENT,
     REGISTERING_EXPECTED_DOB,
-    REGISTERING_SUBJECT
+    REGISTERING_SUBJECT,
   ],
 
   REGISTERED_AS_IN_STUDY,
   REGISTERED_AS_NO_STUDY,
   REGISTRATION_COMPLETE: [
     REGISTERED_AS_NO_STUDY,
-    REGISTERED_AS_IN_STUDY
+    REGISTERED_AS_IN_STUDY,
   ],
-}
+};

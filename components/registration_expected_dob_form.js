@@ -57,47 +57,47 @@ class RegistrationExpectedDOB extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if ( !nextProps.registration.subject.fetching && nextProps.registration.subject.fetched ) {
-      if ( !nextProps.registration.apiSubject.fetching ) {
-        if (!nextProps.registration.apiSubject.fetched  && !nextState.submitted ) {
-          
-          this.props.apiCreateSubject(nextProps.session, nextProps.registration.subject.data)
-          this.setState({submitted: true})
-
-        } else if ( nextProps.registration.apiSubject.data.id != undefined ) {
-
-          this.props.updateSubject({ api_id: nextProps.registration.apiSubject.data.id })
-
-          if (this.props.registration.auth != nextProps.registration.auth) {
+    const subject = nextProps.registration.subject;
+    const apiSubject = nextProps.registration.apiSubject;
+    const auth = nextProps.registration.auth;
+    const session = nextProps.session;
+    if (!subject.fetching && subject.fetched) {
+      if (!apiSubject.fetching) {
+        if (!apiSubject.fetched && !nextState.submitted) {
+          this.props.apiCreateSubject(session, subject.data);
+          this.setState({ submitted: true });
+        } else if (apiSubject.data.id !== undefined) {
+          this.props.updateSubject({ api_id: apiSubject.data.id });
+          if (this.props.registration.auth !== nextProps.registration.auth) {
             this.props.updateSession({
-              access_token: nextProps.registration.auth.accessToken,
-              client: nextProps.registration.auth.client,
-              uid: nextProps.registration.auth.uid,
-              user_id: nextProps.registration.auth.user_id
+              access_token: auth.accessToken,
+              client: auth.client,
+              uid: auth.uid,
+              user_id: auth.user_id,
             });
           }
-
-          if ( !nextProps.session.fetching && nextProps.session.registration_state != States.REGISTERED_AS_IN_STUDY ) {
-            this.props.apiFetchMilestoneCalendar({subject_id: nextProps.registration.apiSubject.data.id})
-            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} )
+          if (
+            !session.fetching &&
+            session.registration_state !== States.REGISTERED_AS_IN_STUDY
+          ) {
+            this.props.apiCreateMilestoneCalendar({subject_id: apiSubject.data.id});
+            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} );
           }
-
-        } // apiSubject fetched 
+        } // apiSubject fetched
       } // apiSubject fetching
     } // subject fetching
   }
 
   render() {
-
     return (
       <Formik
-        onSubmit={ (values) => {
+        onSubmit={values => {
           if (values.expected_date_of_birth) {
-            const subject = {...values, 
-              respondent_ids:  [this.props.registration.respondent.data.api_id],
+            const subject = {...values,
+              respondent_ids: [this.props.registration.respondent.data.api_id],
               screening_blood: this.props.registration.subject.data.screening_blood,
             }
-            this.props.createSubject(subject)
+            this.props.createSubject(subject);
           } else {
             this.setState({ dobError: 'You must provide the Expected Date of Birth' })
           }
@@ -111,37 +111,32 @@ class RegistrationExpectedDOB extends Component {
           conception_method: 'natural',
           screening_blood: null,
         }}
-        render={ (props) => {
-
+        render={props => {
           return (
             <Form>
               <Text h4>Expected date of birth...</Text>
-
               <DatePickerInput
-                label="" 
-                name="expected_date_of_birth" 
+                label=""
+                name="expected_date_of_birth"
                 date={props.values.expected_date_of_birth}
-                handleChange={ (value) => {
-                  this.setState({ dobError: null })
-                  props.setFieldValue('expected_date_of_birth', value) 
+                handleChange={ value => {
+                  this.setState({ dobError: null });
+                  props.setFieldValue('expected_date_of_birth', value);
                 }}
               />
-
-              <Text style={ styles.errorText }>{ this.state.dobError }</Text>
-
-              <Button 
-                title="NEXT" 
-                onPress={ props.handleSubmit } 
+              <Text style={styles.errorText}>{this.state.dobError}</Text>
+              <Button
+                title="NEXT"
+                onPress={props.handleSubmit} 
                 color={Colors.green}
               />
-
             </Form>
           );
         }}
       />
-    )
+    );
   }
-};
+}
 
 const styles = StyleSheet.create({
   errorText: {
@@ -149,18 +144,25 @@ const styles = StyleSheet.create({
     marginTop: -20,
     marginBottom: 20,
     color: Colors.errorColor,
-  }
-})
+  },
+});
 
-const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { 
-  resetSubject, 
+const mapStateToProps = ({ session, registration }) => ({
+  session,
+  registration,
+});
+
+const mapDispatchToProps = {
+  resetSubject,
   createSubject,
   updateSubject,
-  apiCreateSubject, 
-  fetchRespondent, 
+  apiCreateSubject,
+  fetchRespondent,
   apiFetchMilestoneCalendar,
-  updateSession
+  updateSession,
 };
 
-export default connect( mapStateToProps, mapDispatchToProps )(RegistrationExpectedDOB);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(RegistrationExpectedDOB);

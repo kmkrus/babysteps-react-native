@@ -1,5 +1,6 @@
 import { SQLite } from 'expo';
 import axios from 'axios';
+import url from 'url';
 
 import { _ } from 'lodash';
 
@@ -28,6 +29,10 @@ import {
   FETCH_MILESTONE_CALENDAR_PENDING,
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  API_CREATE_MILESTONE_CALENDAR_PENDING,
+  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
+  API_CREATE_MILESTONE_CALENDAR_REJECTED,
 
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
@@ -162,6 +167,30 @@ export const fetchMilestoneCalendar = () => {
 
 };
 
+export const apiCreateMilestoneCalendar = params => {
+  return dispatch => {
+    dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        responseType: 'json',
+        baseURL: CONSTANTS.BASE_URL,
+        url: '/milestone_calendars/new',
+        params,
+        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+      })
+        .then(response => {
+          insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
+};
+
 export const apiFetchMilestoneCalendar = params => {
   return dispatch => {
     dispatch(Pending(API_FETCH_MILESTONE_CALENDAR_PENDING));
@@ -173,19 +202,16 @@ export const apiFetchMilestoneCalendar = params => {
         baseURL: CONSTANTS.BASE_URL,
         url: '/milestone_calendars',
         params,
-        headers: {
-          "milestone_token": CONSTANTS.MILESTONE_TOKEN,
-        }
+        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
       })
-      .then( response => {
-        insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
-        dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
-      })
-      .catch(error => {
-        dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
-      });
+        .then( response => {
+          insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
+        });
     }); // return Promise
-
   }; // return dispatch
 };
 

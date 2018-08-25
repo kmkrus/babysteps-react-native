@@ -56,7 +56,6 @@ class OverviewScreen extends React.Component {
 
   state = {
     apiFetchCalendarSubmitted: false,
-    fetchCalendarCount: 0,
   };
 
   componentWillMount() {
@@ -67,71 +66,36 @@ class OverviewScreen extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      !nextProps.milestones.groups.fetching &&
-      nextProps.milestones.groups.fetched
-    ) {
-      if (_.isEmpty(nextProps.milestones.groups.data)) {
-        if (!nextProps.milestones.api_milestones.fetching) {
-          if (!nextProps.milestones.api_milestones.fetched) {
+    const groups = nextProps.milestones.groups;
+    if (!groups.fetching && groups.fetched) {
+      if (_.isEmpty(groups.data)) {
+        const api_milestones = nextProps.milestones.api_milestones;
+        if (!api_milestones.fetching && !api_milestones.fetched) {
             this.props.apiFetchMilestones();
-          } else {
-            this.props.fetchMilestoneGroups();
-          }
         }
       }
     }
 
-    if (
-      !nextProps.registration.subject.fetching &&
-      nextProps.registration.subject.fetched
-    ) {
-      if (
-        !nextProps.milestones.calendar.fetching &&
-        nextProps.milestones.calendar.fetched
-      ) {
-        if (_.isEmpty(nextProps.milestones.calendar.data)) {
-          if  (
-            !nextProps.milestones.api_calendar.fetching &&
-            !this.state.apiFetchCalendarSubmitted
-          ) {
-            if (nextProps.session.registration_state == States.REGISTERED_AS_IN_STUDY) {
-              this.props.apiFetchMilestoneCalendar({
-                subject_id: nextProps.registration.subject.data.api_id 
-              });
+    const subject = nextProps.registration.subject;
+    const calendar = nextProps.milestones.calendar;
+    if (!subject.fetching && subject.fetched) {
+      if (!calendar.fetching && calendar.fetched) {
+        if (_.isEmpty(calendar.data)) {
+          const api_calendar = nextProps.milestones.api_calendar;
+          if (!api_calendar.fetching && !this.state.apiFetchCalendarSubmitted) {
+            if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+              this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
             } else {
-              this.props.apiFetchMilestoneCalendar({
-                base_date: nextProps.registration.subject.expected_date_of_birth
-              });
-            };
-            this.setState({ apiFetchCalendarSubmitted: true });
-          };
-
-          if (
-            !nextProps.milestones.api_calendar.fetching &&
-            nextProps.milestones.api_calendar.fetched
-          ) {
-            if (this.state.fetchCalendarCount < 10) {
-              const wait = this.state.fetchCalendarCount * 2000;
-              this.timer = setTimeout(
-                () => this.props.fetchMilestoneCalendar(),
-                wait,
-              );
-              this.setState({
-                fetchCalendarCount: this.state.fetchCalendarCount + 1,
-              });
+              this.props.apiCreateMilestoneCalendar({ base_date: subject.expected_date_of_birth });
             }
+            this.setState({ apiFetchCalendarSubmitted: true });
           }
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
   }
 
-  componentWillUnmount() {
-    clearTimeout(this.timer);
-  }
-
-  renderScreeningItem(item) {
+  renderScreeningItem = item => {
     const date = new Date(item.data.notify_at).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -145,25 +109,26 @@ class OverviewScreen extends React.Component {
         <Text numberOfLines={1} style={styles.screening_date}> { date }</Text>
         <Text numberOfLines={3} style={styles.screening_text}>{ item.data.message }</Text>
         <View style={styles.screening_slide_link}>
-          <TouchableOpacity key={ item._pageIndex } style={styles.screening_button}>
+          <TouchableOpacity key={item._pageIndex} style={styles.screening_button}>
             <Text style={styles.screening_button_text}>Get Started</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
-  }
+  };
 
-  renderMilestoneItem(item) {
+  renderMilestoneItem = item => {
     const uri = milestoneGroupImages[item._pageIndex];
     return (
       <TouchableOpacity
         style={styles.mg_touchable}
         key={item._pageIndex}
-        onPress={() => this.props.navigation.navigate('Milestones')}>
+        onPress={() => this.props.navigation.navigate('Milestones')}
+      >
         <View style={styles.slide_item}>
-          <Image source={uri} style={styles.slide_item_image}/>
-          <View style={styles.slide_item_footer} >
-            <Text style={styles.slide_item_footer_text}>{ item.data.title }</Text>
+          <Image source={uri} style={styles.slide_item_image} />
+          <View style={styles.slide_item_footer}>
+            <Text style={styles.slide_item_footer_text}>{item.data.title}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -181,7 +146,8 @@ class OverviewScreen extends React.Component {
         showsVerticalScrollIndicator={false}>
         <ScrollView 
           style={styles.container} 
-          contentContainerStyle={styles.contentContainer}>
+          contentContainerStyle={styles.contentContainer}
+        >
           <View style={styles.welcomeContainer}>
             <Image
               source={
@@ -228,7 +194,7 @@ class OverviewScreen extends React.Component {
           </View>
           <View style={styles.slider}>
             <ViewPager
-              data={milestoneGroups} 
+              data={milestoneGroups}
               renderPage={item => this.renderMilestoneItem(item)}
               pageWidth={mgSliderWidth}
               renderAsCarousel={false}
@@ -237,7 +203,7 @@ class OverviewScreen extends React.Component {
         </View>
       </ScrollView>
     );
-  };
+  }
 
 }
 

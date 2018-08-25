@@ -43,7 +43,6 @@ const { width, height } = Dimensions.get('window');
 const itemWidth = width - 40;
 
 class MilestoneQuestionsScreen extends Component {
-
   static navigationOptions = ({ navigation }) => {
     const title = navigation.getParam('section')
       ? navigation.getParam('section').title
@@ -70,35 +69,34 @@ class MilestoneQuestionsScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    if (
-      !nextProps.milestones.sections.fetching &&
-      nextProps.milestones.sections.fetched) {
-      if (!_.isEmpty(nextProps.milestones.sections.data)) {
+    const sections = nextProps.milestones.sections;
+    const questions = nextProps.milestones.questions;
+    if (!sections.fetching && sections.fetched) {
+      if (!_.isEmpty(sections.data)) {
         if (_.isEmpty(this.state.section)) {
-          const section = nextProps.milestones.sections.data[0];
+          const section = sections.data[0];
           this.setState({section: section});
           this.props.navigation.setParams({ section });
           this.props.fetchMilestoneQuestions({ section_id: section.id });
           this.props.resetMilestoneChoices();
           this.props.fetchMilestoneAnswers({ section_id: section.id });
         } else {
-          if (!nextProps.milestones.questions.fetching) {
+          if (!questions.fetching) {
             if (
-              _.isEmpty(nextProps.milestones.questions.data) ||
-              nextProps.milestones.questions.data[0].section_id !== this.state.section.id) {
+              _.isEmpty(questions.data) || 
+              questions.data[0].section_id !== this.state.section.id
+            ) {
               this.props.fetchMilestoneQuestions({
                 section_id: this.state.section.id
               });
               this.props.resetMilestoneChoices();
             }
           }
-          if (
-            !nextProps.milestones.questions.fetching &&
-            nextProps.milestones.questions.fetched) {
+          if (!questions.fetching && questions.fetched) {
             if (!nextProps.milestones.choices.fetching) {
               if (_.isEmpty(nextProps.milestones.choices.data)) {
                 this.setState({ questionsFetched: true });
-                const question_ids = _.map(nextProps.milestones.questions.data, 'id');
+                const question_ids = _.map(questions.data, 'id');
                 this.props.fetchMilestoneChoices({ question_ids });
               }
             };
@@ -108,17 +106,15 @@ class MilestoneQuestionsScreen extends Component {
       } // isEmpty sections.data
     } // sections.fetching
 
-    if (
-      !nextProps.milestones.answers.fetching &&
-      !nextProps.milestones.answers.fetched) {
-      if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
+    const answers = nextProps.milestones.answers;
+    if (!answers.fetching && answers.fetched) {
+      if (_.isEmpty(this.state.answers) && this.state.answersFetched) {
         this.setState({
           answers: this.props.milestones.answers.data,
           answersFetched: true,
         });
       }
     }
-
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -134,17 +130,18 @@ class MilestoneQuestionsScreen extends Component {
     const question = item.item;
     const question_number = _.isEmpty(question.question_number)
       ? String(question.position)
-      : question_number;
+      : question.question_number;
+    const title = `${question_number}. ${question.title}`;
 
     return  (
       <TouchableOpacity
         onPress={() => {
-          this.props.navigation.navigate('MilestoneQuestions', { task: item })
+          this.props.navigation.navigate('MilestoneQuestions', { task: item });
         }}
-      > 
-        <View style={ styles.questionContainer }>
-          <View style={ styles.questionLeft }>
-            <Text style={styles.question}>{ question_number + '.  ' + question.title}</Text> 
+      >
+        <View style={styles.questionContainer}>
+          <View style={styles.questionLeft}>
+            <Text style={styles.question}>{title}</Text>
           </View>
           <View>{this.renderChoices(question)}</View>
         </View>
@@ -155,22 +152,18 @@ class MilestoneQuestionsScreen extends Component {
   renderChoices = question => {
     switch(question.rn_input_type) {
       case 'check_box_multiple': {
-        return this.renderCheckBox(question, 'multiple')
-        break;
-      };
+        return this.renderCheckBox(question, 'multiple');
+      }
       case 'check_box_single': {
-        return this.renderCheckBox(question, 'single')
-        break;
-      };
+        return this.renderCheckBox(question, 'single');
+      }
       case 'check_box_yes_no': {
-        return this.renderCheckYesNo(question)
-        break;
-      };
+        return this.renderCheckYesNo(question);
+      }
       case 'text_short': {
-        return this.renderTextShort(question)
-        break;
-      };
-    };
+        return this.renderTextShort(question);
+      }
+    }
   };
 
   saveResponse = (choice, response, options = {}) => {
@@ -188,13 +181,15 @@ class MilestoneQuestionsScreen extends Component {
             ans.question_id === choice.question_id &&
             ans.choice_id !== choice.id
           );
-        } else {
-          return ans.question_id === choice.question_id;
-        };
+        }
+        return ans.question_id === choice.question_id;
       });
     }
 
     const index = _.findIndex(answers, { choice_id: choice.id });
+    const user = this.props.user;
+    const subject = this.props.subject;
+    const respondent = this.props.respondent;
 
     if (index === -1) {
       if (format === 'single' && !response.answer_boolean) {
@@ -206,24 +201,23 @@ class MilestoneQuestionsScreen extends Component {
           choice_id: choice.id,
           score: choice.score,
         };
-        if (!_.isEmpty(this.props.registration.user.data)) {
-          answer.user_id = this.props.registration.user.data.id;
-          answer.user_api_id = this.props.registration.user.data.api_id;
+        if (!_.isEmpty(user.data)) {
+          answer.user_id = user.data.id;
+          answer.user_api_id = user.data.api_id;
         }
-        if (!_.isEmpty(this.props.registration.respondent.data)) {
-          answer.respondent_id = this.props.registration.respondent.data.id;
-          answer.respondent_api_id = this.props.registration.respondent.data.api_id;
+        if (!_.isEmpty(respondent.data)) {
+          answer.respondent_id = respondent.data.id;
+          answer.respondent_api_id = respondent.data.api_id;
         }
-        if (!_.isEmpty(this.props.registration.subject.data)) {
-          answer.subject_id = this.props.registration.subject.data.id;
-          answer.subject_api_id = this.props.registration.subject.data.api_id;
+        if (!_.isEmpty(subject.data)) {
+          answer.subject_id = subject.data.id;
+          answer.subject_api_id = subject.data.api_id;
         }
 
         _.assign(answer, response);
 
         answers.push(answer);
       } // format == single
-
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);
       _.assign(answer, response);
@@ -242,19 +236,18 @@ class MilestoneQuestionsScreen extends Component {
         checked = answer.answer_boolean;
         text = answer.answer_text;
       }
-      const requireExplanation =
-        choice.require_explanation === 'if_true' && checked;
+      const requireExplanation = (choice.require_explanation === 'if_true' && checked);
 
       return (
         <View key={choice.id} style={styles.checkBoxExplanationContainer}>
           <CheckBox
-            title={choice.body} 
+            title={choice.body}
             textStyle={styles.checkBoxChoiceText}
             containerStyle={styles.checkBoxChoiceContainer}
             checked={checked}
             onPress={() =>
               this.saveResponse(
-                choice, 
+                choice,
                 { answer_boolean: !checked },
                 { format },
               )
@@ -379,8 +372,8 @@ class MilestoneQuestionsScreen extends Component {
         )}
       </ScrollView>
     );
-  };
-};
+  }
+}
 
 const styles = StyleSheet.create({
   container: {

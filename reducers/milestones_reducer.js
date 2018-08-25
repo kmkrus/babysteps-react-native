@@ -19,6 +19,10 @@ import {
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
 
+  API_CREATE_MILESTONE_CALENDAR_PENDING,
+  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
+  API_CREATE_MILESTONE_CALENDAR_REJECTED,
+
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
   API_FETCH_MILESTONE_CALENDAR_REJECTED,
@@ -148,15 +152,25 @@ const reducer = (state = initialState, action, formData = []) => {
     }
 
     case API_FETCH_MILESTONES_PENDING: {
-      return {...state, api_milestones: {...state.api_milestones, fetching: true, fetched: false, error: null } }
+      return {...state,
+        api_milestones: {...state.api_milestones, fetching: true, fetched: false, error: null },
+      };
       break;
     }
     case API_FETCH_MILESTONES_FULFILLED: {
-      return {...state, api_milestones: {...state.api_milestones, fetching: false, fetched: true } }
+      const data = action.payload.data;
+      return {...state,
+        api_milestones: {...state.api_milestones, fetching: false, fetched: true, error: null },
+        groups: {...state.groups, fetching: false, fetched: true, error: null, data: data.milestone_groups },
+        milestones: {...state.milestones, fetching: false, fetched: true, error: null, data: data.milestones },
+        tasks: {...state.tasks, fetching: false, fetched: true, error: null, data: data.tasks },
+      };
       break;
     }
     case API_FETCH_MILESTONES_REJECTED: {
-      return {...state, api_milestones: {...state.api_milestones, fetching: false, error: action.payload} }
+      return {...state, 
+        api_milestones: {...state.api_milestones, fetching: false, error: action.payload},
+      };
       break;
     }
 
@@ -188,16 +202,44 @@ const reducer = (state = initialState, action, formData = []) => {
       break;
     }
 
+    case API_CREATE_MILESTONE_CALENDAR_PENDING: {
+      return {...state,
+        api_calendar: { ...state.api_calendar, fetching: true, fetched: false, error: null },
+      };
+      break;
+    }
+    case API_CREATE_MILESTONE_CALENDAR_FULFILLED: {
+      return {...state,
+        api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
+        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
+      };
+      break;
+    }
+    case API_CREATE_MILESTONE_CALENDAR_REJECTED: {
+      return {...state,
+        api_calendar: {...state.api_calendar, fetching: false, fetched: false, error: action.payload },
+      };
+      break;
+    };
+
+
     case API_FETCH_MILESTONE_CALENDAR_PENDING: {
-      return {...state, api_calendar: {...state.api_calendar, fetching: true, fetched: false, error: null } }
+      return {...state,
+        api_calendar: { ...state.api_calendar, fetching: true, fetched: false, error: null },
+      };
       break;
     }
     case API_FETCH_MILESTONE_CALENDAR_FULFILLED: {
-      return {...state, api_calendar: {...state.api_calendar, fetching: false, fetched: true, error: null } }
+      return {...state,
+        api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
+        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
+      };
       break;
     }
     case API_FETCH_MILESTONE_CALENDAR_REJECTED: {
-      return {...state, api_calendar: {...state.api_calendar, fetching: false, fetched: false, error: action.payload } }
+      return {...state, 
+        api_calendar: { ...state.api_calendar, fetching: false, fetched: false, error: action.payload },
+      };
       break;
     }
 
