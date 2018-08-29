@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormInput,
 } from 'react-native-elements';
+import DatePicker from 'react-native-datepicker';
 
 import _ from 'lodash';
 
@@ -38,7 +39,7 @@ import {
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 
@@ -160,13 +161,23 @@ class MilestoneQuestionsScreen extends Component {
       case 'check_box_yes_no': {
         return this.renderCheckYesNo(question);
       }
+      case 'date_time_date': {
+        return this.renderDate(question);
+      }
       case 'text_short': {
         return this.renderTextShort(question);
+      }
+      case 'text_long': {
+        return this.renderTextLong(question);
+      }
+      case 'number': {
+        return this.renderTextNumeric(question);
       }
     }
   };
 
   saveResponse = (choice, response, options = {}) => {
+    debugger
     let answer = {};
     let answers = this.state.answers;
     const format = options.format;
@@ -326,6 +337,94 @@ class MilestoneQuestionsScreen extends Component {
     return <View>{collection}</View>;
   };
 
+  renderTextLong = question => {
+    const collection = _.map(question.choices, choice => {
+      let text = '';
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
+      if (answer) {
+        text = answer.answer_text;
+      }
+      return (
+        <View key={choice.id}>
+          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
+          <FormInput
+            inputStyle={styles.textInput}
+            defaultValue={text}
+            multiline = {true}
+            numberOfLines = {4}
+            onChangeText={value =>
+              this.saveResponse(choice, { answer_text: value })
+            }
+            containerStyle={{ borderBottomColor: Colors.lightGrey }}
+            underlineColorAndroid={Colors.lightGrey}
+          />
+        </View>
+      );
+    });
+    return <View>{collection}</View>;
+  };
+
+  renderTextNumeric = question => {
+    const collection = _.map(question.choices, choice => {
+      let text = '';
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
+      if (answer) {
+        text = answer.answer_text;
+      }
+      return (
+        <View key={choice.id}>
+          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
+          <FormInput
+            inputStyle={styles.textInput}
+            defaultValue={text}
+            keyboardType="numeric"
+            onChangeText={value =>
+              this.saveResponse(choice, { answer_text: value })
+            }
+            containerStyle={{ borderBottomColor: Colors.lightGrey }}
+            underlineColorAndroid={Colors.lightGrey}
+          />
+        </View>
+      );
+    });
+    return <View>{collection}</View>;
+  };
+
+  renderDate = question => {
+    const collection = _.map(question.choices, choice => {
+      let text = new Date().toISOString().slice(0, 10);
+      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
+      if (answer) {
+        text = answer.answer_text;
+      }
+      return (
+        <View key={choice.id}>
+          <DatePicker
+            label={choice.body}
+            date={text}
+            style={styles.dateInput}
+            mode="date"
+            androidMode="spinner"
+            format="YYYY-MM-DD"
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              dateInput: {
+                borderWidth: 0,
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.lightGrey,
+              },
+            }}
+            onDateChange={value =>
+              this.saveResponse(choice, { answer_text: value })
+            }
+          />
+        </View>
+      );
+    });
+    return <View>{collection}</View>;
+  };
+
   handleConfirm = () => {
     // TODO validation
     // TODO move to next section if more than one section in this task
@@ -334,7 +433,7 @@ class MilestoneQuestionsScreen extends Component {
     if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
       this.props.apiUpdateMilestoneAnswers(this.props.session, this.state.section.id, this.state.answers);
     }
-    this.props.navigation.navigate('Milestones');
+    this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
 
   render() {
@@ -421,6 +520,11 @@ const styles = StyleSheet.create({
   textLabel: {
     fontSize: 12,
     fontWeight: '400',
+  },
+  dateInput: {
+    width: 200,
+    marginBottom: 10,
+    marginLeft: 20,
   },
   buttonContainer: {
     flex: 1,

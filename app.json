@@ -23,15 +23,15 @@
     "ios": {
       "buildNumber": "7",
       "supportsTablet": true,
-      "bundleIdentifier": "com.gofullstack.babysteps"
+      "bundleIdentifier": "com.gofullstack.babysteps",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to capture images of your baby for the study or baby book.",
+        "NSLocationAlwaysUsageDescription": "This app uses location to identify where your pictures were taken.",
+        "NSPhotoLibraryUsage": "This app uses your photo library for selecting images of your baby for the study or baby book."
+      }
     },
     "android": {
       "package": "com.gofullstack.babysteps",
-    },
-    "infoPlist": {
-      "NSCameraUsageDescription": "This app uses the camera to capture images of your baby for the study or baby book.",
-      "NSLocationAlwaysUsageDescription": "This app uses location to identify where your pictures were taken.",
-      "NSPhotoLibraryUsage": "This app uses your photo library for selecting images of your baby for the study or baby book."
     },
   },
   "hooks": {

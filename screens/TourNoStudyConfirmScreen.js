@@ -17,9 +17,7 @@ import States from '../actions/states';
 import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 
-const { width: screenWidth } = Dimensions.get('window');
-const width = screenWidth;
-
+const { width, height } = Dimensions.get('window');
 
 class TourNoStudyConfirmScreen extends Component {
 
