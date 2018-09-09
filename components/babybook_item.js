@@ -17,8 +17,8 @@ import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
 
 const { width, height } = Dimensions.get('window');
-const heightOffset = 180 // compensate for header and navbar
-const widthOffset = 40
+const heightOffset = 180 ;// compensate for header and navbar
+const widthOffset = 40;
 
 const imageSize = width - widthOffset - 60
 const backgroundImage = require('../assets/images/baby_book_inside_background.png')
@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     width: width - widthOffset,
   },
   backgroundImage: {
+    flex: 1,
     resizeMode: 'stretch',
     width: width - widthOffset,
   },

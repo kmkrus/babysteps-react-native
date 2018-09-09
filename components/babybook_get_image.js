@@ -9,13 +9,15 @@ import {
 import { Video } from 'expo';
 
 import Colors from '../constants/Colors';
-import CONSTANTS from '../constants';
+import VideoFormats from '../constants/VideoFormats';
 
 const { width } = Dimensions.get('window');
 const widthOffset = 40;
 const imageOffset = 60;
 
 const imageWidth = width - (widthOffset + imageOffset);
+const videoWidth = imageWidth;
+const videoHeight = imageWidth;
 
 class BabyBookGetImage extends Component {
   static IMAGE_WIDTH = imageWidth;
@@ -26,6 +28,9 @@ class BabyBookGetImage extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     const item = nextProps.item;
+    if (VideoFormats.includes(item.file_type)) {
+      return;
+    }
     if (item.file_name && item.file_uri) {
       Image.getSize(
         item.file_uri.uri,
@@ -33,6 +38,7 @@ class BabyBookGetImage extends Component {
           this.setState({ imageHeight: imageWidth * (height / width) });
         },
         error => {
+          // not fatal
           console.log(error);
         },
       ); // Image.getSize
@@ -40,16 +46,16 @@ class BabyBookGetImage extends Component {
   }
 
   handleImageOnPress = () => {
-    if (this.props.item.type == 'cover') {
+    if (this.props.item.type === 'cover') {
       this.props.navigation.navigate('BabyBookEntry');
     }
   };
 
   render() {
     const imageContainerHeight = this.state.imageHeight + 2;
-    const imageFileType = this.props.item.data
-      ? this.props.item.data.file_type
-      : null;
+    const uri = this.props.item.file_uri;
+    const isVideo = VideoFormats.includes(this.props.item.file_type);
+    const imageHeight = this.state.imageHeight;
 
     return (
       <View style={[styles.imageContainer, { height: imageContainerHeight }]}>
@@ -58,21 +64,22 @@ class BabyBookGetImage extends Component {
             this.handleImageOnPress();
           }}
         >
-          {imageFileType === 'video/mp4' ? (
+          {isVideo ? (
             <Video
-              style={[
-                styles.image,
-                { width: imageWidth, height: imageWidth * 0.75 },
-              ]}
-              source={this.props.item.file_uri}
-              isMuted
+              source={uri}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode={Video.RESIZE_MODE_COVER}
               shouldPlay
-              resizeMode={Expo.Video.RESIZE_MODE_COVER}
+              isLooping
+              useNativeControls
+              style={{ width: videoWidth, height: videoHeight }}
             />
           ) : (
             <Image
-              source={this.props.item.file_uri}
-              style={[styles.image, { height: this.state.imageHeight }]}
+              source={uri}
+              style={[styles.image, { height: imageHeight }]}
             />
           )}
         </TouchableOpacity>

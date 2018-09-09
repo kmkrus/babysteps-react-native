@@ -23,11 +23,15 @@ import CameraModal from './camera_modal';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import VideoFormats from '../constants/VideoFormats';
 
 const { width, height } = Dimensions.get('window');
 
-const preview_width = width - 40;
-const preview_height = width * 0.75;
+const previewWidth = width - 40;
+const previewHeight = width * 0.75;
+
+const videoWidth = previewWidth;
+const videoHeight = previewWidth;
 
 const TextInput = compose(
   withInputAutoFocus,
@@ -40,19 +44,16 @@ const validationSchema = Yup.object().shape({
 });
 
 class BabyBookEntryForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      image: null,
-      imageError: '',
-      hasCameraPermission: null,
-      hasCameraRollPermission: null,
-      hasAudioPermission: null,
+  state = {
+    image: null,
+    imageError: '',
+    hasCameraPermission: null,
+    hasCameraRollPermission: null,
+    hasAudioPermission: null,
 
-      permissionMessage: '',
-      cameraModalVisible: false,
-    };
-  }
+    permissionMessage: '',
+    cameraModalVisible: false,
+  };
 
   async componentDidMount() {
     await this.handleCameraRollPermission();
@@ -97,11 +98,11 @@ class BabyBookEntryForm extends Component {
     ) {
       message << 'Camera Permissions not granted - cannot open camera preview';
     }
-    if (source == 'library' && !this.state.hasCameraRollPermission) {
+    if (source === 'library' && !this.state.hasCameraRollPermission) {
       message <<
         'Camera Roll Permissions not granted - cannot open photo album';
     }
-    if (source == 'video' && !this.state.hasAudioPermission) {
+    if (source === 'video' && !this.state.hasAudioPermission) {
       message <<
         'Audio Recording Permissions not granted - cannot open video preview';
     }
@@ -126,7 +127,8 @@ class BabyBookEntryForm extends Component {
         render={props => {
           const uri = this.state.image ? this.state.image.uri : null;
           const uriParts = uri ? uri.split('.') : null;
-          const fileType = uriParts ? uriParts[uriParts.length - 1] : null;
+          const file_type = uriParts ? uriParts[uriParts.length - 1] : null;
+          const isVideo = VideoFormats.includes(file_type);
 
           return (
             <Form>
@@ -155,13 +157,17 @@ class BabyBookEntryForm extends Component {
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-                {uri && ['mp4', 'mov'].includes(fileType) ? (
+                {isVideo ? (
                   <Video
-                    style={styles.image}
-                    source={uri ? { uri } : null}
-                    isMuted
+                    source={uri}
+                    rate={1.0}
+                    volume={1.0}
+                    isMuted={false}
+                    resizeMode={Video.RESIZE_MODE_COVER}
                     shouldPlay
-                    resizeMode={Expo.Video.RESIZE_MODE_COVER}
+                    isLooping
+                    useNativeControls
+                    style={{ width: videoWidth, height: videoHeight }}
                   />
                 ) : (
                   <Image source={uri ? { uri } : null} style={styles.image} />
@@ -244,27 +250,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
   },
-  pickImage: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 200,
-    width: 200,
-    backgroundColor: Colors.lightGreen,
-    borderColor: Colors.darkGreen,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  pickImageText: {
-    flex: 1,
-    textAlign: 'center',
-    backgroundColor: Colors.transparent,
-  },
   image: {
     flex: 1,
-    width: preview_width,
-    height: preview_height,
+    width: previewWidth,
+    height: previewHeight,
   },
   textAreaContainer: {
     flex: 1,

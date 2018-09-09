@@ -10,6 +10,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0-rc.1",
     "@expo/vector-icons": "^6.3.1",
+    "@expo/videoplayer": "^0.4.0",
     "@redux-offline/redux-offline": "^2.3.3",
     "axios": "^0.18.0",
     "expo": "^29.0.0",

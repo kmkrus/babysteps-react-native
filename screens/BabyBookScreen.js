@@ -108,9 +108,8 @@ class BabyBookScreen extends Component {
     if (_.isEmpty(this.props.registration.subject.data)) {
       this.props.fetchSubject();
     }
-    if (_.isEmpty(this.props.babybook.entries.data)) {
-      this.props.fetchBabyBookEntries();
-    }
+
+    this.props.fetchBabyBookEntries();
 
     // bind function to navigation
     this.props.navigation.setParams({ Share: this.shareOpen.bind(this) });
@@ -137,6 +136,7 @@ class BabyBookScreen extends Component {
         _.forEach(nextProps.babybook.entries.data, item => {
           if (item.file_name) {
             const uri = babybookDir + item.file_name;
+            const uriParts = item.file_name.split('.');
             data.push({ ...item, file_uri: { uri } });
           }
         });

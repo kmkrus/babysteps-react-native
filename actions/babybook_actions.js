@@ -1,12 +1,10 @@
 import { SQLite } from 'expo';
-import axios from "axios";
 
 import { _ } from 'lodash';
 
 import CONSTANTS from '../constants';
 
 import {
-
   RESET_BABYBOOK_ENTRIES,
 
   FETCH_BABYBOOK_ENTRIES_PENDING,
@@ -21,39 +19,41 @@ import {
   UPDATE_BABYBOOK_ENTRY_FULFILLED,
   UPDATE_BABYBOOK_ENTRY_REJECTED,
 
-} from '../actions/types';
+} from './types';
+
+import VideoFormats from '../constants/VideoFormats';
 
 const db = SQLite.openDatabase('babysteps.db');
 
-const Pending = (type) => {
-  return { type }
+const Pending = type => {
+  return { type };
 };
 
-const Response = ( type, payload, formData={} ) => {
-  return { type, payload, formData }
+const Response = (type, payload, formData = {}) => {
+  return { type, payload, formData };
 };
 
 export const resetBabyBookEntries = () => {
-  return function (dispatch) {
-    dispatch( Pending(RESET_BABYBOOK_ENTRIES))
-  }
-}
+  return function(dispatch) {
+    dispatch(Pending(RESET_BABYBOOK_ENTRIES));
+  };
+};
 
 export const fetchBabyBookEntries = () => {
   return function (dispatch) {
-    
+
     dispatch( Pending(FETCH_BABYBOOK_ENTRIES_PENDING) );
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           'SELECT * FROM babybook_entries;', [],
           (_, response) => { dispatch( Response(FETCH_BABYBOOK_ENTRIES_FULFILLED, response) ) },
           (_, error) => { dispatch( Response(FETCH_BABYBOOK_ENTRIES_REJECTED, error) ) }
         );
       })
     )
-  };
+  }
 
 };
 
@@ -63,19 +63,17 @@ export const createBabyBookEntry = (data, image) => {
 
     dispatch( Pending(CREATE_BABYBOOK_ENTRY_PENDING) );
 
-    const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY 
-    const fileName = image.uri.split('/').pop()
-    const newUri = newDir + '/' + fileName
+    const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
+    const fileName = image.uri.split('/').pop();
+    const newUri = newDir + '/' + fileName;
 
-    const uriParts = image.uri.split('.')
-    const fileType = uriParts[uriParts.length - 1]
-    var mimeType = 'image/png'
-    if ( fileType == 'mp4' ) {
-      mimeType = 'video/mp4'
-    }
+    const uriParts = image.uri.split('.');
+    const fileType = uriParts[uriParts.length - 1];
 
-    data = {...data, file_name: fileName, file_type: mimeType }   
-    
+    const mimeType = VideoFormats.filter(s => s.includes(fileType));
+
+    data = {...data, file_name: fileName, file_type: mimeType[0] }
+
     return (
 
       Expo.FileSystem.copyAsync({from: image.uri, to: newUri})
