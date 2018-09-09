@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Notifications } from 'expo';
+import { Notifications, Permissions } from 'expo';
 
 import { createStackNavigator } from 'react-navigation';
 
@@ -14,8 +14,6 @@ import ConsentScreen from '../screens/ConsentScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
 import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
-
-import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -86,7 +84,7 @@ class RootNavigator extends Component {
   }
 
   componentDidMount() {
-    this._notificationSubscription = this._registerForPushNotifications();
+    this._notificationSubscription = this.registerForNotifications();
   }
 
   componentWillUnmount() {
@@ -95,19 +93,19 @@ class RootNavigator extends Component {
 
   _handleNotification = ({ origin, data }) => {
     console.log(
-      `Push notification ${origin} with data: ${JSON.stringify(data)}`,
+      `Notification ${origin} with data: ${JSON.stringify(data)}`,
     );
   };
 
-  _registerForPushNotifications() {
-    // Send our push token over to our backend so we can receive notifications
-    // You can comment the following line out if you want to stop receiving
-    // a notification every time you open the app. Check out the source
-    // for this function in api/registerForPushNotificationsAsync.js
-    registerForPushNotificationsAsync();
-
+  async registerForNotifications() {
+    // android permissions are given on install
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      console.log('Notifications Permission Denied');
+      return null;
+    }
     // Watch for incoming notifications
-    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+    Notifications.addListener(this._handleNotification);
   }
 
   render() {
