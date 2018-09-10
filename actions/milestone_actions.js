@@ -5,6 +5,7 @@ import url from 'url';
 import { _ } from 'lodash';
 
 import { insertRows } from '../database/common';
+import { setNotifications } from '../notifications';
 import schema from '../database/milestones_schema.json';
 import trigger_schema from '../database/milestone_triggers_schema.json';
 
@@ -29,6 +30,8 @@ import {
   FETCH_MILESTONE_CALENDAR_PENDING,
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  RESET_API_MILESTONE_CALENDAR,
 
   API_CREATE_MILESTONE_CALENDAR_PENDING,
   API_CREATE_MILESTONE_CALENDAR_FULFILLED,
@@ -167,6 +170,12 @@ export const fetchMilestoneCalendar = () => {
 
 };
 
+export const resetApiMilestoneCalendar = () => {
+  return dispatch => {
+    dispatch(Pending(RESET_API_MILESTONE_CALENDAR));
+  };
+};
+
 export const apiCreateMilestoneCalendar = params => {
   return dispatch => {
     dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
@@ -182,6 +191,7 @@ export const apiCreateMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          setNotifications(response.data);
           dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
         })
         .catch(error => {

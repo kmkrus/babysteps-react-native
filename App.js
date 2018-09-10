@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Provider } from 'react-redux';
 import { AppLoading, Asset, Font } from 'expo';
+import FlashMessage from "react-native-flash-message";
 import Sentry from 'sentry-expo';
 
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 import RootNavigator from './navigation/RootNavigator';
 
@@ -14,7 +15,6 @@ import checkRegistrationSchema from './database/check_registration_schema';
 import checkAnswersSchema from './database/check_answers_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
 import checkCustomDirectories from './components/check_custom_directories';
-
 
 import store from './store';
 
@@ -43,10 +43,10 @@ export default class App extends Component {
       <Provider store={store}>
         <View
           style={styles.container}
-          onLayout={() => console.log('*** layout changed')}
-        >
+          onLayout={() => console.log('*** layout changed')}>
           {Platform.OS === 'android' && <StatusBar barStyle="default" />}
           <RootNavigator />
+          <FlashMessage position="top" />
         </View>
       </Provider>
     );

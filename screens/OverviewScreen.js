@@ -8,6 +8,8 @@ import {
   View,
   Dimensions,
 } from 'react-native';
+import { Notifications } from 'expo';
+
 import { ViewPager } from 'react-native-viewpager-carousel';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -20,8 +22,9 @@ import {
   resetApiMilestones,
   apiFetchMilestones,
   fetchMilestoneGroups,
+  resetApiMilestoneCalendar,
   fetchMilestoneCalendar,
-  apiFetchMilestoneCalendar,
+  apiCreateMilestoneCalendar,
 } from '../actions/milestone_actions';
 
 import { fetchSubject } from '../actions/registration_actions';
@@ -60,9 +63,20 @@ class OverviewScreen extends React.Component {
 
   componentWillMount() {
     this.props.resetApiMilestones();
+    this.props.resetApiMilestoneCalendar();
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneCalendar();
     this.props.fetchSubject();
+
+    Notifications.presentLocalNotificationAsync({
+      title: 'Test - Reminder',
+      body: 'This is an important reminder!!!!',
+      data: {
+        title: 'Test - Reminder',
+        body: 'Test - Reminder',
+        type: 'info',
+      },
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -71,7 +85,7 @@ class OverviewScreen extends React.Component {
       if (_.isEmpty(groups.data)) {
         const api_milestones = nextProps.milestones.api_milestones;
         if (!api_milestones.fetching && !api_milestones.fetched) {
-            this.props.apiFetchMilestones();
+          this.props.apiFetchMilestones();
         }
       }
     }
@@ -79,8 +93,8 @@ class OverviewScreen extends React.Component {
     const subject = nextProps.registration.subject;
     const calendar = nextProps.milestones.calendar;
     if (!subject.fetching && subject.fetched) {
-      if (!calendar.fetching && calendar.fetched) {
-        if (_.isEmpty(calendar.data)) {
+      if ( !calendar.fetching && calendar.fetched) {
+        if ( _.isEmpty(calendar.data)) {
           const api_calendar = nextProps.milestones.api_calendar;
           if (!api_calendar.fetching && !this.state.apiFetchCalendarSubmitted) {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
@@ -138,13 +152,21 @@ class OverviewScreen extends React.Component {
   render() {
     const milestoneGroups = _.sortBy(
       _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position 
-    )
+    );
+    const timeNow = new Date();
+    let screeningEvents = _.filter(this.props.milestones.calendar.data, c => {
+      const notify_at = new Date(c.notify_at)
+      return notify_at > timeNow;
+    });
+    screeningEvents = _.sortBy(screeningEvents, c => {
+      return new Date(c.notify_at);
+    });
 
     return (
       <ScrollView 
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}>
-        <ScrollView 
+        <ScrollView
           style={styles.container} 
           contentContainerStyle={styles.contentContainer}
         >
@@ -172,7 +194,7 @@ class OverviewScreen extends React.Component {
           </View>
           <View style={styles.slider}>
             <ViewPager
-              data={this.props.milestones.calendar.data}
+              data={screeningEvents}
               renderPage={item => this.renderScreeningItem(item)}
               pageWidth={scSliderWidth}
               renderAsCarousel={false}
@@ -344,7 +366,8 @@ const mapDispatchToProps = {
   apiFetchMilestones,
   fetchMilestoneGroups,
   fetchMilestoneCalendar,
-  apiFetchMilestoneCalendar,
+  resetApiMilestoneCalendar,
+  apiCreateMilestoneCalendar,
   fetchSubject,
 };
 export default connect(

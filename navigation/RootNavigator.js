@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
+import { Platform } from 'react-native';
 
 import { Notifications, Permissions } from 'expo';
 
 import { createStackNavigator } from 'react-navigation';
+
+import { showMessage, hideMessage } from "react-native-flash-message";
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
@@ -81,6 +84,15 @@ const TourNoStudyNavigator = createStackNavigator(
 class RootNavigator extends Component {
   componentWillMount() {
     this.props.fetchSession();
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('screeningEvents', {
+        name: 'Screening Events',
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+        color: Colors.notifications,
+      });
+    }
   }
 
   componentDidMount() {
@@ -91,10 +103,14 @@ class RootNavigator extends Component {
     this._notificationSubscription && this._notificationSubscription.remove();
   }
 
-  _handleNotification = ({ origin, data }) => {
-    console.log(
-      `Notification ${origin} with data: ${JSON.stringify(data)}`,
-    );
+  _handleNotification = ({ origin, data, remote }) => {
+    showMessage({
+      type: data.type,
+      message: data.title,
+      description: data.body,
+      color: Colors.flashMessage,
+      backgroundColor: Colors.flashMessageBackground,
+    });
   };
 
   async registerForNotifications() {

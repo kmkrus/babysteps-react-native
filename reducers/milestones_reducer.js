@@ -19,6 +19,8 @@ import {
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
 
+  RESET_API_MILESTONE_CALENDAR,
+
   API_CREATE_MILESTONE_CALENDAR_PENDING,
   API_CREATE_MILESTONE_CALENDAR_FULFILLED,
   API_CREATE_MILESTONE_CALENDAR_REJECTED,
@@ -199,6 +201,11 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case FETCH_MILESTONE_CALENDAR_REJECTED: {
       return {...state, calendar: { ...state.calendar, fetching: false, error: action.payload} }
+      break;
+    }
+
+    case RESET_API_MILESTONE_CALENDAR: {
+      return {...state, api_calendar: {fetching: false, fetched: false, error: null } }
       break;
     }
 

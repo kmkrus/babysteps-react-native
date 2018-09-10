@@ -17,6 +17,8 @@ export const FETCH_MILESTONE_CALENDAR_PENDING = 'fetch_milestone_calendar_pendin
 export const FETCH_MILESTONE_CALENDAR_FULFILLED = 'fetch_milestone_calendar_fulfilled';
 export const FETCH_MILESTONE_CALENDAR_REJECTED = 'fetch_milestone_calendar_rejected';
 
+export const RESET_API_MILESTONE_CALENDAR = 'reset_api_milestone_calendar';
+
 export const API_CREATE_MILESTONE_CALENDAR_PENDING = 'api_create_milestone_calendar_pending';
 export const API_CREATE_MILESTONE_CALENDAR_FULFILLED = 'api_create_milestone_calendar_fulfilled';
 export const API_CREATE_MILESTONE_CALENDAR_REJECTED = 'api_create_milestone_calendar_rejected';
