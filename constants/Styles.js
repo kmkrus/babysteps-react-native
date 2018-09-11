@@ -26,6 +26,7 @@ module.exports = StyleSheet.create({
   registrationLabel: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: Colors.textColor,
     marginLeft: 20,
   },
 
@@ -33,7 +34,7 @@ module.exports = StyleSheet.create({
     marginLeft: 20,
     fontSize: 18,
     fontWeight: 'bold',
-    color: Colors.textColor,
+    color: Colors.black,
   }
 
 });
