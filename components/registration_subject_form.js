@@ -155,7 +155,7 @@ class RegistrationSubjectForm extends Component {
           return (
             <Form>
               <Text style={styles.form_header}>
-                Step 3: Update Your Baby's Profile.
+                Step 3: Update Your Baby's Profile
               </Text>
               <MaterialTextInput
                 label="First Name"
@@ -191,8 +191,8 @@ class RegistrationSubjectForm extends Component {
               />
 
               <DatePickerInput
-                label="Date of Birth" 
-                name="date_of_birth" 
+                label="Date of Birth"
+                name="date_of_birth"
                 date={props.values.date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
@@ -202,7 +202,7 @@ class RegistrationSubjectForm extends Component {
 
               <Text style={styles.errorText}>{dobError}</Text>
 
-              <MaterialTextInput 
+              <MaterialTextInput
                 label="Days Premature"
                 name="days_premature"
                 type="name"

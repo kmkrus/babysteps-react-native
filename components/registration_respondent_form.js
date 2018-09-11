@@ -19,11 +19,11 @@ import withInputAutoFocus, {
 import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
-import { 
-  fetchUser, 
-  resetRespondent, 
-  createRespondent, 
-  updateRespondent, 
+import {
+  fetchUser,
+  resetRespondent,
+  createRespondent,
+  updateRespondent,
   apiCreateRespondent,
   apiUpdateRespondent,
   apiSaveSignature,
@@ -75,15 +75,15 @@ class RegistrationRespondentForm extends Component {
   state = {
     signature_submitted: false,
   }
-  
+
   componentWillMount() {
     this.props.fetchUser()
     this.props.resetRespondent()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.user.fetching || 
-      nextProps.registration.respondent.fetching || 
+    if ( nextProps.registration.user.fetching ||
+      nextProps.registration.respondent.fetching ||
       nextProps.registration.apiRespondent.fetching ) {
       return false
     }
@@ -91,13 +91,13 @@ class RegistrationRespondentForm extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    
+
     if ( !nextProps.registration.respondent.fetching && nextProps.registration.respondent.fetched ) {
       if (!nextProps.registration.apiRespondent.fetching) {
 
         if (!nextProps.registration.apiRespondent.fetched) {
           this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
-        
+
         } else {
 
           // Upload signatture image if we have respondent id
@@ -105,7 +105,7 @@ class RegistrationRespondentForm extends Component {
             const api_id = nextProps.registration.apiRespondent.data.id
 
             this.props.updateRespondent({ api_id: api_id})
-            
+
             if ( !this.state.signature_submitted ) {
               this.saveSignature(api_id)
               this.setState({ signature_submitted: true })
@@ -119,7 +119,7 @@ class RegistrationRespondentForm extends Component {
                 user_id: nextProps.registration.auth.user_id
               });
             }
-            
+
             if (nextProps.registration.respondent.data.pregnant) {
               this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
             } else {
@@ -146,7 +146,7 @@ class RegistrationRespondentForm extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          const respondent = {...values, 
+          const respondent = {...values,
             user_id: this.props.registration.user.data.api_id,
             email: this.props.registration.user.data.email,
             first_name: this.props.registration.user.data.first_name,
@@ -166,7 +166,7 @@ class RegistrationRespondentForm extends Component {
 
           return (
             <Form>
-              <Text style={styles.form_header}>Step 2: Update Your Profile.</Text>
+              <Text style={styles.form_header}>Step 2: Update Your Profile</Text>
 
               <PickerInput
                 label='Relationship'
@@ -191,14 +191,14 @@ class RegistrationRespondentForm extends Component {
               <MaterialTextInput label="Zip Code" name="zip_code" type="text" />
               <MaterialTextInput label="Home Phone" name="home_phone" type="tel" />
               <MaterialTextInput label="Other Phone" name="other_phone" type="tel" />
-              
+
               <DatePickerInput
-                label="Date of Birth" 
-                name="date_of_birth" 
+                label="Date of Birth"
+                name="date_of_birth"
                 date={props.values.date_of_birth}
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
               />
-              
+
               <MaterialTextInput label="Driver's License Number" name="drivers_license_number" type="text" />
 
               <PickerInput
@@ -209,7 +209,7 @@ class RegistrationRespondentForm extends Component {
                 selectedValue={props.values.marital_status}
                 handleChange={ (value) => props.setFieldValue('marital_status', value) }
               />
- 
+
               <MaterialTextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
               <MaterialTextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
@@ -230,9 +230,9 @@ class RegistrationRespondentForm extends Component {
               />
 
               <View style={styles.buttonContainer}>
-                <Button 
+                <Button
                   title="NEXT"
-                  onPress={ props.handleSubmit } 
+                  onPress={ props.handleSubmit }
                   color={Colors.green}
                   disabled={ props.isSubmitting }
                 />
@@ -267,15 +267,15 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { 
-  fetchUser, 
+const mapDispatchToProps = {
+  fetchUser,
   resetRespondent,
-  createRespondent, 
-  updateRespondent, 
+  createRespondent,
+  updateRespondent,
   apiCreateRespondent,
   apiUpdateRespondent,
   apiSaveSignature,
-  updateSession 
+  updateSession
 };
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

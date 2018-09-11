@@ -36,7 +36,7 @@ class RegistrationScreen extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView enableOnAndroid={true}>
+      <KeyboardAwareScrollView style={styles.body} enableOnAndroid={true}>
         <View style={styles.container}>{this.selectForm()}</View>
       </KeyboardAwareScrollView>
     );
@@ -46,7 +46,9 @@ class RegistrationScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 20,
+  },
+  body: {
+    backgroundColor: '#fff',
   },
 });
 
