@@ -23,6 +23,7 @@ import { updateSession } from '../actions/session_actions';
 import MaterialTextInput from '../components/materialTextInput';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 const Form = withNextInputAutoFocusForm(View);

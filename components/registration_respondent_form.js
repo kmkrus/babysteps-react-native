@@ -36,6 +36,7 @@ import Picker from '../components/pickerInput';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
@@ -166,10 +167,11 @@ class RegistrationRespondentForm extends Component {
 
           return (
             <Form>
-              <Text style={styles.form_header}>Step 2: Update Your Profile</Text>
+              <Text style={AppStyles.registrationHeader}>Step 2: Update Your Profile</Text>
 
               <PickerInput
                 label='Relationship'
+                labelStyle={AppStyles.registrationLabel}
                 prompt='Relationship'
                 name='respondent_type'
                 data={respondentTypes}
@@ -177,32 +179,35 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('respondent_type', value) }
               />
 
-              <MaterialTextInput label="Address 1" name="address_1" type="text" />
-              <MaterialTextInput label="Address 2" name="address_2" type="text" />
-              <MaterialTextInput label="City" name="city" type="text" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Address 1" name="address_1" type="text" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Address 2" name="address_2" type="text" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="City" name="city" type="text" />
               <PickerInput
                 label='State'
+                labelStyle={AppStyles.registrationLabel}
                 prompt='State'
                 name='state'
                 data={States}
                 selectedValue={props.values.state}
                 handleChange={ (value) => props.setFieldValue('state', value) }
               />
-              <MaterialTextInput label="Zip Code" name="zip_code" type="text" />
-              <MaterialTextInput label="Home Phone" name="home_phone" type="tel" />
-              <MaterialTextInput label="Other Phone" name="other_phone" type="tel" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Zip Code" name="zip_code" type="text" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Home Phone" name="home_phone" type="tel" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Other Phone" name="other_phone" type="tel" />
 
               <DatePickerInput
                 label="Date of Birth"
+                labelStyle={AppStyles.registrationLabel}
                 name="date_of_birth"
                 date={props.values.date_of_birth}
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
               />
 
-              <MaterialTextInput label="Driver's License Number" name="drivers_license_number" type="text" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Driver's License Number" name="drivers_license_number" type="text" />
 
               <PickerInput
                 label='Marital Status'
+                labelStyle={AppStyles.registrationLabel}
                 prompt='Marital Status'
                 name='marital_status'
                 data={maritalStatuses}
@@ -210,10 +215,10 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('marital_status', value) }
               />
 
-              <MaterialTextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
-              <MaterialTextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
+              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
-              <Text style={styles.label}>Are You Currently Pregnant?</Text>
+              <Text style={AppStyles.registrationLabel}>Are You Currently Pregnant?</Text>
               <CheckBox
                 title='Yes'
                 checked={ props.values.pregnant }

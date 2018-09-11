@@ -19,7 +19,7 @@ export default class DatePickerInput extends React.PureComponent {
 
     return (
       <View>
-        <Text>{this.props.label}</Text>
+        <Text style={this.props.labelStyle}>{this.props.label}</Text>
         <DatePicker
           ref={input => (this.input = input)}
           style={styles}
@@ -38,7 +38,7 @@ export default class DatePickerInput extends React.PureComponent {
           onDateChange={ (value) => { this.props.handleChange(value) } }
           {...this.props}
         />
-        <InputHelper 
+        <InputHelper
           displayError={displayError}
           helper={helper}
           error={error}

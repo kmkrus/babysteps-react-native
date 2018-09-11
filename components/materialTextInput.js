@@ -20,10 +20,11 @@ export default class MaterialTextInput extends React.PureComponent {
       <View >
         <TextField
           ref={input => (this.input = input)}
-          labelHeight={14}
+          labelHeight={12}
           labelFontSize={12}
-          labelTextStyle={styles.label}
-          style={ {marginLeft: 20, fontWeight: 'bold'} }
+          fontSize={14}
+          labelTextStyle={this.props.labelStyle}
+          style={this.props.textInputStyle}
           baseColor={baseColor}
           tintColor={Colors.darkGrey}
           textColor={Colors.textColor}
@@ -39,13 +40,3 @@ export default class MaterialTextInput extends React.PureComponent {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  label: {
-    marginLeft: 20,
-    fontWeight: 'bold',
-  },
-  inputContainer: {
-    marginLeft: 20,
-  },
-});
