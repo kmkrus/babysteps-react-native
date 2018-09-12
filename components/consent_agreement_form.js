@@ -39,7 +39,7 @@ class ConsentAgreementForm extends Component {
       <ScrollView contentContainerStyle={styles.scrollView} >
 
         <View style={styles.elevated}>
-          
+
           <Text style={styles.title}>INFORMED CONSENT DOCUMENT</Text>
 
           <Text style={styles.header}>Project Title:</Text>
@@ -67,7 +67,7 @@ class ConsentAgreementForm extends Component {
 
           <Text style={styles.header}>HOW LONG WILL I BE IN THIS STUDY?</Text>
           <Text style={styles.text}>If you agree to take part in this study, your involvement will last for up to three months, during which time you may be asked to answer simple questions about yourself, your pregnancy or your baby’s development; or to videotape yourself playing with your child. These tasks will appear on your cell phone several times per week. They can be completed at any convenient time for you and should take between 1 and 10 minutes of your time on each occasion.</Text>
-        
+
 
           <Text style={styles.header}>WHAT WILL HAPPEN DURING THIS STUDY?</Text>
           <Text style={styles.text}>Before beginning any study procedures and/or signing the study consent, you will have participated in a phone or web-based screening interview to determine your eligibility to participate in the study.  If you were eligible, a link to download this smart phone app would have been sent to the email address you provided.</Text>
@@ -87,7 +87,7 @@ class ConsentAgreementForm extends Component {
           <Text style={styles.text}>With your consent, the newborn blood spot may be obtained from Iowa Department of Public Health and analyzed at the University of Iowa. Results of a genetic test will not be provided to you or placed in the medical record.</Text>
 
           <Text style={styles.header}>Please initial below if you agree to the use of your baby’s newborn screening blood spots for genetic testing:</Text>
-        
+
           <CheckBox
             title='Yes, I allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose.'
             textStyle={styles.checkboxText}
@@ -165,7 +165,7 @@ class ConsentAgreementForm extends Component {
             color={Colors.grey}
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ () => { 
+            onPress={ () => {
               this.props.updateSession( {registration_state: States.REGISTERING_AS_NO_STUDY} )
             }}
             title='Disagree' />
@@ -177,7 +177,7 @@ class ConsentAgreementForm extends Component {
             title='Agree' />
         </View>
 
-        
+
 
       </ScrollView>
     )
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   elevated: {
     flex: 1,
     backgroundColor: Colors.white,
-    padding: 3,
+    padding: 20,
     elevation: 2,
   },
   checkboxText: {
