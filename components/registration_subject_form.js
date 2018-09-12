@@ -49,8 +49,23 @@ const DatePickerInput = compose(
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
-  //date_of_birth: Yup.string()
-  //.required('Date of Birth is Required'),
+  first_name: Yup.string()
+    .required("Your baby's first name is required"),
+  last_name: Yup.string()
+    .required("Your baby's last name is required"),
+  gender: Yup.string()
+    .typeError("Your baby's gender is required")
+    .required("Your baby's gender is required"),
+  conception_method: Yup.string()
+    .typeError("Please provide your baby's conception method")
+    .required("Please provide your baby's conception method"),
+  date_of_birth: Yup.date()
+    .typeError("Your baby's date of birth must be a date")
+    .required("Your baby's date of birth is required"),
+  date_of_birth: Yup.number()
+    .typeError("Your baby's days premature must be a number")
+    .required("Your baby's days premature is required"),
+
 });
 
 const genders = [
@@ -214,7 +229,6 @@ class RegistrationSubjectForm extends Component {
                 style={ {width: '100%', borderBottomWidth: .25} }
                 showIcon={ false }
                 customStyles={ { dateInput: { borderWidth: 0 } } }
-
               />
 
               <Text style={styles.errorText}>{dobError}</Text>

@@ -47,14 +47,37 @@ const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)
 
 const Form = withNextInputAutoFocusForm(View);
 
+
 const validationSchema = Yup.object().shape({
-  //first_name: Yup.string()
-    //.required('First Name is Required'),
-  //last_name: Yup.string()
-    //.required('Last Name is Required'),
-  //email: Yup.string()
-    //.required('Email Address is Required')
-    //.email("Not a Valid Email Address"),
+  respondent_type: Yup.string()
+    .typeError("Relationship is required")
+    .required("Relationship is required"),
+  address_1: Yup.string()
+    .required("Address is required"),
+  city: Yup.string()
+    .required("City is required"),
+  state: Yup.string()
+    .required("State is required"),
+  zip_code: Yup.string()
+    .required("Zip code is required")
+    .matches(/\d{5}/,'Zip code must be 5 digits'),
+  home_phone: Yup.string()
+    .required("Home phone is required"),
+  date_of_birth: Yup.date()
+    .typeError('Date of birth must be a valid date')
+    .required("Date of birth is required"),
+  drivers_license_number: Yup.string()
+    .required("Driver's license number is required"),
+  marital_status: Yup.string()
+    .required("Marital status is required"),
+  weight: Yup.number('Weight must be a number')
+    .typeError('Weight must be a number')
+    .required("Weight is required")
+    .positive("Weight must be greater than 0"),
+  height: Yup.number()
+    .typeError('Height must be a number')
+    .required("Height is required")
+    .positive("Height must be greater than 0"),
 })
 
 const respondentTypes = [
@@ -253,7 +276,7 @@ class RegistrationRespondentForm extends Component {
                   color={Colors.darkGreen}
                   disabled={ props.isSubmitting }
                 />
-                
+
               </View>
 
 
