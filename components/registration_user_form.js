@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import {
   View,
-  Button,
   StyleSheet,
   Platform
 } from 'react-native';
-import { Text } from 'react-native-elements';
+import {   Button, Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -121,17 +120,25 @@ class RegistrationUserForm extends Component {
 
           return (
             <Form>
-              <Text style={styles.form_header}>Step 1: Create an Account</Text>
-              <TextInput label="First Name" name="first_name" type="name" />
-              <TextInput label="Last Name" name="last_name" type="name" />
-              <TextInput label="Email" name="email" type="email" />
-              <TextInput label="Password" name="password" type="password" />
+              <Text style={AppStyles.registrationHeader}>Step 1: Create an Account</Text>
+              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="First Name" name="first_name" type="name" />
+              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Last Name" name="last_name" type="name" />
+              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Email" name="email" type="email" />
+              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Password" name="password" type="password" />
 
-                <Button
-                  title="NEXT"
-                  onPress={ props.handleSubmit }
-                  color={ Colors.green }
-                />
+                <View style={AppStyles.registrationButtonContainer}>
+
+                  <Button
+                    title="NEXT"
+                    onPress={props.handleSubmit}
+                    buttonStyle={AppStyles.buttonSubmit}
+                    titleStyle={ {fontWeight: 900} }
+                    color={Colors.darkGreen}
+                    disabled={ props.isSubmitting }
+                  />
+
+                </View>
+
 
                 <ErrorText apiUser={ this.props.registration.apiUser } />
 

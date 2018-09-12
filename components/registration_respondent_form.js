@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import {
   View,
-  Button,
   StyleSheet,
   Platform,
   Keyboard
 } from 'react-native';
+import { Button } from 'react-native-elements';
 import { Text, CheckBox } from 'react-native-elements';
 
 import { compose } from 'recompose';
@@ -201,6 +201,13 @@ class RegistrationRespondentForm extends Component {
                 name="date_of_birth"
                 date={props.values.date_of_birth}
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
+                style={ {width: '100%', borderBottomWidth: .25} }
+                showIcon={ false }
+                customStyles={ {
+                  dateInput: {
+                    borderWidth: 0,
+                  }
+                } }
               />
 
               <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Driver's License Number" name="drivers_license_number" type="text" />
@@ -218,30 +225,39 @@ class RegistrationRespondentForm extends Component {
               <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
               <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
-              <Text style={AppStyles.registrationLabel}>Are You Currently Pregnant?</Text>
-              <CheckBox
-                title='Yes'
-                checked={ props.values.pregnant }
-                containerStyle={ styles.checkboxContainer }
-                textStyle={ styles.checkboxText }
-                onPress={ (value) => props.setFieldValue('pregnant', true) }
-              />
-              <CheckBox
-                title='No'
-                checked={ !props.values.pregnant }
-                containerStyle={ styles.checkboxContainer }
-                textStyle={ styles.checkboxText }
-                onPress={ (value) => props.setFieldValue('pregnant', false) }
-              />
-
-              <View style={styles.buttonContainer}>
-                <Button
-                  title="NEXT"
-                  onPress={ props.handleSubmit }
-                  color={Colors.green}
-                  disabled={ props.isSubmitting }
+              <View style={AppStyles.registrationCheckBoxes}>
+                <Text style={[AppStyles.registrationLabel, {marginTop: 20, marginBottom: 10}]}>Are You Currently Pregnant?</Text>
+                <CheckBox
+                  title='Yes'
+                  checked={ props.values.pregnant }
+                  containerStyle={ styles.checkboxContainer }
+                  textStyle={ styles.checkboxText }
+                  onPress={ (value) => props.setFieldValue('pregnant', true) }
+                />
+                <CheckBox
+                  title='No'
+                  checked={ !props.values.pregnant }
+                  containerStyle={ styles.checkboxContainer }
+                  textStyle={ styles.checkboxText }
+                  onPress={ (value) => props.setFieldValue('pregnant', false) }
                 />
               </View>
+
+              <View style={AppStyles.registrationButtonContainer}>
+
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={ {fontWeight: 900} }
+                  color={Colors.darkGreen}
+                  disabled={ props.isSubmitting }
+                />
+                
+              </View>
+
+
+
             </Form>
           );
         }}
@@ -259,6 +275,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   checkboxContainer: {
+    borderWidth: 0,
     margin: 0,
     padding:0,
     backgroundColor: Colors.backgroundColor,

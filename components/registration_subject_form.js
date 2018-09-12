@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Button } from 'react-native-elements';
+
 import { Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
@@ -27,6 +29,9 @@ import Picker from './pickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
+
+import ActionStates from '../actions/states';
 
 const MaterialTextInput = compose(
   withInputAutoFocus,
@@ -154,23 +159,28 @@ class RegistrationSubjectForm extends Component {
         render={ props => {
           return (
             <Form>
-              <Text style={styles.form_header}>
-                Step 3: Update Your Baby's Profile
+              <Text  style={AppStyles.registrationHeader}>
+                Step 3: Update Your Baby&apos;s Profile
               </Text>
               <MaterialTextInput
                 label="First Name"
                 name="first_name"
                 type="name"
+                textInputStyle={AppStyles.registrationTextInput}
+                labelStyle={AppStyles.registrationLabel}
               />
               <MaterialTextInput
                 label="Middle Name"
                 name="middle_name"
                 type="name"
+                labelStyle={AppStyles.registrationLabel}
               />
               <MaterialTextInput
                 label="Last Name"
                 name="last_name"
                 type="name"
+                textInputStyle={AppStyles.registrationTextInput}
+                labelStyle={AppStyles.registrationLabel}
               />
               <PickerInput
                 label="Gender"
@@ -179,6 +189,7 @@ class RegistrationSubjectForm extends Component {
                 data={genders}
                 selectedValue={props.values.gender}
                 handleChange={ value => props.setFieldValue('gender', value) }
+                labelStyle={AppStyles.registrationLabel}
               />
 
               <PickerInput
@@ -188,16 +199,22 @@ class RegistrationSubjectForm extends Component {
                 data={conceptionMethods}
                 selectedValue={props.values.conception_method}
                 handleChange={ value => props.setFieldValue('conception_method', value) }
+                labelStyle={AppStyles.registrationLabel}
               />
 
               <DatePickerInput
                 label="Date of Birth"
                 name="date_of_birth"
                 date={props.values.date_of_birth}
+                labelStyle={AppStyles.registrationLabel}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('date_of_birth', value);
                 }}
+                style={ {width: '100%', borderBottomWidth: .25} }
+                showIcon={ false }
+                customStyles={ { dateInput: { borderWidth: 0 } } }
+
               />
 
               <Text style={styles.errorText}>{dobError}</Text>
@@ -206,13 +223,20 @@ class RegistrationSubjectForm extends Component {
                 label="Days Premature"
                 name="days_premature"
                 type="name"
+                textInputStyle={AppStyles.registrationTextInput}
+                labelStyle={AppStyles.registrationLabel}
               />
 
-              <Button
-                title="NEXT"
-                onPress={props.handleSubmit}
-                color={Colors.green}
-              />
+              <View style={AppStyles.registrationButtonContainer}>
+
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={ {fontWeight: 900} }
+                  color={Colors.darkGreen}
+                />
+              </View>
             </Form>
           );
         }}
