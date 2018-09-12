@@ -86,25 +86,8 @@ class ConsentAgreementForm extends Component {
           <Text style={styles.text}>You are being asked to give access to your baby’s newborn blood spot for genetic research. What we learn about your baby from this sample will not be put in your health record. Your test results will not be shared with you or your doctor. No one else (like a relative, boss, or insurance company) will be given your test results. </Text>
           <Text style={styles.text}>With your consent, the newborn blood spot may be obtained from Iowa Department of Public Health and analyzed at the University of Iowa. Results of a genetic test will not be provided to you or placed in the medical record.</Text>
 
-          <Text style={styles.header}>Please initial below if you agree to the use of your baby’s newborn screening blood spots for genetic testing:</Text>
-
-          <CheckBox
-            title='Yes, I allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose.'
-            textStyle={styles.checkboxText}
-            checked={this.state.screeningBlood == true}
-            containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
-           />
-
-          <CheckBox
-            title='No, I do not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose. '
-            textStyle={styles.checkboxText}
-            checked={this.state.screeningBlood == false}
-            containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
-           />
-           <Text style={styles.header}>Genetic Information Nondiscrimination Act (GINA)</Text>
-           <Text style={styles.text}>A new federal law called the Genetic Information Nondiscrimination Act (GINA) generally makes it illegal for health insurance companies, group health plans, and employers of 15 or more persons to discriminate against you based on your genetic information. Based on this new law, health insurance companies and group health plans are prohibited from requesting your genetic information that we get from this research. This means that they may not use your genetic information when making decisions regarding your eligibility for insurance coverage or the amount of your insurance premiums. Be aware that this new federal law will not protect you against genetic discrimination by companies that sell life insurance, disability insurance, or long-term care insurance.  The law also does not prohibit discrimination if you already have a manifest genetic disease or disorder.</Text>
+          <Text style={styles.header}>Genetic Information Nondiscrimination Act (GINA)</Text>
+          <Text style={styles.text}>A new federal law called the Genetic Information Nondiscrimination Act (GINA) generally makes it illegal for health insurance companies, group health plans, and employers of 15 or more persons to discriminate against you based on your genetic information. Based on this new law, health insurance companies and group health plans are prohibited from requesting your genetic information that we get from this research. This means that they may not use your genetic information when making decisions regarding your eligibility for insurance coverage or the amount of your insurance premiums. Be aware that this new federal law will not protect you against genetic discrimination by companies that sell life insurance, disability insurance, or long-term care insurance.  The law also does not prohibit discrimination if you already have a manifest genetic disease or disorder.</Text>
 
           <Text style={styles.header}>Audio Recording/Video Recording/Photographs</Text>
           <Text style={styles.text}>One aspect of this study involves obtaining video recordings and photographs of you and your baby, collected on your smart phone.  In the longitudinal study, these will be used to observe changes in social behavior and development over the first two years of life. These videos will be stored in a secure location and only shared with those who are directly involved in the study, such as those who are doing the coding of the videos. These videos will be destroyed on study completion.</Text>
@@ -158,25 +141,48 @@ class ConsentAgreementForm extends Component {
 
         </View>
 
-        <Text style={styles.textError}>{this.state.errorMessage}</Text>
+        <View style={styles.elevated}>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonOneStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => {
-              this.props.updateSession( {registration_state: States.REGISTERING_AS_NO_STUDY} )
-            }}
-            title='Disagree' />
-          <Button
-            color={Colors.pink}
-            buttonStyle={styles.buttonTwoStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ ()=>this.handleSubmit() }
-            title='Agree' />
+          <Text style={styles.header}>Please initial below if you agree to the use of your baby’s newborn screening blood spots for genetic testing:</Text>
+
+          <CheckBox
+            title='Yes, I allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose.'
+            textStyle={styles.checkboxText}
+            checked={this.state.screeningBlood == true}
+            containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
+            onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
+           />
+
+          <CheckBox
+            title='No, I do not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose. '
+            textStyle={styles.checkboxText}
+            checked={this.state.screeningBlood == false}
+            containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
+            onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
+           />
+
         </View>
 
+
+        <Text style={styles.textError}>{this.state.errorMessage}</Text>
+
+
+          <View style={styles.buttonContainer}>
+            <Button
+              color={Colors.grey}
+              buttonStyle={styles.buttonOneStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={ () => {
+                this.props.updateSession( {registration_state: States.REGISTERING_AS_NO_STUDY} )
+              }}
+              title='Disagree' />
+            <Button
+              color={Colors.pink}
+              buttonStyle={styles.buttonTwoStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={ ()=>this.handleSubmit() }
+              title='Agree' />
+          </View>
 
 
       </ScrollView>
@@ -191,20 +197,21 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '900',
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: 20,
   },
   header: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '900',
     textAlign: 'left',
+    paddingBottom: 10,
   },
   text: {
     textAlign: 'left',
     fontSize: 11,
-    padding: 5,
+    paddingBottom: 10,
   },
   textEmphasis: {
     textAlign: 'left',
