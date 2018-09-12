@@ -189,6 +189,7 @@ class RegistrationSubjectForm extends Component {
                 name="middle_name"
                 type="name"
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationTextInput}
               />
               <MaterialTextInput
                 label="Last Name"
