@@ -62,7 +62,7 @@ const validationSchema = Yup.object().shape({
   date_of_birth: Yup.date()
     .typeError("Your baby's date of birth must be a date")
     .required("Your baby's date of birth is required"),
-  date_of_birth: Yup.number()
+  days_premature: Yup.number()
     .typeError("Your baby's days premature must be a number")
     .required("Your baby's days premature is required"),
 
