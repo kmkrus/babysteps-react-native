@@ -32,7 +32,7 @@ export default class DatePickerInput extends React.PureComponent {
             dateInput: {
               borderWidth: 0,
               borderBottomWidth: 1,
-              borderBottomColor: baseColor
+              borderBottomColor: baseColor,
             }
           }}
           onDateChange={ (value) => { this.props.handleChange(value) } }

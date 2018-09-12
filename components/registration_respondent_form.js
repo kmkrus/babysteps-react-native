@@ -226,11 +226,7 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
                 style={ {width: '100%', borderBottomWidth: .25} }
                 showIcon={ false }
-                customStyles={ {
-                  dateInput: {
-                    borderWidth: 0,
-                  }
-                } }
+                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
               />
 
               <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Driver's License Number" name="drivers_license_number" type="text" />

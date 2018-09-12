@@ -50,6 +50,16 @@ module.exports = StyleSheet.create({
     marginBottom: 20
   },
 
+  registrationDateContainer: {
+    width: '100%',
+    borderBottomWidth: .25
+  },
+
+  registrationDateInput: {
+    borderWidth: 0,
+    alignItems: 'flex-start'
+  },
+
   buttonSubmit: {
     width: 150,
     backgroundColor: Colors.lightGreen,
@@ -65,5 +75,6 @@ module.exports = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
   }
+
 
 });

@@ -228,7 +228,7 @@ class RegistrationSubjectForm extends Component {
                 }}
                 style={ {width: '100%', borderBottomWidth: .25} }
                 showIcon={ false }
-                customStyles={ { dateInput: { borderWidth: 0 } } }
+                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
               />
 
               <Text style={styles.errorText}>{dobError}</Text>
