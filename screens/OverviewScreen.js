@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Notifications } from 'expo';
 
-import { ViewPager } from 'react-native-viewpager-carousel';
+import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
@@ -41,13 +41,11 @@ const wp = (percentage, direction) => {
 };
 
 const scContainerHeight = wp(30, height);
-const scSliderWidth = width - 5;
 const scCardHeight = wp(70, scContainerHeight);
 const scCardWidth = wp(80, width);
 const scCardMargin = (width - scCardWidth) / 2;
 
 const mgContainerHeight = wp(30, height);
-const mgSliderWidth = width - 7;
 const mgImageHeight = wp(70, mgContainerHeight);
 const mgImageWidth = wp(80, width);
 const mgImageMargin = (width - mgImageWidth) / 2;
@@ -58,6 +56,9 @@ class OverviewScreen extends React.Component {
   };
 
   state = {
+    currentIndexScreening: 0,
+    currentIndexMilestones: 0,
+    calendarRefreshed: false,
     apiFetchCalendarSubmitted: false,
   };
 
@@ -93,8 +94,8 @@ class OverviewScreen extends React.Component {
     const subject = nextProps.registration.subject;
     const calendar = nextProps.milestones.calendar;
     if (!subject.fetching && subject.fetched) {
-      if ( !calendar.fetching && calendar.fetched) {
-        if ( _.isEmpty(calendar.data)) {
+      if (!calendar.fetching && calendar.fetched) {
+        if (_.isEmpty(calendar.data)) {
           const api_calendar = nextProps.milestones.api_calendar;
           if (!api_calendar.fetching && !this.state.apiFetchCalendarSubmitted) {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
@@ -104,13 +105,16 @@ class OverviewScreen extends React.Component {
             }
             this.setState({ apiFetchCalendarSubmitted: true });
           }
+        } else {
+          this.setState({ calendarRefreshed: true });
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
   }
 
   renderScreeningItem = item => {
-    const date = new Date(item.data.notify_at).toLocaleDateString('en-US', {
+    const task = item.item;
+    const date = new Date(task.notify_at).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -119,11 +123,11 @@ class OverviewScreen extends React.Component {
 
     return (
       <View style={styles.screening_slide_container}>
-        <Text numberOfLines={1} style={styles.screening_title}>{ item.data.title }</Text>
-        <Text numberOfLines={1} style={styles.screening_date}> { date }</Text>
-        <Text numberOfLines={3} style={styles.screening_text}>{ item.data.message }</Text>
+        <Text numberOfLines={1} style={styles.screening_title}>{ task.title }</Text>
+        <Text numberOfLines={1} style={styles.screening_date}> { task.date }</Text>
+        <Text numberOfLines={3} style={styles.screening_text}>{ task.message }</Text>
         <View style={styles.screening_slide_link}>
-          <TouchableOpacity key={item._pageIndex} style={styles.screening_button}>
+          <TouchableOpacity key={item.currentIndex} style={styles.screening_button}>
             <Text style={styles.screening_button_text}>Get Started</Text>
           </TouchableOpacity>
         </View>
@@ -132,7 +136,7 @@ class OverviewScreen extends React.Component {
   };
 
   renderMilestoneItem = item => {
-    const uri = milestoneGroupImages[item._pageIndex];
+    const milestone = item.item;
     return (
       <TouchableOpacity
         style={styles.mg_touchable}
@@ -140,9 +144,9 @@ class OverviewScreen extends React.Component {
         onPress={() => this.props.navigation.navigate('Milestones')}
       >
         <View style={styles.slide_item}>
-          <Image source={uri} style={styles.slide_item_image} />
+          <Image source={milestone.uri} style={styles.slide_item_image} />
           <View style={styles.slide_item_footer}>
-            <Text style={styles.slide_item_footer_text}>{item.data.title}</Text>
+            <Text style={styles.slide_item_footer_text}>{milestone.title}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -150,24 +154,31 @@ class OverviewScreen extends React.Component {
   }
 
   render() {
+    const calendarRefreshed = this.state.calendarRefreshed;
+
     const milestoneGroups = _.sortBy(
       _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position 
     );
+    milestoneGroups.forEach( (group, index) => {
+      group.uri = milestoneGroupImages[index];
+    });
+
+
     const timeNow = new Date();
     let screeningEvents = _.filter(this.props.milestones.calendar.data, c => {
       const notify_at = new Date(c.notify_at)
       return notify_at > timeNow;
     });
-    screeningEvents = _.sortBy(screeningEvents, c => {
-      return new Date(c.notify_at);
+    screeningEvents = _.sortBy(screeningEvents, s => {
+      return new Date(s.notify_at);
     });
 
     return (
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}>
         <ScrollView
-          style={styles.container} 
+          style={styles.container}
           contentContainerStyle={styles.contentContainer}
         >
           <View style={styles.welcomeContainer}>
@@ -183,8 +194,8 @@ class OverviewScreen extends React.Component {
         </ScrollView>
 
         <View style={styles.slider_container}>
-          <View style={styles.slider_header} >
-            <View style={styles.slider_title} >
+          <View style={styles.slider_header}>
+            <View style={styles.slider_title}>
               <Text style={styles.slider_title_text}>Screening Events</Text>
             </View>
             <TouchableOpacity style={styles.opacityStyle}>
@@ -193,11 +204,15 @@ class OverviewScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.slider}>
-            <ViewPager
+            <SideSwipe
+              index={this.state.currentIndexScreening}
               data={screeningEvents}
-              renderPage={item => this.renderScreeningItem(item)}
-              pageWidth={scSliderWidth}
-              renderAsCarousel={false}
+              renderItem={item => this.renderScreeningItem(item)}
+              itemWidth={scCardWidth + scCardMargin}
+              contentOffset={scCardMargin - 2}
+              onIndexChange={index =>
+                this.setState(() => ({ currentIndexScreening: index }))
+              }
             />
           </View>
         </View>
@@ -215,11 +230,16 @@ class OverviewScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.slider}>
-            <ViewPager
+            <SideSwipe
+              index={this.state.currentIndexMilestones}
               data={milestoneGroups}
-              renderPage={item => this.renderMilestoneItem(item)}
-              pageWidth={mgSliderWidth}
-              renderAsCarousel={false}
+              renderItem={item => this.renderMilestoneItem(item)}
+              itemWidth={mgImageWidth + mgImageMargin}
+              threshold={mgImageWidth}
+              contentOffset={mgImageMargin - 2}
+              onIndexChange={index =>
+                this.setState(() => ({ currentIndexMilestones: index }))
+              }
             />
           </View>
         </View>
@@ -265,7 +285,7 @@ const styles = StyleSheet.create({
     width: mgImageWidth,
     height: mgImageHeight,
     borderRadius: 5,
-    marginLeft: mgImageMargin,
+    marginRight: mgImageMargin,
   },
   slide_item_image: {
     flex: 1,
@@ -318,7 +338,7 @@ const styles = StyleSheet.create({
   screening_slide_container: {
     width: scCardWidth,
     height: scCardHeight,
-    marginLeft: scCardMargin,
+    marginRight: scCardMargin,
     borderRadius: 5,
     borderColor: Colors.lightGrey,
     borderWidth: 1,
