@@ -32,7 +32,6 @@ module.exports = StyleSheet.create({
   },
 
   registrationTextInput: {
-    marginLeft: 20,
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.black,
@@ -43,7 +42,8 @@ module.exports = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     width: '100%',
-    marginBottom: 40
+    marginBottom: 40,
+    marginTop: 20
   },
 
   registrationCheckBoxes: {

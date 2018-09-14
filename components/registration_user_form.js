@@ -20,11 +20,13 @@ import { apiFetchMilestones } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import AppStyles from '../constants/Styles';
 
 const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
@@ -121,10 +123,10 @@ class RegistrationUserForm extends Component {
           return (
             <Form>
               <Text style={AppStyles.registrationHeader}>Step 1: Create an Account</Text>
-              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="First Name" name="first_name" type="name" />
-              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Last Name" name="last_name" type="name" />
-              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Email" name="email" type="email" />
-              <TextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Password" name="password" type="password" />
+              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="First Name" name="first_name" type="name" />
+              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Last Name" name="last_name" type="name" />
+              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Email" name="email" type="email" />
+              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Password" name="password" type="password" />
 
                 <View style={AppStyles.registrationButtonContainer}>
 
