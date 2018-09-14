@@ -5,12 +5,15 @@ import { Notifications, Permissions } from 'expo';
 
 import { createStackNavigator } from 'react-navigation';
 
-import { showMessage, hideMessage } from "react-native-flash-message";
+import find from 'lodash/find';
+
+import { showMessage } from "react-native-flash-message";
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
 
 import AppNavigator from './AppNavigator';
+import NavigationService from './NavigationService';
 
 import TourScreen from '../screens/TourScreen';
 import ConsentScreen from '../screens/ConsentScreen';
@@ -103,6 +106,11 @@ class RootNavigator extends Component {
     this._notificationSubscription && this._notificationSubscription.remove();
   }
 
+  _handleNotificationOnPress = data => {
+    const task = find(this.props.milestones.tasks.data, ['id', data.task_id]);
+    NavigationService.navigate('MilestoneQuestions', { task });
+  };
+
   _handleNotification = ({ origin, data, remote }) => {
     showMessage({
       type: data.type,
@@ -110,6 +118,9 @@ class RootNavigator extends Component {
       description: data.body,
       color: Colors.flashMessage,
       backgroundColor: Colors.flashMessageBackground,
+      autoHide: false,
+      icon: data.type,
+      onPress: () => this._handleNotificationOnPress(data),
     });
   };
 
@@ -127,7 +138,13 @@ class RootNavigator extends Component {
   render() {
     const registration_state = this.props.session.registration_state;
     if (States.REGISTRATION_COMPLETE.includes(registration_state)) {
-      return <AppNavigator />;
+      return (
+        <AppNavigator
+          ref={navigatorRef => {
+            NavigationService.setTopLevelNavigator(navigatorRef);
+          }}
+        />
+      );
     }
     if (States.REGISTERING_NO_STUDY.includes(registration_state)) {
       return <TourNoStudyNavigator />;
@@ -142,7 +159,7 @@ class RootNavigator extends Component {
   }
 }
 
-const mapStateToProps = ({ session }) => ({ session });
+const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
 const mapDispatchToProps = { updateSession, fetchSession };
 
 export default connect(

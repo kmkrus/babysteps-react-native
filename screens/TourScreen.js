@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import {
-  View,
-  ScrollView,
-  Text,
   StyleSheet,
-  ImageBackground, 
+  ImageBackground,
   Dimensions,
-  Platform,
 } from 'react-native';
 
 import SideSwipe from 'react-native-sideswipe';
@@ -22,8 +18,8 @@ import TourButtons from '../components/tour_buttons';
 const { width } = Dimensions.get('window');
 
 const items = [
-  {key: '1'}, 
-  {key: '2'}, 
+  {key: '1'},
+  {key: '2'},
   {key: '3'},
   {key: '4'},
 ];
@@ -43,54 +39,49 @@ export default class TourScreen extends Component {
   }
 
   updateIndex() {
-    this.setState({currentIndex: 3 })
+    this.setState({ currentIndex: 3 });
   }
 
   renderItem(page) {
-    if (page.item.key != '4') { 
+    if (page.item.key !== '4') {
       return (
-        <TourItem 
-          item = {page.item}
-          index = {page.itemIndex}
-          currentIndex = {page.currentIndex}
-          animatedValue = {page.animatedValue}
+        <TourItem
+          item={page.item}
+          index={page.itemIndex}
+          currentIndex={page.currentIndex}
+          animatedValue={page.animatedValue}
         />
-      )
-    } else {
-      return (
-        <TourItemFour
-          item = {page.item}
-          index = {page.itemIndex}
-          currentIndex = {page.currentIndex}
-          animatedValue = {page.animatedValue}
-          handleNestedScrollEvent={ (value) => this.handleNestedScrollEvent(value) }
-        />
-      )
+      );
     }
+    return (
+      <TourItemFour
+        item={page.item}
+        index={page.itemIndex}
+        currentIndex={page.currentIndex}
+        animatedValue={page.animatedValue}
+        handleNestedScrollEvent={value => this.handleNestedScrollEvent(value)}
+      />
+    );
   }
 
   render() {
-
     const offset = (width - TourItem.WIDTH) / 6;
-    
     return (
-      
-      <ImageBackground 
+      <ImageBackground
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
-        
         <SideSwipe
-          data={ items }
-          index={ this.state.currentIndex }
-          shouldCapture={ () => this.state.scrollEnabled }
-          style={ styles.sideSwipe }
-          itemWidth={ TourItem.WIDTH }
-          threshold={ TourItem.WIDTH / 4 }
-          extractKey={ item => item.key }
-          contentOffset={ offset }
+          data={items}
+          index={this.state.currentIndex}
+          shouldCapture={() => this.state.scrollEnabled}
+          style={styles.sideSwipe}
+          itemWidth={TourItem.WIDTH}
+          threshold={TourItem.WIDTH / 4}
+          extractKey={item => item.key}
+          contentOffset={offset}
           onIndexChange={index =>
-            this.setState( () => ({ currentIndex: index }) )}
-          renderItem={ (page) => this.renderItem(page) }
+            this.setState(() => ({ currentIndex: index }))}
+          renderItem={page => this.renderItem(page)}
         />
 
         <PageControl
@@ -106,36 +97,30 @@ export default class TourScreen extends Component {
           onPageIndicatorPress={this.onItemTap}
         />
 
-        <TourButtons  
-          {...this.state} 
-          updateIndex = {this.updateIndex} 
-          navigation = {this.props.navigation}
+        <TourButtons
+          {...this.state}
+          updateIndex={this.updateIndex}
+          navigation={this.props.navigation}
         />
-
       </ImageBackground>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   pageControl: {
     flex: 1,
-    position:'absolute', 
-    left:0, 
-    right:0, 
-    bottom:80,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 80,
   },
   imageBackground: {
     flex: 1,
     marginTop: 20,
-  },    
-  container: {    
-    flex: 1,    
-    alignItems: 'stretch',    
-    justifyContent: 'center',
   },
   sideSwipe: {
-    width: width,
+    width,
     position: 'absolute',
     top: 0,
     left: 0,

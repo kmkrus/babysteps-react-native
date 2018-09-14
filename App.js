@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Provider } from 'react-redux';
 import { AppLoading, Asset, Font } from 'expo';
-import FlashMessage from "react-native-flash-message";
+import FlashMessage from 'react-native-flash-message';
 import Sentry from 'sentry-expo';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -28,31 +28,7 @@ export default class App extends Component {
     isLoadingComplete: false,
   };
 
-  render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
-      return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
-      );
-    }
-
-    return (
-      <Provider store={store}>
-        <View
-          style={styles.container}
-          onLayout={() => console.log('*** layout changed')}>
-          {Platform.OS === 'android' && <StatusBar barStyle="default" />}
-          <RootNavigator />
-          <FlashMessage position="top" />
-        </View>
-      </Provider>
-    );
-  }
-
-  _loadResourcesAsync = async () =>
+  _loadResourcesAsync = async () => {
     Promise.all([
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),
@@ -91,6 +67,7 @@ export default class App extends Component {
       checkBabyBookSchema(),
       checkCustomDirectories(),
     ]);
+  };
 
   _handleLoadingError = error => {
     // In this case, you might want to report the error to your error
@@ -101,6 +78,30 @@ export default class App extends Component {
   _handleFinishLoading = () => {
     this.setState({ isLoadingComplete: true });
   };
+
+  render() {
+    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
+      return (
+        <AppLoading
+          startAsync={this._loadResourcesAsync}
+          onError={this._handleLoadingError}
+          onFinish={this._handleFinishLoading}
+        />
+      );
+    }
+
+    return (
+      <Provider store={store}>
+        <View
+          style={styles.container}
+          onLayout={() => console.log('*** layout changed')}>
+          {Platform.OS === 'android' && <StatusBar barStyle="default" />}
+          <RootNavigator />
+          <FlashMessage position="top" />
+        </View>
+      </Provider>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

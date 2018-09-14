@@ -13,6 +13,8 @@ import { Notifications } from 'expo';
 import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
+import isEmpty from 'lodash/isEmpty';
+
 import { connect } from 'react-redux';
 
 import _ from 'lodash';
@@ -69,21 +71,12 @@ class OverviewScreen extends React.Component {
     this.props.fetchMilestoneCalendar();
     this.props.fetchSubject();
 
-    Notifications.presentLocalNotificationAsync({
-      title: 'Test - Reminder',
-      body: 'This is an important reminder!!!!',
-      data: {
-        title: 'Test - Reminder',
-        body: 'Test - Reminder',
-        type: 'info',
-      },
-    });
   }
 
   componentWillReceiveProps(nextProps) {
     const groups = nextProps.milestones.groups;
     if (!groups.fetching && groups.fetched) {
-      if (_.isEmpty(groups.data)) {
+      if (isEmpty(groups.data)) {
         const api_milestones = nextProps.milestones.api_milestones;
         if (!api_milestones.fetching && !api_milestones.fetched) {
           this.props.apiFetchMilestones();
@@ -95,7 +88,7 @@ class OverviewScreen extends React.Component {
     const calendar = nextProps.milestones.calendar;
     if (!subject.fetching && subject.fetched) {
       if (!calendar.fetching && calendar.fetched) {
-        if (_.isEmpty(calendar.data)) {
+        if (isEmpty(calendar.data)) {
           const api_calendar = nextProps.milestones.api_calendar;
           if (!api_calendar.fetching && !this.state.apiFetchCalendarSubmitted) {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
@@ -162,7 +155,6 @@ class OverviewScreen extends React.Component {
     milestoneGroups.forEach( (group, index) => {
       group.uri = milestoneGroupImages[index];
     });
-
 
     const timeNow = new Date();
     let screeningEvents = _.filter(this.props.milestones.calendar.data, c => {

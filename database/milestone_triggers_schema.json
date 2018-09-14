@@ -4,6 +4,7 @@
       "id": "INTEGER PRIMARY KEY",
       "subject_id": "INTEGER",
       "milestone_id": "INTEGER",
+      "task_id": "INTEGER",
       "notify_at": "TEXT",
       "notify_count": "INTEGER",
       "available_start_at": "TEXT",
@@ -12,6 +13,7 @@
     },
     "indexes": [
       "milestone_triggers_milestone_id ON milestone_triggers (milestone_id);",
+      "milestone_triggers_task_id ON milestone_triggers (task_id);",
       "milestone_triggers_notify_at ON milestone_triggers (notify_at);",
       "milestone_triggers_available_start_at ON milestone_triggers (available_start_at);",
       "milestone_triggers_available_end_at ON milestone_triggers (available_end_at);",
