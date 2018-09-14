@@ -19,11 +19,11 @@ import { fetchMilestoneGroups, fetchMilestoneTasks } from '../actions/milestone_
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
-const itemWidth = width - 60
+const itemWidth = width - 60;
 
-var tasks = [];
+let tasksForList = [];
 
 class MilestonesScreen extends Component {
   static navigationOptions = {
@@ -31,71 +31,79 @@ class MilestonesScreen extends Component {
   };
 
   componentWillMount() {
-    this.props.fetchMilestoneGroups()
-    this.props.fetchMilestoneTasks()
+    this.props.fetchMilestoneGroups();
+    this.props.fetchMilestoneTasks();
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-   
-    if ( !nextProps.milestones.tasks.fetching && nextProps.milestones.tasks.fetched ) {
-
-      tasks = _.filter(nextProps.milestones.tasks.data, function(task) {
-        if ( nextProps.session.registration_state == States.REGISTERED_AS_NO_STUDY && task.study_only == 1 ) { 
-          return false
+  componentWillReceiveProps(nextProps) {
+    const groups = nextProps.milestones.groups;
+    const tasks = nextProps.milestones.tasks;
+    const session = nextProps.session;
+    if (!tasks.fetching && tasks.fetched) {
+      tasksForList = _.filter(tasks.data, task => {
+        if (
+          session.registration_state === States.REGISTERED_AS_NO_STUDY &&
+          task.study_only === 1
+        ) {
+          return false;
         }
-        return true
+        return true;
       });
 
-      tasks = _.groupBy(tasks, task => task.milestone_group_id );
+      tasksForList = _.groupBy(tasksForList, task => task.milestone_group_id);
 
-      tasks = _.reduce(tasks, (acc, data, index) => {
-        const group = _.find(this.props.milestones.groups.data, ['id', data[0].milestone_group_id])
-        acc.push({
-          key: index,
-          title: group.title,
-          data: data
-        });
-        return acc;
-      }, []);
-
+      tasksForList = _.reduce(
+        tasksForList,
+        (acc, data, index) => {
+          const group = _.find(groups.data, ['id', data[0].milestone_group_id]);
+          acc.push({ key: index, title: group.title, data });
+          return acc;
+        },
+        [],
+      );
     }
   }
 
-  renderItem = (item) => {
-    return  (
-      <TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('MilestoneQuestions', {task: item.item} ) } }> 
-
-        <View style={ styles.itemContainer }>
-          <View style={ styles.itemLeft }>
-            <MaterialCommunityIcons name='checkbox-blank-outline' style={ styles.itemCheckBox } />
-            <Text style={styles.item}>{`${item.item.milestone_title} - ${item.item.name}`}</Text> 
+  renderItem = item => {
+    const task = item.item;
+    return (
+      <TouchableOpacity
+        onPress={() =>
+          this.props.navigation.navigate('MilestoneQuestions', { task })
+        }
+      >
+        <View style={styles.itemContainer}>
+          <View style={styles.itemLeft}>
+            <MaterialCommunityIcons
+              name="checkbox-blank-outline"
+              style={styles.itemCheckBox}
+            />
+            <Text style={styles.item}>{`${task.milestone_title} - ${task.name}`}</Text>
           </View>
-          <View style={ styles.itemRight}>               
-            <Ionicons name='md-arrow-forward' style={ styles.itemRightArrow } />
+          <View style={styles.itemRight}>
+            <Ionicons name="md-arrow-forward" style={styles.itemRightArrow} />
           </View>
         </View>
-
       </TouchableOpacity>
-    )
-  }
+    );
+  };
 
-  renderSectionHeader = (headerItem) => {
-    return <Text style={ styles.section }>{ headerItem.section.title }</Text>
-  }  
+  renderSectionHeader = headerItem => {
+    return <Text style={styles.section}>{headerItem.section.title}</Text>;
+  };
 
   render() {
     return (
-      <ScrollView style={ styles.container }>
+      <ScrollView style={styles.container}>
         <SectionList
-          renderSectionHeader={ this.renderSectionHeader }
-          renderItem={ this.renderItem }
-          sections={ tasks }
-          keyExtractor={ (item) => item.id }
+          renderSectionHeader={this.renderSectionHeader}
+          renderItem={this.renderItem}
+          sections={tasksForList}
+          keyExtractor={item => item.id}
         />
       </ScrollView>
-    )
+    );
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -105,32 +113,32 @@ const styles = StyleSheet.create({
   },
   section: {
     fontSize: 16,
-    padding:5,
+    padding: 5,
     paddingLeft: 10,
     color: Colors.tint,
     backgroundColor: Colors.lightGrey,
   },
   itemContainer: {
-    flexDirection: 'row', 
-    padding: 5,  
-    justifyContent:'space-between', 
-    borderBottomWidth: 1, 
+    flexDirection: 'row',
+    padding: 5,
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
     borderBottomColor: Colors.lightGrey,
   },
   itemLeft: {
-    flexDirection:'row',
-    justifyContent:'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     width: itemWidth,
   },
   itemRight: {
-    marginRight: 5
+    marginRight: 5,
   },
-  itemCheckBox: { 
-    fontSize: 22, 
+  itemCheckBox: {
+    fontSize: 22,
     color: Colors.lightGrey,
   },
-  itemRightArrow: { 
-    fontSize: 22, 
+  itemRightArrow: {
+    fontSize: 22,
     color: Colors.lightGrey,
   },
   item: {
@@ -142,6 +150,9 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
-const mapDispatchToProps = { fetchMilestoneGroups, fetchMilestoneTasks }
+const mapDispatchToProps = { fetchMilestoneGroups, fetchMilestoneTasks };
 
-export default connect( mapStateToProps, mapDispatchToProps )( MilestonesScreen );
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(MilestonesScreen);

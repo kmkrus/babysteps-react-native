@@ -52,7 +52,7 @@ class RegistrationNoStudyForm extends Component {
     this.props.apiFetchMilestones();
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     const respondent = nextProps.registration.respondent;
     const subject = nextProps.registration.subject;
     if (!respondent.fetching && !subject.fetching) {
@@ -69,7 +69,7 @@ class RegistrationNoStudyForm extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     const respondent = nextProps.registration.respondent;
     const subject = nextProps.registration.subject;
     return (!respondent.fetching && !subject.fetching)

@@ -21,7 +21,7 @@ const headerOptions = {
   headerTitleStyle: {
     fontWeight: '900',
   },
-}
+};
 
 const OverviewStack = createStackNavigator({
   Overview: OverviewScreen,

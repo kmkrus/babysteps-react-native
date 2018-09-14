@@ -13,11 +13,12 @@ export const setNotifications = async entries => {
     const milestone = await getMilestone(entry.milestone_id);
 
     const localNotification = {
-      title: milestone.title,
-      body: milestone.message,
+      title: milestone.message,
+      body: entry.name,
       data: {
-        title: milestone.title,
-        body: milestone.message,
+        task_id: entry.task_id,
+        title: milestone.message,
+        body: entry.name,
         type: 'info',
       },
       ios: {

@@ -17,68 +17,73 @@ import States from '../actions/states';
 import Colors from '../constants/Colors';
 import '@expo/vector-icons';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 class TourNoStudyConfirmScreen extends Component {
-
   selectText = () => {
-    if (this.props.session.registration_state == States.REGISTERING_NOT_ELIGIBLE ) {
+    const session = this.props.session;
+    if (session.registration_state === States.REGISTERING_NOT_ELIGIBLE ) {
       return (
-        <Text>Unfortunately, you are not eligible to participate in the research study, but that's okay!  You can still access many of the features including the Baby Book and Milestone Tracking.</Text>
-      )
-    } else {
-      return (
-        <Text>You've chosen not to participate in the research study, and that's okay! Be aware that you will not have access to all the benefits that Baby Steps offers.  I you change your mind, you will be able to join the study later if you wish.</Text>
-      )
-    }
+        <Text>
+          Unfortunately, you are not eligible to participate in the research
+          study, but that's okay! You can still access many of the features
+          including the Baby Book and Milestone Tracking.
+        </Text>
+      );
+    } 
+    return (
+      <Text>
+        You've chosen not to participate in the research study, and that's okay!
+        Be aware that you will not have access to all the benefits that Baby
+        Steps offers. I you change your mind, you will be able to join the study
+        later if you wish.
+      </Text>
+    )
   }
 
   selectButtonTitle = () => {
-    if (this.props.session.registration_state == States.REGISTERING_ELIGIBILITY) {
-      return 'Join Study'
-    } else {
-      return 'Go Back'
+    const session = this.props.session;
+    if (session.registration_state === States.REGISTERING_ELIGIBILITY) {
+      return 'Join Study';
     }
-  }
-  
+    return 'Go Back';
+  };
+
   render() {
-    
     return (
-      
-      <ImageBackground 
+      <ImageBackground
         source={require('../assets/images/background.png')}
         style={styles.imageBackground}>
-
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.textBlock}>
             <Image
               style={styles.image}
-              source={require('../assets/images/tour_no_study_confirm.png')} />
-            { this.selectText()}
+              source={require('../assets/images/tour_no_study_confirm.png')}
+            />
+            {this.selectText()}
           </View>
-
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.grey}
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ () => { 
+            onPress={() => {
               this.props.updateSession( {registration_state: States.REGISTERING_ELIGIBILITY} )
             }}
-            title={ this.selectButtonTitle() } />
+            title={this.selectButtonTitle()} />
           <Button
             color={Colors.pink}
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ () => { 
-              this.props.navigation.navigate('Registration')
+            onPress={() => {
+              this.props.navigation.navigate('Registration');
             }}
-            title='I Understand' />
-          </View>
-
+            title="I Understand"
+          />
+        </View>
       </ImageBackground>
-    )
+    );
   }
 }
 
@@ -126,11 +131,14 @@ const styles = StyleSheet.create({
     borderColor: Colors.pink,
     borderWidth: 2,
     borderRadius: 5,
-  }
-})
+  },
+});
 
 const mapStateToProps = ({ session }) => ({ session });
 
 const mapDispatchToProps = { updateSession };
 
-export default connect( mapStateToProps, mapDispatchToProps )(TourNoStudyConfirmScreen);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TourNoStudyConfirmScreen);

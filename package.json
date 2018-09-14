@@ -35,7 +35,6 @@
     "react-native-sideswipe": "^1.4.1",
     "react-native-timeline-listview": "^0.2.3",
     "react-native-vector-icons": "^4.6.0",
-    "react-native-viewpager-carousel": "^0.2.10",
     "react-navigation": "~2.9.3",
     "react-redux": "^5.0.7",
     "recompose": "^0.27.1",
