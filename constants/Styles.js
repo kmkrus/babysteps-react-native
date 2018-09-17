@@ -34,7 +34,14 @@ module.exports = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.black,
-    lineHeight: 36
+    height: 36,
+  },
+
+  registrationDateTextInput: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.black,
+    lineHeight: 36,
   },
 
   registrationPickerText: {

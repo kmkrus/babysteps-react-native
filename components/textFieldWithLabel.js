@@ -32,8 +32,6 @@ export default class TextFieldWithLabel extends React.PureComponent {
       labelStyle: {color: labelColor}
     }
 
-    const { containerStyle, ...inputContainerProps } = this.props;
-
     return (
       <View {...containerProps}>
         <FormLabel {...labelProps}>{this.props.label}</FormLabel>

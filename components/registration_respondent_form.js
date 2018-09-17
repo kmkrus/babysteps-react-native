@@ -11,12 +11,12 @@ import { Text, CheckBox } from 'react-native-elements';
 import { compose } from 'recompose';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-/*
+
 import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
-*/
+
 
 import { _ } from 'lodash';
 
@@ -43,17 +43,11 @@ import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
-/*
 const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
-*/
-const TextField = TextFieldWithLabel;
-const PickerInput = Picker;
-const DatePickerInput = DatePicker;
-const Form = View;
 
 
 const validationSchema = Yup.object().shape({
@@ -238,7 +232,7 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
                 showIcon={ false }
                 style={{width: "100%"}}
-                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
+                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput } }
               />
 
               <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Driver's License Number" name="drivers_license_number" />
@@ -285,8 +279,9 @@ class RegistrationRespondentForm extends Component {
                   color={Colors.darkGreen}
                   disabled={ props.isSubmitting }
                 />
-
+                <Text>{JSON.stringify(props.errors)}</Text>
               </View>
+
 
 
 
