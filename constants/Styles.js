@@ -28,13 +28,27 @@ module.exports = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: Colors.textColor,
-    marginLeft: 20,
   },
 
   registrationTextInput: {
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.black,
+    lineHeight: 36
+  },
+
+  registrationPickerText: {
+    fontSize: 18,
+    height: 36,
+    fontWeight: 'bold',
+    color: Colors.black,
+  },
+
+
+  registrationTextInputContainer: {
+    borderBottomWidth: .25,
+    borderBottomColor: Colors.grey,
+    marginBottom: 1
   },
 
   registrationButtonContainer: {
@@ -47,17 +61,25 @@ module.exports = StyleSheet.create({
   },
 
   registrationCheckBoxes: {
-    marginBottom: 20
+    marginBottom: 20,
+    marginLeft: 20
   },
 
   registrationDateContainer: {
-    width: '100%',
-    borderBottomWidth: .25
+    borderBottomWidth: .25,
+    borderBottomColor: Colors.grey,
+    marginLeft: 20,
+    marginTop: 20,
+    marginRight: 20,
+    marginBottom: 1
   },
 
   registrationDateInput: {
     borderWidth: 0,
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    height: 36,
+    width: '100%'
   },
 
   buttonSubmit: {

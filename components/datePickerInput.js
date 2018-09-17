@@ -15,10 +15,14 @@ export default class DatePickerInput extends React.PureComponent {
     const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
     const baseColor = displayError ? Colors.errorColor : Colors.darkGrey
-    const styles = {...this.props.style, width: 200, marginBottom: 10 }
+    const styles = {...this.props.style }
+
+    const containerProps = {
+      style: this.props.containerStyle
+    }
 
     return (
-      <View>
+      <View {...containerProps}>
         <Text style={this.props.labelStyle}>{this.props.label}</Text>
         <DatePicker
           ref={input => (this.input = input)}
@@ -31,8 +35,7 @@ export default class DatePickerInput extends React.PureComponent {
           customStyles={{
             dateInput: {
               borderWidth: 0,
-              borderBottomWidth: 1,
-              borderBottomColor: baseColor,
+              width: '100%'
             }
           }}
           onDateChange={ (value) => { this.props.handleChange(value) } }

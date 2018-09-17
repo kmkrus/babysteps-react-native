@@ -25,7 +25,6 @@ import Colors from '../constants/Colors';
 import States from '../actions/states';
 import AppStyles from '../constants/Styles';
 
-const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
 const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const Form = withNextInputAutoFocusForm(View);
 
@@ -123,10 +122,10 @@ class RegistrationUserForm extends Component {
           return (
             <Form>
               <Text style={AppStyles.registrationHeader}>Step 1: Create an Account</Text>
-              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="First Name" name="first_name" type="name" />
-              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Last Name" name="last_name" type="name" />
-              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Email" name="email" type="email" />
-              <TextField inputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Password" name="password" type="password" />
+              <TextField autoCapitalize="words" label="First Name" name="first_name" type="name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Last Name" name="last_name" type="name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField keyboardType="email-address" label="Email" name="email" type="email" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField label="Password" name="password" type="password" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
 
                 <View style={AppStyles.registrationButtonContainer}>
 

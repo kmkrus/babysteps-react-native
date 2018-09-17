@@ -20,7 +20,7 @@ export default class TextFieldWithLabel extends React.PureComponent {
     const { error, helper, touched, ...props } = this.props;
     const displayError = !!error && touched;
 
-    const labelColor = displayError ? Colors.errorColor : Colors.textColor;
+    const labelColor = ( displayError ? Colors.errorColor : Colors.grey)
 
     let containerProps = {
       style: this.props.containerStyle,
@@ -28,14 +28,21 @@ export default class TextFieldWithLabel extends React.PureComponent {
       onResponderRelease: this.onPress,
     };
 
+    let labelProps = {
+      labelStyle: {color: labelColor}
+    }
+
+    const { containerStyle, ...inputContainerProps } = this.props;
+
     return (
       <View {...containerProps}>
-        <FormLabel>{this.props.label}</FormLabel>
+        <FormLabel {...labelProps}>{this.props.label}</FormLabel>
         <FormInput
           ref={input => (this.input = input)}
           autoCapitalize="none"
           autoCorrect={false}
-          {...props}
+          containerStyle={ this.props.inputContainerStyle }
+          {...this.props}
         />
         <InputHelper
           displayError={displayError}

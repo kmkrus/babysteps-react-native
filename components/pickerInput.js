@@ -21,13 +21,18 @@ export default class PickerInput extends React.PureComponent {
     const displayError = !!error && touched;
 
     const pickerStyle = {
-        inputIOS: AppStyles.registrationTextInput,
+        inputIOS: this.props.textInputStyle,
+        inputAndroid: this.props.textInputStyle
     }
 
     const containerStyle = {
       borderBottomWidth: .25,
-      borderBottomColor: 'black',
+      borderBottomColor: Colors.grey,
       marginBottom: 20,
+      marginLeft: 20,
+      marginRight: 20,
+      marginTop: 15,
+      marginBottom: 1
     }
 
     return (

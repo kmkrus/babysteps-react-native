@@ -11,10 +11,12 @@ import { Text, CheckBox } from 'react-native-elements';
 import { compose } from 'recompose';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+/*
 import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
+*/
 
 import { _ } from 'lodash';
 
@@ -30,9 +32,9 @@ import {
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MTextInput from '../components/materialTextInput';
 import DatePicker from '../components/datePickerInput';
 import Picker from '../components/pickerInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
@@ -41,11 +43,17 @@ import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
-const MaterialTextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MTextInput);
+/*
+const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
+*/
+const TextField = TextFieldWithLabel;
+const PickerInput = Picker;
+const DatePickerInput = DatePicker;
+const Form = View;
 
 
 const validationSchema = Yup.object().shape({
@@ -195,6 +203,7 @@ class RegistrationRespondentForm extends Component {
               <PickerInput
                 label='Relationship'
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='Relationship'
                 name='respondent_type'
                 data={respondentTypes}
@@ -202,38 +211,42 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('respondent_type', value) }
               />
 
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Address 1" name="address_1" type="text" />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Address 2" name="address_2" type="text" />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="City" name="city" type="text" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 1" name="address_1" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 2" name="address_2" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="City" name="city" />
               <PickerInput
                 label='State'
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='State'
                 name='state'
                 data={States}
                 selectedValue={props.values.state}
                 handleChange={ (value) => props.setFieldValue('state', value) }
               />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Zip Code" name="zip_code" type="text" />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Home Phone" name="home_phone" type="tel" />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Other Phone" name="other_phone" type="tel" />
+
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="number-pad" label="Zip Code" name="zip_code" returnKeyType="done" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Home Phone" name="home_phone" returnKeyType="done" type="tel" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Other Phone" name="other_phone" returnKeyType="done" type="tel" />
 
               <DatePickerInput
                 label="Date of Birth"
                 labelStyle={AppStyles.registrationLabel}
                 name="date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
-                style={ {width: '100%', borderBottomWidth: .25} }
                 showIcon={ false }
+                style={{width: "100%"}}
                 customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
               />
 
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Driver's License Number" name="drivers_license_number" type="text" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Driver's License Number" name="drivers_license_number" />
 
               <PickerInput
                 label='Marital Status'
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='Marital Status'
                 name='marital_status'
                 data={maritalStatuses}
@@ -241,8 +254,8 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('marital_status', value) }
               />
 
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
-              <MaterialTextInput textInputStyle={AppStyles.registrationTextInput} labelStyle={AppStyles.registrationLabel} label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Weight" name="weight" type="text" returnKeyType="done" keyboardType="numeric" helper="In pounds" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Height" name="height" type="text" returnKeyType="done" keyboardType="numeric" helper="In inches" />
 
               <View style={AppStyles.registrationCheckBoxes}>
                 <Text style={[AppStyles.registrationLabel, {marginTop: 20, marginBottom: 10}]}>Are You Currently Pregnant?</Text>
@@ -307,6 +320,7 @@ const styles = StyleSheet.create({
   }
 })
 
+
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
 const mapDispatchToProps = {
   fetchUser,
@@ -318,5 +332,6 @@ const mapDispatchToProps = {
   apiSaveSignature,
   updateSession
 };
+
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

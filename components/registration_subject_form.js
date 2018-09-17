@@ -23,7 +23,7 @@ import {
 import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MTextInput from './materialTextInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 import DatePicker from './datePickerInput';
 import Picker from './pickerInput';
 
@@ -33,10 +33,10 @@ import AppStyles from '../constants/Styles';
 
 import ActionStates from '../actions/states';
 
-const MaterialTextInput = compose(
+const TextField = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
-)(MTextInput);
+)(TextFieldWithLabel);
 const PickerInput = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
@@ -177,27 +177,10 @@ class RegistrationSubjectForm extends Component {
               <Text  style={AppStyles.registrationHeader}>
                 Step 3: Update Your Baby&apos;s Profile
               </Text>
-              <MaterialTextInput
-                label="First Name"
-                name="first_name"
-                type="name"
-                textInputStyle={AppStyles.registrationTextInput}
-                labelStyle={AppStyles.registrationLabel}
-              />
-              <MaterialTextInput
-                label="Middle Name"
-                name="middle_name"
-                type="name"
-                labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationTextInput}
-              />
-              <MaterialTextInput
-                label="Last Name"
-                name="last_name"
-                type="name"
-                textInputStyle={AppStyles.registrationTextInput}
-                labelStyle={AppStyles.registrationLabel}
-              />
+              <TextField autoCapitalize="words" label="First Name" name="first_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Middle Name" name="middle_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Last Name" name="last_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+
               <PickerInput
                 label="Gender"
                 prompt="Gender"
@@ -206,6 +189,7 @@ class RegistrationSubjectForm extends Component {
                 selectedValue={props.values.gender}
                 handleChange={ value => props.setFieldValue('gender', value) }
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
               />
 
               <PickerInput
@@ -216,31 +200,27 @@ class RegistrationSubjectForm extends Component {
                 selectedValue={props.values.conception_method}
                 handleChange={ value => props.setFieldValue('conception_method', value) }
                 labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
               />
 
               <DatePickerInput
                 label="Date of Birth"
-                name="date_of_birth"
-                date={props.values.date_of_birth}
                 labelStyle={AppStyles.registrationLabel}
+                name="date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
+                date={props.values.date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('date_of_birth', value);
                 }}
-                style={ {width: '100%', borderBottomWidth: .25} }
                 showIcon={ false }
+                style={{width: "100%"}}
                 customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
               />
 
               <Text style={styles.errorText}>{dobError}</Text>
 
-              <MaterialTextInput
-                label="Days Premature"
-                name="days_premature"
-                type="name"
-                textInputStyle={AppStyles.registrationTextInput}
-                labelStyle={AppStyles.registrationLabel}
-              />
+              <TextField keyboardType="number-pad" label="Days Premature" name="days_premature" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
 
               <View style={AppStyles.registrationButtonContainer}>
 
