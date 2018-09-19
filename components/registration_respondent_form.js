@@ -1,59 +1,85 @@
 import React, { Component } from 'react';
 import {
   View,
-  Button,
   StyleSheet,
   Platform,
   Keyboard
 } from 'react-native';
+import { Button } from 'react-native-elements';
 import { Text, CheckBox } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
 import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
+
 import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
-import { 
-  fetchUser, 
-  resetRespondent, 
-  createRespondent, 
-  updateRespondent, 
+import {
+  fetchUser,
+  resetRespondent,
+  createRespondent,
+  updateRespondent,
   apiCreateRespondent,
   apiUpdateRespondent,
   apiSaveSignature,
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MTextInput from '../components/materialTextInput';
 import DatePicker from '../components/datePickerInput';
 import Picker from '../components/pickerInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
-const MaterialTextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MTextInput);
+const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
 
+
 const validationSchema = Yup.object().shape({
-  //first_name: Yup.string()
-    //.required('First Name is Required'),
-  //last_name: Yup.string()
-    //.required('Last Name is Required'),
-  //email: Yup.string()
-    //.required('Email Address is Required')
-    //.email("Not a Valid Email Address"),
+  respondent_type: Yup.string()
+    .typeError("Relationship is required")
+    .required("Relationship is required"),
+  address_1: Yup.string()
+    .required("Address is required"),
+  city: Yup.string()
+    .required("City is required"),
+  state: Yup.string()
+    .required("State is required"),
+  zip_code: Yup.string()
+    .required("Zip code is required")
+    .matches(/\d{5}/,'Zip code must be 5 digits'),
+  home_phone: Yup.string()
+    .required("Home phone is required"),
+  date_of_birth: Yup.date()
+    .typeError('Date of birth must be a valid date')
+    .required("Date of birth is required"),
+  drivers_license_number: Yup.string()
+    .required("Driver's license number is required"),
+  marital_status: Yup.string()
+    .required("Marital status is required"),
+  weight: Yup.number('Weight must be a number')
+    .typeError('Weight must be a number')
+    .required("Weight is required")
+    .positive("Weight must be greater than 0"),
+  height: Yup.number()
+    .typeError('Height must be a number')
+    .required("Height is required")
+    .positive("Height must be greater than 0"),
 })
 
 const respondentTypes = [
@@ -75,15 +101,15 @@ class RegistrationRespondentForm extends Component {
   state = {
     signature_submitted: false,
   }
-  
+
   componentWillMount() {
     this.props.fetchUser()
     this.props.resetRespondent()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.user.fetching || 
-      nextProps.registration.respondent.fetching || 
+    if ( nextProps.registration.user.fetching ||
+      nextProps.registration.respondent.fetching ||
       nextProps.registration.apiRespondent.fetching ) {
       return false
     }
@@ -91,13 +117,13 @@ class RegistrationRespondentForm extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    
+
     if ( !nextProps.registration.respondent.fetching && nextProps.registration.respondent.fetched ) {
       if (!nextProps.registration.apiRespondent.fetching) {
 
         if (!nextProps.registration.apiRespondent.fetched) {
           this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
-        
+
         } else {
 
           // Upload signatture image if we have respondent id
@@ -105,7 +131,7 @@ class RegistrationRespondentForm extends Component {
             const api_id = nextProps.registration.apiRespondent.data.id
 
             this.props.updateRespondent({ api_id: api_id})
-            
+
             if ( !this.state.signature_submitted ) {
               this.saveSignature(api_id)
               this.setState({ signature_submitted: true })
@@ -119,7 +145,7 @@ class RegistrationRespondentForm extends Component {
                 user_id: nextProps.registration.auth.user_id
               });
             }
-            
+
             if (nextProps.registration.respondent.data.pregnant) {
               this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
             } else {
@@ -146,7 +172,7 @@ class RegistrationRespondentForm extends Component {
     return (
       <Formik
         onSubmit={ (values) => {
-          const respondent = {...values, 
+          const respondent = {...values,
             user_id: this.props.registration.user.data.api_id,
             email: this.props.registration.user.data.email,
             first_name: this.props.registration.user.data.first_name,
@@ -166,10 +192,12 @@ class RegistrationRespondentForm extends Component {
 
           return (
             <Form>
-              <Text style={styles.form_header}>Step 2: Update Your Profile.</Text>
+              <Text style={AppStyles.registrationHeader}>Step 2: Update Your Profile</Text>
 
               <PickerInput
                 label='Relationship'
+                labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='Relationship'
                 name='respondent_type'
                 data={respondentTypes}
@@ -177,66 +205,86 @@ class RegistrationRespondentForm extends Component {
                 handleChange={ (value) => props.setFieldValue('respondent_type', value) }
               />
 
-              <MaterialTextInput label="Address 1" name="address_1" type="text" />
-              <MaterialTextInput label="Address 2" name="address_2" type="text" />
-              <MaterialTextInput label="City" name="city" type="text" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 1" name="address_1" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 2" name="address_2" />
+              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="City" name="city" />
               <PickerInput
                 label='State'
+                labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='State'
                 name='state'
                 data={States}
                 selectedValue={props.values.state}
                 handleChange={ (value) => props.setFieldValue('state', value) }
               />
-              <MaterialTextInput label="Zip Code" name="zip_code" type="text" />
-              <MaterialTextInput label="Home Phone" name="home_phone" type="tel" />
-              <MaterialTextInput label="Other Phone" name="other_phone" type="tel" />
-              
+
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="number-pad" label="Zip Code" name="zip_code" returnKeyType="done" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Home Phone" name="home_phone" returnKeyType="done" type="tel" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Other Phone" name="other_phone" returnKeyType="done" type="tel" />
+
               <DatePickerInput
-                label="Date of Birth" 
-                name="date_of_birth" 
+                label="Date of Birth"
+                labelStyle={AppStyles.registrationLabel}
+                name="date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
                 handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
+                showIcon={ false }
+                style={{width: "100%"}}
+                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput } }
               />
-              
-              <MaterialTextInput label="Driver's License Number" name="drivers_license_number" type="text" />
+
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Driver's License Number" name="drivers_license_number" />
 
               <PickerInput
                 label='Marital Status'
+                labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
                 prompt='Marital Status'
                 name='marital_status'
                 data={maritalStatuses}
                 selectedValue={props.values.marital_status}
                 handleChange={ (value) => props.setFieldValue('marital_status', value) }
               />
- 
-              <MaterialTextInput label="Weight" name="weight" type="text" keyboardType="number-pad" helper="In pounds" />
-              <MaterialTextInput label="Height" name="height" type="text" keyboardType="number-pad" helper="In inches" />
 
-              <Text style={styles.label}>Are You Currently Pregnant?</Text>
-              <CheckBox
-                title='Yes'
-                checked={ props.values.pregnant }
-                containerStyle={ styles.checkboxContainer }
-                textStyle={ styles.checkboxText }
-                onPress={ (value) => props.setFieldValue('pregnant', true) }
-              />
-              <CheckBox
-                title='No'
-                checked={ !props.values.pregnant }
-                containerStyle={ styles.checkboxContainer }
-                textStyle={ styles.checkboxText }
-                onPress={ (value) => props.setFieldValue('pregnant', false) }
-              />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Weight" name="weight" type="text" returnKeyType="done" keyboardType="numeric" helper="In pounds" />
+              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Height" name="height" type="text" returnKeyType="done" keyboardType="numeric" helper="In inches" />
 
-              <View style={styles.buttonContainer}>
-                <Button 
-                  title="NEXT"
-                  onPress={ props.handleSubmit } 
-                  color={Colors.green}
-                  disabled={ props.isSubmitting }
+              <View style={AppStyles.registrationCheckBoxes}>
+                <Text style={[AppStyles.registrationLabel, {marginTop: 20, marginBottom: 10}]}>Are You Currently Pregnant?</Text>
+                <CheckBox
+                  title='Yes'
+                  checked={ props.values.pregnant }
+                  containerStyle={ styles.checkboxContainer }
+                  textStyle={ styles.checkboxText }
+                  onPress={ (value) => props.setFieldValue('pregnant', true) }
+                />
+                <CheckBox
+                  title='No'
+                  checked={ !props.values.pregnant }
+                  containerStyle={ styles.checkboxContainer }
+                  textStyle={ styles.checkboxText }
+                  onPress={ (value) => props.setFieldValue('pregnant', false) }
                 />
               </View>
+
+              <View style={AppStyles.registrationButtonContainer}>
+
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={ {fontWeight: 900} }
+                  color={Colors.darkGreen}
+                  disabled={ props.isSubmitting }
+                />
+                <Text>{JSON.stringify(props.errors)}</Text>
+              </View>
+
+
+
+
             </Form>
           );
         }}
@@ -254,6 +302,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   checkboxContainer: {
+    borderWidth: 0,
     margin: 0,
     padding:0,
     backgroundColor: Colors.backgroundColor,
@@ -266,16 +315,18 @@ const styles = StyleSheet.create({
   }
 })
 
+
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { 
-  fetchUser, 
+const mapDispatchToProps = {
+  fetchUser,
   resetRespondent,
-  createRespondent, 
-  updateRespondent, 
+  createRespondent,
+  updateRespondent,
   apiCreateRespondent,
   apiUpdateRespondent,
   apiSaveSignature,
-  updateSession 
+  updateSession
 };
+
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

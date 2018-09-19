@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import {
   View,
-  Button,
   StyleSheet,
   Platform
 } from 'react-native';
-import { Text } from 'react-native-elements';
+import {   Button, Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -21,10 +20,12 @@ import { apiFetchMilestones } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import MaterialTextInput from '../components/materialTextInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
-const TextInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(MaterialTextInput);
+const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
@@ -98,9 +99,9 @@ class RegistrationUserForm extends Component {
         }
         if ( !nextProps.registration.user.fetched ) {
           this.props.createUser({
-            ... nextProps.registration.apiUser.data, 
+            ... nextProps.registration.apiUser.data,
             api_id:  nextProps.registration.auth.user_id
-          })  
+          })
         } else if ( nextProps.registration.user.fetched ) {
           this.props.updateSession( {registration_state: States.REGISTERING_RESPONDENT} )
         }
@@ -120,18 +121,26 @@ class RegistrationUserForm extends Component {
 
           return (
             <Form>
-              <Text style={styles.form_header}>Step 1: Create an Account.</Text>
-              <TextInput label="First Name" name="first_name" type="name" />
-              <TextInput label="Last Name" name="last_name" type="name" />
-              <TextInput label="Email" name="email" type="email" />
-              <TextInput label="Password" name="password" type="password" />
-  
-                <Button 
-                  title="NEXT" 
-                  onPress={ props.handleSubmit } 
-                  color={ Colors.green }
-                />
-              
+              <Text style={AppStyles.registrationHeader}>Step 1: Create an Account</Text>
+              <TextField autoCapitalize="words" label="First Name" name="first_name" type="name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Last Name" name="last_name" type="name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField keyboardType="email-address" label="Email" name="email" type="email" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField label="Password" name="password" type="password" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+
+                <View style={AppStyles.registrationButtonContainer}>
+
+                  <Button
+                    title="NEXT"
+                    onPress={props.handleSubmit}
+                    buttonStyle={AppStyles.buttonSubmit}
+                    titleStyle={ {fontWeight: 900} }
+                    color={Colors.darkGreen}
+                    disabled={ props.isSubmitting }
+                  />
+
+                </View>
+
+
                 <ErrorText apiUser={ this.props.registration.apiUser } />
 
             </Form>
@@ -144,8 +153,11 @@ class RegistrationUserForm extends Component {
 
 const styles = StyleSheet.create({
   form_header: {
-    fontSize: 18,
-    marginBottom: 16,
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 20
   },
 })
 

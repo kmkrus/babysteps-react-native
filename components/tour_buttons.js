@@ -16,9 +16,9 @@ class TourButtons extends Component {
 
   render() {
     if (this.props.currentIndex < 3) {
-      
+
       var updateIndex = this.props.updateIndex;
-      
+
       return (
         <View style={styles.buttonContainer}>
           <Button
@@ -32,13 +32,13 @@ class TourButtons extends Component {
 
    } else {
 
-      return( 
+      return(
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.grey}
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ () => { 
+            onPress={ () => {
               this.props.updateSession( {registration_state: States.REGISTERING_AS_NO_STUDY} )
             }}
             title='No Thanks' />
@@ -46,7 +46,7 @@ class TourButtons extends Component {
             color={Colors.pink}
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ () => { 
+            onPress={ () => {
               this.props.updateSession( {registration_state: States.REGISTERING_ELIGIBILITY} )
             }}
             title='Join Study' />

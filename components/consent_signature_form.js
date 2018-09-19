@@ -30,8 +30,8 @@ class ConsentSignatureForm extends Component {
     const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
     const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY
     const resultDir = await Expo.FileSystem.getInfoAsync( signatureDir )
- 
-    if ( resultDir.exists ) {  
+
+    if ( resultDir.exists ) {
       const fileName =  signatureDir + '/signature.png'
       await Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
       await Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
@@ -111,9 +111,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     marginTop: 20,
     elevation: 2,
+    padding: 20
   },
   sketchContainer: {
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
     borderColor: Colors.grey,
     borderWidth: 1.5,
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   signature: {
     height: 150,
     width: '100%',
-    backgroundColor: Colors.white, 
+    backgroundColor: Colors.white,
     borderRadius: 5,
   },
   buttonContainer: {
