@@ -106,7 +106,7 @@ class OverviewScreen extends React.Component {
     return (
       <View style={styles.screening_slide_container}>
         <Text numberOfLines={1} style={styles.screening_title}>{ item.data.title }</Text>
-        <Text numberOfLines={1} style={styles.screening_date}>{ date }</Text>
+        <Text numberOfLines={1} style={styles.screening_date}> { date }</Text>
         <Text numberOfLines={3} style={styles.screening_text}>{ item.data.message }</Text>
         <View style={styles.screening_slide_link}>
           <TouchableOpacity key={item._pageIndex} style={styles.screening_button}>
@@ -137,15 +137,15 @@ class OverviewScreen extends React.Component {
 
   render() {
     const milestoneGroups = _.sortBy(
-      _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position
+      _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position 
     )
 
     return (
-      <ScrollView
+      <ScrollView 
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}>
-        <ScrollView
-          style={styles.container}
+        <ScrollView 
+          style={styles.container} 
           contentContainerStyle={styles.contentContainer}
         >
           <View style={styles.welcomeContainer}>
@@ -174,6 +174,7 @@ class OverviewScreen extends React.Component {
             <ViewPager
               data={this.props.milestones.calendar.data}
               renderPage={item => this.renderScreeningItem(item)}
+              pageWidth={scSliderWidth}
               renderAsCarousel={false}
             />
           </View>
@@ -185,7 +186,7 @@ class OverviewScreen extends React.Component {
               <Text style={styles.slider_title_text}>Developmental Milestones</Text>
             </View>
             <TouchableOpacity
-              style={styles.opacityStyle}
+              style={styles.opacityStyle} 
               onPress={()=>{this.props.navigation.navigate('Milestones')}} >
               <Text style={styles.slider_link_text}>View all</Text>
               <Ionicons name='md-arrow-forward' style={styles.slider_link_icon} />
@@ -195,6 +196,7 @@ class OverviewScreen extends React.Component {
             <ViewPager
               data={milestoneGroups}
               renderPage={item => this.renderMilestoneItem(item)}
+              pageWidth={mgSliderWidth}
               renderAsCarousel={false}
             />
           </View>
@@ -238,13 +240,15 @@ const styles = StyleSheet.create({
   },
   slide_item: {
     flex: 1,
+    width: mgImageWidth,
     height: mgImageHeight,
     borderRadius: 5,
-    width: '100%'
+    marginLeft: mgImageMargin,
   },
   slide_item_image: {
     flex: 1,
-    width: '100%'
+    width: mgImageWidth,
+    height: mgImageHeight,
   },
   slide_item_footer: {
     position: 'absolute',
@@ -283,15 +287,16 @@ const styles = StyleSheet.create({
   },
   slider: {
     flex: 1,
+    paddingLeft: 5,
     marginBottom: 10,
   },
   mg_touchable: {
     height: mgImageHeight,
   },
   screening_slide_container: {
-    marginLeft: 10,
-    marginRight: 10,
+    width: scCardWidth,
     height: scCardHeight,
+    marginLeft: scCardMargin,
     borderRadius: 5,
     borderColor: Colors.lightGrey,
     borderWidth: 1,
@@ -308,27 +313,23 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   screening_date: {
-    fontSize: 12,
+    fontSize: 10,
     color: Colors.darkGrey,
   },
   screening_text: {
-    fontSize: 14,
-    marginBottom: 6,
-    marginTop: 6,
+    fontSize: 12,
     color: Colors.darkGrey,
   },
   screening_button: {
-    padding: 8,
-    width: 100,
-    borderWidth: 2,
+    padding: 3,
+    borderWidth: 1,
     borderColor: Colors.pink,
     backgroundColor: Colors.lightPink,
     borderRadius: 5,
   },
   screening_button_text: {
     fontSize: 12,
-    color: Colors.pink,
-    textAlign: 'center',
+    color: Colors.darkPink,
   },
 });
 
