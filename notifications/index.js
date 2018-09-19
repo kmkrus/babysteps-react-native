@@ -3,11 +3,9 @@ import { Notifications, SQLite } from 'expo';
 const db = SQLite.openDatabase('babysteps.db');
 
 export const setNotifications = async entries => {
-
   const result = await Notifications.dismissAllNotificationsAsync();
-
   const timeNow = new Date();
-
+  
   entries.forEach(async entry => {
 
     const milestone = await getMilestone(entry.milestone_id);
@@ -25,22 +23,19 @@ export const setNotifications = async entries => {
         sound: true,
       },
       android: {
-        channelid: 'screeningEvents',
+        channelId: 'screeningEvents',
       },
     };
 
     const scheduleTime = new Date(entry.notify_at);
 
     if (scheduleTime > timeNow) {
-
       const schedulingOptions = { time: scheduleTime };
-
       Notifications.scheduleLocalNotificationAsync(
         localNotification,
         schedulingOptions,
       );
-    }
-
+    };
   });
 
 };

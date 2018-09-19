@@ -77,7 +77,6 @@ import {
 
 } from './types';
 
-
 const db = SQLite.openDatabase('babysteps.db');
 
 const Pending = type => {
@@ -233,7 +232,7 @@ export const fetchMilestoneTasks = (params = {}) => {
     sql = sql + ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
     sql = sql + ' WHERE mg.visible = 1 AND ms.always_visible = 1';
     sql = sql + ' ORDER BY milestone_group_position, milestone_position, position;';
-    
+
     return (
       db.transaction(tx => {
         tx.executeSql( 
@@ -411,11 +410,13 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
   const answers = [];
   _.forEach(data, row => {
     const answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
-    answer.id = row.api_id;
-    answer.user_id = row.user_api_id;
-    answer.respondent_id = row.respondent_api_id;
-    answer.subject_id = row.subject_api_id;
-    answers.push(answer);
+    answers.push({
+      ...answer,
+      id: row.api_id,
+      user_id: row.user_api_id,
+      respondent_id: row.respondent_api_id,
+      subject_id: row.subject_api_id,
+    })
   });
 
   return dispatch => {

@@ -4,20 +4,22 @@ import session from './session_reducer';
 import registration from './registration_reducer';
 import milestones from './milestones_reducer';
 import babybook from './babybook_reducer';
+import notifications from './notification_reducer';
 
 import CONSTANTS from '../constants';
 
 const appReducer = combineReducers({
-  session: session,
-  registration: registration,
-  milestones: milestones,
-  babybook: babybook,
+  session,
+  registration,
+  milestones,
+  notifications,
+  babybook,
 });
 
 export default (state, action) => {
   if (CONSTANTS.RESET_STATE) {
-    console.log(' ###### Resetting State ######')
+    console.log(' ###### Resetting State ######');
     state = undefined;
-  } 
-  return appReducer(state, action)
-}
+  }
+  return appReducer(state, action);
+};

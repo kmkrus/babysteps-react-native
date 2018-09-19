@@ -26,6 +26,7 @@ export default {
   errorColor,
   flashMessage: grey,
   flashMessageBackground: lightGreen,
+  modalBackground: 'rgba(0,0,0,0.5)',
   warningBackground: '#EAEB5E',
   warningText: '#666804',
   noticeBackground: tintColor,

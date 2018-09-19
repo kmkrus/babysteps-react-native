@@ -16,6 +16,8 @@ import checkAnswersSchema from './database/check_answers_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
 import checkCustomDirectories from './components/check_custom_directories';
 
+import MomentaryAssessment from './components/momentary_assessment_modal';
+
 import store from './store';
 
 import CONSTANTS from './constants';
@@ -98,6 +100,7 @@ export default class App extends Component {
           {Platform.OS === 'android' && <StatusBar barStyle="default" />}
           <RootNavigator />
           <FlashMessage position="top" />
+          <MomentaryAssessment />
         </View>
       </Provider>
     );
