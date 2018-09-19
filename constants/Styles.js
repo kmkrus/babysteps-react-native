@@ -1,0 +1,109 @@
+'use strict';
+
+import Colors from '../constants/Colors';
+
+
+var React = require('react-native');
+
+var {
+  StyleSheet,
+} = React;
+
+module.exports = StyleSheet.create({
+
+  registrationInput: {
+    marginBottom: 40,
+    marginTop: 40,
+  },
+
+  registrationHeader: {
+    textAlign: 'center',
+    fontSize: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginTop: 20,
+  },
+
+  registrationLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Colors.textColor,
+  },
+
+  registrationTextInput: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.black,
+    height: 36,
+  },
+
+  registrationDateTextInput: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.black,
+    lineHeight: 36,
+  },
+
+  registrationPickerText: {
+    fontSize: 18,
+    height: 36,
+    fontWeight: 'bold',
+    color: Colors.black,
+  },
+
+
+  registrationTextInputContainer: {
+    borderBottomWidth: .25,
+    borderBottomColor: Colors.grey,
+    marginBottom: 1
+  },
+
+  registrationButtonContainer: {
+    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 40,
+    marginTop: 20
+  },
+
+  registrationCheckBoxes: {
+    marginBottom: 20,
+    marginLeft: 20
+  },
+
+  registrationDateContainer: {
+    borderBottomWidth: .25,
+    borderBottomColor: Colors.grey,
+    marginLeft: 20,
+    marginTop: 20,
+    marginRight: 20,
+    marginBottom: 1
+  },
+
+  registrationDateInput: {
+    borderWidth: 0,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    height: 36,
+    width: '100%'
+  },
+
+  buttonSubmit: {
+    width: 150,
+    backgroundColor: Colors.lightGreen,
+    borderColor: Colors.green,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+
+  buttonCancel: {
+    width: 150,
+    backgroundColor: Colors.lightGrey,
+    borderColor: Colors.grey,
+    borderWidth: 2,
+    borderRadius: 5,
+  }
+
+
+});

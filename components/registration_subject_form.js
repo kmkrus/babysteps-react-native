@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { View, Button, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Button } from 'react-native-elements';
+
 import { Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
@@ -21,17 +23,20 @@ import {
 import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MTextInput from './materialTextInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 import DatePicker from './datePickerInput';
 import Picker from './pickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
-const MaterialTextInput = compose(
+import ActionStates from '../actions/states';
+
+const TextField = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
-)(MTextInput);
+)(TextFieldWithLabel);
 const PickerInput = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
@@ -44,8 +49,23 @@ const DatePickerInput = compose(
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
-  //date_of_birth: Yup.string()
-  //.required('Date of Birth is Required'),
+  first_name: Yup.string()
+    .required("Your baby's first name is required"),
+  last_name: Yup.string()
+    .required("Your baby's last name is required"),
+  gender: Yup.string()
+    .typeError("Your baby's gender is required")
+    .required("Your baby's gender is required"),
+  conception_method: Yup.string()
+    .typeError("Please provide your baby's conception method")
+    .required("Please provide your baby's conception method"),
+  date_of_birth: Yup.date()
+    .typeError("Your baby's date of birth must be a date")
+    .required("Your baby's date of birth is required"),
+  days_premature: Yup.number()
+    .typeError("Your baby's days premature must be a number")
+    .required("Your baby's days premature is required"),
+
 });
 
 const genders = [
@@ -154,24 +174,13 @@ class RegistrationSubjectForm extends Component {
         render={ props => {
           return (
             <Form>
-              <Text style={styles.form_header}>
-                Step 3: Update Your Baby's Profile.
+              <Text  style={AppStyles.registrationHeader}>
+                Step 3: Update Your Baby&apos;s Profile
               </Text>
-              <MaterialTextInput
-                label="First Name"
-                name="first_name"
-                type="name"
-              />
-              <MaterialTextInput
-                label="Middle Name"
-                name="middle_name"
-                type="name"
-              />
-              <MaterialTextInput
-                label="Last Name"
-                name="last_name"
-                type="name"
-              />
+              <TextField autoCapitalize="words" label="First Name" name="first_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Middle Name" name="middle_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField autoCapitalize="words" label="Last Name" name="last_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+
               <PickerInput
                 label="Gender"
                 prompt="Gender"
@@ -179,6 +188,8 @@ class RegistrationSubjectForm extends Component {
                 data={genders}
                 selectedValue={props.values.gender}
                 handleChange={ value => props.setFieldValue('gender', value) }
+                labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
               />
 
               <PickerInput
@@ -188,31 +199,39 @@ class RegistrationSubjectForm extends Component {
                 data={conceptionMethods}
                 selectedValue={props.values.conception_method}
                 handleChange={ value => props.setFieldValue('conception_method', value) }
+                labelStyle={AppStyles.registrationLabel}
+                textInputStyle={AppStyles.registrationPickerText}
               />
 
               <DatePickerInput
-                label="Date of Birth" 
-                name="date_of_birth" 
+                label="Date of Birth"
+                labelStyle={AppStyles.registrationLabel}
+                name="date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('date_of_birth', value);
                 }}
+                showIcon={ false }
+                style={{width: "100%"}}
+                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
               />
 
               <Text style={styles.errorText}>{dobError}</Text>
 
-              <MaterialTextInput 
-                label="Days Premature"
-                name="days_premature"
-                type="name"
-              />
+              <TextField keyboardType="number-pad" label="Days Premature" name="days_premature" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
 
-              <Button
-                title="NEXT"
-                onPress={props.handleSubmit}
-                color={Colors.green}
-              />
+              <View style={AppStyles.registrationButtonContainer}>
+
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={ {fontWeight: 900} }
+                  color={Colors.darkGreen}
+                />
+              </View>
             </Form>
           );
         }}
