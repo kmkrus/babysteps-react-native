@@ -60,7 +60,6 @@ class OverviewScreen extends React.Component {
   state = {
     currentIndexScreening: 0,
     currentIndexMilestones: 0,
-    calendarRefreshed: false,
     apiFetchCalendarSubmitted: false,
   };
 
@@ -70,7 +69,6 @@ class OverviewScreen extends React.Component {
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneCalendar();
     this.props.fetchSubject();
-
   }
 
   componentWillReceiveProps(nextProps) {
@@ -94,12 +92,10 @@ class OverviewScreen extends React.Component {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
               this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
             } else {
-              this.props.apiCreateMilestoneCalendar({ base_date: subject.expected_date_of_birth });
+              this.props.apiCreateMilestoneCalendar({ base_date: subject.data.expected_date_of_birth });
             }
             this.setState({ apiFetchCalendarSubmitted: true });
           }
-        } else {
-          this.setState({ calendarRefreshed: true });
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
@@ -147,8 +143,6 @@ class OverviewScreen extends React.Component {
   }
 
   render() {
-    const calendarRefreshed = this.state.calendarRefreshed;
-
     const milestoneGroups = _.sortBy(
       _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position 
     );

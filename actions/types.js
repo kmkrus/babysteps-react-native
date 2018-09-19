@@ -148,3 +148,10 @@ export const CREATE_BABYBOOK_ENTRY_REJECTED = 'create_babybook_entry_rejected';
 export const UPDATE_BABYBOOK_ENTRY_PENDING = 'update_babybook_entry_pending';
 export const UPDATE_BABYBOOK_ENTRY_FULFILLED = 'update_babybook_entry_fulfilled';
 export const UPDATE_BABYBOOK_ENTRY_REJECTED = 'update_babybook_entry_rejected';
+
+export const SHOW_MOMENTARY_ASSESSMENT = 'show_momentary_assessment';
+export const HIDE_MOMENTARY_ASSESSMENT = 'hide_momentary_assessment';
+
+export const FETCH_MOMENTARY_ASSESSMENT_PENDING = 'fetch_momentary_assessment_pending';
+export const FETCH_MOMENTARY_ASSESSMENT_FULFILLED = 'fetch_momentary_assessment_fulfilled';
+export const FETCH_MOMENTARY_ASSESSMENT_REJECTED = 'fetch_momentary_assessment_rejected';
