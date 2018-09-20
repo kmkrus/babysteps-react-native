@@ -62,10 +62,6 @@ const validationSchema = Yup.object().shape({
   date_of_birth: Yup.date()
     .typeError("Your baby's date of birth must be a date")
     .required("Your baby's date of birth is required"),
-  days_premature: Yup.number()
-    .typeError("Your baby's days premature must be a number")
-    .required("Your baby's days premature is required"),
-
 });
 
 const genders = [
@@ -126,7 +122,7 @@ class RegistrationSubjectForm extends Component {
     } // subject fetching
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     const subject = nextProps.registration.subject;
     const apiSubject = nextProps.registration.apiSubject;
     const respondent = nextProps.registration.respondent;
@@ -150,14 +146,13 @@ class RegistrationSubjectForm extends Component {
 
     return (
       <Formik
-        onSubmit={ values => {
-
+        onSubmit={values => {
           if (values.date_of_birth) {
             const newSubject = {
               ...values,
               respondent_ids: [respondent.data.api_id],
               screening_blood: subject.data.screening_blood,
-            }
+            };
             this.props.createSubject(newSubject);
           } else {
             this.setState({ dobError: 'You must provide the Date of Birth' });
@@ -171,15 +166,33 @@ class RegistrationSubjectForm extends Component {
           conception_method: 'natural',
           screening_blood: null,
         }}
-        render={ props => {
+        render={props => {
           return (
             <Form>
               <Text  style={AppStyles.registrationHeader}>
                 Step 3: Update Your Baby&apos;s Profile
               </Text>
-              <TextField autoCapitalize="words" label="First Name" name="first_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
-              <TextField autoCapitalize="words" label="Middle Name" name="middle_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
-              <TextField autoCapitalize="words" label="Last Name" name="last_name" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
+              <TextField
+                autoCapitalize="words"
+                label="First Name"
+                name="first_name"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+              />
+              <TextField
+                autoCapitalize="words"
+                label="Middle Name"
+                name="middle_name"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+              />
+              <TextField
+                autoCapitalize="words"
+                label="Last Name"
+                name="last_name"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+              />
 
               <PickerInput
                 label="Gender"
@@ -187,7 +200,7 @@ class RegistrationSubjectForm extends Component {
                 name="gender"
                 data={genders}
                 selectedValue={props.values.gender}
-                handleChange={ value => props.setFieldValue('gender', value) }
+                handleChange={value => props.setFieldValue('gender', value)}
                 labelStyle={AppStyles.registrationLabel}
                 textInputStyle={AppStyles.registrationPickerText}
               />
@@ -198,7 +211,7 @@ class RegistrationSubjectForm extends Component {
                 name="conception_method"
                 data={conceptionMethods}
                 selectedValue={props.values.conception_method}
-                handleChange={ value => props.setFieldValue('conception_method', value) }
+                handleChange={value => props.setFieldValue('conception_method', value)}
                 labelStyle={AppStyles.registrationLabel}
                 textInputStyle={AppStyles.registrationPickerText}
               />
@@ -213,22 +226,22 @@ class RegistrationSubjectForm extends Component {
                   this.setState({ dobError: null });
                   props.setFieldValue('date_of_birth', value);
                 }}
-                showIcon={ false }
-                style={{width: "100%"}}
-                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationTextInput } }
+                showIcon={false}
+                style={{ width: '100%' }}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationTextInput,
+                }}
               />
 
               <Text style={styles.errorText}>{dobError}</Text>
 
-              <TextField keyboardType="number-pad" label="Days Premature" name="days_premature" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} />
-
               <View style={AppStyles.registrationButtonContainer}>
-
                 <Button
                   title="NEXT"
                   onPress={props.handleSubmit}
                   buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={ {fontWeight: 900} }
+                  titleStyle={ { fontWeight: 900 } }
                   color={Colors.darkGreen}
                 />
               </View>
@@ -241,10 +254,6 @@ class RegistrationSubjectForm extends Component {
 }
 
 const styles = StyleSheet.create({
-  form_header: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
   errorText: {
     fontSize: 12,
     marginTop: -20,
