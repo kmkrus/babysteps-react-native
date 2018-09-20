@@ -13,6 +13,7 @@ import { Notifications } from 'expo';
 import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
+import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 
 import { connect } from 'react-redux';
@@ -33,6 +34,7 @@ import { fetchSubject } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import CONSTANTS from '../constants';
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
 
 const { width, height } = Dimensions.get('window');
@@ -60,8 +62,8 @@ class OverviewScreen extends React.Component {
   state = {
     currentIndexScreening: 0,
     currentIndexMilestones: 0,
-    calendarRefreshed: false,
     apiFetchCalendarSubmitted: false,
+    testNotificationCreated: false,
   };
 
   componentWillMount() {
@@ -70,7 +72,6 @@ class OverviewScreen extends React.Component {
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneCalendar();
     this.props.fetchSubject();
-
   }
 
   componentWillReceiveProps(nextProps) {
@@ -90,20 +91,54 @@ class OverviewScreen extends React.Component {
       if (!calendar.fetching && calendar.fetched) {
         if (isEmpty(calendar.data)) {
           const api_calendar = nextProps.milestones.api_calendar;
-          if (!api_calendar.fetching && !this.state.apiFetchCalendarSubmitted) {
+          if (
+            !api_calendar.fetching &&
+            subject.data !== undefined &&
+            !this.state.apiFetchCalendarSubmitted)
+          {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-              this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
+                this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
             } else {
-              this.props.apiCreateMilestoneCalendar({ base_date: subject.expected_date_of_birth });
+              this.props.apiCreateMilestoneCalendar({ base_date: subject.data.expected_date_of_birth });
             }
             this.setState({ apiFetchCalendarSubmitted: true });
           }
-        } else {
-          this.setState({ calendarRefreshed: true });
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
+    if (CONSTANTS.TEST_NOTIFICATION && !this.state.testNotificationCreated) {
+      this.testNotification({momentary_assessment: CONSTANTS.MOMENTARY_ASSESSMENT});
+    }
   }
+
+  testNotification = (noticeType = null) => {
+    const milestones = this.props.milestones.milestones.data;
+    const tasks = this.props.milestones.tasks.data;
+    let milestone = {};
+    debugger
+    if (noticeType.momentary_assessment) {
+      milestone = find(milestones, ['momentary_assessment', true]);
+    } else {
+      milestone = milestones[10];
+    }
+    if (milestone) {
+      const task = find(tasks, ['milestone_id', milestone.id]);
+
+      if (task) {
+        Notifications.presentLocalNotificationAsync({
+          title: milestone.title,
+          body: task.name,
+          data: {
+            task_id: task.id,
+            title: milestone.title,
+            body: task.name,
+            type: 'info',
+          },
+        });
+        this.setState({testNotificationCreated: true});
+      } // task
+    } // milestone
+  };
 
   renderScreeningItem = item => {
     const task = item.item;
@@ -147,10 +182,8 @@ class OverviewScreen extends React.Component {
   }
 
   render() {
-    const calendarRefreshed = this.state.calendarRefreshed;
-
     const milestoneGroups = _.sortBy(
-      _.filter(this.props.milestones.groups.data, mg => (mg.visible > 0) ), mg => mg.position 
+      _.filter(this.props.milestones.groups.data, mg => (mg.always_visible === true) ), mg => mg.position 
     );
     milestoneGroups.forEach( (group, index) => {
       group.uri = milestoneGroupImages[index];
@@ -158,8 +191,8 @@ class OverviewScreen extends React.Component {
 
     const timeNow = new Date();
     let screeningEvents = _.filter(this.props.milestones.calendar.data, c => {
-      const notify_at = new Date(c.notify_at)
-      return notify_at > timeNow;
+      const notify_at = new Date(c.notify_at);
+      return notify_at > timeNow && c.momentary_assessment !== 1;
     });
     screeningEvents = _.sortBy(screeningEvents, s => {
       return new Date(s.notify_at);

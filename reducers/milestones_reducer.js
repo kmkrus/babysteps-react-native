@@ -229,7 +229,6 @@ const reducer = (state = initialState, action, formData = []) => {
       break;
     };
 
-
     case API_FETCH_MILESTONE_CALENDAR_PENDING: {
       return {...state,
         api_calendar: { ...state.api_calendar, fetching: true, fetched: false, error: null },

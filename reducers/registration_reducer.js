@@ -67,7 +67,7 @@ const initialState = {
   user: {
     fetching: false,
     fetched: false,
-    data: {},
+    data: { id: null },
     error: null,
   },
   apiUser: {

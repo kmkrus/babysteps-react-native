@@ -11,6 +11,7 @@ import { showMessage } from "react-native-flash-message";
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
+import { showMomentaryAssessment } from '../actions/notification_actions';
 
 import AppNavigator from './AppNavigator';
 import NavigationService from './NavigationService';
@@ -87,7 +88,9 @@ const TourNoStudyNavigator = createStackNavigator(
 class RootNavigator extends Component {
   componentWillMount() {
     this.props.fetchSession();
+  }
 
+  componentDidMount() {
     if (Platform.OS === 'android') {
       Notifications.createChannelAndroidAsync('screeningEvents', {
         name: 'Screening Events',
@@ -96,9 +99,6 @@ class RootNavigator extends Component {
         color: Colors.notifications,
       });
     }
-  }
-
-  componentDidMount() {
     this._notificationSubscription = this.registerForNotifications();
   }
 
@@ -111,17 +111,34 @@ class RootNavigator extends Component {
     NavigationService.navigate('MilestoneQuestions', { task });
   };
 
+  _handleMomentaryAssessment = data => {
+    this.props.showMomentaryAssessment(data);
+  };
+
   _handleNotification = ({ origin, data, remote }) => {
-    showMessage({
-      type: data.type,
-      message: data.title,
-      description: data.body,
-      color: Colors.flashMessage,
-      backgroundColor: Colors.flashMessageBackground,
-      autoHide: false,
-      icon: data.type,
-      onPress: () => this._handleNotificationOnPress(data),
-    });
+    // origin
+    // 'received' app is open and foregrounded
+    // 'received' app is open but was backgrounded (ios)
+    // 'selected' app is open but was backgrounded (Andriod)
+    // 'selected' app was not open and opened by selecting notification
+    // 'selected' app was not open but opened by app icon (ios only)
+    debugger
+    if (data.momentary_assessment === 1) {
+      this._handleMomentaryAssessment(data);
+    } else if (origin === 'selected') {
+      this._handleNotificationOnPress(data);
+    } else {
+      showMessage({
+        type: data.type,
+        message: data.title,
+        description: data.body,
+        color: Colors.flashMessage,
+        backgroundColor: Colors.flashMessageBackground,
+        autoHide: false,
+        icon: data.type,
+        onPress: () => this._handleNotificationOnPress(data),
+      });
+    }
   };
 
   async registerForNotifications() {
@@ -160,7 +177,11 @@ class RootNavigator extends Component {
 }
 
 const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
-const mapDispatchToProps = { updateSession, fetchSession };
+const mapDispatchToProps = {
+  updateSession,
+  fetchSession,
+  showMomentaryAssessment,
+};
 
 export default connect(
   mapStateToProps,

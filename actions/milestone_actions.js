@@ -77,7 +77,6 @@ import {
 
 } from './types';
 
-
 const db = SQLite.openDatabase('babysteps.db');
 
 const Pending = type => {
@@ -214,7 +213,7 @@ export const apiFetchMilestoneCalendar = params => {
         params,
         headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
       })
-        .then( response => {
+        .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
         })
@@ -227,16 +226,16 @@ export const apiFetchMilestoneCalendar = params => {
 
 export const fetchMilestoneTasks = (params = {}) => {
   return dispatch => {
-    dispatch( Pending(FETCH_MILESTONE_TASKS_PENDING) );
-    var sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
-    sql = sql + ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
-    sql = sql + ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
-    sql = sql + ' WHERE mg.visible = 1 AND ms.always_visible = 1';
-    sql = sql + ' ORDER BY milestone_group_position, milestone_position, position;';
-    
+    dispatch(Pending(FETCH_MILESTONE_TASKS_PENDING));
+    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
+    sql += ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
+    sql += ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
+    sql += ' WHERE mg.visible = 1 AND ms.always_visible = 1';
+    sql += ' ORDER BY milestone_group_position, milestone_position, position;';
+
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_TASKS_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_TASKS_REJECTED, error))}
@@ -244,7 +243,6 @@ export const fetchMilestoneTasks = (params = {}) => {
       })
     );
   };
-
 };
 
 export const fetchMilestoneSections = (params = {}) => {
@@ -411,11 +409,13 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
   const answers = [];
   _.forEach(data, row => {
     const answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
-    answer.id = row.api_id;
-    answer.user_id = row.user_api_id;
-    answer.respondent_id = row.respondent_api_id;
-    answer.subject_id = row.subject_api_id;
-    answers.push(answer);
+    answers.push({
+      ...answer,
+      id: row.api_id,
+      user_id: row.user_api_id,
+      respondent_id: row.respondent_api_id,
+      subject_id: row.subject_api_id,
+    })
   });
 
   return dispatch => {
