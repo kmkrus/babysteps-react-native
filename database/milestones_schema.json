@@ -26,7 +26,10 @@
       "milestone_group_id": "INTEGER", 
       "position": "INTEGER", 
       "title": "TEXT", 
-      "message": "TEXT", 
+      "message": "TEXT",
+      "momentary_assessment": "INTEGER",
+      "frequency": "TEXT",
+      "response_scale": "TEXT",
       "days_since_baseline": "INTEGER", 
       "always_visible": "INTEGER", 
       "notify": "INTEGER"

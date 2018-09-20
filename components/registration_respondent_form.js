@@ -62,7 +62,7 @@ const validationSchema = Yup.object().shape({
     .required("State is required"),
   zip_code: Yup.string()
     .required("Zip code is required")
-    .matches(/\d{5}/,'Zip code must be 5 digits'),
+    .matches(/\d{5}/, 'Zip code must be 5 digits'),
   home_phone: Yup.string()
     .required("Home phone is required"),
   date_of_birth: Yup.date()
@@ -80,76 +80,73 @@ const validationSchema = Yup.object().shape({
     .typeError('Height must be a number')
     .required("Height is required")
     .positive("Height must be greater than 0"),
-})
+});
 
 const respondentTypes = [
   { label: "Mother", value: "mother"},
   { label: "Father", value: "father"},
   { label: "Guardian", value: "guardian"},
   { label: "Other", value: "other"}
-]
+];
 
 const maritalStatuses = [
   { label: "Married", value: "married"},
   { label: "Single", value: "single"},
   { label: "Living With Father", value: "living_with_father"},
   { label: "Living With Other", value: "living_with_other"}
-]
+];
 
 class RegistrationRespondentForm extends Component {
-
   state = {
     signature_submitted: false,
-  }
+  };
 
   componentWillMount() {
-    this.props.fetchUser()
-    this.props.resetRespondent()
+    this.props.fetchUser();
+    this.props.resetRespondent();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.user.fetching ||
-      nextProps.registration.respondent.fetching ||
-      nextProps.registration.apiRespondent.fetching ) {
-      return false
+  shouldComponentUpdate(nextProps) {
+    const registration = nextProps.registration;
+    if (
+      registration.user.fetching ||
+      registration.respondent.fetching ||
+      registration.apiRespondent.fetching
+    ) {
+      return false;
     }
-    return true
+    return true;
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-
-    if ( !nextProps.registration.respondent.fetching && nextProps.registration.respondent.fetched ) {
-      if (!nextProps.registration.apiRespondent.fetching) {
-
-        if (!nextProps.registration.apiRespondent.fetched) {
-          this.props.apiCreateRespondent(nextProps.session, nextProps.registration.respondent.data)
-
+  componentWillReceiveProps(nextProps) {
+    const respondent = nextProps.registration.respondent;
+    const apiRespondent = nextProps.registration.apiRespondent;
+    const registration = nextProps.registration;
+    if (!respondent.fetching && respondent.fetched) {
+      if (!apiRespondent.fetching) {
+        if (!apiRespondent.fetched) {
+          this.props.apiCreateRespondent(nextProps.session, respondent.data);
         } else {
-
           // Upload signatture image if we have respondent id
-          if ( nextProps.registration.apiRespondent.data.id !== undefined ) {
-            const api_id = nextProps.registration.apiRespondent.data.id
-
-            this.props.updateRespondent({ api_id: api_id})
-
+          if (apiRespondent.data.id !== undefined) {
+            const api_id = apiRespondent.data.id;
+            this.props.updateRespondent({api_id: api_id});
             if ( !this.state.signature_submitted ) {
-              this.saveSignature(api_id)
-              this.setState({ signature_submitted: true })
+              this.saveSignature(api_id);
+              this.setState({ signature_submitted: true });
             }
-
             if (this.props.registration.auth != nextProps.registration.auth) {
               this.props.updateSession({
-                access_token: nextProps.registration.auth.accessToken,
-                client: nextProps.registration.auth.client,
-                uid: nextProps.registration.auth.uid,
-                user_id: nextProps.registration.auth.user_id
+                access_token: registration.auth.accessToken,
+                client: registration.auth.client,
+                uid: registration.auth.uid,
+                user_id: registration.auth.user_id
               });
             }
-
-            if (nextProps.registration.respondent.data.pregnant) {
-              this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB })
+            if (respondent.data.pregnant) {
+              this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB });
             } else {
-              this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT })
+              this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT });
             }
           } // apiRespondent.id
         } // apiRespondent.fetched
@@ -158,28 +155,28 @@ class RegistrationRespondentForm extends Component {
   }
 
   saveSignature = async (api_id) => {
-    const uri = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png'
-    const signatureFile = await Expo.FileSystem.getInfoAsync(uri, {size: true})
-    if ( signatureFile.exists ) {
-      this.props.apiSaveSignature(this.props.session, api_id, uri)
+    const uri = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
+    const signatureFile = await Expo.FileSystem.getInfoAsync(uri, {size: true});
+    if (signatureFile.exists) {
+      this.props.apiSaveSignature(this.props.session, api_id, uri);
     } else {
-      console.log('no signature available')
+      console.log('no signature available');
     } // signatureFile exists
-  }
+  };
 
   render() {
-
+    const user = this.props.registration.user;
     return (
       <Formik
-        onSubmit={ (values) => {
+        onSubmit={values => {
           const respondent = {...values,
-            user_id: this.props.registration.user.data.api_id,
-            email: this.props.registration.user.data.email,
-            first_name: this.props.registration.user.data.first_name,
-            last_name: this.props.registration.user.data.last_name,
-            accepted_tos_at: new Date().toISOString()
+            user_id: user.data.api_id,
+            email: user.data.email,
+            first_name: user.data.first_name,
+            last_name: user.data.last_name,
+            accepted_tos_at: new Date().toISOString(),
           }
-          this.props.createRespondent(respondent)
+          this.props.createRespondent(respondent);
         }}
         validationSchema={validationSchema}
         initialValues={{
@@ -188,103 +185,158 @@ class RegistrationRespondentForm extends Component {
           marital_status: 'married',
           pregnant: false,
         }}
-        render={ (props) => {
-
+        render={props => {
           return (
             <Form>
               <Text style={AppStyles.registrationHeader}>Step 2: Update Your Profile</Text>
 
               <PickerInput
-                label='Relationship'
+                label="Relationship"
                 labelStyle={AppStyles.registrationLabel}
                 textInputStyle={AppStyles.registrationPickerText}
-                prompt='Relationship'
-                name='respondent_type'
+                prompt="Relationship"
+                name="respondent_type"
                 data={respondentTypes}
                 selectedValue={props.values.respondent_type}
-                handleChange={ (value) => props.setFieldValue('respondent_type', value) }
+                handleChange={value => props.setFieldValue('respondent_type', value)}
               />
 
-              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 1" name="address_1" />
-              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Address 2" name="address_2" />
-              <TextField autoCapitalize="words" inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="City" name="city" />
+              <TextField
+                autoCapitalize="words"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="Address 1"
+                name="address_1"
+              />
+              <TextField
+                autoCapitalize="words"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="Address 2"
+                name="address_2"
+              />
+              <TextField
+                autoCapitalize="words"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="City"
+                name="city"
+              />
               <PickerInput
-                label='State'
+                label="State"
                 labelStyle={AppStyles.registrationLabel}
                 textInputStyle={AppStyles.registrationPickerText}
-                prompt='State'
-                name='state'
+                prompt="State"
+                name="state"
                 data={States}
                 selectedValue={props.values.state}
-                handleChange={ (value) => props.setFieldValue('state', value) }
+                handleChange={value => props.setFieldValue('state', value)}
               />
-
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="number-pad" label="Zip Code" name="zip_code" returnKeyType="done" />
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Home Phone" name="home_phone" returnKeyType="done" type="tel" />
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="phone-pad" label="Other Phone" name="other_phone" returnKeyType="done" type="tel" />
-
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                keyboardType="number-pad"
+                label="Zip Code"
+                name="zip_code"
+                returnKeyType="done"
+              />
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                keyboardType="phone-pad"
+                label="Home Phone"
+                name="home_phone"
+                returnKeyType="done"
+                type="tel"
+              />
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                keyboardType="phone-pad"
+                label="Other Phone"
+                name="other_phone"
+                returnKeyType="done"
+                type="tel"
+              />
               <DatePickerInput
                 label="Date of Birth"
                 labelStyle={AppStyles.registrationLabel}
                 name="date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
-                handleChange={ (value) => props.setFieldValue('date_of_birth', value) }
+                handleChange={value => props.setFieldValue('date_of_birth', value)}
                 showIcon={ false }
-                style={{width: "100%"}}
-                customStyles={ { dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput } }
+                style={{ width: "100%" }}
+                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
               />
 
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} label="Driver's License Number" name="drivers_license_number" />
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="Driver's License Number"
+                name="drivers_license_number"
+              />
 
               <PickerInput
-                label='Marital Status'
+                label="Marital Status"
                 labelStyle={AppStyles.registrationLabel}
                 textInputStyle={AppStyles.registrationPickerText}
-                prompt='Marital Status'
-                name='marital_status'
+                prompt="Marital Status"
+                name="marital_status"
                 data={maritalStatuses}
                 selectedValue={props.values.marital_status}
-                handleChange={ (value) => props.setFieldValue('marital_status', value) }
+                handleChange={value => props.setFieldValue('marital_status', value)}
               />
 
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Weight" name="weight" type="text" returnKeyType="done" keyboardType="numeric" helper="In pounds" />
-              <TextField inputStyle={AppStyles.registrationTextInput} inputContainerStyle={AppStyles.registrationTextInputContainer} keyboardType="numeric" label="Height" name="height" type="text" returnKeyType="done" keyboardType="numeric" helper="In inches" />
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="Weight"
+                name="weight" 
+                type="text"
+                returnKeyType="done"
+                keyboardType="numeric"
+                helper="In pounds"
+              />
+              <TextField
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+                label="Height"
+                name="height"
+                type="text"
+                returnKeyType="done"
+                keyboardType="numeric"
+                helper="In inches"
+              />
 
               <View style={AppStyles.registrationCheckBoxes}>
                 <Text style={[AppStyles.registrationLabel, {marginTop: 20, marginBottom: 10}]}>Are You Currently Pregnant?</Text>
                 <CheckBox
-                  title='Yes'
-                  checked={ props.values.pregnant }
-                  containerStyle={ styles.checkboxContainer }
-                  textStyle={ styles.checkboxText }
-                  onPress={ (value) => props.setFieldValue('pregnant', true) }
+                  title="Yes"
+                  checked={props.values.pregnant}
+                  containerStyle={styles.checkboxContainer}
+                  textStyle={styles.checkboxText}
+                  onPress={() => props.setFieldValue('pregnant', true)}
                 />
                 <CheckBox
-                  title='No'
-                  checked={ !props.values.pregnant }
-                  containerStyle={ styles.checkboxContainer }
-                  textStyle={ styles.checkboxText }
-                  onPress={ (value) => props.setFieldValue('pregnant', false) }
+                  title="No"
+                  checked={!props.values.pregnant}
+                  containerStyle={styles.checkboxContainer}
+                  textStyle={styles.checkboxText}
+                  onPress={() => props.setFieldValue('pregnant', false)}
                 />
               </View>
 
               <View style={AppStyles.registrationButtonContainer}>
-
                 <Button
                   title="NEXT"
                   onPress={props.handleSubmit}
                   buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={ {fontWeight: 900} }
+                  titleStyle={{fontWeight: 900}}
                   color={Colors.darkGreen}
-                  disabled={ props.isSubmitting }
+                  disabled={props.isSubmitting}
                 />
-                <Text>{JSON.stringify(props.errors)}</Text>
               </View>
-
-
-
-
             </Form>
           );
         }}
@@ -294,27 +346,16 @@ class RegistrationRespondentForm extends Component {
 };
 
 const styles = StyleSheet.create({
-  form_header: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  label: {
-    marginTop: 20,
-  },
   checkboxContainer: {
     borderWidth: 0,
     margin: 0,
-    padding:0,
+    padding: 0,
     backgroundColor: Colors.backgroundColor,
   },
   checkboxText: {
     fontSize: 12,
   },
-  buttonContainer: {
-    marginTop: 20,
-  }
-})
-
+});
 
 const mapStateToProps = ({ session, registration }) => ({ session, registration });
 const mapDispatchToProps = {
@@ -325,8 +366,9 @@ const mapDispatchToProps = {
   apiCreateRespondent,
   apiUpdateRespondent,
   apiSaveSignature,
-  updateSession
+  updateSession,
 };
+
 
 
 export default connect( mapStateToProps, mapDispatchToProps )(RegistrationRespondentForm);

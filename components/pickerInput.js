@@ -1,20 +1,12 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  Picker
-} from 'react-native';
-import InputHelper from '../components/inputHelper';
+import { Text, View, Picker } from 'react-native';
+import InputHelper from './inputHelper';
 import Colors from '../constants/Colors';
 import { Label } from 'react-native-material-textfield';
 import RNPickerSelect from 'react-native-picker-select';
 import AppStyles from '../constants/Styles';
 
 export default class PickerInput extends React.PureComponent {
-
-  focus() {
-    //this.input.focus();
-  }
 
   render() {
     const { error, helper, touched, name, ...props } = this.props;
@@ -32,8 +24,8 @@ export default class PickerInput extends React.PureComponent {
       marginLeft: 20,
       marginRight: 20,
       marginTop: 15,
-      marginBottom: 1
-    }
+      marginBottom: 1,
+    };
 
     return (
       <View style={containerStyle}>
@@ -58,17 +50,17 @@ export default class PickerInput extends React.PureComponent {
     )
 
     const pickerSelectStyles = StyleSheet.create({
-        inputIOS: {
-            fontSize: 16,
-            paddingTop: 13,
-            paddingHorizontal: 10,
-            paddingBottom: 12,
-            borderWidth: 1,
-            borderColor: 'gray',
-            borderRadius: 4,
-            backgroundColor: 'white',
-            color: 'red',
-        },
+      inputIOS: {
+          fontSize: 16,
+          paddingTop: 13,
+          paddingHorizontal: 10,
+          paddingBottom: 12,
+          borderWidth: 1,
+          borderColor: 'gray',
+          borderRadius: 4,
+          backgroundColor: 'white',
+          color: 'red',
+      },
     });
 
   }

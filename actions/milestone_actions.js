@@ -213,7 +213,7 @@ export const apiFetchMilestoneCalendar = params => {
         params,
         headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
       })
-        .then( response => {
+        .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
         })
@@ -226,16 +226,16 @@ export const apiFetchMilestoneCalendar = params => {
 
 export const fetchMilestoneTasks = (params = {}) => {
   return dispatch => {
-    dispatch( Pending(FETCH_MILESTONE_TASKS_PENDING) );
-    var sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
-    sql = sql + ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
-    sql = sql + ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
-    sql = sql + ' WHERE mg.visible = 1 AND ms.always_visible = 1';
-    sql = sql + ' ORDER BY milestone_group_position, milestone_position, position;';
+    dispatch(Pending(FETCH_MILESTONE_TASKS_PENDING));
+    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
+    sql += ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
+    sql += ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
+    sql += ' WHERE mg.visible = 1 AND ms.always_visible = 1';
+    sql += ' ORDER BY milestone_group_position, milestone_position, position;';
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_TASKS_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_TASKS_REJECTED, error))}
@@ -243,7 +243,6 @@ export const fetchMilestoneTasks = (params = {}) => {
       })
     );
   };
-
 };
 
 export const fetchMilestoneSections = (params = {}) => {

@@ -88,7 +88,9 @@ const TourNoStudyNavigator = createStackNavigator(
 class RootNavigator extends Component {
   componentWillMount() {
     this.props.fetchSession();
+  }
 
+  componentDidMount() {
     if (Platform.OS === 'android') {
       Notifications.createChannelAndroidAsync('screeningEvents', {
         name: 'Screening Events',
@@ -97,9 +99,6 @@ class RootNavigator extends Component {
         color: Colors.notifications,
       });
     }
-  }
-
-  componentDidMount() {
     this._notificationSubscription = this.registerForNotifications();
   }
 
@@ -108,29 +107,12 @@ class RootNavigator extends Component {
   }
 
   _handleNotificationOnPress = data => {
-    NavigationService.navigate('MilestoneQuestions', { data });
+    const task = find(this.props.milestones.tasks.data, ['id', data.task_id]);
+    NavigationService.navigate('MilestoneQuestions', { task });
   };
 
   _handleMomentaryAssessment = data => {
     this.props.showMomentaryAssessment(data);
-  };
-
-  _testNotification = () => {
-    const milestone = this.props.milestones.milestones.data[0];
-    const task = this.props.milestones.tasks.data[0];
-
-    if (milestone && task) {
-      Notifications.presentLocalNotificationAsync({
-        title: milestone.title,
-        body: task.name,
-        data: {
-          task_id: task.id,
-          title: milestone.title,
-          body: task.name,
-          type: 'info',
-        },
-      });
-    }
   };
 
   _handleNotification = ({ origin, data, remote }) => {
@@ -140,7 +122,8 @@ class RootNavigator extends Component {
     // 'selected' app is open but was backgrounded (Andriod)
     // 'selected' app was not open and opened by selecting notification
     // 'selected' app was not open but opened by app icon (ios only)
-    if (data.momentary_assessment) {
+    debugger
+    if (data.momentary_assessment === 1) {
       this._handleMomentaryAssessment(data);
     } else if (origin === 'selected') {
       this._handleNotificationOnPress(data);

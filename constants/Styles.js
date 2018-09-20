@@ -1,16 +1,12 @@
 'use strict';
 
-import Colors from '../constants/Colors';
+import Colors from './Colors';
 
+let React = require('react-native');
 
-var React = require('react-native');
-
-var {
-  StyleSheet,
-} = React;
+let { StyleSheet } = React;
 
 module.exports = StyleSheet.create({
-
   registrationInput: {
     marginBottom: 40,
     marginTop: 40,
@@ -45,17 +41,14 @@ module.exports = StyleSheet.create({
   },
 
   registrationPickerText: {
-    fontSize: 18,
     height: 36,
-    fontWeight: 'bold',
     color: Colors.black,
   },
 
-
   registrationTextInputContainer: {
-    borderBottomWidth: .25,
+    borderBottomWidth: 0.25,
     borderBottomColor: Colors.grey,
-    marginBottom: 1
+    marginBottom: 1,
   },
 
   registrationButtonContainer: {
@@ -64,21 +57,21 @@ module.exports = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     marginBottom: 40,
-    marginTop: 20
+    marginTop: 20,
   },
 
   registrationCheckBoxes: {
     marginBottom: 20,
-    marginLeft: 20
+    marginLeft: 20,
   },
 
   registrationDateContainer: {
-    borderBottomWidth: .25,
+    borderBottomWidth: 0.25,
     borderBottomColor: Colors.grey,
     marginLeft: 20,
     marginTop: 20,
     marginRight: 20,
-    marginBottom: 1
+    marginBottom: 1,
   },
 
   registrationDateInput: {
@@ -86,7 +79,7 @@ module.exports = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     height: 36,
-    width: '100%'
+    width: '100%',
   },
 
   buttonSubmit: {
@@ -103,7 +96,5 @@ module.exports = StyleSheet.create({
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
-  }
-
-
+  },
 });
