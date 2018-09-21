@@ -2,7 +2,9 @@ import { SQLite } from 'expo';
 import axios from 'axios';
 import url from 'url';
 
-import { _ } from 'lodash';
+import map from 'lodash/map';
+import forEach from 'lodash/forEach';
+import omit from 'lodash/omit';
 
 import { insertRows } from '../database/common';
 import { setNotifications } from '../notifications';
@@ -67,9 +69,17 @@ import {
   FETCH_MILESTONE_ANSWERS_FULFILLED,
   FETCH_MILESTONE_ANSWERS_REJECTED,
 
+  CREATE_MILESTONE_ANSWER_PENDING,
+  CREATE_MILESTONE_ANSWER_FULFILLED,
+  CREATE_MILESTONE_ANSWER_REJECTED,
+
   UPDATE_MILESTONE_ANSWERS_PENDING,
   UPDATE_MILESTONE_ANSWERS_FULFILLED,
   UPDATE_MILESTONE_ANSWERS_REJECTED,
+
+  API_CREATE_MILESTONE_ANSWER_PENDING,
+  API_CREATE_MILESTONE_ANSWER_FULFILLED,
+  API_CREATE_MILESTONE_ANSWER_REJECTED,
 
   API_UPDATE_MILESTONE_ANSWERS_PENDING,
   API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
@@ -227,10 +237,9 @@ export const apiFetchMilestoneCalendar = params => {
 export const fetchMilestoneTasks = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_TASKS_PENDING));
-    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, ms.milestone_group_id, ms.position AS milestone_position, ms.title AS milestone_title FROM tasks AS ts';
+    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, mg.visible AS milestone_group_visible, ms.milestone_group_id, ms.position AS milestone_position, ms.always_visible AS milestone_always_visible, ms.title AS milestone_title, ms.momentary_assessment AS momentary_assessment, ms.response_scale AS response_scale FROM tasks AS ts';
     sql += ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
     sql += ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
-    sql += ' WHERE mg.visible = 1 AND ms.always_visible = 1';
     sql += ' ORDER BY milestone_group_position, milestone_position, position;';
 
     return (
@@ -249,8 +258,10 @@ export const fetchMilestoneSections = (params = {}) => {
   return dispatch => {
     dispatch( Pending(FETCH_MILESTONE_SECTIONS_PENDING) );
     var sql = 'SELECT * FROM sections';
-    sql = sql + ' WHERE sections.task_id = ' + params['task_id'];
-    sql = sql + ' ORDER BY sections.position;';
+    if (params.task_id) {
+      sql += ` WHERE sections.task_id = ${params.task_id}`;
+    }
+    sql += ' ORDER BY sections.position;';
 
     return (
       db.transaction(tx => {
@@ -343,50 +354,72 @@ export const fetchMilestoneAnswers = (params={}) => {
   };
 };
 
+const answerFields = [
+  'api_id',
+  'user_id',
+  'user_api_id',
+  'respondent_id',
+  'respondent_api_id',
+  'subject_id',
+  'subject_api_id',
+  'milestone_id',
+  'task_id',
+  'section_id',
+  'question_id',
+  'choice_id',
+  'answer_numeric',
+  'answer_boolean',
+  'answer_text',
+  'score',
+];
+
+parseFields = (object, fields) => {
+  let row = [];
+  map(fields, field => {
+    if (object[field] === undefined || object[field] === null) {
+      row.push('null');
+    } else if (object[field] === true) {
+      row.push(1);
+    } else if (object[field] === false) {
+      row.push(0);
+    } else if (field === 'answer_text') {
+      row.push(`"${object[field]}"`);
+    } else {
+      row.push(object[field]);
+    }
+  });
+  return row.join(', ');
+}
+
+export const createMilestoneAnswer = answer => {
+  return dispatch => {
+    dispatch(Pending(CREATE_MILESTONE_ANSWER_PENDING));
+    const values = this.parseFields(answer, answerFields);
+    const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES (${values});`;
+    return (
+      db.transaction(tx => {
+        tx.executeSql(
+          sql, [],
+          (_, response) => {dispatch(Response(CREATE_MILESTONE_ANSWER_FULFILLED, response))},
+          (_, error) => {dispatch(Response(CREATE_MILESTONE_ANSWER_REJECTED, error))}
+        )
+      }) // transaction
+    ) // return
+  }; // dispatch
+};
+
 export const updateMilestoneAnswers = (section, answers) => {
   return dispatch => {
     dispatch(Pending(UPDATE_MILESTONE_ANSWERS_PENDING));
 
-    const fields = [
-      'api_id',
-      'user_id',
-      'user_api_id',
-      'respondent_id',
-      'respondent_api_id',
-      'subject_id',
-      'subject_api_id',
-      'milestone_id',
-      'task_id',
-      'section_id',
-      'question_id',
-      'choice_id',
-      'answer_numeric',
-      'answer_boolean',
-      'answer_text',
-      'score',
-    ];
-
     const values = [];
-    let row = [];
-    _.map(answers, answer => {
-      row = [];
-      _.map(fields, field => {
-        if (answer[field] === undefined || answer[field] === null) {
-          row.push('null');
-        } else if (answer[field] === true) {
-          row.push(1);
-        } else if (answer[field] === false) {
-          row.push(0);
-        } else if (field === 'answer_text') {
-          row.push(`"${answer[field]}"`);
-        } else {
-          row.push(answer[field]) ;
-        }
-      })
-      values.push(`( ${row.join(', ')} )`);
+    let row = '';
+    map(answers, answer => {
+      row = this.parseFields(answer, answerFields);
+      values.push(`( ${row} )`);
     });
 
-    const sql = `INSERT INTO answers ( ${fields.join(', ')} ) VALUES ${values.join(', ')} `;
+    const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES ${values.join(', ')} `;
 
     return (
       db.transaction(tx => {
@@ -404,11 +437,40 @@ export const updateMilestoneAnswers = (section, answers) => {
   };
 };
 
+export const apiCreateMilestoneAnswer = (session, data) => {
+  let answer = omit(data, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
+  answer = {
+    ...answer,
+    user_id: data.user_api_id,
+    respondent_id: data.respondent_api_id,
+    subject_id: data.subject_api_id,
+  };
+  return dispatch => {
+    dispatch({
+      type: API_CREATE_MILESTONE_ANSWER_PENDING,
+      payload: {
+        data: { answer: answer },
+        session,
+      },
+      meta: {
+        offline: {
+          effect: {
+            method: 'POST',
+            url: '/answers',
+            fulfilled: API_CREATE_MILESTONE_ANSWER_FULFILLED,
+            rejected: API_CREATE_MILESTONE_ANSWER_REJECTED,
+          },
+        },
+      },
+    });
+  }; // return dispatch
+};
+
 export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
 
   const answers = [];
-  _.forEach(data, row => {
-    const answer = _.omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
+  forEach(data, row => {
+    const answer = omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
     answers.push({
       ...answer,
       id: row.api_id,

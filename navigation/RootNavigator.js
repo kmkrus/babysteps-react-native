@@ -122,7 +122,6 @@ class RootNavigator extends Component {
     // 'selected' app is open but was backgrounded (Andriod)
     // 'selected' app was not open and opened by selecting notification
     // 'selected' app was not open but opened by app icon (ios only)
-    debugger
     if (data.momentary_assessment === 1) {
       this._handleMomentaryAssessment(data);
     } else if (origin === 'selected') {
@@ -172,7 +171,9 @@ class RootNavigator extends Component {
     if (States.REGISTERING_REGISTRATION.includes(registration_state)) {
       return <RegistrationNavigator />;
     }
-    return <TourNavigator />;
+    if (registration_state === 'none') {
+      return <TourNavigator />;
+    }
   }
 }
 

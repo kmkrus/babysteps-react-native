@@ -55,9 +55,17 @@ import {
   FETCH_MILESTONE_ANSWERS_FULFILLED,
   FETCH_MILESTONE_ANSWERS_REJECTED,
 
+  CREATE_MILESTONE_ANSWER_PENDING,
+  CREATE_MILESTONE_ANSWER_FULFILLED,
+  CREATE_MILESTONE_ANSWER_REJECTED,
+
   UPDATE_MILESTONE_ANSWERS_PENDING,
   UPDATE_MILESTONE_ANSWERS_FULFILLED,
   UPDATE_MILESTONE_ANSWERS_REJECTED,
+
+  API_CREATE_MILESTONE_ANSWER_PENDING,
+  API_CREATE_MILESTONE_ANSWER_FULFILLED,
+  API_CREATE_MILESTONE_ANSWER_REJECTED,
 
   API_UPDATE_MILESTONE_ANSWERS_PENDING,
   API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
@@ -119,11 +127,23 @@ const initialState = {
     data: [],
     error: null,
   },
+  answer: {
+    fetching: false,
+    fetched: false,
+    data: [],
+    error: null,
+  },
   answers: {
     fetching: false,
     fetched: false,
     data: [],
     error: null,
+  },
+  apiAnswer: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
   },
   apiAnswers: {
     fetching: false,
@@ -254,7 +274,7 @@ const reducer = (state = initialState, action, formData = []) => {
       break;
     }
     case FETCH_MILESTONE_TASKS_FULFILLED: {
-      const data = action.payload.rows['_array']
+      const data = action.payload.rows['_array'];
       return {...state, tasks: {...state.tasks, fetching: false, fetched: true, error: null, data: data } }
       break;
     }
@@ -337,6 +357,19 @@ const reducer = (state = initialState, action, formData = []) => {
       break;
     }
 
+    case CREATE_MILESTONE_ANSWER_PENDING: {
+      return {...state, answer: {...state.answer, fetching: true, fetched: false, error: null}};
+      break;
+    }
+    case CREATE_MILESTONE_ANSWER_FULFILLED: {
+      return {...state, answer: {...state.answer, fetching: false, fetched: true, error: null}};
+      break;
+    }
+    case CREATE_MILESTONE_ANSWER_REJECTED: {
+      return {...state, answer: {...state.answer, fetching: false, fetched: false, error: action.payload}};
+      break;
+    }
+
     case UPDATE_MILESTONE_ANSWERS_PENDING: {
       return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null} }
       break;
@@ -352,8 +385,26 @@ const reducer = (state = initialState, action, formData = []) => {
       break;
     }
 
+    case API_CREATE_MILESTONE_ANSWER_PENDING: {
+      return {...state, apiAnswer: {...state.apiAnswer, fetching: true, fetched: false, error: null }}
+      break;
+    }
+    case API_CREATE_MILESTONE_ANSWER_FULFILLED: {
+      const headers = action.payload.headers;
+      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
+      return {...state, 
+        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id },
+        apiAnswer: {...state.apiAnswer, fetching: false, fetched: true, error: null, data: action.payload.data},
+      };
+      break;
+    }
+    case API_CREATE_MILESTONE_ANSWER_REJECTED: {
+      return {...state, apiAnswer: {...state.apiAnswer, fetching: false, fetched: false, error: action.payload}};
+      break;
+    }
+
     case API_UPDATE_MILESTONE_ANSWERS_PENDING: {
-      return {...state, apiAnswers: {...state.apiAnswers, fetching: true, fetched: false, error: null }}
+      return {...state, apiAnswers: {...state.apiAnswers, fetching: true, fetched: false, error: null}};
       break;
     }
     case API_UPDATE_MILESTONE_ANSWERS_FULFILLED: {
