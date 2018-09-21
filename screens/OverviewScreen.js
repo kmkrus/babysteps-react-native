@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   Image,
+  Text,
+  View,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  ActivityIndicator,
   Dimensions,
 } from 'react-native';
 import { Notifications } from 'expo';
@@ -15,10 +16,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
+import filter from 'lodash/filter';
+import sortBy from 'lodash/sortBy';
 
 import { connect } from 'react-redux';
-
-import _ from 'lodash';
 
 import {
   fetchMilestones,
@@ -50,7 +51,7 @@ const scCardWidth = wp(80, width);
 const scCardMargin = (width - scCardWidth) / 2;
 
 const mgContainerHeight = wp(30, height);
-const mgImageHeight = wp(70, mgContainerHeight);
+const mgImageHeight = wp(80, mgContainerHeight);
 const mgImageWidth = wp(80, width);
 const mgImageMargin = (width - mgImageWidth) / 2;
 
@@ -64,6 +65,10 @@ class OverviewScreen extends React.Component {
     currentIndexMilestones: 0,
     apiFetchCalendarSubmitted: false,
     testNotificationCreated: false,
+    scSliderLoading: true,
+    mgSliderLoading: true,
+    milestoneGroups: [],
+    screeningEvents: [],
   };
 
   componentWillMount() {
@@ -82,7 +87,17 @@ class OverviewScreen extends React.Component {
         if (!api_milestones.fetching && !api_milestones.fetched) {
           this.props.apiFetchMilestones();
         }
-      }
+      } else {
+        const milestoneGroups = filter(groups.data, {visible: 1});
+        milestoneGroups = sortBy(milestoneGroups, ['position']);
+        milestoneGroups.forEach((group, index) => {
+          group.uri = milestoneGroupImages[index];
+        });
+        this.setState({
+          milestoneGroups: milestoneGroups,
+          mgSliderLoading: false,
+        });
+      } // isEmpty groups
     }
 
     const subject = nextProps.registration.subject;
@@ -94,15 +109,27 @@ class OverviewScreen extends React.Component {
           if (
             !api_calendar.fetching &&
             subject.data !== undefined &&
-            !this.state.apiFetchCalendarSubmitted)
-          {
+            !this.state.apiFetchCalendarSubmitted
+          ) {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-                this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
+              this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
             } else {
               this.props.apiCreateMilestoneCalendar({ base_date: subject.data.expected_date_of_birth });
             }
             this.setState({ apiFetchCalendarSubmitted: true });
           }
+        } else {
+          const timeNow = new Date();
+          const screeningEvents = filter(calendar.data, function(s) {
+            return (new Date(s.notify_at) > timeNow) && !s.momentary_assessment;
+          });
+          screeningEvents = sortBy(screeningEvents, function(s) {
+            return (new Date(s.notify_at));
+          });
+          this.setState({
+            screeningEvents: screeningEvents,
+            scSliderLoading: false,
+          });
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
@@ -115,7 +142,6 @@ class OverviewScreen extends React.Component {
     const milestones = this.props.milestones.milestones.data;
     const tasks = this.props.milestones.tasks.data;
     let milestone = {};
-    debugger
     if (noticeType.momentary_assessment) {
       milestone = find(milestones, ['momentary_assessment', true]);
     } else {
@@ -142,7 +168,7 @@ class OverviewScreen extends React.Component {
 
   renderScreeningItem = item => {
     const task = item.item;
-    const date = new Date(task.notify_at).toLocaleDateString('en-US', {
+    const longDate = new Date(task.notify_at).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -152,7 +178,7 @@ class OverviewScreen extends React.Component {
     return (
       <View style={styles.screening_slide_container}>
         <Text numberOfLines={1} style={styles.screening_title}>{ task.title }</Text>
-        <Text numberOfLines={1} style={styles.screening_date}> { task.date }</Text>
+        <Text numberOfLines={1} style={styles.screening_date}> { longDate }</Text>
         <Text numberOfLines={3} style={styles.screening_text}>{ task.message }</Text>
         <View style={styles.screening_slide_link}>
           <TouchableOpacity key={item.currentIndex} style={styles.screening_button}>
@@ -179,29 +205,14 @@ class OverviewScreen extends React.Component {
         </View>
       </TouchableOpacity>
     );
-  }
+  };
 
   render() {
-    const milestoneGroups = _.sortBy(
-      _.filter(this.props.milestones.groups.data, mg => (mg.always_visible === true) ), mg => mg.position 
-    );
-    milestoneGroups.forEach( (group, index) => {
-      group.uri = milestoneGroupImages[index];
-    });
-
-    const timeNow = new Date();
-    let screeningEvents = _.filter(this.props.milestones.calendar.data, c => {
-      const notify_at = new Date(c.notify_at);
-      return notify_at > timeNow && c.momentary_assessment !== 1;
-    });
-    screeningEvents = _.sortBy(screeningEvents, s => {
-      return new Date(s.notify_at);
-    });
-
     return (
       <ScrollView
         contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}
@@ -229,9 +240,12 @@ class OverviewScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.slider}>
+            {this.state.scSliderLoading &&
+              <ActivityIndicator size="large" color={Colors.tint} />
+            }
             <SideSwipe
               index={this.state.currentIndexScreening}
-              data={screeningEvents}
+              data={this.state.screeningEvents}
               renderItem={item => this.renderScreeningItem(item)}
               itemWidth={scCardWidth + scCardMargin}
               contentOffset={scCardMargin - 2}
@@ -255,15 +269,18 @@ class OverviewScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.slider}>
+            {this.state.mgSliderLoading &&
+              <ActivityIndicator size="large" color={Colors.tint} />
+            }
             <SideSwipe
               index={this.state.currentIndexMilestones}
-              data={milestoneGroups}
+              data={this.state.milestoneGroups}
               renderItem={item => this.renderMilestoneItem(item)}
               itemWidth={mgImageWidth + mgImageMargin}
               threshold={mgImageWidth}
               contentOffset={mgImageMargin - 2}
               onIndexChange={index =>
-                this.setState(() => ({ currentIndexMilestones: index }))
+                this.setState({ currentIndexMilestones: index })
               }
             />
           </View>
@@ -271,7 +288,6 @@ class OverviewScreen extends React.Component {
       </ScrollView>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

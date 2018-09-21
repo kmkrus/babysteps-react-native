@@ -172,7 +172,9 @@ class RootNavigator extends Component {
     if (States.REGISTERING_REGISTRATION.includes(registration_state)) {
       return <RegistrationNavigator />;
     }
-    return <TourNavigator />;
+    if (registration_state === 'none') {
+      return <TourNavigator />;
+    }
   }
 }
 
