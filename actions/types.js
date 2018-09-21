@@ -53,9 +53,17 @@ export const FETCH_MILESTONE_ANSWERS_PENDING = 'fetch_milestone_answers_pending'
 export const FETCH_MILESTONE_ANSWERS_FULFILLED = 'fetch_milestone_answers_fulfilled';
 export const FETCH_MILESTONE_ANSWERS_REJECTED = 'fetch_milestone_answers_rejected';
 
+export const CREATE_MILESTONE_ANSWER_PENDING = 'create_milestone_answer_pending';
+export const CREATE_MILESTONE_ANSWER_FULFILLED = 'create_milestone_answer_fulfilled';
+export const CREATE_MILESTONE_ANSWER_REJECTED = 'create_milestone_answer_rejected';
+
 export const UPDATE_MILESTONE_ANSWERS_PENDING = 'update_milestone_answers_pending';
 export const UPDATE_MILESTONE_ANSWERS_FULFILLED = 'update_milestone_answers_fulfilled';
 export const UPDATE_MILESTONE_ANSWERS_REJECTED = 'update_milestone_answers_rejected';
+
+export const API_CREATE_MILESTONE_ANSWER_PENDING = 'api_create_milestone_answer_pending';
+export const API_CREATE_MILESTONE_ANSWER_FULFILLED = 'api_create_milestone_answer_fulfilled';
+export const API_CREATE_MILESTONE_ANSWER_REJECTED = 'api_create_milestone_answer_rejected';
 
 export const API_UPDATE_MILESTONE_ANSWERS_PENDING = 'api_update_milestone_answers_pending';
 export const API_UPDATE_MILESTONE_ANSWERS_FULFILLED = 'api_update_milestone_answers_fulfilled';

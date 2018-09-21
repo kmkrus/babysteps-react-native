@@ -6,7 +6,7 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 
 import { connect } from 'react-redux';
-import { updateMilestoneAnswers } from '../actions/milestone_actions';
+import { createMilestoneAnswer, apiCreateMilestoneAnswer } from '../actions/milestone_actions';
 import { fetchMomentaryAssessment, hideMomentaryAssessment } from '../actions/notification_actions';
 
 import Colors from '../constants/Colors';
@@ -37,16 +37,14 @@ class MomentaryAssessment extends Component {
 
   _handleOnPress = (selectedIndex) => {
     this.setState({selectedIndex});
-
-    const user = this.props.user;
+    const user = this.props.registration.user.data;
     const respondent = this.props.registration.respondent.data;
     const subject = this.props.registration.subject.data;
     const momentary_assessment = this.props.notifications.momentary_assessment.data;
     const session = this.props.session;
-    const section = find(this.props.milestones.sections.data, ['id', momentary_assessment.section_id])
     const answer = {
       user_id: user.id,
-      user_api_id: session.user_id,
+      user_api_id: user.api_id,
       respondent_id: respondent.id,
       respondent_api_id: respondent.api_id,
       subject_id: subject.id,
@@ -56,8 +54,8 @@ class MomentaryAssessment extends Component {
     };
 
     this.props.hideMomentaryAssessment(momentary_assessment, answer);
-    this.props.updateMilestoneAnswers(section, [answer]);
-    this.props.apiUpdateMilestoneAnswers(session, section.id, [answer]);
+    this.props.createMilestoneAnswer(answer);
+    this.props.apiCreateMilestoneAnswer(session, answer);
   }
 
   render() {
@@ -164,7 +162,8 @@ const mapStateToProps = ({
 });
 const mapDispatchToProps = {
   fetchMomentaryAssessment,
-  updateMilestoneAnswers,
+  createMilestoneAnswer,
+  apiCreateMilestoneAnswer,
   hideMomentaryAssessment,
 };
 

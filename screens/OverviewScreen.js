@@ -26,6 +26,7 @@ import {
   resetApiMilestones,
   apiFetchMilestones,
   fetchMilestoneGroups,
+  fetchMilestoneTasks,
   resetApiMilestoneCalendar,
   fetchMilestoneCalendar,
   apiCreateMilestoneCalendar,
@@ -133,37 +134,40 @@ class OverviewScreen extends React.Component {
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
-    if (CONSTANTS.TEST_NOTIFICATION && !this.state.testNotificationCreated) {
-      this.testNotification({momentary_assessment: CONSTANTS.MOMENTARY_ASSESSMENT});
-    }
   }
 
-  testNotification = (noticeType = null) => {
-    const milestones = this.props.milestones.milestones.data;
-    const tasks = this.props.milestones.tasks.data;
-    let milestone = {};
-    if (noticeType.momentary_assessment) {
-      milestone = find(milestones, ['momentary_assessment', true]);
-    } else {
-      milestone = milestones[10];
+  testNotification(noticeType = null) {
+    const tasks = this.props.milestones.tasks;
+    if (!tasks.fetching && isEmpty(tasks.data)) {
+      this.props.fetchMilestoneTasks();
+      return;
     }
-    if (milestone) {
-      const task = find(tasks, ['milestone_id', milestone.id]);
-
-      if (task) {
-        Notifications.presentLocalNotificationAsync({
-          title: milestone.title,
+    let task = {};
+    let filteredTasks = [];
+    let index = 0;
+    if (noticeType.momentary_assessment) {
+      filteredTasks = filter(tasks.data, {momentary_assessment: 1});
+      index = Math.floor(Math.random() * 4);
+    } else {
+      filteredTasks = filter(tasks.data, {momentary_assessment: 0});
+      index = Math.floor(Math.random() * 75);
+    }
+    task = filteredTasks[index];
+    if (task) {
+      Notifications.presentLocalNotificationAsync({
+        title: task.milestone_title,
+        body: task.name,
+        data: {
+          task_id: task.id,
+          title: task.milestone_title,
           body: task.name,
-          data: {
-            task_id: task.id,
-            title: milestone.title,
-            body: task.name,
-            type: 'info',
-          },
-        });
-        this.setState({testNotificationCreated: true});
-      } // task
-    } // milestone
+          momentary_assessment: task.momentary_assessment,
+          response_scale: task.response_scale,
+          type: 'info',
+        },
+      });
+      this.setState({testNotificationCreated: true});
+    } // task
   };
 
   renderScreeningItem = item => {
@@ -226,6 +230,18 @@ class OverviewScreen extends React.Component {
               }
               style={styles.welcomeImage}
             />
+            <TouchableOpacity 
+              style={[styles.opacityStyle, {marginTop: 30}]}
+              onPress={() => this.testNotification({momentary_assessment: false})}
+            >
+              <Text>Fire regular notification</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.opacityStyle, {marginTop: 20}]}
+              onPress={() => this.testNotification({momentary_assessment: true})}
+            >
+              <Text>Fire momentary assessment notification</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -426,6 +442,7 @@ const mapDispatchToProps = {
   resetApiMilestones,
   apiFetchMilestones,
   fetchMilestoneGroups,
+  fetchMilestoneTasks,
   fetchMilestoneCalendar,
   resetApiMilestoneCalendar,
   apiCreateMilestoneCalendar,

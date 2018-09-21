@@ -5,8 +5,6 @@ export default {
   DROP_REGISTRATION_TABLES: false,
   DROP_ANSWER_TABLE: false,
   DROP_BABYBOOK_TABLES: false,
-  TEST_NOTIFICATION: false,
-  MOMENTARY_ASSESSMENT: false,
 
   // Custom Directories
   BABYBOOK_DIRECTORY: 'babybook',
