@@ -19,7 +19,7 @@ class RegistrationNoStudyScreen extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView enableOnAndroid={true} >
+      <KeyboardAwareScrollView contentContainerStyle={styles.body} enableResetScrollToCoords={false} enableAutomaticScroll={false} enableOnAndroid={true}>
         <View style={ styles.container }>
           <RegistrationNoStudyForm />
         </View>
@@ -33,6 +33,9 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     flex: 1,
     margin: 20,
+  },
+  body: {
+    backgroundColor: '#FFF'
   }
 });
 
