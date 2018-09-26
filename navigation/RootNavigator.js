@@ -147,6 +147,8 @@ class RootNavigator extends Component {
     );
     let finalStatus = existingStatus;
 
+    console.log("Notifications Permissions:",existingStatus)
+
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.
     if (existingStatus !== 'granted') {
