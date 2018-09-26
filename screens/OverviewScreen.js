@@ -138,28 +138,30 @@ class OverviewScreen extends React.Component {
 
   testNotification(noticeType = null) {
     const tasks = this.props.milestones.tasks;
+    const milestones = this.props.milestones.milestones;
+    console.log(milestones);
+    console.log("testNotification",arguments)
     if (!tasks.fetching && isEmpty(tasks.data)) {
       this.props.fetchMilestoneTasks();
       return;
     }
-    let task = {};
-    let filteredTasks = [];
-    let index = 0;
-    if (noticeType.momentary_assessment) {
-      filteredTasks = filter(tasks.data, {momentary_assessment: 1});
-      index = Math.floor(Math.random() * 4);
-    } else {
-      filteredTasks = filter(tasks.data, {momentary_assessment: 0});
-      index = Math.floor(Math.random() * 75);
-    }
-    task = filteredTasks[index];
-    if (task) {
+    let task, milestone = {};
+    let filteredMilestones = filter(milestones.data, {momentary_assessment: noticeType.momentary_assessment});;
+    let index = Math.floor(Math.random() * filteredMilestones.length);
+    milestone = filteredMilestones[index];
+
+    task = find(tasks.data,{milestone_id: milestone.id});
+
+    console.log("Task",task);
+    console.log("Milestone",milestone);
+
+    if (milestone && task) {
       Notifications.presentLocalNotificationAsync({
-        title: task.milestone_title,
+        title: milestone.title,
         body: task.name,
         data: {
           task_id: task.id,
-          title: task.milestone_title,
+          title: milestone.title,
           body: task.name,
           momentary_assessment: task.momentary_assessment,
           response_scale: task.response_scale,
@@ -230,13 +232,13 @@ class OverviewScreen extends React.Component {
               }
               style={styles.welcomeImage}
             />
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.opacityStyle, {marginTop: 30}]}
               onPress={() => this.testNotification({momentary_assessment: false})}
             >
               <Text>Fire regular notification</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.opacityStyle, {marginTop: 20}]}
               onPress={() => this.testNotification({momentary_assessment: true})}
             >
@@ -278,7 +280,7 @@ class OverviewScreen extends React.Component {
               <Text style={styles.slider_title_text}>Developmental Milestones</Text>
             </View>
             <TouchableOpacity
-              style={styles.opacityStyle} 
+              style={styles.opacityStyle}
               onPress={()=>{this.props.navigation.navigate('Milestones')}} >
               <Text style={styles.slider_link_text}>View all</Text>
               <Ionicons name='md-arrow-forward' style={styles.slider_link_icon} />
