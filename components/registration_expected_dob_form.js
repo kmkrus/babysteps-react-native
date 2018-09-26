@@ -23,6 +23,7 @@ import { updateSession } from '../actions/session_actions';
 import DatePicker from '../components/datePickerInput';
 
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 import States from '../actions/states';
 
 const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
@@ -47,12 +48,12 @@ class RegistrationExpectedDOB extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.subject.fetching || 
+    if ( nextProps.registration.subject.fetching ||
       nextProps.registration.respondent.fetching ||
       nextProps.registration.apiSubject.fetching ||
       nextProps.session.fetching ) {
       return false
-    } 
+    }
     return true
   }
 
@@ -102,34 +103,46 @@ class RegistrationExpectedDOB extends Component {
             this.setState({ dobError: 'You must provide the Expected Date of Birth' })
           }
         }}
-       
+
         validationSchema={validationSchema}
         initialValues={{
           respondent_ids: null,
           gender: 'unknown',
-          expected_date_of_birth: null,
+          expected_date_of_birth: false,
           conception_method: 'natural',
           screening_blood: null,
         }}
         render={props => {
           return (
             <Form>
-              <Text h4>Expected date of birth...</Text>
+              <Text style={AppStyles.registrationHeader}>  Step 3: Update Your Baby&apos;s Profile</Text>
               <DatePickerInput
-                label=""
+                label="Your Baby's Due Date"
+                labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.expected_date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
+                showIcon={ false }
+                style={{ width: "100%" }}
+                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
               />
+
               <Text style={styles.errorText}>{this.state.dobError}</Text>
-              <Button
-                title="NEXT"
-                onPress={props.handleSubmit} 
-                color={Colors.green}
-              />
+
+              <View style={AppStyles.registrationButtonContainer}>
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={{fontWeight: 900}}
+                  color={Colors.darkGreen}
+                  disabled={props.isSubmitting}
+                />
+              </View>
             </Form>
           );
         }}

@@ -20,16 +20,18 @@ import {
 } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import MaterialTextInput from './materialTextInput';
+import TextFieldWithLabel from '../components/textFieldWithLabel';
 import DatePicker from './datePickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
-const TextInput = compose(
+const TextField = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
-)(MaterialTextInput);
+)(TextFieldWithLabel);
+
 const DatePickerInput = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
@@ -97,37 +99,64 @@ class RegistrationNoStudyForm extends Component {
         render={ props => {
           return (
             <Form>
-              <TextInput
+              <Text style={AppStyles.registrationHeader}>Update Your Profile</Text>
+
+              <TextField
+                autoCapitalize="words"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
                 label="Your First Name"
                 name="first_name"
-                type="name"
               />
-              <TextInput
+
+              <TextField
+                autoCapitalize="words"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
                 label="Your Last Name"
                 name="last_name"
-                type="name"
               />
+
               <DatePickerInput
                 label="Your Date of Birth"
+                labelStyle={AppStyles.registrationLabel}
                 name="date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
                 handleChange={value => props.setFieldValue('date_of_birth', value)}
+                showIcon={ false }
+                style={{ width: "100%" }}
+                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
               />
+
               <DatePickerInput
                 label="Your Baby's Due Date"
-                name="expected_date_of_birth" 
-                date={props.values.expected_date_of_birth}
+                labelStyle={AppStyles.registrationLabel}
+                name="expected_date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
+                date={props.values.date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
+                showIcon={ false }
+                style={{ width: "100%" }}
+                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
               />
+
               <Text style={styles.errorText}>{this.state.dobError}</Text>
-              <Button
-                title="DONE"
-                onPress={props.handleSubmit}
-                color={Colors.green}
-              />
+  
+              <View style={AppStyles.registrationButtonContainer}>
+                <Button
+                  title="DONE"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={{fontWeight: 900}}
+                  color={Colors.darkGreen}
+                  disabled={props.isSubmitting}
+                />
+              </View>
+
             </Form>
           );
         }}
