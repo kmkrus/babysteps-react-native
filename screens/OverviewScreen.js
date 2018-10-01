@@ -113,9 +113,13 @@ class OverviewScreen extends React.Component {
             !this.state.apiFetchCalendarSubmitted
           ) {
             if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-              this.props.apiCreateMilestoneCalendar({ subject_id: subject.data.api_id });
+              this.props.apiCreateMilestoneCalendar({
+                subject_id: subject.data.api_id,
+              });
             } else {
-              this.props.apiCreateMilestoneCalendar({ base_date: subject.data.expected_date_of_birth });
+              this.props.apiCreateMilestoneCalendar({
+                base_date: subject.data.expected_date_of_birth,
+              });
             }
             this.setState({ apiFetchCalendarSubmitted: true });
           }

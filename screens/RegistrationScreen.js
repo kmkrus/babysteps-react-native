@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -36,7 +36,12 @@ class RegistrationScreen extends Component {
 
   render() {
     return (
-      <KeyboardAwareScrollView contentContainerStyle={styles.body} enableResetScrollToCoords={false} enableAutomaticScroll={false} enableOnAndroid={true}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.body}
+        enableResetScrollToCoords={false}
+        enableAutomaticScroll={false}
+        enableOnAndroid
+      >
         <View style={styles.container}>{this.selectForm()}</View>
       </KeyboardAwareScrollView>
     );

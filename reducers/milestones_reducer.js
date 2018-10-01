@@ -238,7 +238,6 @@ const reducer = (state = initialState, action, formData = []) => {
     case API_CREATE_MILESTONE_CALENDAR_FULFILLED: {
       return {...state,
         api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
-        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
       };
       break;
     }
@@ -258,7 +257,6 @@ const reducer = (state = initialState, action, formData = []) => {
     case API_FETCH_MILESTONE_CALENDAR_FULFILLED: {
       return {...state,
         api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
-        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
       };
       break;
     }

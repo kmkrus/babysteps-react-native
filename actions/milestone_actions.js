@@ -200,6 +200,7 @@ export const apiCreateMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          fetchMilestoneCalendar();
           setNotifications(response.data);
           dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
         })
