@@ -1,12 +1,8 @@
-'use strict';
+import { StyleSheet } from 'react-native';
 
 import Colors from './Colors';
 
-let React = require('react-native');
-
-let { StyleSheet } = React;
-
-module.exports = StyleSheet.create({
+export default StyleSheet.create({
   registrationInput: {
     marginBottom: 40,
     marginTop: 40,

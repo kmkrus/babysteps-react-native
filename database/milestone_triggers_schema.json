@@ -5,6 +5,8 @@
       "subject_id": "INTEGER",
       "milestone_id": "INTEGER",
       "task_id": "INTEGER",
+      "title": "TEXT",
+      "message": "TEXT",
       "momentary_assessment": "INTEGER",
       "response_scale": "TEXT",
       "notify_at": "TEXT",

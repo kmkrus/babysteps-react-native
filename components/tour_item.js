@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Animated, Dimensions, StyleSheet } from 'react-native';
 import tour_images from './tour_images';
 import tour_text from './tour_text';
 
-const { width: screenWidth } = Dimensions.get('window');
-const width = screenWidth;
+const { width } = Dimensions.get('window');
 
 export class TourItem extends Component {
   static WIDTH = width;

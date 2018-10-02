@@ -31,44 +31,42 @@ export default class App extends Component {
   };
 
   _loadResourcesAsync = async () => {
-    Promise.all([
-      Asset.loadAsync([
-        require('./assets/images/robot-dev.png'),
-        require('./assets/images/robot-prod.png'),
-        require('./assets/images/baby_book_cover_background.png'),
-        require('./assets/images/baby_book_inside_background.png'),
-        require('./assets/images/baby_book_picture_frame_bottom_left.png'),
-        require('./assets/images/baby_book_picture_frame_bottom_right.png'),
-        require('./assets/images/baby_book_picture_frame_top_left.png'),
-        require('./assets/images/baby_book_picture_frame_top_right.png'),
-        require('./assets/images/background.png'),
-        require('./assets/images/tour_no_study_confirm.png'),
-        require('./assets/images/tour_slide_four_baby.png'),
-        require('./assets/images/tour_slide_four_brain.png'),
-        require('./assets/images/tour_slide_four_face.png'),
-        require('./assets/images/tour_slide_four_video.png'),
-        require('./assets/images/tour_slide_one.png'),
-        require('./assets/images/tour_slide_three.png'),
-        require('./assets/images/tour_slide_two.png'),
-        require('./assets/images/uofi_logo.png'),
-      ]),
-      Font.loadAsync({
-        // This is the font that we are using for our tab bar
-        ...Ionicons.font,
-        MaterialIcons: require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
-        'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
-        'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
-        'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
-        FontAwesome: require('./assets/fonts/FontAwesome.ttf'),
-      }),
-      // async check of schemas
-      checkRegistrationSchema(),
-      checkMilestonesSchema(),
-      checkMilestoneTriggersSchema(),
-      checkAnswersSchema(),
-      checkBabyBookSchema(),
-      checkCustomDirectories(),
+    await Asset.loadAsync([
+      require('./assets/images/robot-dev.png'),
+      require('./assets/images/robot-prod.png'),
+      require('./assets/images/baby_book_cover_background.png'),
+      require('./assets/images/baby_book_inside_background.png'),
+      require('./assets/images/baby_book_picture_frame_bottom_left.png'),
+      require('./assets/images/baby_book_picture_frame_bottom_right.png'),
+      require('./assets/images/baby_book_picture_frame_top_left.png'),
+      require('./assets/images/baby_book_picture_frame_top_right.png'),
+      require('./assets/images/background.png'),
+      require('./assets/images/tour_no_study_confirm.png'),
+      require('./assets/images/tour_slide_four_baby.png'),
+      require('./assets/images/tour_slide_four_brain.png'),
+      require('./assets/images/tour_slide_four_face.png'),
+      require('./assets/images/tour_slide_four_video.png'),
+      require('./assets/images/tour_slide_one.png'),
+      require('./assets/images/tour_slide_three.png'),
+      require('./assets/images/tour_slide_two.png'),
+      require('./assets/images/uofi_logo.png'),
     ]);
+    await Font.loadAsync({
+      // This is the font that we are using for our tab bar
+      ...Ionicons.font,
+      MaterialIcons: require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
+      'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
+      'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
+      'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
+      FontAwesome: require('./assets/fonts/FontAwesome.ttf'),
+    });
+    // async check of schemas
+    await checkRegistrationSchema();
+    await checkMilestonesSchema();
+    await checkMilestoneTriggersSchema();
+    await checkAnswersSchema();
+    await checkBabyBookSchema();
+    await checkCustomDirectories();
   };
 
   _handleLoadingError = error => {

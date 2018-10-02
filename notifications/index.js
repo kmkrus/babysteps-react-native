@@ -3,7 +3,7 @@ import { Notifications, SQLite } from 'expo';
 const db = SQLite.openDatabase('babysteps.db');
 
 export const setNotifications = async entries => {
-  const result = await Notifications.dismissAllNotificationsAsync();
+  const result = await Notifications.cancelAllScheduledNotificationsAsync();
   const timeNow = new Date();
   entries.forEach(async entry => {
     const milestone = await getMilestone(entry.milestone_id);

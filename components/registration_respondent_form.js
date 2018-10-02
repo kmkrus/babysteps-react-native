@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Platform,
-  Keyboard
-} from 'react-native';
-import { Button } from 'react-native-elements';
-import { Text, CheckBox } from 'react-native-elements';
+import { View, StyleSheet } from 'react-native';
+import { Text, Button, CheckBox } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -16,9 +10,6 @@ import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
-
-
-import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
 import {
@@ -32,9 +23,9 @@ import {
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
-import DatePicker from '../components/datePickerInput';
-import Picker from '../components/pickerInput';
-import TextFieldWithLabel from '../components/textFieldWithLabel';
+import DatePicker from './datePickerInput';
+import Picker from './pickerInput';
+import TextFieldWithLabel from './textFieldWithLabel';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';
@@ -49,51 +40,50 @@ const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)
 
 const Form = withNextInputAutoFocusForm(View);
 
-
 const validationSchema = Yup.object().shape({
   respondent_type: Yup.string()
-    .typeError("Relationship is required")
-    .required("Relationship is required"),
+    .typeError('Relationship is required')
+    .required('Relationship is required'),
   address_1: Yup.string()
-    .required("Address is required"),
+    .required('Address is required'),
   city: Yup.string()
-    .required("City is required"),
+    .required('City is required'),
   state: Yup.string()
-    .required("State is required"),
+    .required('State is required'),
   zip_code: Yup.string()
-    .required("Zip code is required")
+    .required('Zip code is required')
     .matches(/\d{5}/, 'Zip code must be 5 digits'),
   home_phone: Yup.string()
-    .required("Home phone is required"),
+    .required('Home phone is required'),
   date_of_birth: Yup.date()
     .typeError('Date of birth must be a valid date')
-    .required("Date of birth is required"),
+    .required('Date of birth is required'),
   drivers_license_number: Yup.string()
     .required("Driver's license number is required"),
   marital_status: Yup.string()
-    .required("Marital status is required"),
+    .required('Marital status is required'),
   weight: Yup.number('Weight must be a number')
     .typeError('Weight must be a number')
-    .required("Weight is required")
-    .positive("Weight must be greater than 0"),
+    .required('Weight is required')
+    .positive('Weight must be greater than 0'),
   height: Yup.number()
     .typeError('Height must be a number')
-    .required("Height is required")
-    .positive("Height must be greater than 0"),
+    .required('Height is required')
+    .positive('Height must be greater than 0'),
 });
 
 const respondentTypes = [
-  { label: "Mother", value: "mother"},
-  { label: "Father", value: "father"},
-  { label: "Guardian", value: "guardian"},
-  { label: "Other", value: "other"}
+  { label: 'Mother', value: 'mother' },
+  { label: 'Father', value: 'father' },
+  { label: 'Guardian', value: 'guardian' },
+  { label: 'Other', value: 'other' },
 ];
 
 const maritalStatuses = [
-  { label: "Married", value: "married"},
-  { label: "Single", value: "single"},
-  { label: "Living With Father", value: "living_with_father"},
-  { label: "Living With Other", value: "living_with_other"}
+  { label: 'Married', value: 'married' },
+  { label: 'Single', value: 'single' },
+  { label: 'Living With Father', value: 'living_with_father' },
+  { label: 'Living With Other', value: 'living_with_other' },
 ];
 
 class RegistrationRespondentForm extends Component {
@@ -106,6 +96,44 @@ class RegistrationRespondentForm extends Component {
     this.props.resetRespondent();
   }
 
+  componentWillReceiveProps(nextProps) {
+    const respondent = nextProps.registration.respondent;
+    const apiRespondent = nextProps.registration.apiRespondent;
+    const registration = nextProps.registration;
+    if (!respondent.fetching && respondent.fetched) {
+      if (!apiRespondent.fetching) {
+        if (!apiRespondent.fetched) {
+          this.props.apiCreateRespondent(nextProps.session, respondent.data);
+        } else if (apiRespondent.data.id !== undefined) {
+          // Upload signature image if we have respondent id
+          const api_id = apiRespondent.data.id;
+          this.props.updateRespondent({api_id: api_id});
+          if (!this.state.signature_submitted) {
+            this.saveSignature(api_id);
+            this.setState({ signature_submitted: true });
+          }
+          if (this.props.registration.auth !== nextProps.registration.auth) {
+            this.props.updateSession({
+              access_token: registration.auth.accessToken,
+              client: registration.auth.client,
+              uid: registration.auth.uid,
+              user_id: registration.auth.user_id,
+            });
+          }
+          if (respondent.data.pregnant) {
+            this.props.updateSession({
+              registration_state: ActionStates.REGISTERING_EXPECTED_DOB,
+            });
+          } else {
+            this.props.updateSession({
+              registration_state: ActionStates.REGISTERING_SUBJECT,
+            });
+          }
+        } // apiRespondent.fetched
+      } // apiRespondent.fetching
+    } // respondent.fetching
+  }
+
   shouldComponentUpdate(nextProps) {
     const registration = nextProps.registration;
     if (
@@ -116,42 +144,6 @@ class RegistrationRespondentForm extends Component {
       return false;
     }
     return true;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const respondent = nextProps.registration.respondent;
-    const apiRespondent = nextProps.registration.apiRespondent;
-    const registration = nextProps.registration;
-    if (!respondent.fetching && respondent.fetched) {
-      if (!apiRespondent.fetching) {
-        if (!apiRespondent.fetched) {
-          this.props.apiCreateRespondent(nextProps.session, respondent.data);
-        } else {
-          // Upload signatture image if we have respondent id
-          if (apiRespondent.data.id !== undefined) {
-            const api_id = apiRespondent.data.id;
-            this.props.updateRespondent({api_id: api_id});
-            if ( !this.state.signature_submitted ) {
-              this.saveSignature(api_id);
-              this.setState({ signature_submitted: true });
-            }
-            if (this.props.registration.auth != nextProps.registration.auth) {
-              this.props.updateSession({
-                access_token: registration.auth.accessToken,
-                client: registration.auth.client,
-                uid: registration.auth.uid,
-                user_id: registration.auth.user_id
-              });
-            }
-            if (respondent.data.pregnant) {
-              this.props.updateSession({ registration_state: ActionStates.REGISTERING_EXPECTED_DOB });
-            } else {
-              this.props.updateSession({ registration_state: ActionStates.REGISTERING_SUBJECT });
-            }
-          } // apiRespondent.id
-        } // apiRespondent.fetched
-      } // apiRespondent.fetching
-    } // respondent.fetching
   }
 
   saveSignature = async (api_id) => {

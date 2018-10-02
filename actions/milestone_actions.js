@@ -169,7 +169,7 @@ export const fetchMilestoneCalendar = () => {
     return (
       db.transaction(tx => {
         tx.executeSql(
-          'SELECT * FROM milestone_triggers INNER JOIN milestones ON milestone_triggers.milestone_id = milestones.id ORDER BY milestones.days_since_baseline;', [],
+          'SELECT * FROM milestone_triggers ORDER BY milestone_triggers.notify_at;', [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error))}
         );
@@ -225,6 +225,7 @@ export const apiFetchMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          setNotifications(response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
         })
         .catch(error => {
