@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import {
-  View,
-  StyleSheet,
-  Platform,
-  Keyboard
-} from 'react-native';
-import { Button } from 'react-native-elements';
-import { Text, CheckBox } from 'react-native-elements';
+import { View, StyleSheet } from 'react-native';
+import { Text, Button, CheckBox } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -16,9 +10,6 @@ import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
-
-
-import { _ } from 'lodash';
 
 import { connect } from 'react-redux';
 import {
@@ -32,9 +23,9 @@ import {
 } from '../actions/registration_actions';
 import { updateSession } from '../actions/session_actions';
 
-import DatePicker from '../components/datePickerInput';
-import Picker from '../components/pickerInput';
-import TextFieldWithLabel from '../components/textFieldWithLabel';
+import DatePicker from './datePickerInput';
+import Picker from './pickerInput';
+import TextFieldWithLabel from './textFieldWithLabel';
 
 import States from '../constants/States';
 import Colors from '../constants/Colors';

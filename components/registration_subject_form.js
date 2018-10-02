@@ -23,15 +23,13 @@ import {
 import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import TextFieldWithLabel from '../components/textFieldWithLabel';
+import TextFieldWithLabel from './textFieldWithLabel';
 import DatePicker from './datePickerInput';
 import Picker from './pickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import AppStyles from '../constants/Styles';
-
-import ActionStates from '../actions/states';
 
 const TextField = compose(
   withInputAutoFocus,
@@ -101,7 +99,6 @@ class RegistrationSubjectForm extends Component {
           this.setState({ submitted: true });
         } else if (apiSubject.data.id !== undefined) {
           this.props.updateSubject({ api_id: apiSubject.data.id });
-
           if (this.props.registration.auth !== nextProps.registration.auth) {
             this.props.updateSession({
               access_token: auth.accessToken,
@@ -114,8 +111,12 @@ class RegistrationSubjectForm extends Component {
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
           ) {
-            this.props.apiCreateMilestoneCalendar({ subject_id: apiSubject.data.id })
-            this.props.updateSession({ registration_state: States.REGISTERED_AS_IN_STUDY });
+            this.props.apiCreateMilestoneCalendar({
+              subject_id: apiSubject.data.id,
+            });
+            this.props.updateSession({
+              registration_state: States.REGISTERED_AS_IN_STUDY,
+            });
           }
         } // apiSubject fetched
       } // apiSubject fetching

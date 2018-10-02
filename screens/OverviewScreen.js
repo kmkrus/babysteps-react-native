@@ -260,9 +260,9 @@ class OverviewScreen extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.slider}>
-            {this.state.scSliderLoading &&
+            {this.state.scSliderLoading && (
               <ActivityIndicator size="large" color={Colors.tint} />
-            }
+            )}
             <SideSwipe
               index={this.state.currentIndexScreening}
               data={this.state.screeningEvents}

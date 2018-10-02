@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Platform
-} from 'react-native';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
 import Expo from 'expo';
@@ -12,56 +7,61 @@ import ExpoPixi from 'expo-pixi';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
-import { saveSignature, apiUpdateRespondent } from '../actions/registration_actions';
+import {
+  saveSignature,
+  apiUpdateRespondent,
+} from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import CONSTANTS from '../constants';
 
+const { width } = Dimensions.get('window');
+const twoButtonWidth = (width / 2) - 40;
+
 class ConsentSignatureForm extends Component {
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return ( !nextProps.session.registration_state == States.REGISTERING_SIGNATURE)
-  }
+  shouldComponentUpdate(nextProps) {
+    return (!nextProps.session.registration_state === States.REGISTERING_SIGNATURE)
+  };
 
 
   handleSubmit = async () => {
-
     const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
-    const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY
-    const resultDir = await Expo.FileSystem.getInfoAsync( signatureDir )
+    const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
+    const resultDir = await Expo.FileSystem.getInfoAsync(signatureDir);
 
-    if ( resultDir.exists ) {
-      const fileName =  signatureDir + '/signature.png'
+    if (resultDir.exists) {
+      const fileName = signatureDir + '/signature.png';
       await Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
-      await Expo.FileSystem.copyAsync({from: image.uri, to: fileName})
-      const resultFile = await Expo.FileSystem.getInfoAsync( fileName )
-      if ( resultFile.exists ) {
-        this.props.updateSession({registration_state: States.REGISTERING_USER })
+      await Expo.FileSystem.copyAsync({from: image.uri, to: fileName});
+      const resultFile = await Expo.FileSystem.getInfoAsync( fileName );
+      if (resultFile.exists) {
+        this.props.updateSession({
+          registration_state: States.REGISTERING_USER,
+        });
       } else {
-        console.log('Error: file not saved - ', resultFile)
+        console.log('Error: file not saved - ', resultFile);
       }
     } else {
-      console.log('Error: no directory - ', resultDir )
+      console.log('Error: no directory - ', resultDir);
     }
-  }
+  };
 
   handleReset = () => {
     this.sketch.undo();
-  }
+  };
 
   render() {
 
     //GLView won't run with remote debugging running.  Shut off remote debugging or you will get a Can't Find Property 0 error message.
 
     return (
-
       <View style={styles.container}>
-
         <View style={styles.sketchContainer}>
           <ExpoPixi.Sketch
-            ref={ref => this.sketch = ref}
-            style={styles.signature }
+            ref={ref => (this.sketch = ref)}
+            style={styles.signature}
             strokeColor={Colors.black}
             strokeWidth={8}
             transparent={false}
@@ -70,7 +70,10 @@ class ConsentSignatureForm extends Component {
 
         <View style={styles.elevated}>
           <Text style={styles.header}>Your Signature</Text>
-          <Text style={styles.text}>Do not sign this form if today’s date is on or after  EXPIRATION DATE: 01/29/19.</Text>
+          <Text style={styles.text}>
+            Do not sign this form if today’s date is on or after
+            EXPIRATION DATE: 01/29/19.
+          </Text>
         </View>
 
         <View style={styles.buttonContainer}>
@@ -78,21 +81,19 @@ class ConsentSignatureForm extends Component {
             color={Colors.grey}
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ ()=>this.handleReset() }
+            onPress={this.handleReset}
             title='Reset' />
           <Button
             color={Colors.pink}
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={ ()=>this.handleSubmit() }
+            onPress={this.handleSubmit}
             title='Done' />
         </View>
-
       </View>
-
-    ) // return
+    ); // return
   } // render
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     marginTop: 20,
     elevation: 2,
-    padding: 20
+    padding: 20,
   },
   sketchContainer: {
     justifyContent: 'center',
@@ -135,14 +136,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonOneStyle: {
-    width: 150,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 150,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
@@ -150,7 +151,17 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session, registration }) => ({ session, registration });
-const mapDispatchToProps = { updateSession, saveSignature, apiUpdateRespondent };
+const mapStateToProps = ({ session, registration }) => ({
+  session,
+  registration
+});
+const mapDispatchToProps = {
+  updateSession,
+  saveSignature,
+  apiUpdateRespondent,
+};
 
-export default connect( mapStateToProps, mapDispatchToProps )(ConsentSignatureForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ConsentSignatureForm);
