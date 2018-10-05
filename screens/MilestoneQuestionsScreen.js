@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   ScrollView,
   View,
+  Image,
   StyleSheet,
   FlatList,
   Dimensions,
@@ -14,6 +15,7 @@ import {
   FormLabel,
   FormInput,
 } from 'react-native-elements';
+import { Video } from 'expo';
 import DatePicker from 'react-native-datepicker';
 
 import _ from 'lodash';
@@ -36,6 +38,13 @@ import {
   fetchSubject,
 } from '../actions/registration_actions';
 
+import {
+  RenderCheckBox,
+  RenderCheckYesNo,
+  RenderTextShort,
+  RenderFile,
+} from '../components/milestone_question_elements';
+
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
@@ -51,12 +60,25 @@ class MilestoneQuestionsScreen extends Component {
     return { title };
   };
 
-  state = {
-    section: {},
-    questionsFetched: false,
-    answersFetched: false,
-    answers: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      section: {},
+      questionsFetched: false,
+      answersFetched: false,
+      answers: [],
+      attachments: [],
+
+      hasCameraPermission: null,
+      hasCameraRollPermission: null,
+      hasAudioPermission: null,
+
+      permissionMessage: '',
+      cameraModalVisible: false,
+    };
+
+    this.saveResponse = this.saveResponse.bind(this);
+  }
 
   componentWillMount() {
     this.props.resetMilestoneQuestions();
@@ -121,7 +143,8 @@ class MilestoneQuestionsScreen extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (
       nextProps.milestones.questions.fetching ||
-      nextProps.milestones.choices.fetching) {
+      nextProps.milestones.choices.fetching
+    ) {
       return false;
     }
     return true;
@@ -134,7 +157,7 @@ class MilestoneQuestionsScreen extends Component {
       : question.question_number;
     const title = `${question_number}. ${question.title}`;
 
-    return  (
+    return (
       <TouchableOpacity
         onPress={() => {
           this.props.navigation.navigate('MilestoneQuestions', { task: item });
@@ -151,33 +174,96 @@ class MilestoneQuestionsScreen extends Component {
   };
 
   renderChoices = question => {
-    switch(question.rn_input_type) {
+    switch (question.rn_input_type) {
       case 'check_box_multiple': {
-        return this.renderCheckBox(question, 'multiple');
+        return (
+          <RenderCheckBox
+            choices={question.choices}
+            format="multiple"
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'check_box_single': {
-        return this.renderCheckBox(question, 'single');
+        return (
+          <RenderCheckBox
+            choices={question.choices}
+            format="single"
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'check_box_yes_no': {
-        return this.renderCheckYesNo(question);
+        return (
+          <RenderCheckYesNo
+            choices={question.choices}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'date_time_date': {
-        return this.renderDate(question);
+        return (
+          <RenderDate
+            choices={question.choices}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'text_short': {
-        return this.renderTextShort(question);
+        return (
+          <RenderTextShort
+            choices={question.choices}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'text_long': {
-        return this.renderTextLong(question);
+        return (
+          <RenderTextLong
+            choices={question.choices}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
       case 'number': {
-        return this.renderTextNumeric(question);
+        return (
+          <RenderTextNumeric
+            choices={question.choices}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
+      }
+      case 'file_image': {
+        return (
+          <RenderFile
+            choices={question.choices}
+            format={'Photo'}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
+      }
+      case 'file_video': {
+        return (
+          <RenderFile
+            choices={question.choices}
+            format={'Video'}
+            answers={this.state.answers}
+            saveResponse={this.saveResponse}
+          />
+        );
       }
     }
   };
 
   saveResponse = (choice, response, options = {}) => {
-    debugger
     let answer = {};
     let answers = this.state.answers;
     const format = options.format;
@@ -198,9 +284,10 @@ class MilestoneQuestionsScreen extends Component {
     }
 
     const index = _.findIndex(answers, { choice_id: choice.id });
-    const user = this.props.user;
-    const subject = this.props.subject;
-    const respondent = this.props.respondent;
+
+    const user = this.props.registration.user;
+    const subject = this.props.registration.subject;
+    const respondent = this.props.registration.respondent;
 
     if (index === -1) {
       if (format === 'single' && !response.answer_boolean) {
@@ -235,194 +322,6 @@ class MilestoneQuestionsScreen extends Component {
     } // index = -1
 
     this.setState({ answers });
-  };
-
-  renderCheckBox = (question, format = 'multiple') => {
-    const collection = _.map(question.choices, choice => {
-      let checked = false;
-      let text = '';
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-
-      if (answer) {
-        checked = answer.answer_boolean;
-        text = answer.answer_text;
-      }
-      const requireExplanation = (choice.require_explanation === 'if_true' && checked);
-
-      return (
-        <View key={choice.id} style={styles.checkBoxExplanationContainer}>
-          <CheckBox
-            title={choice.body}
-            textStyle={styles.checkBoxChoiceText}
-            containerStyle={styles.checkBoxChoiceContainer}
-            checked={checked}
-            onPress={() =>
-              this.saveResponse(
-                choice,
-                { answer_boolean: !checked },
-                { format },
-              )
-            }
-          />
-          {requireExplanation && (
-            <FormInput 
-              inputStyle={styles.textInput}
-              defaultValue={text}
-              onChangeText={value =>
-                this.saveResponse(
-                  choice,
-                  { answer_text: value },
-                  { preserve: true },
-                )
-              }
-              containerStyle={{ borderBottomColor: Colors.lightGrey }}
-              underlineColorAndroid={Colors.lightGrey}
-            />
-          )}
-        </View>
-      );
-    });
-    return <View>{collection}</View>;
-  };
-
-  renderCheckYesNo = question => {
-    const collection = _.map(question.choices, choice => {
-      let checked = false;
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-      if (answer) {
-        checked = answer.answer_boolean;
-      }
-      return (
-        <CheckBox
-          key={choice.id}
-          title={choice.body}
-          textStyle={styles.checkBoxChoiceText}
-          containerStyle={styles.checkBoxChoiceContainer}
-          checked={checked}
-          onPress={() =>
-            this.saveResponse(
-              choice,
-              { answer_boolean: !checked },
-              { format: "single" },
-            )
-          }
-        />
-      );
-    });
-    return <View style={{ flexDirection: 'row' }}>{collection}</View>;
-  };
-
-  renderTextShort = question => {
-    const collection = _.map(question.choices, choice => {
-      let text = '';
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-      if (answer) {
-        text = answer.answer_text;
-      }
-      return (
-        <View key={choice.id}>
-          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
-          <FormInput
-            inputStyle={styles.textInput}
-            defaultValue={text}
-            onChangeText={value =>
-              this.saveResponse(choice, { answer_text: value })
-            }
-            containerStyle={{ borderBottomColor: Colors.lightGrey }}
-            underlineColorAndroid={Colors.lightGrey}
-          />
-        </View>
-      );
-    });
-    return <View>{collection}</View>;
-  };
-
-  renderTextLong = question => {
-    const collection = _.map(question.choices, choice => {
-      let text = '';
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-      if (answer) {
-        text = answer.answer_text;
-      }
-      return (
-        <View key={choice.id}>
-          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
-          <FormInput
-            inputStyle={styles.textInput}
-            defaultValue={text}
-            multiline = {true}
-            numberOfLines = {4}
-            onChangeText={value =>
-              this.saveResponse(choice, { answer_text: value })
-            }
-            containerStyle={{ borderBottomColor: Colors.lightGrey }}
-            underlineColorAndroid={Colors.lightGrey}
-          />
-        </View>
-      );
-    });
-    return <View>{collection}</View>;
-  };
-
-  renderTextNumeric = question => {
-    const collection = _.map(question.choices, choice => {
-      let text = '';
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-      if (answer) {
-        text = answer.answer_text;
-      }
-      return (
-        <View key={choice.id}>
-          <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
-          <FormInput
-            inputStyle={styles.textInput}
-            defaultValue={text}
-            keyboardType="numeric"
-            onChangeText={value =>
-              this.saveResponse(choice, { answer_text: value })
-            }
-            containerStyle={{ borderBottomColor: Colors.lightGrey }}
-            underlineColorAndroid={Colors.lightGrey}
-          />
-        </View>
-      );
-    });
-    return <View>{collection}</View>;
-  };
-
-  renderDate = question => {
-    const collection = _.map(question.choices, choice => {
-      let text = new Date().toISOString().slice(0, 10);
-      const answer = _.find(this.state.answers, ['choice_id', choice.id]);
-      if (answer) {
-        text = answer.answer_text;
-      }
-      return (
-        <View key={choice.id}>
-          <DatePicker
-            label={choice.body}
-            date={text}
-            style={styles.dateInput}
-            mode="date"
-            androidMode="spinner"
-            format="YYYY-MM-DD"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={{
-              dateInput: {
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.lightGrey,
-              },
-            }}
-            onDateChange={value =>
-              this.saveResponse(choice, { answer_text: value })
-            }
-          />
-        </View>
-      );
-    });
-    return <View>{collection}</View>;
   };
 
   handleConfirm = () => {

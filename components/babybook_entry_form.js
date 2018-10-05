@@ -22,10 +22,9 @@ import MaterialTextInput from './materialTextInput';
 import CameraModal from './camera_modal';
 
 import Colors from '../constants/Colors';
-import States from '../actions/states';
 import VideoFormats from '../constants/VideoFormats';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const previewWidth = width - 40;
 const previewHeight = width * 0.75;
@@ -99,12 +98,10 @@ class BabyBookEntryForm extends Component {
       message << 'Camera Permissions not granted - cannot open camera preview';
     }
     if (source === 'library' && !this.state.hasCameraRollPermission) {
-      message <<
-        'Camera Roll Permissions not granted - cannot open photo album';
+      message << 'Camera Roll Permissions not granted - cannot open photo album';
     }
     if (source === 'video' && !this.state.hasAudioPermission) {
-      message <<
-        'Audio Recording Permissions not granted - cannot open video preview';
+      message << 'Audio Recording Permissions not granted - cannot open video preview';
     }
     this.setState({ permissionMessage: message.join(', ') });
   };
@@ -115,6 +112,13 @@ class BabyBookEntryForm extends Component {
   };
 
   render() {
+    let isVideo = false;
+    let uri = null;
+    if (this.state.image) {
+      uri = this.state.image.uri;
+      const uriParts = uri.split('.');
+      isVideo = VideoFormats.includes(uriParts[uriParts.length - 1]);
+    }
     return (
       <Formik
         onSubmit={values => {
@@ -125,11 +129,6 @@ class BabyBookEntryForm extends Component {
           created_at: new Date().toISOString(),
         }}
         render={props => {
-          const uri = this.state.image ? this.state.image.uri : null;
-          const uriParts = uri ? uri.split('.') : null;
-          const file_type = uriParts ? uriParts[uriParts.length - 1] : null;
-          const isVideo = VideoFormats.includes(file_type);
-
           return (
             <Form>
               <TextInput label="Title" name="title" type="name" />
@@ -148,7 +147,7 @@ class BabyBookEntryForm extends Component {
                 onPressIn={() => this.pickImage('library')}
               />
               <Button
-                title="Take a Photo or Video"
+                title="Take a Photo or Video "
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.darkGreen}
@@ -157,14 +156,14 @@ class BabyBookEntryForm extends Component {
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-                {isVideo ? (
+                {!!isVideo ? (
                   <Video
                     source={uri}
                     rate={1.0}
                     volume={1.0}
                     isMuted={false}
                     resizeMode={Video.RESIZE_MODE_COVER}
-                    shouldPlay
+                    shouldPlay={false}
                     isLooping
                     useNativeControls
                     style={{ width: videoWidth, height: videoHeight }}

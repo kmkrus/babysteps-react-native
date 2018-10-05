@@ -71,7 +71,7 @@ class BabyBookGetImage extends Component {
               volume={1.0}
               isMuted={false}
               resizeMode={Video.RESIZE_MODE_COVER}
-              shouldPlay
+              shouldPlay={false}
               isLooping
               useNativeControls
               style={{ width: videoWidth, height: videoHeight }}

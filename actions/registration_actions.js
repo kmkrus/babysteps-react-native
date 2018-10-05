@@ -347,139 +347,143 @@ export const apiUpdateRespondent = (session, data) => {
 }
 
 export const apiSaveSignature = (session, api_id, uri) => {
-    return function (dispatch) {
+  return function(dispatch) {
 
-    dispatch( Pending(API_SAVE_SIGNATURE_PENDING) );
+    dispatch(Pending(API_SAVE_SIGNATURE_PENDING));
 
     const formData = new FormData();
-    formData.append('respondent[attachments][]', { uri, name: 'signature.png', type: 'image/png'} )
+    formData.append('respondent[attachments][]', {
+      uri,
+      name: 'signature.png',
+      type: 'image/png',
+    });
 
     const headers = {
       'ACCESS-TOKEN': session.access_token,
       'TOKEN-TYPE': 'Bearer',
-      'CLIENT': session.client,
-      'UID': session.uid,
-      'CONTENT-TYPE': 'multipart/form-data'
-    }
-    
+      CLIENT: session.client,
+      UID: session.uid,
+      'CONTENT-TYPE': 'multipart/form-data',
+    };
+
     axios({
       method: 'PUT',
       responseType: 'json',
       baseURL: CONSTANTS.BASE_URL,
       url: '/respondents/' + api_id,
-      headers: headers,
+      headers,
       data: formData,
     })
-    .then( (response) => {
-      dispatch( Response( API_SAVE_SIGNATURE_FULFILLED, response ) )
-    }) 
-    .catch( (error) => { 
-      dispatch( Response( API_SAVE_SIGNATURE_REJECTED, error ) )
-    }) 
-  } // return dispatch
-}
+      .then(response => {
+        dispatch(Response(API_SAVE_SIGNATURE_FULFILLED, response));
+      })
+      .catch(error => {
+        dispatch(Response(API_SAVE_SIGNATURE_REJECTED, error));
+      })
+  }; // return dispatch
+};
 
-export const saveScreenBlood = (screeningBlood) => {
-  return function (dispatch) {
-    dispatch( Pending(UPDATE_SUBJECT_PENDING) );
-    dispatch( Response(UPDATE_SUBJECT_FULFILLED, screeningBlood))
-  }
-}
+export const saveScreenBlood = screeningBlood => {
+  return function(dispatch) {
+    dispatch(Pending(UPDATE_SUBJECT_PENDING));
+    dispatch(Response(UPDATE_SUBJECT_FULFILLED, screeningBlood));
+  };
+};
 
 export const resetSubject = () => {
-  return function (dispatch) {
-    dispatch( Pending(RESET_SUBJECT))
-  }
-}
+  return function(dispatch) {
+    dispatch(Pending(RESET_SUBJECT));
+  };
+};
 
 export const fetchSubject = () => {
-  return function (dispatch) {
-    
-    dispatch( Pending(FETCH_SUBJECT_PENDING) );
+  return function(dispatch) {
+    dispatch(Pending(FETCH_SUBJECT_PENDING));
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           `SELECT * FROM subjects LIMIT 1;`, [],
-          (_, response) => { dispatch( Response(FETCH_SUBJECT_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_SUBJECT_REJECTED, error) ) }
+          (_, response) => dispatch(Response(FETCH_SUBJECT_FULFILLED, response)),
+          (_, error) => dispatch( Response(FETCH_SUBJECT_REJECTED, error)),
         );
       })
     )
   };
-
 };
 
-export const createSubject = (subject) => {
- return function (dispatch) {
+export const createSubject = subject => {
+  return function(dispatch) {
+    
+    dispatch(Pending(CREATE_SUBJECT_PENDING));
 
-    dispatch( Pending(CREATE_SUBJECT_PENDING) );
+    const sql = 'INSERT INTO subjects ( \
+      first_name, \
+      last_name, \
+      middle_name, \
+      gender, \
+      conception_method, \
+      expected_date_of_birth, \
+      date_of_birth, \
+      days_premature \
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+
+    const values = [
+      subject.first_name,
+      subject.last_name,
+      subject.middle_name,
+      subject.gender,
+      subject.conception_method,
+      subject.expected_date_of_birth,
+      subject.date_of_birth,
+      subject.days_premature,
+    ];
 
     return (
       db.transaction(tx => {
         tx.executeSql( 'DELETE FROM subjects', [], 
           (_, rows) => console.log('** Clear subjects table'), 
-          (_, error) => console.log('*** Error in clearing subjects table')
+          (_, error) => console.log('*** Error in clearing subjects table'),
         );
-        const sql = 'INSERT INTO subjects ( \
-          first_name, \
-          last_name, \
-          middle_name, \
-          gender, \
-          conception_method, \
-          expected_date_of_birth, \
-          date_of_birth, \
-          days_premature \
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
-        const values = [
-          subject.first_name,
-          subject.last_name,
-          subject.middle_name,
-          subject.gender,
-          subject.conception_method,
-          subject.expected_date_of_birth,
-          subject.date_of_birth,
-          subject.days_premature
-        ]
         tx.executeSql( sql, values,
-          (_, response) => { 
-            dispatch( Response(CREATE_SUBJECT_FULFILLED, response, subject) );
+          (_, response) => {
+            dispatch(Response(CREATE_SUBJECT_FULFILLED, response, subject))
           },
-          (_, error) => { 
-            dispatch( Response(CREATE_SUBJECT_REJECTED, error) ) 
+          (_, error) => {
+            dispatch(Response(CREATE_SUBJECT_REJECTED, error))
           }
-        );
+        )
       })
-    )
+    );
   };
-}
+};
 
 export const apiCreateSubject = (session, data) => {
-  delete data.id 
-  delete data.api_id 
+  delete data.id;
+  delete data.api_id;
 
-  return function (dispatch) {
-    
+  return function(dispatch) {
+
     dispatch({
       type: API_CREATE_SUBJECT_PENDING,
       payload: {
         data: {subject: data},
-        session: session
+        session,
       },
       meta: {
         offline: {
-          effect: { 
+          effect: {
             method: 'POST',
             url: '/subjects',
             fulfilled: API_CREATE_SUBJECT_FULFILLED,
             rejected: API_CREATE_SUBJECT_REJECTED,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
 
-  }
-}
+  };
+};
 
 export const updateSubject = (data) => {
   return function (dispatch) {

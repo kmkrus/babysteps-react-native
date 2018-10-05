@@ -256,10 +256,15 @@ class RegistrationRespondentForm extends Component {
                 name="date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}
-                handleChange={value => props.setFieldValue('date_of_birth', value)}
+                handleChange={value =>
+                  props.setFieldValue('date_of_birth', value)
+                }
                 showIcon={ false }
                 style={{ width: "100%" }}
-                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
 
               <TextField
