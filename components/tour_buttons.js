@@ -13,51 +13,53 @@ const oneButtonWidth = width - 60;
 const twoButtonWidth = (width / 2) - 30;
 
 class TourButtons extends Component {
-  render() {
-    const item_four = (this.props.currentIndex === 3);
+
+  _renderButtons = () => {
+    if (this.props.currentIndex < 3) {
+      return (
+        <View style={styles.buttonContainer}>
+          <Button
+            color={Colors.grey}
+            buttonStyle={styles.buttonThreeStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={this.props.updateIndex}
+            title="Let's Get Started"
+          />
+        </View>
+      );
+    }
     return (
-      <View style={styles.container}>
-        {!item_four && (
-          <View style={styles.buttonContainer}>
-            <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonThreeStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={this.props.updateIndex}
-              title="Let's Get Started"
-            />
-          </View>
-        )}
-        {item_four && (
-          <View style={styles.buttonContainer}>
-            <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonOneStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={ () => {
-                this.props.updateSession({
-                  registration_state: States.REGISTERING_AS_NO_STUDY,
-                });
-              }}
-              title='No Thanks'
-            />
-            <Button
-              color={Colors.pink}
-              buttonStyle={styles.buttonTwoStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={ () => {
-                this.props.updateSession({
-                  registration_state: States.REGISTERING_ELIGIBILITY,
-                });
-              }}
-              title='Join Study'
-            />
-          </View>
-        )};
+      <View style={styles.buttonContainer}>
+        <Button
+          color={Colors.grey}
+          buttonStyle={styles.buttonOneStyle}
+          titleStyle={styles.buttonTitleStyle}
+          onPress={() => {
+            this.props.updateSession({
+              registration_state: States.REGISTERING_AS_NO_STUDY,
+            });
+          }}
+          title="No Thanks"
+        />
+        <Button
+          color={Colors.pink}
+          buttonStyle={styles.buttonTwoStyle}
+          titleStyle={styles.buttonTitleStyle}
+          onPress={() => {
+            this.props.updateSession({
+              registration_state: States.REGISTERING_ELIGIBILITY,
+            });
+          }}
+          title="Join Study"
+        />
       </View>
-    ); // return
+    );
+  };
+
+  render() {
+    return <View style={styles.container}>{this._renderButtons()}</View>;
   } // render
-};
+}
 
 const styles = StyleSheet.create({
   container: {

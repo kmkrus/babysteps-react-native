@@ -336,16 +336,20 @@ export const resetMilestoneAnswers = () => {
   };
 };
 
-export const fetchMilestoneAnswers = (params={}) => {
+export const fetchMilestoneAnswers = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_ANSWERS_PENDING));
 
-    var sql = 'SELECT * FROM answers WHERE answers.section_id = ' + params['section_id'];
-    sql = sql + ' ORDER BY question_id, choice_id;';
+    let sql = 'SELECT * FROM answers';
+    sql += ' INNER JOIN attachments ON attachments.answer_id = answers.id';
+    if (params.section_id) {
+      sql += ` WHERE answers.section_id = ${params.section_id}`;
+    }
+    sql += ' ORDER BY question_id, choice_id;';
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_REJECTED, error))}

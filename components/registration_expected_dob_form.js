@@ -25,6 +25,7 @@ import DatePicker from './datePickerInput';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
 const DatePickerInput = compose(
   withInputAutoFocus,
@@ -129,22 +130,34 @@ class RegistrationExpectedDOB extends Component {
         render={props => {
           return (
             <Form>
-              <Text h4>Due Date</Text>
+              <Text style={AppStyles.registrationHeader}>Step 3: Due Date</Text>
               <DatePickerInput
-                label=""
+                label="Due Date"
+                labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
                 date={props.values.expected_date_of_birth}
-                handleChange={ value => {
+                handleChange={value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
+                showIcon={ false }
+                style={{ width: "100%", marginLeft: 20 }}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
               <Text style={styles.errorText}>{this.state.dobError}</Text>
-              <Button
-                title="NEXT"
-                onPress={props.handleSubmit}
-                color={Colors.green}
-              />
+              <View style={AppStyles.registrationButtonContainer}>
+                <Button
+                  title="NEXT"
+                  onPress={props.handleSubmit}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={{fontWeight: 900}}
+                  color={Colors.darkGreen}
+                  disabled={props.isSubmitting}
+                />
+              </View>
             </Form>
           );
         }}

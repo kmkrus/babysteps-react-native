@@ -11,7 +11,7 @@ export function tableNames() {
         (_, error) => reject('Error retrieving table names')
       );
     });
-  });    
+  });
 };
 
 export function createTable(name, schema) {

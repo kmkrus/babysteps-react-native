@@ -38,6 +38,8 @@
     }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/forbid-prop-types": ["error", { "forbid": ["any"]}],
+    "react/prefer-stateless-function": [2, { "ignorePureComponents": true }],
+    "react/no-multi-comp": 0,
     "no-use-before-define": ["error", { "variables": false }]
   }
 }
