@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Image,
@@ -236,7 +236,7 @@ export class RenderDate extends React.PureComponent {
   } // render
 }
 
-export class RenderFile extends React.PureComponent {
+export class RenderFile extends Component {
   state = {
     images: [],
     hasCameraPermission: null,
@@ -247,10 +247,6 @@ export class RenderFile extends React.PureComponent {
     cameraModalVisible: false,
   };
 
-  async componentDidMount() {
-    await this.handleCameraRollPermission();
-  }
-
   handleCameraRollPermission = async () => {
     const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({
@@ -258,26 +254,31 @@ export class RenderFile extends React.PureComponent {
     });
   };
 
-  pickImage = async (source = null) => {
+  pickImage = async (choice, source = null) => {
     let image = {};
     if (source === 'library') {
+      await this.handleCameraRollPermission();
       if (this.state.hasCameraRollPermission) {
+        const mediaType = this.props.format === 'Photo' ? 'Images' : 'Videos';
         image = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: 'All',
+          mediaTypes: mediaType,
         });
-        console.log('************', image);
+        this.saveImage(choice, image);
       } else {
-        await this.handleCameraRollPermission();
         this.renderNoPermissions(source);
       }
     } else {
       this.setState({ cameraModalVisible: true });
     }
+  };
 
+  saveImage = (choice, image) => {
     if (image && !image.cancelled) {
-      const images = {...this.state.images};
-
-      this.setState({ image });
+      const images = _.extend(this.state.images);
+      _.remove(images, ['choice_id', choice.id]);
+      image.choice_id = choice.id;
+      images.push(image);
+      this.setState({ images });
     }
   };
 
@@ -299,30 +300,34 @@ export class RenderFile extends React.PureComponent {
   };
 
   closeModal = image => {
-    if (image) this.setState({ image });
+    this.saveImage(choice, image);
     this.setState({ cameraModalVisible: false });
   };
 
   render() {
+    const images =this.state.images;
     const format = this.props.format;
-    const collection = _.map(this.props.choices, choice => {
 
+    const collection = _.map(this.props.choices, choice => {
       let hasUri = false;
       let isVideo = false;
       let uri = null;
+      let uriParts = [];
       let attachment = {};
+
       const answer = _.find(this.props.answers, ['choice_id', choice.id]);
       if (answer) {
         attachment = answer.attachments[0];
       }
 
-      const image = _.find(this.state.images, ['choice_id', choice.id]);
+      const image = _.find(images, ['choice_id', choice.id]);
 
       if (image) {
         if (image.uri) {
+          uri = image.uri;
           hasUri = true;
-        };
-        const uriParts = image.uri.split('.');
+          uriParts = uri.split('.');
+        }
         isVideo = VideoFormats.includes(uriParts[uriParts.length - 1]);
       }
 
@@ -333,14 +338,14 @@ export class RenderFile extends React.PureComponent {
             buttonStyle={styles.libraryButton}
             titleStyle={styles.buttonTitleStyle}
             color={Colors.darkGreen}
-            onPressIn={() => this.pickImage('library')}
+            onPressIn={() => this.pickImage(choice, 'library')}
           />
           <Button
             title={`Take a ${format}`}
             buttonStyle={styles.cameraButton}
             titleStyle={styles.buttonTitleStyle}
             color={Colors.darkGreen}
-            onPressIn={() => this.pickImage('new')}
+            onPressIn={() => this.pickImage(choice, 'new')}
           />
           <Text>{this.state.permissionMessage}</Text>
 
@@ -348,7 +353,7 @@ export class RenderFile extends React.PureComponent {
             {!!isVideo &&
               !!hasUri && (
                 <Video
-                  source={image.uri}
+                  source={uri}
                   rate={1.0}
                   volume={1.0}
                   isMuted={false}
@@ -359,7 +364,6 @@ export class RenderFile extends React.PureComponent {
                   style={{ width: videoWidth, height: videoHeight }}
                 />
             )}
-
             {!isVideo &&
               !!hasUri && (
               <Image source={{ uri }} style={styles.image} />
@@ -480,5 +484,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    flex: 1,
+    width: previewWidth,
+    height: previewHeight,
   },
 });
