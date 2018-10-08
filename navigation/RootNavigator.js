@@ -142,11 +142,28 @@ class RootNavigator extends Component {
 
   async registerForNotifications() {
     // android permissions are given on install
-    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    let finalStatus = existingStatus;
+
+    console.log("Notifications Permissions:",existingStatus)
+
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
       console.log('Notifications Permission Denied');
       return null;
     }
+
     // Watch for incoming notifications
     Notifications.addListener(this._handleNotification);
   }

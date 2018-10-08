@@ -24,6 +24,7 @@ import { updateSession } from '../actions/session_actions';
 import DatePicker from './datePickerInput';
 
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 import States from '../actions/states';
 import AppStyles from '../constants/Styles';
 
@@ -46,8 +47,8 @@ class RegistrationExpectedDOB extends Component {
   };
 
   componentWillMount() {
-    this.props.resetSubject();
-    this.props.fetchRespondent();
+    this.props.resetSubject()
+    this.props.fetchRespondent()
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -123,31 +124,34 @@ class RegistrationExpectedDOB extends Component {
         initialValues={{
           respondent_ids: null,
           gender: 'unknown',
-          expected_date_of_birth: null,
+          expected_date_of_birth: false,
           conception_method: 'natural',
           screening_blood: null,
         }}
         render={props => {
           return (
             <Form>
+              <Text style={AppStyles.registrationHeader}>  Step 3: Update Your Baby&apos;s Profile</Text>
+              <DatePickerInput
+                label="Your Baby's Due Date"
               <Text style={AppStyles.registrationHeader}>Step 3: Due Date</Text>
               <DatePickerInput
                 label="Due Date"
                 labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
+                containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.expected_date_of_birth}
                 handleChange={value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
                 showIcon={ false }
-                style={{ width: "100%", marginLeft: 20 }}
-                customStyles={{
-                  dateInput: AppStyles.registrationDateInput,
-                  dateText: AppStyles.registrationDateTextInput,
-                }}
+                style={{ width: "100%" }}
+                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
               />
+
               <Text style={styles.errorText}>{this.state.dobError}</Text>
+
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="NEXT"
