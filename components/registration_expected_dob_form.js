@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Button,
-  StyleSheet,
-  Platform
-} from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
 import { Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
@@ -16,45 +11,44 @@ import withInputAutoFocus, {
 } from 'react-native-formik';
 
 import { connect } from 'react-redux';
-import { resetSubject, createSubject, updateSubject, apiCreateSubject, fetchRespondent } from '../actions/registration_actions';
-import { apiFetchMilestoneCalendar } from '../actions/milestone_actions';
+import {
+  resetSubject,
+  createSubject,
+  updateSubject,
+  apiCreateSubject,
+  fetchRespondent,
+} from '../actions/registration_actions';
+import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
-import DatePicker from '../components/datePickerInput';
+import DatePicker from './datePickerInput';
 
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
 import States from '../actions/states';
+import AppStyles from '../constants/Styles';
 
-const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
+const DatePickerInput = compose(
+  withInputAutoFocus,
+  withNextInputAutoFocusInput,
+)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
   //expected_date_of_birth: Yup.string()
   //  .required('Expected Date of Birth is Required'),
-})
+});
 
 class RegistrationExpectedDOB extends Component {
-
   state = {
     dobError: null,
     submitted: false,
-  }
+  };
 
   componentWillMount() {
     this.props.resetSubject()
     this.props.fetchRespondent()
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if ( nextProps.registration.subject.fetching ||
-      nextProps.registration.respondent.fetching ||
-      nextProps.registration.apiSubject.fetching ||
-      nextProps.session.fetching ) {
-      return false
-    }
-    return true
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -81,29 +75,51 @@ class RegistrationExpectedDOB extends Component {
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
           ) {
-            this.props.apiCreateMilestoneCalendar({subject_id: apiSubject.data.id});
-            this.props.updateSession( {registration_state: States.REGISTERED_AS_IN_STUDY} );
+            this.props.apiCreateMilestoneCalendar({
+              subject_id: apiSubject.data.id,
+            });
+            this.props.updateSession({
+              registration_state: States.REGISTERED_AS_IN_STUDY,
+            });
           }
         } // apiSubject fetched
       } // apiSubject fetching
     } // subject fetching
   }
 
+  shouldComponentUpdate(nextProps) {
+    const subject = nextProps.registration.subject;
+    const apiSubject = nextProps.registration.apiSubject;
+    const respondent = nextProps.registration.respondent;
+    const session = nextProps.session;
+    if (
+      subject.fetching ||
+      respondent.fetching ||
+      apiSubject.fetching ||
+      session.fetching
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   render() {
+    const registration = this.props.registration;
     return (
       <Formik
         onSubmit={values => {
           if (values.expected_date_of_birth) {
             const subject = {...values,
-              respondent_ids: [this.props.registration.respondent.data.api_id],
-              screening_blood: this.props.registration.subject.data.screening_blood,
-            }
+              respondent_ids: [registration.respondent.data.api_id],
+              screening_blood: registration.subject.data.screening_blood,
+            };
             this.props.createSubject(subject);
           } else {
-            this.setState({ dobError: 'You must provide the Expected Date of Birth' })
+            this.setState({
+              dobError: 'You must provide the Expected Date of Birth',
+            });
           }
         }}
-
         validationSchema={validationSchema}
         initialValues={{
           respondent_ids: null,
@@ -118,11 +134,14 @@ class RegistrationExpectedDOB extends Component {
               <Text style={AppStyles.registrationHeader}>  Step 3: Update Your Baby&apos;s Profile</Text>
               <DatePickerInput
                 label="Your Baby's Due Date"
+              <Text style={AppStyles.registrationHeader}>Step 3: Due Date</Text>
+              <DatePickerInput
+                label="Due Date"
                 labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.expected_date_of_birth}
-                handleChange={ value => {
+                handleChange={value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
@@ -171,7 +190,7 @@ const mapDispatchToProps = {
   updateSubject,
   apiCreateSubject,
   fetchRespondent,
-  apiFetchMilestoneCalendar,
+  apiCreateMilestoneCalendar,
   updateSession,
 };
 

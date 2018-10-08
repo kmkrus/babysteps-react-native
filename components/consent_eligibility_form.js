@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Platform
-} from 'react-native';
-import {
-  Button,
-  ButtonGroup
-} from 'react-native-elements';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Button, ButtonGroup } from 'react-native-elements';
 
-import { _ } from 'lodash';
+import sum from 'lodash/sum';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
@@ -18,42 +10,48 @@ import { updateSession } from '../actions/session_actions';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-class ConsentEligibilityForm extends Component {
+const { width } = Dimensions.get('window');
+const oneButtonWidth = width - 60;
 
+class ConsentEligibilityForm extends Component {
   state = {
     selectedIndex: [],
-  }
+  };
 
   handleOnPress = (buttonGroup, index) => {
     var selectedState = this.state.selectedIndex
     selectedState[buttonGroup] = index
     this.setState( { selectedIndex: selectedState } )
-  }
+  };
 
   handleSubmit = () => {
     if ( this.state.selectedIndex.length < 3 ) {
-      return  // not complete
+      return; // not complete
     }
-    if ( _.sum(this.state.selectedIndex) > 0 ) {
+    if ( sum(this.state.selectedIndex) > 0 ) {
       // any no
-      this.props.updateSession({registration_state: States.REGISTERING_NOT_ELIGIBLE })
+      this.props.updateSession({
+        registration_state: States.REGISTERING_NOT_ELIGIBLE,
+      });
     } else {
       // all yes
-      this.props.updateSession({registration_state: States.REGISTERING_AS_ELIGIBLE })
+      this.props.updateSession({
+        registration_state: States.REGISTERING_AS_ELIGIBLE,
+      });
     }
-  }
+  };
 
   render() {
-
-    const buttons = ['Yes', 'No']
-
+    const buttons = ['Yes', 'No'];
     return (
       <View style={styles.container}>
-
         <View style={styles.elevated}>
-          <Text style={styles.text}>Do you have an infant younger than 24 months, are you currently pregnant or are you planning to become pregnant within the next six months?</Text>
+          <Text style={styles.text}>
+            Do you have an infant younger than 24 months, are you currently 
+            pregnant or are you planning to become pregnant within the next six months?
+          </Text>
           <ButtonGroup
-            onPress={ (value)=>this.handleOnPress(0, value) }
+            onPress={value => this.handleOnPress(0, value)}
             selectedIndex={this.state.selectedIndex[0]}
             buttons={buttons}
             containerStyle={styles.buttonGroup}
@@ -63,9 +61,11 @@ class ConsentEligibilityForm extends Component {
         </View>
 
         <View style={styles.elevated}>
-          <Text style={styles.text}>Can you read and understand English fluently?</Text>
+          <Text style={styles.text}>
+            Can you read and understand English fluently?
+          </Text>
           <ButtonGroup
-            onPress={ (value)=>this.handleOnPress(1, value) }
+            onPress={value => this.handleOnPress(1, value)}
             selectedIndex={this.state.selectedIndex[1]}
             buttons={buttons}
             containerStyle={styles.buttonGroup}
@@ -76,9 +76,8 @@ class ConsentEligibilityForm extends Component {
 
         <View style={styles.elevated}>
           <Text style={styles.text}>Do you live in the United States?</Text>
-        
           <ButtonGroup
-            onPress={ (value)=>this.handleOnPress(2, value) }
+            onPress={value => this.handleOnPress(2, value) }
             selectedIndex={this.state.selectedIndex[2]}
             buttons={buttons}
             containerStyle={styles.buttonGroup}
@@ -88,9 +87,9 @@ class ConsentEligibilityForm extends Component {
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button 
+          <Button
             title="NEXT"
-            onPress={ this.handleSubmit } 
+            onPress={this.handleSubmit}
             color={Colors.pink}
             buttonStyle={styles.buttonNext}
             titleStyle={styles.buttonNextTitle}
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonNext: {
-    width: 300,
+    width: oneButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
@@ -145,10 +144,13 @@ const styles = StyleSheet.create({
   },
   buttonNextTitle: {
     fontWeight: '900',
-  }
+  },
 });
 
 const mapStateToProps = ({ session }) => ({ session });
 const mapDispatchToProps = { updateSession };
 
-export default connect( mapStateToProps, mapDispatchToProps )(ConsentEligibilityForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ConsentEligibilityForm);

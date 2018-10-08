@@ -1,9 +1,8 @@
-import axios from "axios";
-import { 
-  tableNames, 
-  createTable, 
+import {
+  tableNames,
+  createTable,
   dropTable,
-  createSessionRecord
+  createSessionRecord,
 } from './common';
 
 import CONSTANTS from '../constants';
@@ -17,36 +16,31 @@ const checkRegistrationSchema = () => {
 
   // drop tables for testing
   if (CONSTANTS.DROP_REGISTRATION_TABLES) {
-    tables.forEach( function(name) {
+    tables.forEach(name => {
       dropTable(name);
     });
   }
 
-  return new Promise( (resolve, reject) => {
-
-    tableNames()
-    .then( (result) => {
-      return new Promise((resolve, reject) => {
-      
+  return new Promise(resolve => {
+    tableNames().then(result => {
+      return new Promise(resolve => {
         // list of tables in SQLite
-        const existing_tables = eval(result).map( a => a.name );
-        
+        const existing_tables = eval(result).map(a => a.name);
         // create for missing tables
-        tables.forEach( function(name) {
+        tables.forEach(name => {
           if (!existing_tables.includes(name)) {
             createTable(name, schema[name]);
-            if (name == 'sessions') {
+            if (name === 'sessions') {
               // need a session record to initialize app
               createSessionRecord();
             }
           }
-        })
+        });
         resolve(true);
-      }) // return Promise
-    })
+      }); // return Promise
+    });
     resolve(true);
-  }) // return Promise ;
-
+  }); // return Promise
 };
 
 export default checkRegistrationSchema;

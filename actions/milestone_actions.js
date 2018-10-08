@@ -169,7 +169,7 @@ export const fetchMilestoneCalendar = () => {
     return (
       db.transaction(tx => {
         tx.executeSql(
-          'SELECT * FROM milestone_triggers INNER JOIN milestones ON milestone_triggers.milestone_id = milestones.id ORDER BY milestones.days_since_baseline;', [],
+          'SELECT * FROM milestone_triggers ORDER BY milestone_triggers.notify_at;', [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error))}
         );
@@ -225,6 +225,7 @@ export const apiFetchMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
+          setNotifications(response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
         })
         .catch(error => {
@@ -335,16 +336,20 @@ export const resetMilestoneAnswers = () => {
   };
 };
 
-export const fetchMilestoneAnswers = (params={}) => {
+export const fetchMilestoneAnswers = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_ANSWERS_PENDING));
 
-    var sql = 'SELECT * FROM answers WHERE answers.section_id = ' + params['section_id'];
-    sql = sql + ' ORDER BY question_id, choice_id;';
+    let sql = 'SELECT * FROM answers';
+    sql += ' INNER JOIN attachments ON attachments.answer_id = answers.id';
+    if (params.section_id) {
+      sql += ` WHERE answers.section_id = ${params.section_id}`;
+    }
+    sql += ' ORDER BY question_id, choice_id;';
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_ANSWERS_REJECTED, error))}

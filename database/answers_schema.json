@@ -32,5 +32,20 @@
       "answer_question_id ON answers (question_id);",
       "answer_choice_id ON answers (choice_id);",
     ],
-  }
+  },
+  "attachments": {
+    "columns": {
+      "id": "INTEGER PRIMARY KEY",
+      "api_id": "INTEGER",
+      "answer_id": "INTEGER",
+      "filename": "TEXT",
+      "content_type": "TEXT",
+      "uri": "TEXT",
+      "url": "TEXT",
+    },
+    "indexes": [
+      "attachments_api_id ON attachments (api_id);",
+      "attachments_answer_id ON attachments (answer_id);",
+    ],
+  },
 }

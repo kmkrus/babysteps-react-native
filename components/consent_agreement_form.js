@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  ScrollView,
-  StyleSheet,
-  Platform
-} from 'react-native';
+import { Text, View, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Button, CheckBox } from 'react-native-elements';
 
 import { connect } from 'react-redux';
@@ -15,28 +9,34 @@ import { saveScreenBlood } from '../actions/registration_actions';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
-class ConsentAgreementForm extends Component {
+const { width } = Dimensions.get('window');
+const twoButtonWidth = (width / 2) - 40;
 
+class ConsentAgreementForm extends Component {
   state = {
     screeningBlood: null,
     errorMessage: '',
-  }
+  };
 
   handleSubmit = () => {
-    if ( this.state.screeningBlood == null ) {
-      this.setState({errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot."})
+    if (this.state.screeningBlood === null) {
+      this.setState({
+        errorMessage: "You must select whether or not you will allow collection of your baby's bloodspot.",
+      });
     } else {
-      this.props.saveScreenBlood({screening_blood: this.state.screeningBlood})
-      this.props.updateSession( {registration_state: States.REGISTERING_SIGNATURE} )
+      this.props.saveScreenBlood({
+        screening_blood: this.state.screeningBlood,
+      });
+      this.props.updateSession({
+        registration_state: States.REGISTERING_SIGNATURE,
+      });
       //this.props.updateSession({registration_state: States.REGISTERING_USER })
     }
-  }
+  };
 
   render() {
-
     return (
-
-      <ScrollView contentContainerStyle={styles.scrollView} >
+      <ScrollView contentContainerStyle={styles.scrollView}>
 
         <View style={styles.elevated}>
 
@@ -142,7 +142,6 @@ class ConsentAgreementForm extends Component {
         </View>
 
         <View style={styles.elevated}>
-
           <Text style={styles.header}>Please initial below if you agree to the use of your baby’s newborn screening blood spots for genetic testing:</Text>
 
           <CheckBox
@@ -163,9 +162,7 @@ class ConsentAgreementForm extends Component {
 
         </View>
 
-
         <Text style={styles.textError}>{this.state.errorMessage}</Text>
-
 
           <View style={styles.buttonContainer}>
             <Button
@@ -184,11 +181,10 @@ class ConsentAgreementForm extends Component {
               title='Agree' />
           </View>
 
-
       </ScrollView>
-    )
+    );
   }
-};
+}
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -235,20 +231,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   buttonContainer: {
-    justifyContent: 'center',
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
     marginTop: 10,
   },
   buttonOneStyle: {
-    width: 150,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 150,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
@@ -259,4 +256,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = ({ session }) => ({ session });
 const mapDispatchToProps = { updateSession, saveScreenBlood };
 
-export default connect( mapStateToProps, mapDispatchToProps )(ConsentAgreementForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ConsentAgreementForm);

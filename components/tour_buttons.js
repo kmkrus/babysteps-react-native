@@ -1,24 +1,21 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet
-} from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
-import { connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 
+const { width } = Dimensions.get('window');
+const oneButtonWidth = width - 60;
+const twoButtonWidth = (width / 2) - 30;
+
 class TourButtons extends Component {
 
-  render() {
+  _renderButtons = () => {
     if (this.props.currentIndex < 3) {
-
-      var updateIndex = this.props.updateIndex;
-
       return (
         <View style={styles.buttonContainer}>
           <Button
@@ -26,74 +23,88 @@ class TourButtons extends Component {
             buttonStyle={styles.buttonThreeStyle}
             titleStyle={styles.buttonTitleStyle}
             onPress={this.props.updateIndex}
-            title="Let's Get Started" />
+            title="Let's Get Started"
+          />
         </View>
-      )
+      );
+    }
+    return (
+      <View style={styles.buttonContainer}>
+        <Button
+          color={Colors.grey}
+          buttonStyle={styles.buttonOneStyle}
+          titleStyle={styles.buttonTitleStyle}
+          onPress={() => {
+            this.props.updateSession({
+              registration_state: States.REGISTERING_AS_NO_STUDY,
+            });
+          }}
+          title="No Thanks"
+        />
+        <Button
+          color={Colors.pink}
+          buttonStyle={styles.buttonTwoStyle}
+          titleStyle={styles.buttonTitleStyle}
+          onPress={() => {
+            this.props.updateSession({
+              registration_state: States.REGISTERING_ELIGIBILITY,
+            });
+          }}
+          title="Join Study"
+        />
+      </View>
+    );
+  };
 
-   } else {
-
-      return(
-        <View style={styles.buttonContainer}>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonOneStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => {
-              this.props.updateSession( {registration_state: States.REGISTERING_AS_NO_STUDY} )
-            }}
-            title='No Thanks' />
-          <Button
-            color={Colors.pink}
-            buttonStyle={styles.buttonTwoStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={ () => {
-              this.props.updateSession( {registration_state: States.REGISTERING_ELIGIBILITY} )
-            }}
-            title='Join Study' />
-        </View>
-      )
-
-    } // if props.currentIndex
+  render() {
+    return <View style={styles.container}>{this._renderButtons()}</View>;
   } // render
-
-};
+}
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    justifyContent: 'center',
-    flex: 1,
-    flexDirection: 'row',
+  container: {
     position: 'absolute',
     bottom: 20,
+    width: '100%',
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
     width: '100%',
   },
   buttonTitleStyle: {
     fontWeight: '900',
   },
   buttonOneStyle: {
-    width: 150,
+    flex: 1,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 150,
+    flex: 1,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonThreeStyle: {
-    width: 300,
+    width: oneButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
     borderRadius: 5,
   },
-})
+});
 
 const mapStateToProps = ({ session }) => ({ session });
 const mapDispatchToProps = { updateSession };
 
-export default connect( mapStateToProps, mapDispatchToProps )(TourButtons);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TourButtons);
