@@ -26,7 +26,6 @@ import DatePicker from './datePickerInput';
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
 import States from '../actions/states';
-import AppStyles from '../constants/Styles';
 
 const DatePickerInput = compose(
   withInputAutoFocus,
@@ -134,9 +133,6 @@ class RegistrationExpectedDOB extends Component {
               <Text style={AppStyles.registrationHeader}>  Step 3: Update Your Baby&apos;s Profile</Text>
               <DatePickerInput
                 label="Your Baby's Due Date"
-              <Text style={AppStyles.registrationHeader}>Step 3: Due Date</Text>
-              <DatePickerInput
-                label="Due Date"
                 labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
@@ -147,7 +143,10 @@ class RegistrationExpectedDOB extends Component {
                 }}
                 showIcon={ false }
                 style={{ width: "100%" }}
-                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
 
               <Text style={styles.errorText}>{this.state.dobError}</Text>

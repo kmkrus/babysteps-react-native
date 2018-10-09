@@ -150,7 +150,9 @@ class OverviewScreen extends React.Component {
       return;
     }
     let task, milestone = {};
-    let filteredMilestones = filter(milestones.data, {momentary_assessment: noticeType.momentary_assessment});;
+    let filteredMilestones = filter(milestones.data, {
+      momentary_assessment: noticeType.momentary_assessment,
+    });;
     let index = Math.floor(Math.random() * filteredMilestones.length);
     milestone = filteredMilestones[index];
 

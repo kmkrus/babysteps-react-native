@@ -112,12 +112,16 @@ class BabyBookEntryForm extends Component {
   };
 
   render() {
+    const image = this.state.image;
     let isVideo = false;
     let uri = null;
-    if (this.state.image) {
-      uri = this.state.image.uri;
-      const uriParts = uri.split('.');
-      isVideo = VideoFormats.includes(uriParts[uriParts.length - 1]);
+    if (image) {
+      if (image.uri) {
+        uri = image.uri;
+        hasUri = true;
+        uriParts = uri.split('.');
+      }
+      isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
     }
     return (
       <Formik
@@ -156,20 +160,24 @@ class BabyBookEntryForm extends Component {
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-                {!!isVideo ? (
-                  <Video
-                    source={uri}
-                    rate={1.0}
-                    volume={1.0}
-                    isMuted={false}
-                    resizeMode={Video.RESIZE_MODE_COVER}
-                    shouldPlay={false}
-                    isLooping
-                    useNativeControls
-                    style={{ width: videoWidth, height: videoHeight }}
-                  />
-                ) : (
-                  <Image source={uri ? { uri } : null} style={styles.image} />
+
+                {!!hasUri &&
+                  (!!isVideo && (
+                    <Video
+                      source={{ uri }}
+                      rate={1.0}
+                      volume={1.0}
+                      isMuted={false}
+                      resizeMode={Video.RESIZE_MODE_COVER}
+                      shouldPlay={false}
+                      isLooping
+                      useNativeControls
+                      style={styles.video}
+                    />
+                  ) ||
+                  !isVideo && (
+                    <Image source={{ uri }} style={styles.image} />
+                  )
                 )}
 
                 <Text style={styles.textError}>{this.state.imageError}</Text>
@@ -253,6 +261,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: previewWidth,
     height: previewHeight,
+  },
+  video: {
+    flex: 1,
+    width: videoWidth,
+    height: videoHeight,
   },
   textAreaContainer: {
     flex: 1,

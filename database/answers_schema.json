@@ -39,6 +39,8 @@
       "api_id": "INTEGER",
       "answer_id": "INTEGER",
       "filename": "TEXT",
+      "width": "INTEGER",
+      "height": "INTEGER",
       "content_type": "TEXT",
       "uri": "TEXT",
       "url": "TEXT",

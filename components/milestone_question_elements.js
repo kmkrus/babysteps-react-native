@@ -238,6 +238,7 @@ export class RenderDate extends React.PureComponent {
 
 export class RenderFile extends Component {
   state = {
+    choice: null,
     images: [],
     hasCameraPermission: null,
     hasCameraRollPermission: null,
@@ -256,6 +257,7 @@ export class RenderFile extends Component {
 
   pickImage = async (choice, source = null) => {
     let image = {};
+    this.setState({ choice });
     if (source === 'library') {
       await this.handleCameraRollPermission();
       if (this.state.hasCameraRollPermission) {
@@ -263,7 +265,7 @@ export class RenderFile extends Component {
         image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: mediaType,
         });
-        this.saveImage(choice, image);
+        this.saveImage(image);
       } else {
         this.renderNoPermissions(source);
       }
@@ -272,13 +274,10 @@ export class RenderFile extends Component {
     }
   };
 
-  saveImage = (choice, image) => {
+  saveImage = (image) => {
     if (image && !image.cancelled) {
-      const images = _.extend(this.state.images);
-      _.remove(images, ['choice_id', choice.id]);
-      image.choice_id = choice.id;
-      images.push(image);
-      this.setState({ images });
+      this.props.saveResponse(this.state.choice, {attachments: [image]});
+      this.setState({ choice: null });
     }
   };
 
@@ -300,27 +299,25 @@ export class RenderFile extends Component {
   };
 
   closeModal = image => {
-    this.saveImage(choice, image);
+    this.saveImage(image);
     this.setState({ cameraModalVisible: false });
   };
 
   render() {
-    const images =this.state.images;
     const format = this.props.format;
+    const answers = this.props.answers;
 
     const collection = _.map(this.props.choices, choice => {
       let hasUri = false;
       let isVideo = false;
       let uri = null;
       let uriParts = [];
-      let attachment = {};
+      let image = {};
+      const answer = _.find(answers, ['choice_id', choice.id]);
 
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
-      if (answer) {
-        attachment = answer.attachments[0];
+      if (answer && answer.attachments[0]) {
+        image = answer.attachments[0];
       }
-
-      const image = _.find(images, ['choice_id', choice.id]);
 
       if (image) {
         if (image.uri) {
@@ -328,7 +325,7 @@ export class RenderFile extends Component {
           hasUri = true;
           uriParts = uri.split('.');
         }
-        isVideo = VideoFormats.includes(uriParts[uriParts.length - 1]);
+        isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
       }
 
       return (
@@ -350,10 +347,10 @@ export class RenderFile extends Component {
           <Text>{this.state.permissionMessage}</Text>
 
           <View style={styles.pickImageContainer}>
-            {!!isVideo &&
-              !!hasUri && (
+            {!!hasUri &&
+              (!!isVideo && (
                 <Video
-                  source={uri}
+                  source={{ uri }}
                   rate={1.0}
                   volume={1.0}
                   isMuted={false}
@@ -361,14 +358,13 @@ export class RenderFile extends Component {
                   shouldPlay={false}
                   isLooping
                   useNativeControls
-                  style={{ width: videoWidth, height: videoHeight }}
+                  style={styles.video}
                 />
+              ) ||
+              !isVideo && (
+                <Image source={{ uri }} style={styles.image} />
+              )
             )}
-            {!isVideo &&
-              !!hasUri && (
-              <Image source={{ uri }} style={styles.image} />
-            )}
-
             <Text style={styles.textError}>{this.state.imageError}</Text>
           </View>
         </View>
@@ -387,31 +383,6 @@ export class RenderFile extends Component {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  listContainer: {
-    flex: 1,
-  },
-  questionContainer: {
-    flexDirection: 'column',
-    padding: 5,
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey,
-  },
-  questionLeft: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: itemWidth,
-  },
-  question: {
-    fontSize: 14,
-    paddingVertical: 2,
-    paddingLeft: 5,
-    color: Colors.tint,
-  },
   checkBoxChoiceContainer: {
     padding: 0,
     marginLeft: 20,
@@ -438,30 +409,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 20,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    width: '100%',
-    marginTop: 20,
-    marginBottom: 20,
-  },
   buttonTitleStyle: {
     fontWeight: '900',
-  },
-  buttonOneStyle: {
-    width: 150,
-    backgroundColor: Colors.lightGrey,
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
-  buttonTwoStyle: {
-    width: 150,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
   },
   fileImageContainer: {
     marginTop: 20,
@@ -489,5 +438,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: previewWidth,
     height: previewHeight,
+  },
+  video: {
+    flex: 1,
+    width: videoWidth,
+    height: videoHeight,
   },
 });
