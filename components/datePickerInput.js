@@ -40,6 +40,8 @@ export default class DatePickerInput extends React.PureComponent {
           }}
           onDateChange={ (value) => { this.props.handleChange(value) } }
           {...this.props}
+          date={""}
+          placeholder={" "}
         />
         <InputHelper
           displayError={displayError}
