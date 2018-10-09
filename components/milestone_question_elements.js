@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Image,
@@ -236,8 +236,9 @@ export class RenderDate extends React.PureComponent {
   } // render
 }
 
-export class RenderFile extends React.PureComponent {
+export class RenderFile extends Component {
   state = {
+    choice: null,
     images: [],
     hasCameraPermission: null,
     hasCameraRollPermission: null,
@@ -247,10 +248,6 @@ export class RenderFile extends React.PureComponent {
     cameraModalVisible: false,
   };
 
-  async componentDidMount() {
-    await this.handleCameraRollPermission();
-  }
-
   handleCameraRollPermission = async () => {
     const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({
@@ -258,26 +255,29 @@ export class RenderFile extends React.PureComponent {
     });
   };
 
-  pickImage = async (source = null) => {
+  pickImage = async (choice, source = null) => {
     let image = {};
+    this.setState({ choice });
     if (source === 'library') {
+      await this.handleCameraRollPermission();
       if (this.state.hasCameraRollPermission) {
+        const mediaType = this.props.format === 'Photo' ? 'Images' : 'Videos';
         image = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: 'All',
+          mediaTypes: mediaType,
         });
-        console.log('************', image);
+        this.saveImage(image);
       } else {
-        await this.handleCameraRollPermission();
         this.renderNoPermissions(source);
       }
     } else {
       this.setState({ cameraModalVisible: true });
     }
+  };
 
+  saveImage = (image) => {
     if (image && !image.cancelled) {
-      const images = {...this.state.images};
-
-      this.setState({ image });
+      this.props.saveResponse(this.state.choice, {attachments: [image]});
+      this.setState({ choice: null });
     }
   };
 
@@ -299,31 +299,33 @@ export class RenderFile extends React.PureComponent {
   };
 
   closeModal = image => {
-    if (image) this.setState({ image });
+    this.saveImage(image);
     this.setState({ cameraModalVisible: false });
   };
 
   render() {
     const format = this.props.format;
-    const collection = _.map(this.props.choices, choice => {
+    const answers = this.props.answers;
 
+    const collection = _.map(this.props.choices, choice => {
       let hasUri = false;
       let isVideo = false;
       let uri = null;
-      let attachment = {};
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
-      if (answer) {
-        attachment = answer.attachments[0];
-      }
+      let uriParts = [];
+      let image = {};
+      const answer = _.find(answers, ['choice_id', choice.id]);
 
-      const image = _.find(this.state.images, ['choice_id', choice.id]);
+      if (answer && answer.attachments[0]) {
+        image = answer.attachments[0];
+      }
 
       if (image) {
         if (image.uri) {
+          uri = image.uri;
           hasUri = true;
-        };
-        const uriParts = image.uri.split('.');
-        isVideo = VideoFormats.includes(uriParts[uriParts.length - 1]);
+          uriParts = uri.split('.');
+        }
+        isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
       }
 
       return (
@@ -333,22 +335,22 @@ export class RenderFile extends React.PureComponent {
             buttonStyle={styles.libraryButton}
             titleStyle={styles.buttonTitleStyle}
             color={Colors.darkGreen}
-            onPressIn={() => this.pickImage('library')}
+            onPressIn={() => this.pickImage(choice, 'library')}
           />
           <Button
             title={`Take a ${format}`}
             buttonStyle={styles.cameraButton}
             titleStyle={styles.buttonTitleStyle}
             color={Colors.darkGreen}
-            onPressIn={() => this.pickImage('new')}
+            onPressIn={() => this.pickImage(choice, 'new')}
           />
           <Text>{this.state.permissionMessage}</Text>
 
           <View style={styles.pickImageContainer}>
-            {!!isVideo &&
-              !!hasUri && (
+            {!!hasUri &&
+              (!!isVideo && (
                 <Video
-                  source={image.uri}
+                  source={{ uri }}
                   rate={1.0}
                   volume={1.0}
                   isMuted={false}
@@ -356,15 +358,13 @@ export class RenderFile extends React.PureComponent {
                   shouldPlay={false}
                   isLooping
                   useNativeControls
-                  style={{ width: videoWidth, height: videoHeight }}
+                  style={styles.video}
                 />
+              ) ||
+              !isVideo && (
+                <Image source={{ uri }} style={styles.image} />
+              )
             )}
-
-            {!isVideo &&
-              !!hasUri && (
-              <Image source={{ uri }} style={styles.image} />
-            )}
-
             <Text style={styles.textError}>{this.state.imageError}</Text>
           </View>
         </View>
@@ -383,31 +383,6 @@ export class RenderFile extends React.PureComponent {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  listContainer: {
-    flex: 1,
-  },
-  questionContainer: {
-    flexDirection: 'column',
-    padding: 5,
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey,
-  },
-  questionLeft: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: itemWidth,
-  },
-  question: {
-    fontSize: 14,
-    paddingVertical: 2,
-    paddingLeft: 5,
-    color: Colors.tint,
-  },
   checkBoxChoiceContainer: {
     padding: 0,
     marginLeft: 20,
@@ -434,30 +409,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 20,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    width: '100%',
-    marginTop: 20,
-    marginBottom: 20,
-  },
   buttonTitleStyle: {
     fontWeight: '900',
-  },
-  buttonOneStyle: {
-    width: 150,
-    backgroundColor: Colors.lightGrey,
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
-  buttonTwoStyle: {
-    width: 150,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
   },
   fileImageContainer: {
     marginTop: 20,
@@ -480,5 +433,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    flex: 1,
+    width: previewWidth,
+    height: previewHeight,
+  },
+  video: {
+    flex: 1,
+    width: videoWidth,
+    height: videoHeight,
   },
 });

@@ -143,7 +143,10 @@ class RegistrationExpectedDOB extends Component {
                 }}
                 showIcon={ false }
                 style={{ width: "100%" }}
-                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
 
               <Text style={styles.errorText}>{this.state.dobError}</Text>
