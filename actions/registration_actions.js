@@ -67,28 +67,27 @@ import {
 
 const db = SQLite.openDatabase('babysteps.db');
 
-const Pending = (type) => {
-  return { type }
+const Pending = type => {
+  return { type };
 };
 
-const Response = ( type, payload, formData={} ) => {
+const Response = (type, payload, formData={}) => {
   return { type, payload, formData }
 };
 
-const getUpdateSQL = (data) => {
+const getUpdateSQL = data => {
   const keys = _.keys(data);
-  const values = _.values(data);
-  var updateSQL = []
+  const updateSQL = [];
 
-  _.forEach( keys, (key) => {
-    if ( _.isInteger( data[key] ) ) {
-      updateSQL.push( key + " = " + data[key]  )
+  _.forEach(keys, key => {
+    if (_.isInteger(data[key])) {
+      updateSQL.push(`${key} = ${data[key]}`);
     } else {
-      updateSQL.push( key + " = '" + data[key] + "'" )
+      updateSQL.push(`${key} = '${data[key]}'`);
     }
-  })
-  return updateSQL
-}
+  });
+  return updateSQL;
+};
 
 export const fetchRegistrationData = () => {
   // Thunk middleware knows how to handle functions.
@@ -230,7 +229,8 @@ export const createRespondent = (respondent) => {
           marital_status, \
           weight, \
           height \
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+
         const values = [
           respondent.user_id,
           respondent.respondent_type,
@@ -298,9 +298,9 @@ export const updateRespondent = (data) => {
 
     dispatch( Pending(UPDATE_RESPONDENT_PENDING) );
 
-    delete data.id 
+    delete data.id;
     
-    const updateSQL = getUpdateSQL(data)
+    const updateSQL = getUpdateSQL(data);
 
     return (
       db.transaction(tx => {
@@ -379,7 +379,7 @@ export const apiSaveSignature = (session, api_id, uri) => {
       })
       .catch(error => {
         dispatch(Response(API_SAVE_SIGNATURE_REJECTED, error));
-      })
+      });
   }; // return dispatch
 };
 

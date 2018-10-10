@@ -33,7 +33,7 @@ class ConsentSignatureForm extends Component {
 
     if (resultDir.exists) {
       const fileName = signatureDir + '/signature.png';
-      await Expo.FileSystem.deleteAsync(fileName, { idempotent:  true });
+      await Expo.FileSystem.deleteAsync(fileName, { idempotent: true });
       await Expo.FileSystem.copyAsync({from: image.uri, to: fileName});
       const resultFile = await Expo.FileSystem.getInfoAsync( fileName );
       if (resultFile.exists) {

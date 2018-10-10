@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
-import {
-  View,
-  ScrollView,
-  Text,
-  Image,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Image, Dimensions, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
+import { StackActions } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
@@ -16,6 +10,12 @@ const { width } = Dimensions.get('window');
 class MilestoneQuestionConfirmScreen extends Component {
   static navigationOptions = {
     title: 'Milestones',
+  };
+
+  returnToOverview = () => {
+    //const { navigate } = this.props.navigation;
+    this.props.navigation.dispatch(StackActions.popToTop());
+    this.props.navigation.navigate('Overview');
   };
 
   render() {
@@ -36,7 +36,7 @@ class MilestoneQuestionConfirmScreen extends Component {
             color={Colors.pink}
             buttonStyle={styles.buttonStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={() => this.props.navigation.navigate('Overview')}
+            onPress={this.returnToOverview}
             title="Go to Overview"
           />
         </View>

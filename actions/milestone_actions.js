@@ -5,6 +5,7 @@ import url from 'url';
 import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import omit from 'lodash/omit';
+import keys from 'lodash/keys';
 
 import { insertRows } from '../database/common';
 import { setNotifications } from '../notifications';
@@ -85,6 +86,18 @@ import {
   API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
   API_UPDATE_MILESTONE_ANSWERS_REJECTED,
 
+  FETCH_MILESTONE_ATTACHMENTS_PENDING,
+  FETCH_MILESTONE_ATTACHMENTS_FULFILLED,
+  FETCH_MILESTONE_ATTACHMENTS_REJECTED,
+
+  CREATE_MILESTONE_ATTACHMENT_PENDING,
+  CREATE_MILESTONE_ATTACHMENT_FULFILLED,
+  CREATE_MILESTONE_ATTACHMENT_REJECTED,
+
+  UPDATE_MILESTONE_ATTACHMENT_PENDING,
+  UPDATE_MILESTONE_ATTACHMENT_FULFILLED,
+  UPDATE_MILESTONE_ATTACHMENT_REJECTED,
+
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -95,6 +108,20 @@ const Pending = type => {
 
 const Response = (type, payload, formData = {}) => {
   return { type, payload, formData };
+};
+
+const getUpdateSQL = data => {
+  const allKeys = keys(data);
+  const updateSQL = [];
+
+  forEach(allKeys, key => {
+    if (_.isInteger(data[key])) {
+      updateSQL.push(`${key} = ${data[key]}`);
+    } else {
+      updateSQL.push(`${key} = '${data[key]}'`);
+    }
+  });
+  return updateSQL;
 };
 
 export const fetchMilestones = () => {
@@ -189,6 +216,10 @@ export const apiCreateMilestoneCalendar = params => {
   return dispatch => {
     dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
 
+    if (CONSTANTS.COMPRESS_MILESTONE_CALENDAR) {
+      params.test = 'true';
+    }
+
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -214,6 +245,10 @@ export const apiFetchMilestoneCalendar = params => {
   return dispatch => {
     dispatch(Pending(API_FETCH_MILESTONE_CALENDAR_PENDING));
 
+    if (CONSTANTS.COMPRESS_MILESTONE_CALENDAR) {
+      params.test = 'true';
+    }
+
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
@@ -235,7 +270,7 @@ export const apiFetchMilestoneCalendar = params => {
   }; // return dispatch
 };
 
-export const fetchMilestoneTasks = (params = {}) => {
+export const fetchMilestoneTasks = () => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_TASKS_PENDING));
     let sql = 'SELECT ts.*, mg.position AS milestone_group_position, mg.visible AS milestone_group_visible, ms.milestone_group_id, ms.position AS milestone_position, ms.always_visible AS milestone_always_visible, ms.title AS milestone_title, ms.momentary_assessment AS momentary_assessment, ms.response_scale AS response_scale FROM tasks AS ts';
@@ -282,7 +317,7 @@ export const resetMilestoneQuestions = () => {
   }
 }
 
-export const fetchMilestoneQuestions = (params={}) => {
+export const fetchMilestoneQuestions = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_QUESTIONS_PENDING));
     var sql = 'SELECT qs.*, ops.input_type, ops.rn_input_type FROM questions AS qs';
@@ -341,7 +376,6 @@ export const fetchMilestoneAnswers = (params = {}) => {
     dispatch(Pending(FETCH_MILESTONE_ANSWERS_PENDING));
 
     let sql = 'SELECT * FROM answers';
-    sql += ' INNER JOIN attachments ON attachments.answer_id = answers.id';
     if (params.section_id) {
       sql += ` WHERE answers.section_id = ${params.section_id}`;
     }
@@ -378,36 +412,57 @@ const answerFields = [
   'score',
 ];
 
+const attachmentFields = [
+  'api_id',
+  'section_id',
+  'choice_id',
+  'answer_id',
+  'filename',
+  'width',
+  'height',
+  'content_type',
+  'uri',
+  'url',
+];
+
 parseFields = (object, fields) => {
+  delete object.id;
   let row = [];
   map(fields, field => {
     if (object[field] === undefined || object[field] === null) {
       row.push('null');
-    } else if (object[field] === true) {
-      row.push(1);
-    } else if (object[field] === false) {
-      row.push(0);
     } else if (field === 'answer_text') {
-      row.push(`"${object[field]}"`);
+      row.push(`'${object[field]}'`);
+    } else if (field === 'answer_numeric') {
+      row.push(object[field]);
+    } else if (field === 'answer_boolean') {
+      if (object[field] === true) {
+        row.push(1);
+      } else {
+        row.push(0);
+      }
+    } else if (typeof object[field] === 'string') {
+      row.push(`'${object[field]}'`);
     } else {
       row.push(object[field]);
     }
   });
   return row.join(', ');
-}
+};
 
 export const createMilestoneAnswer = answer => {
   return dispatch => {
     dispatch(Pending(CREATE_MILESTONE_ANSWER_PENDING));
     const values = this.parseFields(answer, answerFields);
-    const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES (${values});`;
+    const sql =`INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES (${values});`;
+
     return (
       db.transaction(tx => {
         tx.executeSql(
           sql, [],
-          (_, response) => {dispatch(Response(CREATE_MILESTONE_ANSWER_FULFILLED, response))},
-          (_, error) => {dispatch(Response(CREATE_MILESTONE_ANSWER_REJECTED, error))}
-        )
+          (_, response) => dispatch(Response(CREATE_MILESTONE_ANSWER_FULFILLED, response)),
+          (_, error) => dispatch(Response(CREATE_MILESTONE_ANSWER_REJECTED, error))
+        );
       }) // transaction
     ) // return
   }; // dispatch
@@ -454,7 +509,7 @@ export const apiCreateMilestoneAnswer = (session, data) => {
     dispatch({
       type: API_CREATE_MILESTONE_ANSWER_PENDING,
       payload: {
-        data: { answer: answer },
+        data: { answer },
         session,
       },
       meta: {
@@ -482,7 +537,7 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
       user_id: row.user_api_id,
       respondent_id: row.respondent_api_id,
       subject_id: row.subject_api_id,
-    })
+    });
   });
 
   return dispatch => {
@@ -505,4 +560,69 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
       },
     });
   }; // return dispatch
+};
+
+export const fetchMilestoneAttachments = (params = {}) => {
+  return dispatch => {
+    dispatch(Pending(FETCH_MILESTONE_ATTACHMENTS_PENDING));
+
+    let sql = 'SELECT * FROM attachments';
+    if (params.section_id) {
+      sql += ` WHERE attachments.section_id = ${params.section_id}`;
+    }
+    sql += ' ORDER BY choice_id;';
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql(
+          sql, [],
+          (_, response) => {dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_REJECTED, error))}
+        );
+      })
+    );
+  };
+};
+
+export const createMilestoneAttachment = attachment => {
+  return dispatch => {
+    dispatch(Pending(CREATE_MILESTONE_ATTACHMENT_PENDING));
+
+    const values = this.parseFields(attachment, attachmentFields);
+    const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql(
+          sql, [],
+          (_, response) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
+          (_, error) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_REJECTED, error))
+        );
+      }) // transaction
+    ) // return
+  }; // dispatch
+};
+
+export const updateMilestoneAttachment = attachment => {
+  return dispatch => {
+    dispatch(Pending(UPDATE_MILESTONE_ATTACHMENT_PENDING));
+
+    const choice_id = attachment.choice_id;
+    const values = this.parseFields(attachment, attachmentFields);
+    const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
+
+    return (
+      db.transaction(tx => {
+         tx.executeSql( 'DELETE FROM attachments WHERE choice_id = ?', [choice_id],
+          (_, response) => console.log('** Clear attchments table for choice ' + choice_id),
+          (_, error) => console.log('*** Error in clearing attachments table for choice ' + choice_id)
+        );
+        tx.executeSql(
+          sql, [],
+          (_, response) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
+          (_, error) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_REJECTED, error))
+        );
+      }) // transaction
+    ) // return
+  }; // dispatch
 };
