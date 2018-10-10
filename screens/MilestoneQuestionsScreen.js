@@ -31,6 +31,8 @@ import {
   fetchMilestoneAnswers,
   updateMilestoneAnswers,
   apiUpdateMilestoneAnswers,
+  fetchMilestoneAttachments,
+  updateMilestoneAttachment,
 } from '../actions/milestone_actions';
 import {
   fetchUser,
@@ -47,6 +49,7 @@ import {
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import CONSTANTS from '../constants';
 
 const { width } = Dimensions.get('window');
 
@@ -66,15 +69,10 @@ class MilestoneQuestionsScreen extends Component {
       section: {},
       questionsFetched: false,
       answersFetched: false,
+      attachmentsFetched: false,
       answers: [],
       attachments: [],
-
-      hasCameraPermission: null,
-      hasCameraRollPermission: null,
-      hasAudioPermission: null,
-
-      permissionMessage: '',
-      cameraModalVisible: false,
+      errorMessage: '',
     };
 
     this.saveResponse = this.saveResponse.bind(this);
@@ -103,6 +101,7 @@ class MilestoneQuestionsScreen extends Component {
           this.props.fetchMilestoneQuestions({ section_id: section.id });
           this.props.resetMilestoneChoices();
           this.props.fetchMilestoneAnswers({ section_id: section.id });
+          this.props.fetchMilestoneAttachments({ section_id: section.id });
         } else {
           if (!questions.fetching) {
             if (
@@ -131,10 +130,20 @@ class MilestoneQuestionsScreen extends Component {
 
     const answers = nextProps.milestones.answers;
     if (!answers.fetching && answers.fetched) {
-      if (_.isEmpty(this.state.answers) && this.state.answersFetched) {
+      if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
         this.setState({
           answers: this.props.milestones.answers.data,
           answersFetched: true,
+        });
+      }
+    }
+
+    const attachments = nextProps.milestones.attachments;
+    if (!attachments.fetching && attachments.fetched) {
+      if (_.isEmpty(this.state.attachments) && !this.state.attachmentsFetched) {
+        this.setState({
+          attachments: this.props.milestones.attachments.data,
+          attachmentsFetched: true,
         });
       }
     }
@@ -246,7 +255,9 @@ class MilestoneQuestionsScreen extends Component {
             choices={question.choices}
             format={'Photo'}
             answers={this.state.answers}
+            attachments={this.state.attachments}
             saveResponse={this.saveResponse}
+            errorMessage={this.state.errorMessage}
           />
         );
       }
@@ -256,7 +267,9 @@ class MilestoneQuestionsScreen extends Component {
             choices={question.choices}
             format={'Video'}
             answers={this.state.answers}
+            attachments={this.state.attachments}
             saveResponse={this.saveResponse}
+            errorMessage={this.state.errorMessage}
           />
         );
       }
@@ -265,7 +278,8 @@ class MilestoneQuestionsScreen extends Component {
 
   saveResponse = (choice, response, options = {}) => {
     let answer = {};
-    let answers = this.state.answers;
+    const answers = [...this.state.answers];
+    const attachments = [...this.state.attachments];
     const format = options.format;
     const preserve = options.preserve;
 
@@ -311,26 +325,71 @@ class MilestoneQuestionsScreen extends Component {
           answer.subject_id = subject.data.id;
           answer.subject_api_id = subject.data.api_id;
         }
-
-        _.assign(answer, response);
-
-        answers.push(answer);
       } // format == single
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);
       _.assign(answer, response);
+      _.remove(answers, ['choice_id', choice.id]);
     } // index = -1
+    if (response.attachments) {
+      const attachmentDir = Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+      answer.attachments = [];
+      _.map(response.attachments, async att => {
+        const attachment = {};
+        if (response.id) {
+          attachment.answer_id = response.id;
+        }
+        attachment.filename = att.uri.substring(
+          att.uri.lastIndexOf('/') + 1,
+          att.uri.length,
+        );
 
+        attachment.uri = attachmentDir + '/' + attachment.filename;
+        Expo.FileSystem.deleteAsync(attachment.uri, { idempotent: true });
+        Expo.FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
+
+        const resultFile = await Expo.FileSystem.getInfoAsync(attachment.uri);
+        if (!resultFile.exists) {
+          console.log('Error: attachment not saved: ', choice.id, attachment.filename);
+          this.setState({errorMessage: 'Error: Attachment Not Saved'});
+        }
+
+        _.assign(attachment, {
+          section_id: this.state.section.id,
+          choice_id: choice.id,
+          width: att.width,
+          height: att.height,
+          content_type: att.type,
+        });
+
+        _.remove(attachments, ['choice_id', choice.id]);
+        attachments.push(attachment);
+        this.setState({ attachments });
+        answer.attachments.push(attachment);
+      });
+    } // response.attachments
+    answers.push(answer);
     this.setState({ answers });
   };
 
   handleConfirm = () => {
+    const section = this.state.section;
+    const answers = this.state.answers;
     // TODO validation
     // TODO move to next section if more than one section in this task
     // TODO update milestone_triggers completed_at if task complete
-    this.props.updateMilestoneAnswers(this.state.section, this.state.answers);
-    if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-      this.props.apiUpdateMilestoneAnswers(this.props.session, this.state.section.id, this.state.answers);
+    this.props.updateMilestoneAnswers(section, answers);
+
+    // save attachments
+    if (_.find(answers, a => {return !!a.attachments })) {
+      _.map(answers, answer => {
+        _.map(answer.attachments, attachment => {
+          this.props.updateMilestoneAttachment(attachment);
+        });
+      });
+    }
+    if (false) { // (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+      this.props.apiUpdateMilestoneAnswers(this.props.session, section.id, answers);
     }
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
@@ -363,7 +422,7 @@ class MilestoneQuestionsScreen extends Component {
               color={Colors.pink}
               buttonStyle={styles.buttonTwoStyle}
               titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.handleConfirm()}
+              onPress={this.handleConfirm}
               title="Confirm"
             />
           </View>
@@ -470,6 +529,8 @@ const mapDispatchToProps = {
   fetchMilestoneAnswers,
   updateMilestoneAnswers,
   apiUpdateMilestoneAnswers,
+  fetchMilestoneAttachments,
+  updateMilestoneAttachment,
 };
 
 export default connect(

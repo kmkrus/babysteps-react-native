@@ -71,6 +71,18 @@ import {
   API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
   API_UPDATE_MILESTONE_ANSWERS_REJECTED,
 
+  FETCH_MILESTONE_ATTACHMENTS_PENDING,
+  FETCH_MILESTONE_ATTACHMENTS_FULFILLED,
+  FETCH_MILESTONE_ATTACHMENTS_REJECTED,
+
+  CREATE_MILESTONE_ATTACHMENT_PENDING,
+  CREATE_MILESTONE_ATTACHMENT_FULFILLED,
+  CREATE_MILESTONE_ATTACHMENT_REJECTED,
+
+  UPDATE_MILESTONE_ATTACHMENT_PENDING,
+  UPDATE_MILESTONE_ATTACHMENT_FULFILLED,
+  UPDATE_MILESTONE_ATTACHMENT_REJECTED,
+
 } from '../actions/types';
 
 const initialState = {
@@ -149,6 +161,17 @@ const initialState = {
     fetching: false,
     fetched: false,
     error: null,
+  },
+  attachment: {
+    fetching: false,
+    fetched: false,
+    error: null,
+  },
+  attachments: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
   },
 };
 
@@ -347,8 +370,8 @@ const reducer = (state = initialState, action, formData = []) => {
     case FETCH_MILESTONE_ANSWERS_FULFILLED: {
       let data = action.payload.rows['_array']
       _.map(data, (answer) => {
-        answer['answer_boolean'] = (answer['answer_boolean'] == 1)
-      })
+        answer['answer_boolean'] = (answer['answer_boolean'] === 1)
+      });
       return {...state, answers: {...state.answers, fetching: false, fetched: true, error: null, data: data } }
       break;
     }
@@ -418,6 +441,46 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_UPDATE_MILESTONE_ANSWERS_REJECTED: {
       return {...state, apiAnswers: {...state.apiAnswers, fetching: false, fetched: false, error: action.payload }}
+      break;
+    }
+
+    case FETCH_MILESTONE_ATTACHMENTS_PENDING: {
+      return {...state, attachments: {...state.attachments, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_MILESTONE_ATTACHMENTS_FULFILLED: {
+      let data = action.payload.rows['_array']
+      return {...state, attachments: {...state.attachments, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_MILESTONE_ATTACHMENTS_REJECTED: {
+      return {...state, attachments: {...state.attachments, fetching: false, fetched: false, error: action.payload} }
+      break;
+    }
+
+    case CREATE_MILESTONE_ATTACHMENT_PENDING: {
+      return {...state, attachment: {...state.attachment, fetching: true, fetched: false, error: null}};
+      break;
+    }
+    case CREATE_MILESTONE_ATTACHMENT_FULFILLED: {
+      return {...state, attachment: {...state.attachment, fetching: false, fetched: true, error: null}};
+      break;
+    }
+    case CREATE_MILESTONE_ATTACHMENT_REJECTED: {
+      return {...state, attachment: {...state.attachment, fetching: false, fetched: false, error: action.payload}};
+      break;
+    }
+
+    case UPDATE_MILESTONE_ATTACHMENT_PENDING: {
+      return {...state, attachment: {...state.attachment, fetching: true, fetched: false, error: null}};
+      break;
+    }
+    case UPDATE_MILESTONE_ATTACHMENT_FULFILLED: {
+      return {...state, attachment: {...state.attachment, fetching: false, fetched: true, error: null}};
+      break;
+    }
+    case UPDATE_MILESTONE_ATTACHMENT_REJECTED: {
+      return {...state, attachment: {...state.attachment, fetching: false, fetched: false, error: action.payload}};
       break;
     }
 

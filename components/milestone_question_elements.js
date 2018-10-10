@@ -239,7 +239,6 @@ export class RenderDate extends React.PureComponent {
 export class RenderFile extends Component {
   state = {
     choice: null,
-    images: [],
     hasCameraPermission: null,
     hasCameraRollPermission: null,
     hasAudioPermission: null,
@@ -276,7 +275,9 @@ export class RenderFile extends Component {
 
   saveImage = (image) => {
     if (image && !image.cancelled) {
-      this.props.saveResponse(this.state.choice, {attachments: [image]});
+      this.props.saveResponse(this.state.choice, {
+        attachments: [image],
+      });
       this.setState({ choice: null });
     }
   };
@@ -306,6 +307,7 @@ export class RenderFile extends Component {
   render() {
     const format = this.props.format;
     const answers = this.props.answers;
+    const attachments = this.props.attachments;
 
     const collection = _.map(this.props.choices, choice => {
       let hasUri = false;
@@ -314,14 +316,11 @@ export class RenderFile extends Component {
       let uriParts = [];
       let image = {};
       const answer = _.find(answers, ['choice_id', choice.id]);
+      const attachment = _.find(attachments, ['choice_id', choice.id]);
 
-      if (answer && answer.attachments[0]) {
-        image = answer.attachments[0];
-      }
-
-      if (image) {
-        if (image.uri) {
-          uri = image.uri;
+      if (attachment) {
+        if (attachment.uri) {
+          uri = attachment.uri;
           hasUri = true;
           uriParts = uri.split('.');
         }
@@ -344,7 +343,10 @@ export class RenderFile extends Component {
             color={Colors.darkGreen}
             onPressIn={() => this.pickImage(choice, 'new')}
           />
-          <Text>{this.state.permissionMessage}</Text>
+          <Text style={styles.textError}>
+            {this.state.permissionMessage}
+            {this.props.errorMessage}
+          </Text>
 
           <View style={styles.pickImageContainer}>
             {!!hasUri &&
@@ -379,8 +381,8 @@ export class RenderFile extends Component {
         />
       </View>
     );
-  }; // render
-};
+  } // render
+}
 
 const styles = StyleSheet.create({
   checkBoxChoiceContainer: {
@@ -403,6 +405,12 @@ const styles = StyleSheet.create({
   textLabel: {
     fontSize: 12,
     fontWeight: '400',
+  },
+  textError: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: Colors.red,
+    alignSelf: 'center',
   },
   dateInput: {
     width: 200,

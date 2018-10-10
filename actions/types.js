@@ -69,6 +69,18 @@ export const API_UPDATE_MILESTONE_ANSWERS_PENDING = 'api_update_milestone_answer
 export const API_UPDATE_MILESTONE_ANSWERS_FULFILLED = 'api_update_milestone_answers_fulfilled';
 export const API_UPDATE_MILESTONE_ANSWERS_REJECTED = 'api_update_milestone_answers_rejected';
 
+export const FETCH_MILESTONE_ATTACHMENTS_PENDING = 'fetch_milestone_attachments_pending';
+export const FETCH_MILESTONE_ATTACHMENTS_FULFILLED = 'fetch_milestone_attachments_fulfilled';
+export const FETCH_MILESTONE_ATTACHMENTS_REJECTED = 'fetch_milestone_attachments_rejected';
+
+export const CREATE_MILESTONE_ATTACHMENT_PENDING = 'create_milestone_attachment_pending';
+export const CREATE_MILESTONE_ATTACHMENT_FULFILLED = 'create_milestone_attachment_fulfilled';
+export const CREATE_MILESTONE_ATTACHMENT_REJECTED = 'create_milestone_attachment_rejected';
+
+export const UPDATE_MILESTONE_ATTACHMENT_PENDING = 'update_milestone_attachment_pending';
+export const UPDATE_MILESTONE_ATTACHMENT_FULFILLED = 'update_milestone_attachment_fulfilled';
+export const UPDATE_MILESTONE_ATTACHMENT_REJECTED = 'update_milestone_attachment_rejected';
+
 // Session actions
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
 export const FETCH_SESSION_FULFILLED = 'fetch_session_fulfilled';

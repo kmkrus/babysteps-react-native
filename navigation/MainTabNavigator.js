@@ -59,20 +59,22 @@ MilestonesStack.navigationOptions = {
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-list${focused ? '' : '-outline'}` 
+          ? `ios-list${focused ? '' : '-outline'}`
           : 'md-list'
       }
     />
   ),
 };
 
-const BabyBookStack = createStackNavigator({
-  BabyBook: BabyBookScreen,
-  BabyBookEntry: BabyBookEntryScreen,
-},
-{
-  navigationOptions: headerOptions ,
-})
+const BabyBookStack = createStackNavigator(
+  {
+    BabyBook: BabyBookScreen,
+    BabyBookEntry: BabyBookEntryScreen,
+  },
+  {
+    navigationOptions: headerOptions,
+  },
+);
 
 BabyBookStack.navigationOptions = {
   tabBarLabel: 'BabyBook',
@@ -89,7 +91,7 @@ BabyBookStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-  OverviewStack,
-  MilestonesStack,
-  BabyBookStack,
+  Overview: OverviewStack,
+  Milestones: MilestonesStack,
+  BabyBook: BabyBookStack,
 });
