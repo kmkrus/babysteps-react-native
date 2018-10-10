@@ -19,7 +19,7 @@ export default class PickerInput extends React.PureComponent {
     const containerStyle = {
       borderBottomWidth: 0.25,
       borderBottomColor: Colors.grey,
-      marginBottom: 20,
+      marginBottom: 1,
       marginLeft: 20,
       marginRight: 20,
       marginTop: 15,

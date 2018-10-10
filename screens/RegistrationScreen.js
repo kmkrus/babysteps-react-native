@@ -34,13 +34,20 @@ class RegistrationScreen extends Component {
     }
   };
 
+  _scrollToInput = (reactNode: any) => {
+    // Add a 'scroll' ref to your ScrollView
+    this.scroll.scrollToFocusedInput(reactNode)
+  }
+
   render() {
     return (
       <KeyboardAwareScrollView
         contentContainerStyle={styles.body}
         enableResetScrollToCoords={false}
-        enableAutomaticScroll={false}
-        enableOnAndroid
+        enableAutomaticScroll={true}
+        enableOnAndroid={true}
+        extraScrollHeight={50}
+        innerRef={ref => {this.scroll = ref}}
       >
         <View style={styles.container}>{this.selectForm()}</View>
       </KeyboardAwareScrollView>
