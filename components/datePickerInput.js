@@ -38,10 +38,9 @@ export default class DatePickerInput extends React.PureComponent {
               width: '100%'
             }
           }}
+          placeholder={" "}
           onDateChange={ (value) => { this.props.handleChange(value) } }
           {...this.props}
-          date={""}
-          placeholder={" "}
         />
         <InputHelper
           displayError={displayError}
