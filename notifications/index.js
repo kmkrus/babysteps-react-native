@@ -41,7 +41,7 @@ export const setNotifications = async entries => {
         localNotification,
         schedulingOptions,
       );
-      console.log('Notfication Scheduled:', task.name);
+      console.log('Notfication Scheduled:', task.name, scheduleTime);
     };
   });
 
