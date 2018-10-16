@@ -23,6 +23,8 @@ import CameraModal from './camera_modal';
 
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
+import AudioFormats from '../constants/AudioFormats';
 
 const { width } = Dimensions.get('window');
 
@@ -36,7 +38,6 @@ const videoHeight = previewWidth;
 
 export class RenderCheckBox extends React.PureComponent {
   render() {
-
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
       let text = '';
@@ -236,6 +237,17 @@ export class RenderDate extends React.PureComponent {
   } // render
 }
 
+const formats = {
+  file_audio: 'Audio',
+  file_image: 'Photo',
+  file_video: 'Video',
+};
+const mediaTypes = {
+  file_audio: 'Audio',
+  file_image: 'Images',
+  file_video: 'Videos',
+};
+
 export class RenderFile extends Component {
   state = {
     choice: null,
@@ -260,7 +272,7 @@ export class RenderFile extends Component {
     if (source === 'library') {
       await this.handleCameraRollPermission();
       if (this.state.hasCameraRollPermission) {
-        const mediaType = this.props.format === 'Photo' ? 'Images' : 'Videos';
+        const mediaType = mediaTypes[this.props.question.rn_input_type];
         image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: mediaType,
         });
@@ -305,26 +317,29 @@ export class RenderFile extends Component {
   };
 
   render() {
-    const format = this.props.format;
+    const format = formats[this.props.question.rn_input_type];
     const answers = this.props.answers;
     const attachments = this.props.attachments;
 
     const collection = _.map(this.props.choices, choice => {
       let hasUri = false;
       let isVideo = false;
+      let isImage = false;
+      let isAudio = false;
       let uri = null;
       let uriParts = [];
       let image = {};
       const answer = _.find(answers, ['choice_id', choice.id]);
       const attachment = _.find(attachments, ['choice_id', choice.id]);
 
-      if (attachment) {
-        if (attachment.uri) {
-          uri = attachment.uri;
-          hasUri = true;
-          uriParts = uri.split('.');
-        }
-        isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
+      if (attachment && attachment.uri) {
+        uri = attachment.uri;
+        hasUri = true;
+        uriParts = uri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+        isVideo = VideoFormats.includes(`video/${fileType}`);
+        isImage = ImageFormats.includes(`image/${fileType}`);
+        isAudio = AudioFormats[fileType];
       }
 
       return (
@@ -363,8 +378,11 @@ export class RenderFile extends Component {
                   style={styles.video}
                 />
               ) ||
-              !isVideo && (
+              !!isImage && (
                 <Image source={{ uri }} style={styles.image} />
+              ) ||
+              !!isAudio && (
+                <Text>Test</Text>
               )
             )}
             <Text style={styles.textError}>{this.state.imageError}</Text>
@@ -378,6 +396,7 @@ export class RenderFile extends Component {
         <CameraModal
           modalVisible={this.state.cameraModalVisible}
           closeModal={image => this.closeModal(image)}
+          question={this.props.question}
         />
       </View>
     );

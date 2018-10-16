@@ -16,11 +16,17 @@ import { padStart } from 'lodash';
 import Colors from '../constants/Colors';
 
 const { width, height } = Dimensions.get('window');
+const mediaTypes = {
+  file_audio: 'audio',
+  file_image: 'photo',
+  file_video: 'video',
+};
 // TODO fix horizontal styles
 class CameraModal extends Component {
   state = {
     cameraMessage: null,
     activeOption: 'photo',
+    limitOption: false,
     type: Camera.Constants.Type.back,
     flashMode: Camera.Constants.FlashMode.off,
     isLandscape: false,
@@ -33,6 +39,16 @@ class CameraModal extends Component {
     const camera = await Permissions.askAsync(Permissions.CAMERA);
     if (!(camera.status === 'granted')) {
       this.props.closeModal();
+    }
+  }
+
+  componentDidMount() {
+    debugger
+    if (this.props.question) {
+      this.setState({
+        limitOption: true,
+        activeOption: mediaTypes[this.props.question.rn_input_type],
+      });
     }
   }
 
@@ -212,35 +228,39 @@ class CameraModal extends Component {
           </View>
         </View>
         <View style={styles.bottomBarMenu}>
-          <TouchableOpacity
-            onPressIn={() => this.setState({ activeOption: 'photo' })}
-          >
-            <Text
-              style={{
-                marginRight: 72,
-                fontSize: 15,
-                color:
-                  this.state.activeOption === 'photo'
-                    ? Colors.magenta
-                    : Colors.white,
-              }}
-            >
-              Photo
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPressIn={this.handlePressVideoOption}>
-            <Text
-              style={{
-                fontSize: 15,
-                color:
-                  this.state.activeOption === 'video'
-                    ? Colors.magenta
-                    : Colors.white,
-              }}
-            >
-              Video
-            </Text>
-          </TouchableOpacity>
+          {!this.state.limitOption && (
+            <View>
+              <TouchableOpacity
+                onPressIn={() => this.setState({ activeOption: 'photo' })}
+              >
+                <Text
+                  style={{
+                    marginRight: 72,
+                    fontSize: 15,
+                    color:
+                      this.state.activeOption === 'photo'
+                        ? Colors.magenta
+                        : Colors.white,
+                  }}
+                >
+                  Photo
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPressIn={this.handlePressVideoOption}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color:
+                      this.state.activeOption === 'video'
+                        ? Colors.magenta
+                        : Colors.white,
+                  }}
+                >
+                  Video
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -279,6 +299,7 @@ class CameraModal extends Component {
   );
 
   renderImagePreview = () => {
+    debugger
     const { activeOption } = this.state;
     return (
       <View style={styles.imagePreview}>
@@ -298,6 +319,7 @@ class CameraModal extends Component {
   };
 
   render() {
+    debugger
     const { confirmingImage, flashMode, type } = this.state;
     return (
       <Modal
@@ -309,7 +331,7 @@ class CameraModal extends Component {
         <View
           style={styles.camera}
           ref={r => (this.container = r)}
-          //          onLayout={this.onLayout}
+          // onLayout={this.onLayout}
         >
           <Camera
             ref={ref => {

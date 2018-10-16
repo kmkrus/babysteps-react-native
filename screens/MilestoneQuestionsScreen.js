@@ -253,23 +253,13 @@ class MilestoneQuestionsScreen extends Component {
           />
         );
       }
-      case 'file_image': {
-        return (
-          <RenderFile
-            choices={question.choices}
-            format={'Photo'}
-            answers={this.state.answers}
-            attachments={this.state.attachments}
-            saveResponse={this.saveResponse}
-            errorMessage={this.state.errorMessage}
-          />
-        );
-      }
+      case 'file_audio':
+      case 'file_image':
       case 'file_video': {
         return (
           <RenderFile
+            question={question}
             choices={question.choices}
-            format={'Video'}
             answers={this.state.answers}
             attachments={this.state.attachments}
             saveResponse={this.saveResponse}
