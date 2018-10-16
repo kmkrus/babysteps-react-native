@@ -30,6 +30,7 @@ import {
   resetMilestoneAnswers,
   fetchMilestoneAnswers,
   updateMilestoneAnswers,
+  apiCreateMilestoneAnswer,
   apiUpdateMilestoneAnswers,
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
@@ -50,10 +51,13 @@ import {
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import CONSTANTS from '../constants';
+import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
 
 const { width } = Dimensions.get('window');
 
 const itemWidth = width - 40;
+const twoButtonWidth = (width / 2) - 30;
 
 class MilestoneQuestionsScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -339,14 +343,22 @@ class MilestoneQuestionsScreen extends Component {
         if (response.id) {
           attachment.answer_id = response.id;
         }
+
         attachment.filename = att.uri.substring(
           att.uri.lastIndexOf('/') + 1,
           att.uri.length,
         );
 
         attachment.uri = attachmentDir + '/' + attachment.filename;
-        Expo.FileSystem.deleteAsync(attachment.uri, { idempotent: true });
-        Expo.FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
+
+        const fileType = att.uri.substring(
+          att.uri.lastIndexOf('.') + 1,
+          att.uri.length,
+        );
+        attachment.content_type = [...ImageFormats, ...VideoFormats].filter(s => s.includes(fileType))[0];
+
+        await Expo.FileSystem.deleteAsync(attachment.uri, { idempotent: true });
+        await Expo.FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
 
         const resultFile = await Expo.FileSystem.getInfoAsync(attachment.uri);
         if (!resultFile.exists) {
@@ -354,12 +366,13 @@ class MilestoneQuestionsScreen extends Component {
           this.setState({errorMessage: 'Error: Attachment Not Saved'});
         }
 
+        answer.answer_boolean = true;
+
         _.assign(attachment, {
           section_id: this.state.section.id,
           choice_id: choice.id,
           width: att.width,
           height: att.height,
-          content_type: att.type,
         });
 
         _.remove(attachments, ['choice_id', choice.id]);
@@ -386,17 +399,23 @@ class MilestoneQuestionsScreen extends Component {
         _.map(answer.attachments, attachment => {
           this.props.updateMilestoneAttachment(attachment);
         });
+        // cannot bulk update answers with attachments
+        if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+          this.props.apiCreateMilestoneAnswer(this.props.session, answer);
+        }
       });
-    }
-    if (false) { // (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+    } else if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
       this.props.apiUpdateMilestoneAnswers(this.props.session, section.id, answers);
     }
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
 
   render() {
-    const data = _.map(this.props.milestones.questions.data, question => {
-      return _.extend({}, question, {choices: _.filter(this.props.milestones.choices.data, ['question_id', question.id ])})
+    const milestones = this.props.milestones;
+    const data = _.map(milestones.questions.data, question => {
+      return _.extend({}, question, {
+        choices: _.filter(milestones.choices.data, ['question_id', question.id]),
+      });
     });
 
     return (
@@ -458,32 +477,6 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     color: Colors.tint,
   },
-  checkBoxChoiceContainer: {
-    padding: 0,
-    marginLeft: 20,
-    backgroundColor: Colors.white,
-    borderWidth: 0,
-  },
-  checkBoxChoiceText: {
-    fontSize: 12,
-    fontWeight: '400',
-  },
-  checkBoxExplanationContainer: {
-    flexDirection: 'column',
-  },
-  textInput: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  textLabel: {
-    fontSize: 12,
-    fontWeight: '400',
-  },
-  dateInput: {
-    width: 200,
-    marginBottom: 10,
-    marginLeft: 20,
-  },
   buttonContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -496,14 +489,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   buttonOneStyle: {
-    width: 150,
+    flex: 1,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
     borderRadius: 5,
   },
   buttonTwoStyle: {
-    width: 150,
+    flex: 1,
+    width: twoButtonWidth,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
@@ -528,6 +523,7 @@ const mapDispatchToProps = {
   resetMilestoneAnswers,
   fetchMilestoneAnswers,
   updateMilestoneAnswers,
+  apiCreateMilestoneAnswer,
   apiUpdateMilestoneAnswers,
   fetchMilestoneAttachments,
   updateMilestoneAttachment,

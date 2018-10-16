@@ -36,6 +36,7 @@ const TextInput = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
 )(MaterialTextInput);
+
 const Form = withNextInputAutoFocusForm(View);
 
 const validationSchema = Yup.object().shape({
@@ -49,7 +50,6 @@ class BabyBookEntryForm extends Component {
     hasCameraPermission: null,
     hasCameraRollPermission: null,
     hasAudioPermission: null,
-
     permissionMessage: '',
     cameraModalVisible: false,
   };
@@ -113,8 +113,10 @@ class BabyBookEntryForm extends Component {
 
   render() {
     const image = this.state.image;
+    let hasUri = false;
     let isVideo = false;
     let uri = null;
+    let uriParts = [];
     if (image) {
       if (image.uri) {
         uri = image.uri;
@@ -160,7 +162,6 @@ class BabyBookEntryForm extends Component {
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-
                 {!!hasUri &&
                   (!!isVideo && (
                     <Video
@@ -175,10 +176,10 @@ class BabyBookEntryForm extends Component {
                       style={styles.video}
                     />
                   ) ||
-                  !isVideo && (
-                    <Image source={{ uri }} style={styles.image} />
-                  )
-                )}
+                    !isVideo && (
+                      <Image source={{ uri }} style={styles.image} />
+                  ))
+                }
 
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
@@ -201,7 +202,7 @@ class BabyBookEntryForm extends Component {
                   buttonStyle={styles.buttonStyle}
                   titleStyle={styles.buttonTitleStyle}
                   disabled={props.isSubmitting || !this.state.image}
-                  onPress={props.handleSubmit}
+                  onPress={props.submitForm}
                   color={Colors.pink}
                 />
               </View>

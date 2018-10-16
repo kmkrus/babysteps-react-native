@@ -498,19 +498,44 @@ export const updateMilestoneAnswers = (section, answers) => {
 };
 
 export const apiCreateMilestoneAnswer = (session, data) => {
-  let answer = omit(data, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
+  const formData = new FormData();
+  let answer = omit(data, [
+    'api_id',
+    'user_api_id',
+    'respondent_api_id',
+    'subject_api_id',
+    'attachments',
+  ]);
+  if (data.api_id) {
+    answer.id = data.api_id;
+  }
   answer = {
     ...answer,
     user_id: data.user_api_id,
     respondent_id: data.respondent_api_id,
     subject_id: data.subject_api_id,
   };
+  forEach(answer, (value, key) => {
+    const name = `answer[${key}]`;
+    formData.append(name, value);
+  });
+  if (data.attachments) {
+    forEach(data.attachments, (att, index) => {
+      formData.append(`answer[attachments][${index}]`, {
+        uri: att.uri,
+        name: att.filename,
+        type: att.content_type,
+      });
+    });
+  }
+
   return dispatch => {
     dispatch({
       type: API_CREATE_MILESTONE_ANSWER_PENDING,
       payload: {
-        data: { answer },
+        data: formData,
         session,
+        multipart: true,
       },
       meta: {
         offline: {
@@ -527,13 +552,22 @@ export const apiCreateMilestoneAnswer = (session, data) => {
 };
 
 export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
-
+  // can not submit attachments on bulk update
   const answers = [];
   forEach(data, row => {
-    const answer = omit(row, ['api_id', 'user_api_id', 'respondent_api_id', 'subject_api_id']);
+    const answer = omit(row, [
+      'id',
+      'api_id',
+      'user_api_id',
+      'respondent_api_id',
+      'subject_api_id',
+      'attachments',
+    ]);
+    if (row.api_id) {
+      answer.id = row.api_id;
+    }
     answers.push({
       ...answer,
-      id: row.api_id,
       user_id: row.user_api_id,
       respondent_id: row.respondent_api_id,
       subject_id: row.subject_api_id,
@@ -541,7 +575,6 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
   });
 
   return dispatch => {
-
     dispatch({
       type: API_UPDATE_MILESTONE_ANSWERS_PENDING,
       payload: {
@@ -614,7 +647,7 @@ export const updateMilestoneAttachment = attachment => {
     return (
       db.transaction(tx => {
          tx.executeSql( 'DELETE FROM attachments WHERE choice_id = ?', [choice_id],
-          (_, response) => console.log('** Clear attchments table for choice ' + choice_id),
+          (_, response) => console.log('** Clear attachments table for choice ' + choice_id),
           (_, error) => console.log('*** Error in clearing attachments table for choice ' + choice_id)
         );
         tx.executeSql(

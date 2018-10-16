@@ -152,14 +152,14 @@ class OverviewScreen extends React.Component {
     let task, milestone = {};
     let filteredMilestones = filter(milestones.data, {
       momentary_assessment: noticeType.momentary_assessment,
-    });;
+    });
     let index = Math.floor(Math.random() * filteredMilestones.length);
     milestone = filteredMilestones[index];
 
     task = find(tasks.data,{milestone_id: milestone.id});
 
-    console.log("Task",task);
-    console.log("Milestone",milestone);
+    console.log("Task", task);
+    console.log("Milestone", milestone);
 
     if (milestone && task) {
       Notifications.presentLocalNotificationAsync({
