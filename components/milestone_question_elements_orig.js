@@ -34,19 +34,9 @@ const previewHeight = width * 0.75;
 const videoWidth = previewWidth;
 const videoHeight = previewWidth;
 
-const formats = {
-  file_audio: 'Audio',
-  file_image: 'Photo',
-  file_video: 'Video',
-};
-const mediaTypes = {
-  file_audio: 'Audio',
-  file_image: 'Images',
-  file_video: 'Videos',
-};
-
 export class RenderCheckBox extends React.PureComponent {
   render() {
+
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
       let text = '';
@@ -315,7 +305,7 @@ export class RenderFile extends Component {
   };
 
   render() {
-    const format = formats[this.props.question.rn_input_type];
+    const format = this.props.format;
     const answers = this.props.answers;
     const attachments = this.props.attachments;
 
