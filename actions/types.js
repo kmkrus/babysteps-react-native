@@ -82,6 +82,8 @@ export const UPDATE_MILESTONE_ATTACHMENT_FULFILLED = 'update_milestone_attachmen
 export const UPDATE_MILESTONE_ATTACHMENT_REJECTED = 'update_milestone_attachment_rejected';
 
 // Session actions
+export const SET_FETCHING_TOKEN = 'set_fetching_token';
+
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
 export const FETCH_SESSION_FULFILLED = 'fetch_session_fulfilled';
 export const FETCH_SESSION_REJECTED = 'fetch_session_rejected';
@@ -168,6 +170,8 @@ export const CREATE_BABYBOOK_ENTRY_REJECTED = 'create_babybook_entry_rejected';
 export const UPDATE_BABYBOOK_ENTRY_PENDING = 'update_babybook_entry_pending';
 export const UPDATE_BABYBOOK_ENTRY_FULFILLED = 'update_babybook_entry_fulfilled';
 export const UPDATE_BABYBOOK_ENTRY_REJECTED = 'update_babybook_entry_rejected';
+
+// Notifications
 
 export const SHOW_MOMENTARY_ASSESSMENT = 'show_momentary_assessment';
 export const HIDE_MOMENTARY_ASSESSMENT = 'hide_momentary_assessment';

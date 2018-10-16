@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-import InputHelper from '../components/inputHelper';
+import InputHelper from './inputHelper';
 import Colors from '../constants/Colors';
 
 export default class MaterialTextInput extends React.PureComponent {
@@ -17,8 +17,7 @@ export default class MaterialTextInput extends React.PureComponent {
     const baseColor = displayError ? Colors.errorColor : Colors.textColor;
 
     return (
-
-      <View >
+      <View>
         <TextField
           ref={input => (this.input = input)}
           labelHeight={14}
@@ -36,7 +35,6 @@ export default class MaterialTextInput extends React.PureComponent {
           error={error}
         />
       </View>
-
     );
   }
 }

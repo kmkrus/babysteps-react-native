@@ -13,6 +13,7 @@ import {
   RESET_API_MILESTONES,
   RESET_API_MILESTONE_CALENDAR,
   UPDATE_ACCESS_TOKEN,
+  SET_FETCHING_TOKEN,
 } from '../actions/types';
 
 const excludeTypes = [
@@ -53,20 +54,23 @@ export default store => next => action => {
     UID: session.uid,
   };
 
-  return (
-    axios({
-      method: effect.method,
-      responseType: 'json',
-      baseURL: CONSTANTS.BASE_URL,
-      url: effect.url,
-      headers,
-      data: action.payload.data,
-    })
+  if (action.payload.multipart) {
+    headers['CONTENT-TYPE'] = 'multipart/form-data';
+  }
+
+  return axios({
+    method: effect.method,
+    responseType: 'json',
+    baseURL: CONSTANTS.BASE_URL,
+    url: effect.url,
+    headers,
+    data: action.payload.data,
+  })
     .then(response => {
-      store.dispatch(Response( effect.fulfilled, response ))
+      store.dispatch(Response(effect.fulfilled, response));
       // if access-token in header is empty, continue to use existing token
       if (response.headers['access-token'] !== '') {
-        store.dispatch(Response( UPDATE_ACCESS_TOKEN, response.headers['access-token']))
+        store.dispatch(Response(UPDATE_ACCESS_TOKEN, response.headers['access-token']))
       }
     })
     .catch(error => {
@@ -77,11 +81,11 @@ export default store => next => action => {
       if (response.status === 401) {
         // not already getting fresh token
         if (!store.getState().session.fetching_token) {
+          //store.dispatch(Pending(SET_FETCHING_TOKEN));
           apiTokenRefresh(store.dispatch, session);
         }
       } else {
         store.dispatch(Response(effect.rejected, error));
       }
-    }) // catch
-  ) // return
-} // action
+    }); // catch
+}; // action

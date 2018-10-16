@@ -54,15 +54,11 @@ export const fetchBabyBookEntries = () => {
       })
     )
   }
-
 };
 
 export const createBabyBookEntry = (data, image) => {
-
-  return function (dispatch) {
-
-    dispatch( Pending(CREATE_BABYBOOK_ENTRY_PENDING) );
-
+  return function(dispatch) {
+    dispatch(Pending(CREATE_BABYBOOK_ENTRY_PENDING));
     const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
     const fileName = image.uri.split('/').pop();
     const newUri = newDir + '/' + fileName;
@@ -72,31 +68,35 @@ export const createBabyBookEntry = (data, image) => {
 
     const mimeType = VideoFormats.filter(s => s.includes(fileType));
 
-    data = {...data, file_name: fileName, file_type: mimeType[0] }
+    data = {...data, file_name: fileName, file_type: mimeType[0]}
 
     return (
-
       Expo.FileSystem.copyAsync({from: image.uri, to: newUri})
-      .then( () => { 
+      .then(() => { 
         db.transaction(tx => {
-          tx.executeSql( 
-            'INSERT INTO babybook_entries (title, detail, file_name, file_type, created_at) VALUES (?, ?, ?, ?, ?);', 
-            [data.title, data.detail, data.file_name, data.file_type, data.created_at],
-            (_, response) => { 
-              dispatch( Response(CREATE_BABYBOOK_ENTRY_FULFILLED, response, data) );
+          tx.executeSql(
+            'INSERT INTO babybook_entries (title, detail, file_name, file_type, created_at) VALUES (?, ?, ?, ?, ?);',
+            [
+              data.title,
+              data.detail,
+              data.file_name,
+              data.file_type,
+              data.created_at,
+            ],
+            (_, response) => {
+              dispatch(Response(CREATE_BABYBOOK_ENTRY_FULFILLED, response, data));
             },
-            (_, error) => { 
-              dispatch( Response(CREATE_BABYBOOK_ENTRY_REJECTED, error) ) 
-            }
+            (_, error) => {
+              dispatch(Response(CREATE_BABYBOOK_ENTRY_REJECTED, error));
+            },
           );
-        })
+        });
       })
-      .catch( (error) => { 
-        dispatch( Response(CREATE_BABYBOOK_ENTRY_REJECTED, error) ) 
-      }) 
-   
+      .catch(error => {
+        dispatch(Response(CREATE_BABYBOOK_ENTRY_REJECTED, error));
+      })
     ) // return
-  } // dispatch
+  }; // dispatch
 };
 
 export const updateBabyBookEntry = (id, data, image=null) => {
@@ -104,26 +104,26 @@ export const updateBabyBookEntry = (id, data, image=null) => {
 
     dispatch( Pending(UPDATE_BABYBOOK_ENTRY_PENDING) );
 
-    delete data.id 
-    
+    delete data.id;
+
     const keys = _.keys(data);
     const values = _.values(data);
-    var updateSQL = []
+    var updateSQL = [];
 
-    _.forEach( keys, (key) => {
-      updateSQL.push( key + " = '" + data[key] + "'" )
-    })
+    _.forEach( keys, key => {
+      updateSQL.push(key + " = '" + data[key] + "'")
+    });
 
-    updateSQL = 'UPDATE babybook_entries SET ' + updateSQL.join(', ') + ' WHERE babybook_entries.id = ' + id +' ;'
+    updateSQL = `UPDATE babybook_entries SET ${updateSQL.join(', ')} WHERE babybook_entries.id = ${id};`
 
     return (
       db.transaction(tx => {
         tx.executeSql( updateSQL, [],
-          (_, response) => { 
+          (_, response) => {
             dispatch( Response(UPDATE_BABYBOOK_ENTRY_FULFILLED, response, data) );
           },
-          (_, error) => { 
-            dispatch( Response(UPDATE_BABYBOOK_ENTRY_REJECTED, error) ) 
+          (_, error) => {
+            dispatch(Response(UPDATE_BABYBOOK_ENTRY_REJECTED, error))
           }
         );
       })

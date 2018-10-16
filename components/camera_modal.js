@@ -42,7 +42,6 @@ class CameraModal extends Component {
 
     const dim = Dimensions.get('window');
     const { width, height } = dim;
-    console.log(width, height);
     if (dim.width >= dim.height) {
       this.setState({ isLandscape: true });
       return;
