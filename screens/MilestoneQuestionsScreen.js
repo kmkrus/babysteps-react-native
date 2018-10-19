@@ -46,6 +46,9 @@ import {
   RenderCheckBox,
   RenderCheckYesNo,
   RenderTextShort,
+  RenderTextLong,
+  RenderTextNumeric,
+  RenderDate,
   RenderFile,
 } from '../components/milestone_question_elements';
 
@@ -171,20 +174,21 @@ class MilestoneQuestionsScreen extends Component {
       ? String(question.position)
       : question.question_number;
     const title = `${question_number}. ${question.title}`;
-
     return (
-      <TouchableOpacity
-        onPress={() => {
-          this.props.navigation.navigate('MilestoneQuestions', { task: item });
-        }}
-      >
-        <View style={styles.questionContainer}>
-          <View style={styles.questionLeft}>
-            <Text style={styles.question}>{title}</Text>
-          </View>
-          <View>{this.renderChoices(question)}</View>
+      <View style={styles.questionContainer}>
+        {question.attachment_url && (
+          <Image
+            style={styles.image}
+            source={{uri: question.attachment_url}}
+            resizeMethod="scale"
+            resizeMode="contain"
+          />
+        )}
+        <View style={styles.questionLeft}>
+          <Text style={styles.question}>{title}</Text>
         </View>
-      </TouchableOpacity>
+        <View>{this.renderChoices(question)}</View>
+      </View>
     );
   };
 
@@ -487,6 +491,16 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingLeft: 5,
     color: Colors.tint,
+  },
+  image: {
+    flex: 1,
+    width: itemWidth,
+    height: itemWidth * 0.66,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: Colors.black,
+    borderRadius: 5,
+    marginBottom: 10,
   },
   buttonContainer: {
     flex: 1,
