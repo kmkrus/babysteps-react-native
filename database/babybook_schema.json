@@ -6,6 +6,7 @@
       "detail": "TEXT",
       "file_name": "TEXT",
       "file_type": "TEXT",
+      "uri": "TEXT",
       "created_at": "TEXT"
     },
     "indexes": [

@@ -292,9 +292,11 @@ export class RenderFile extends Component {
   saveFile = (file) => {
     if (file && !file.cancelled) {
       file.file_type = this.props.question.rn_input_type;
-      this.props.saveResponse(this.state.choice, {
-        attachments: [file],
-      });
+      file.title = this.props.question.title;
+      this.props.saveResponse(
+        this.state.choice,
+        {attachments: [file]}
+      );
       this.setState({ choice: null });
     }
   };
