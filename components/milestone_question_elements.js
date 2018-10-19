@@ -182,7 +182,7 @@ export class RenderTextLong extends React.PureComponent {
   } // render
 }
 
-export class renderTextNumeric extends React.PureComponent {
+export class RenderTextNumeric extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let text = '';

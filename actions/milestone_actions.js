@@ -273,9 +273,10 @@ export const apiFetchMilestoneCalendar = params => {
 export const fetchMilestoneTasks = () => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_TASKS_PENDING));
-    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, mg.visible AS milestone_group_visible, ms.milestone_group_id, ms.position AS milestone_position, ms.always_visible AS milestone_always_visible, ms.title AS milestone_title, ms.momentary_assessment AS momentary_assessment, ms.response_scale AS response_scale FROM tasks AS ts';
+    let sql = 'SELECT ts.*, mg.position AS milestone_group_position, mg.visible AS milestone_group_visible, ms.milestone_group_id, ms.position AS milestone_position, ms.always_visible AS milestone_always_visible, ms.title AS milestone_title, ms.momentary_assessment AS momentary_assessment, ms.response_scale AS response_scale, ta.attachment_url as attachment_url, ta.content_type as attachment_content_type FROM tasks AS ts';
     sql += ' INNER JOIN milestones AS ms ON ms.id = ts.milestone_id';
     sql += ' INNER JOIN milestone_groups AS mg ON mg.id = ms.milestone_group_id';
+    sql += ' LEFT JOIN task_attachments AS ta ON ts.id = ta.task_id';
     sql += ' ORDER BY milestone_group_position, milestone_position, position;';
 
     return (
@@ -320,10 +321,12 @@ export const resetMilestoneQuestions = () => {
 export const fetchMilestoneQuestions = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_QUESTIONS_PENDING));
-    var sql = 'SELECT qs.*, ops.input_type, ops.rn_input_type FROM questions AS qs';
-    sql = sql + ' INNER JOIN option_groups AS ops ON qs.option_group_id = ops.id';
-    sql = sql + ' WHERE qs.section_id = ' + params['section_id'];
-    sql = sql + ' ORDER BY qs.position;';
+    var sql = 'SELECT qs.*, ops.input_type, ops.rn_input_type, ta.attachment_url, ta.content_type FROM questions AS qs';
+    sql += ' INNER JOIN option_groups AS ops ON qs.option_group_id = ops.id';
+    sql += ' INNER JOIN sections AS ss ON qs.section_id = ss.id';
+    sql += ' LEFT JOIN task_attachments AS ta ON ss.task_id = ta.task_id';
+    sql += ' WHERE ss.id = ' + params['section_id'];
+    sql += ' ORDER BY qs.position;';
 
     return (
       db.transaction(tx => {
