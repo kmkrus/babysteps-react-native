@@ -1,11 +1,12 @@
 export default {
+  '3gp': 'audio/3gpp',
   au: 'audio/basic',
   snd: 'audio/basic',
   pcm: 'audio/L24',
   mid: 'audio/mid',
   rmi: 'audio/mid',
   mp3: 'audio/mpeg',
-  mp4: 'audio audio/mp4',
+  mp4: 'audio/mp4',
   aif: 'audio/x-aiff',
   aifc: 'audio/x-aiff',
   aiff: 'audio/x-aiff',

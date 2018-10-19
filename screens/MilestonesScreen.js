@@ -9,7 +9,11 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-elements';
 
-import _ from 'lodash';
+import filter from 'lodash/filter';
+import groupBy from 'lodash/groupBy';
+import reduce from 'lodash/reduce';
+import find from 'lodash/find';
+import findIndex from 'lodash/findIndex';
 
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -36,26 +40,29 @@ class MilestonesScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const groups = nextProps.milestones.groups;
+    const groups = filter(nextProps.milestones.groups.data, {visible: 1});
     const tasks = nextProps.milestones.tasks;
     const session = nextProps.session;
     if (!tasks.fetching && tasks.fetched) {
-      tasksForList = _.filter(tasks.data, task => {
+      tasksForList = filter(tasks.data, task => {
         if (
           session.registration_state === States.REGISTERED_AS_NO_STUDY &&
           task.study_only === 1
         ) {
           return false;
         }
+        if (findIndex(groups, ['id', task.milestone_group_id]) === -1) {
+          return false;
+        }
         return true;
       });
 
-      tasksForList = _.groupBy(tasksForList, task => task.milestone_group_id);
+      tasksForList = groupBy(tasksForList, task => task.milestone_group_id);
 
-      tasksForList = _.reduce(
+      tasksForList = reduce(
         tasksForList,
         (acc, data, index) => {
-          const group = _.find(groups.data, ['id', data[0].milestone_group_id]);
+          const group = find(groups, ['id', data[0].milestone_group_id]);
           acc.push({ key: index, title: group.title, data });
           return acc;
         },

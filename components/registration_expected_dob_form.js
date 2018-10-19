@@ -123,7 +123,7 @@ class RegistrationExpectedDOB extends Component {
         initialValues={{
           respondent_ids: null,
           gender: 'unknown',
-          expected_date_of_birth: false,
+          expected_date_of_birth: null,
           conception_method: 'natural',
           screening_blood: null,
         }}
@@ -154,7 +154,7 @@ class RegistrationExpectedDOB extends Component {
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="NEXT"
-                  onPress={props.handleSubmit}
+                  onPress={props.submitForm}
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{fontWeight: 900}}
                   color={Colors.darkGreen}

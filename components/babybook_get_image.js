@@ -10,6 +10,7 @@ import { Video } from 'expo';
 
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
 
 const { width } = Dimensions.get('window');
 const widthOffset = 40;
@@ -28,7 +29,7 @@ class BabyBookGetImage extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     const item = nextProps.item;
-    if (VideoFormats.includes(item.file_type)) {
+    if (!!VideoFormats[item.file_type]) {
       return;
     }
     if (item.file_name && item.file_uri) {
@@ -54,7 +55,7 @@ class BabyBookGetImage extends Component {
   render() {
     const imageContainerHeight = this.state.imageHeight + 2;
     const uri = this.props.item.file_uri;
-    const isVideo = VideoFormats.includes(this.props.item.file_type);
+    const isVideo = !!VideoFormats[this.props.item.file_type];
     const imageHeight = this.state.imageHeight;
 
     return (

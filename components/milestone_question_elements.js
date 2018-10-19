@@ -20,13 +20,14 @@ import DatePicker from 'react-native-datepicker';
 import _ from 'lodash';
 
 import CameraModal from './camera_modal';
+import AudioModal from './audio_modal';
 
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
+import AudioFormats from '../constants/AudioFormats';
 
 const { width } = Dimensions.get('window');
-
-const itemWidth = width - 40;
 
 const previewWidth = width - 40;
 const previewHeight = width * 0.75;
@@ -255,6 +256,7 @@ export class RenderFile extends Component {
     permissionMessage: '',
     imageError: '',
     cameraModalVisible: false,
+    audioModalVisible: false,
   };
 
   handleCameraRollPermission = async () => {
@@ -270,11 +272,11 @@ export class RenderFile extends Component {
     if (source === 'library') {
       await this.handleCameraRollPermission();
       if (this.state.hasCameraRollPermission) {
-        const mediaType = this.props.format === 'Photo' ? 'Images' : 'Videos';
+        const mediaType = mediaTypes[this.props.question.rn_input_type];
         image = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: mediaType,
         });
-        this.saveImage(image);
+        this.saveFile(image);
       } else {
         this.renderNoPermissions(source);
       }
@@ -283,10 +285,15 @@ export class RenderFile extends Component {
     }
   };
 
-  saveImage = (image) => {
-    if (image && !image.cancelled) {
+  recordAudio = choice => {
+    this.setState({ choice, audioModalVisible: true });
+  };
+
+  saveFile = (file) => {
+    if (file && !file.cancelled) {
+      file.file_type = this.props.question.rn_input_type;
       this.props.saveResponse(this.state.choice, {
-        attachments: [image],
+        attachments: [file],
       });
       this.setState({ choice: null });
     }
@@ -309,73 +316,116 @@ export class RenderFile extends Component {
     this.setState({ permissionMessage: message.join(', ') });
   };
 
-  closeModal = image => {
-    this.saveImage(image);
+  _closeAudioModal = sound => {
+    this.saveFile(sound);
+    this.setState({ audioModalVisible: false });
+  };
+
+  _closeCameraModal = image => {
+    this.saveFile(image);
     this.setState({ cameraModalVisible: false });
   };
 
   render() {
-    const format = formats[this.props.question.rn_input_type];
+    const question = this.props.question;
+    const format = formats[question.rn_input_type];
     const answers = this.props.answers;
     const attachments = this.props.attachments;
+    let loadCameraModal = false;
+    let loadAudioModal = false;
 
     const collection = _.map(this.props.choices, choice => {
-      let hasUri = false;
       let isVideo = false;
+      let isImage = false;
+      let isAudio = false;
+
+      let displayVideo = false;
+      let displayImage = false;
+      let displayAudio = false;
+
       let uri = null;
       let uriParts = [];
       let image = {};
+      let fileType = null;
       const answer = _.find(answers, ['choice_id', choice.id]);
       const attachment = _.find(attachments, ['choice_id', choice.id]);
 
-      if (attachment) {
-        if (attachment.uri) {
-          uri = attachment.uri;
-          hasUri = true;
-          uriParts = uri.split('.');
-        }
-        isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
+      if (attachment && attachment.uri) {
+        uri = attachment.uri;
+        uriParts = uri.split('.');
+        fileType = uriParts[uriParts.length - 1];
+      }
+      switch (question.rn_input_type) {
+        case 'file_image':
+          isImage = true;
+          loadCameraModal = true;
+          if (fileType) {displayImage = !!ImageFormats[fileType]};
+          break;
+        case 'file_video':
+          isVideo = true;
+          loadCameraModal = true;
+          if (fileType) {displayVideo = !!VideoFormats[fileType]};
+          break;
+        case 'file_audio':
+          isAudio = true;
+          loadAudioModal = true;
+          if (fileType) {displayAudio = !!AudioFormats[fileType]};
+          break;
       }
 
       return (
         <View key={choice.id} style={styles.fileImageContainer}>
-          <Button
-            title={`Attach ${format}`}
-            buttonStyle={styles.libraryButton}
-            titleStyle={styles.buttonTitleStyle}
-            color={Colors.darkGreen}
-            onPressIn={() => this.pickImage(choice, 'library')}
-          />
-          <Button
-            title={`Take a ${format}`}
-            buttonStyle={styles.cameraButton}
-            titleStyle={styles.buttonTitleStyle}
-            color={Colors.darkGreen}
-            onPressIn={() => this.pickImage(choice, 'new')}
-          />
+          {(isImage || isVideo) && (
+            <View>
+              <Button
+                title={`Attach ${format}`}
+                buttonStyle={styles.libraryButton}
+                titleStyle={styles.buttonTitleStyle}
+                color={Colors.darkGreen}
+                onPressIn={() => this.pickImage(choice, 'library')}
+              />
+              <Button
+                title={`Take a ${format}`}
+                buttonStyle={styles.cameraButton}
+                titleStyle={styles.buttonTitleStyle}
+                color={Colors.darkGreen}
+                onPressIn={() => this.pickImage(choice, 'new')}
+              />
+            </View>
+          )}
+          {isAudio && (
+            <Button
+              title="Record Audio"
+              buttonStyle={styles.libraryButton}
+              titleStyle={styles.buttonTitleStyle}
+              color={Colors.darkGreen}
+              onPressIn={() => this.recordAudio(choice)}
+            />
+          )}
           <Text style={styles.textError}>
             {this.state.permissionMessage}
             {this.props.errorMessage}
           </Text>
 
           <View style={styles.pickImageContainer}>
-            {!!hasUri &&
-              (!!isVideo && (
-                <Video
-                  source={{ uri }}
-                  rate={1.0}
-                  volume={1.0}
-                  isMuted={false}
-                  resizeMode={Video.RESIZE_MODE_COVER}
-                  shouldPlay={false}
-                  isLooping
-                  useNativeControls
-                  style={styles.video}
-                />
-              ) ||
-              !isVideo && (
-                <Image source={{ uri }} style={styles.image} />
-              )
+            {displayVideo && (
+              <Video
+                source={{ uri: uri }}
+                rate={1.0}
+                volume={1.0}
+                isMuted={false}
+                resizeMode={Video.RESIZE_MODE_COVER}
+                shouldPlay={false}
+                isLooping
+                useNativeControls
+                style={styles.video}
+              />
+            )}
+            {displayImage && (
+              <Image source={{ uri }} style={styles.image} />
+            )}
+            {displayAudio && (
+              <Text>Recording Attached</Text>
             )}
             <Text style={styles.textError}>{this.state.imageError}</Text>
           </View>
@@ -385,10 +435,20 @@ export class RenderFile extends Component {
     return (
       <View>
         {collection}
-        <CameraModal
-          modalVisible={this.state.cameraModalVisible}
-          closeModal={image => this.closeModal(image)}
-        />
+        {loadCameraModal && (
+          <CameraModal
+            modalVisible={this.state.cameraModalVisible}
+            closeCameraModal={image => this._closeCameraModal(image)}
+            question={this.props.question}
+          />
+        )}
+        {loadAudioModal && (
+          <AudioModal
+            modalVisible={this.state.audioModalVisible}
+            closeAudioModal={sound => this._closeAudioModal(sound)}
+            question={this.props.question}
+          />
+        )}
       </View>
     );
   } // render

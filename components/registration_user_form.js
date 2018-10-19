@@ -131,7 +131,7 @@ class RegistrationUserForm extends Component {
 
                   <Button
                     title="NEXT"
-                    onPress={props.handleSubmit}
+                    onPress={props.submitForm}
                     buttonStyle={AppStyles.buttonSubmit}
                     titleStyle={ {fontWeight: 900} }
                     color={Colors.darkGreen}

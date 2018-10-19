@@ -149,7 +149,7 @@ class RegistrationNoStudyForm extends Component {
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="DONE"
-                  onPress={props.handleSubmit}
+                  onPress={props.submitForm}
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{fontWeight: 900}}
                   color={Colors.darkGreen}
