@@ -22,6 +22,8 @@ import {
 } from './types';
 
 import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
+import AudioFormats from '../constants/AudioFormats';
 
 const db = SQLite.openDatabase('babysteps.db');
 
@@ -42,14 +44,14 @@ export const resetBabyBookEntries = () => {
 export const fetchBabyBookEntries = () => {
   return function (dispatch) {
 
-    dispatch( Pending(FETCH_BABYBOOK_ENTRIES_PENDING) );
+    dispatch(Pending(FETCH_BABYBOOK_ENTRIES_PENDING));
 
     return (
       db.transaction(tx => {
         tx.executeSql(
           'SELECT * FROM babybook_entries;', [],
-          (_, response) => { dispatch( Response(FETCH_BABYBOOK_ENTRIES_FULFILLED, response) ) },
-          (_, error) => { dispatch( Response(FETCH_BABYBOOK_ENTRIES_REJECTED, error) ) }
+          (_, response) => {dispatch(Response(FETCH_BABYBOOK_ENTRIES_FULFILLED, response)) },
+          (_, error) => {dispatch(Response(FETCH_BABYBOOK_ENTRIES_REJECTED, error))}
         );
       })
     )
@@ -66,9 +68,13 @@ export const createBabyBookEntry = (data, image) => {
     const uriParts = image.uri.split('.');
     const fileType = uriParts[uriParts.length - 1];
 
-    const mimeType = VideoFormats.filter(s => s.includes(fileType));
+    const mimeType = {
+      ...VideoFormats,
+      ...ImageFormats,
+      ...AudioFormats,
+    }[fileType];
 
-    data = {...data, file_name: fileName, file_type: mimeType[0]}
+    data = {...data, file_name: fileName, file_type: mimeType}
 
     return (
       Expo.FileSystem.copyAsync({from: image.uri, to: newUri})
@@ -99,10 +105,9 @@ export const createBabyBookEntry = (data, image) => {
   }; // dispatch
 };
 
-export const updateBabyBookEntry = (id, data, image=null) => {
-  return function (dispatch) {
-
-    dispatch( Pending(UPDATE_BABYBOOK_ENTRY_PENDING) );
+export const updateBabyBookEntry = (id, data, image = null) => {
+  return function(dispatch) {
+    dispatch(Pending(UPDATE_BABYBOOK_ENTRY_PENDING));
 
     delete data.id;
 
@@ -111,7 +116,7 @@ export const updateBabyBookEntry = (id, data, image=null) => {
     var updateSQL = [];
 
     _.forEach( keys, key => {
-      updateSQL.push(key + " = '" + data[key] + "'")
+      updateSQL.push(key + " = '" + data[key] + "'");
     });
 
     updateSQL = `UPDATE babybook_entries SET ${updateSQL.join(', ')} WHERE babybook_entries.id = ${id};`
@@ -120,7 +125,7 @@ export const updateBabyBookEntry = (id, data, image=null) => {
       db.transaction(tx => {
         tx.executeSql( updateSQL, [],
           (_, response) => {
-            dispatch( Response(UPDATE_BABYBOOK_ENTRY_FULFILLED, response, data) );
+            dispatch(Response(UPDATE_BABYBOOK_ENTRY_FULFILLED, response, data));
           },
           (_, error) => {
             dispatch(Response(UPDATE_BABYBOOK_ENTRY_REJECTED, error))

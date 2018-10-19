@@ -53,6 +53,7 @@ import States from '../actions/states';
 import CONSTANTS from '../constants';
 import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
+import AudioFormats from '../constants/AudioFormats';
 
 const { width } = Dimensions.get('window');
 
@@ -253,23 +254,13 @@ class MilestoneQuestionsScreen extends Component {
           />
         );
       }
-      case 'file_image': {
-        return (
-          <RenderFile
-            choices={question.choices}
-            format={'Photo'}
-            answers={this.state.answers}
-            attachments={this.state.attachments}
-            saveResponse={this.saveResponse}
-            errorMessage={this.state.errorMessage}
-          />
-        );
-      }
+      case 'file_audio':
+      case 'file_image':
       case 'file_video': {
         return (
           <RenderFile
+            question={question}
             choices={question.choices}
-            format={'Video'}
             answers={this.state.answers}
             attachments={this.state.attachments}
             saveResponse={this.saveResponse}
@@ -301,11 +292,11 @@ class MilestoneQuestionsScreen extends Component {
       });
     }
 
-    const index = _.findIndex(answers, { choice_id: choice.id });
-
     const user = this.props.registration.user;
     const subject = this.props.registration.subject;
     const respondent = this.props.registration.respondent;
+
+    const index = _.findIndex(answers, { choice_id: choice.id });
 
     if (index === -1) {
       if (format === 'single' && !response.answer_boolean) {
@@ -339,6 +330,7 @@ class MilestoneQuestionsScreen extends Component {
       const attachmentDir = Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
       answer.attachments = [];
       _.map(response.attachments, async att => {
+debugger
         const attachment = {};
         if (response.id) {
           attachment.answer_id = response.id;
@@ -355,7 +347,20 @@ class MilestoneQuestionsScreen extends Component {
           att.uri.lastIndexOf('.') + 1,
           att.uri.length,
         );
-        attachment.content_type = [...ImageFormats, ...VideoFormats].filter(s => s.includes(fileType))[0];
+
+        switch (att.file_type) {
+          case 'file_image':
+            attachment.content_type = ImageFormats[fileType];
+            break;
+          case 'file_video':
+            attachment.content_type = VideoFormats[fileType];
+            break;
+          case 'file_audio':
+            attachment.content_type = AudioFormats[fileType];
+            break;
+          default:
+            attachment.content_type = '';
+        }
 
         await Expo.FileSystem.deleteAsync(attachment.uri, { idempotent: true });
         await Expo.FileSystem.copyAsync({ from: att.uri, to: attachment.uri });

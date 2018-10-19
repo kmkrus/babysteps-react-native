@@ -33,7 +33,7 @@ export default class DatePickerInput extends React.PureComponent {
             dateInput: {
               borderWidth: 0,
               width: '100%',
-            }
+            },
           }}
           placeholder={" "}
           onDateChange={ (value) => { this.props.handleChange(value) } }

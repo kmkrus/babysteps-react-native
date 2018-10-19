@@ -23,6 +23,8 @@ import CameraModal from './camera_modal';
 
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
+import ImageFormats from '../constants/ImageFormats';
+import AudioFormats from '../constants/AudioFormats';
 
 const { width } = Dimensions.get('window');
 
@@ -115,16 +117,21 @@ class BabyBookEntryForm extends Component {
     const image = this.state.image;
     let hasUri = false;
     let isVideo = false;
+    let isImage = false;
+    let isAudio = false;
     let uri = null;
     let uriParts = [];
-    if (image) {
-      if (image.uri) {
-        uri = image.uri;
-        hasUri = true;
-        uriParts = uri.split('.');
-      }
-      isVideo = VideoFormats.includes(`video/${uriParts[uriParts.length - 1]}`);
+
+    if (image && image.uri) {
+      uri = image.uri;
+      hasUri = true;
+      uriParts = uri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+      isVideo = !!VideoFormats[fileType];
+      isImage = !!ImageFormats[fileType];
+      isAudio = !!AudioFormats[fileType];
     }
+
     return (
       <Formik
         onSubmit={values => {
