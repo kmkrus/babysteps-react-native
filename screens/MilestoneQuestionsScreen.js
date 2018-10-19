@@ -35,6 +35,7 @@ import {
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
 } from '../actions/milestone_actions';
+import { createBabyBookEntry } from '../actions/babybook_actions';
 import {
   fetchUser,
   fetchRespondent,
@@ -330,7 +331,7 @@ class MilestoneQuestionsScreen extends Component {
       const attachmentDir = Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
       answer.attachments = [];
       _.map(response.attachments, async att => {
-debugger
+
         const attachment = {};
         if (response.id) {
           attachment.answer_id = response.id;
@@ -374,6 +375,7 @@ debugger
         answer.answer_boolean = true;
 
         _.assign(attachment, {
+          title: att.title,
           section_id: this.state.section.id,
           choice_id: choice.id,
           width: att.width,
@@ -402,6 +404,10 @@ debugger
     if (_.find(answers, a => {return !!a.attachments })) {
       _.map(answers, answer => {
         _.map(answer.attachments, attachment => {
+          if (attachment.content_type.includes('video') || attachment.content_type.includes('image')) {
+            this.props.createBabyBookEntry({title: null, detail: null}, attachment);
+          }
+          delete attachment.title;
           this.props.updateMilestoneAttachment(attachment);
         });
         // cannot bulk update answers with attachments
@@ -446,7 +452,7 @@ debugger
               color={Colors.pink}
               buttonStyle={styles.buttonTwoStyle}
               titleStyle={styles.buttonTitleStyle}
-              onPress={this.handleConfirm}
+              onPress={() => this.handleConfirm()}
               title="Confirm"
             />
           </View>
@@ -532,6 +538,7 @@ const mapDispatchToProps = {
   apiUpdateMilestoneAnswers,
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
+  createBabyBookEntry,
 };
 
 export default connect(

@@ -42,7 +42,7 @@ export const resetBabyBookEntries = () => {
 };
 
 export const fetchBabyBookEntries = () => {
-  return function (dispatch) {
+  return function(dispatch) {
 
     dispatch(Pending(FETCH_BABYBOOK_ENTRIES_PENDING));
 
@@ -55,38 +55,50 @@ export const fetchBabyBookEntries = () => {
         );
       })
     )
-  }
+  };
 };
 
 export const createBabyBookEntry = (data, image) => {
   return function(dispatch) {
     dispatch(Pending(CREATE_BABYBOOK_ENTRY_PENDING));
     const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
-    const fileName = image.uri.split('/').pop();
-    const newUri = newDir + '/' + fileName;
 
-    const uriParts = image.uri.split('.');
-    const fileType = uriParts[uriParts.length - 1];
+    data.file_name = image.filename ? image.filename : image.uri.split('/').pop();
 
-    const mimeType = {
-      ...VideoFormats,
-      ...ImageFormats,
-      ...AudioFormats,
-    }[fileType];
+    data.uri = newDir + '/' + data.file_name;
 
-    data = {...data, file_name: fileName, file_type: mimeType}
+    if (!data.title && image.title) {
+      data.title = image.title;
+    }
+
+    if (image.content_type) {
+      data.file_type = image.content_type;
+    } else {
+      const uriParts = image.uri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
+
+      data.file_type = {
+        ...VideoFormats,
+        ...ImageFormats,
+      }[fileType];
+    }
+
+    if (!data.created_at) {
+      data.created_at = new Date().toISOString();
+    }
 
     return (
-      Expo.FileSystem.copyAsync({from: image.uri, to: newUri})
-      .then(() => { 
+      Expo.FileSystem.copyAsync({from: image.uri, to: data.uri})
+      .then(() => {
         db.transaction(tx => {
           tx.executeSql(
-            'INSERT INTO babybook_entries (title, detail, file_name, file_type, created_at) VALUES (?, ?, ?, ?, ?);',
+            'INSERT INTO babybook_entries (title, detail, file_name, file_type, uri, created_at) VALUES (?, ?, ?, ?, ?, ?);',
             [
               data.title,
               data.detail,
               data.file_name,
               data.file_type,
+              data.uri,
               data.created_at,
             ],
             (_, response) => {
