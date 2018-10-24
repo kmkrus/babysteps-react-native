@@ -81,6 +81,10 @@ export const UPDATE_MILESTONE_ATTACHMENT_PENDING = 'update_milestone_attachment_
 export const UPDATE_MILESTONE_ATTACHMENT_FULFILLED = 'update_milestone_attachment_fulfilled';
 export const UPDATE_MILESTONE_ATTACHMENT_REJECTED = 'update_milestone_attachment_rejected';
 
+export const FETCH_OVERVIEW_TIMELINE_PENDING = 'fetch_overview_timeline_pending';
+export const FETCH_OVERVIEW_TIMELINE_FULFILLED = 'fetch_overview_timeline_fulfilled';
+export const FETCH_OVERVIEW_TIMELINE_REJECTED = 'fetch_overview_timeline_rejected';
+
 // Session actions
 export const SET_FETCHING_TOKEN = 'set_fetching_token';
 
