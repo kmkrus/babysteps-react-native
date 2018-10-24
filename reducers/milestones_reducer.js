@@ -83,6 +83,10 @@ import {
   UPDATE_MILESTONE_ATTACHMENT_FULFILLED,
   UPDATE_MILESTONE_ATTACHMENT_REJECTED,
 
+  FETCH_OVERVIEW_TIMELINE_PENDING,
+  FETCH_OVERVIEW_TIMELINE_FULFILLED,
+  FETCH_OVERVIEW_TIMELINE_REJECTED,
+
 } from '../actions/types';
 
 const initialState = {
@@ -168,6 +172,12 @@ const initialState = {
     error: null,
   },
   attachments: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
+  },
+  overview_timeline: {
     fetching: false,
     fetched: false,
     error: null,
@@ -481,6 +491,20 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case UPDATE_MILESTONE_ATTACHMENT_REJECTED: {
       return {...state, attachment: {...state.attachment, fetching: false, fetched: false, error: action.payload}};
+      break;
+    }
+
+    case FETCH_OVERVIEW_TIMELINE_PENDING: {
+      return {...state, overview_timeline: {...state.overview_timeline, fetching: true, fetched: false, error: null, data: [] } }
+      break;
+    }
+    case FETCH_OVERVIEW_TIMELINE_FULFILLED: {
+      const data = action.payload.rows['_array'];
+      return {...state, overview_timeline: {...state.overview_timeline, fetching: false, fetched: true, error: null, data: data } }
+      break;
+    }
+    case FETCH_OVERVIEW_TIMELINE_REJECTED: {
+      return {...state, overview_timeline: {...state.overview_timeline, fetching: false, fetched: false, error: action.payload} }
       break;
     }
 

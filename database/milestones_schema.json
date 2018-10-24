@@ -115,13 +115,15 @@
       "question_id": "INTEGER", 
       "position": "INTEGER", 
       "body": "TEXT", 
-      "score": "INTEGER", 
+      "score": "INTEGER",
+      "overview_timeline": "TEXT",
       "require_explanation": "TEXT", 
       "unit_of_measure": "TEXT"
     },
     "indexes": [
       "choices_question_id ON choices (question_id);",
-      "choices_position ON choices (position);"
+      "choices_position ON choices (position);",
+      "choices_overview_timeline ON choices (overview_timeline);"
     ]
   }
 }

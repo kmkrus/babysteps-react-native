@@ -12,7 +12,7 @@ import {
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { Camera, Permissions, Video } from 'expo';
 import * as moment from 'moment';
-import { padStart } from 'lodash';
+import padStart from 'lodash/padStart';
 import Colors from '../constants/Colors';
 
 // TODO fix horizontal styles

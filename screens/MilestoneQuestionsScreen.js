@@ -34,6 +34,7 @@ import {
   apiUpdateMilestoneAnswers,
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
+  fetchOverViewTimeline,
 } from '../actions/milestone_actions';
 import { createBabyBookEntry } from '../actions/babybook_actions';
 import {
@@ -413,6 +414,7 @@ class MilestoneQuestionsScreen extends Component {
           }
           delete attachment.title;
           this.props.updateMilestoneAttachment(attachment);
+          this.props.fetchOverViewTimeline();
         });
         // cannot bulk update answers with attachments
         if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
@@ -553,6 +555,7 @@ const mapDispatchToProps = {
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
   createBabyBookEntry,
+  fetchOverViewTimeline,
 };
 
 export default connect(

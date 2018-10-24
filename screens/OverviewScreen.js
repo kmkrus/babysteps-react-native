@@ -4,6 +4,7 @@ import {
   Text,
   View,
   ScrollView,
+  ImageBackground,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
@@ -15,9 +16,13 @@ import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
 import find from 'lodash/find';
+import findIndex from 'lodash/findIndex';
 import isEmpty from 'lodash/isEmpty';
 import filter from 'lodash/filter';
 import sortBy from 'lodash/sortBy';
+import forEach from 'lodash/forEach';
+
+import moment from 'moment';
 
 import { connect } from 'react-redux';
 
@@ -30,6 +35,7 @@ import {
   resetApiMilestoneCalendar,
   fetchMilestoneCalendar,
   apiCreateMilestoneCalendar,
+  fetchOverViewTimeline,
 } from '../actions/milestone_actions';
 
 import { fetchSubject } from '../actions/registration_actions';
@@ -45,6 +51,11 @@ const wp = (percentage, direction) => {
   const value = (percentage * direction) / 100;
   return Math.round(value);
 };
+
+const tlPhotoSize = 65;
+const tlCardHeight = tlPhotoSize + 30;
+const tlCardWidth = tlPhotoSize + 10;
+const tlCardMargin = (width - (tlCardWidth * 5)) / 6;
 
 const scContainerHeight = wp(30, height);
 const scCardHeight = wp(70, scContainerHeight);
@@ -62,12 +73,16 @@ class OverviewScreen extends React.Component {
   };
 
   state = {
+    currentIndexTimeline: 0,
     currentIndexScreening: 0,
     currentIndexMilestones: 0,
     apiFetchCalendarSubmitted: false,
     testNotificationCreated: false,
+    phSliderLoading: true,
     scSliderLoading: true,
     mgSliderLoading: true,
+    overviewTimelines: [],
+    currentTimeline: {},
     milestoneGroups: [],
     screeningEvents: [],
   };
@@ -77,10 +92,49 @@ class OverviewScreen extends React.Component {
     this.props.resetApiMilestoneCalendar();
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneCalendar();
+    this.props.fetchOverViewTimeline();
     this.props.fetchSubject();
   }
 
   componentWillReceiveProps(nextProps) {
+    const subject = nextProps.registration.subject;
+    if (!subject.fetching && subject.fetched) {
+      const overview_timeline = nextProps.milestones.overview_timeline;
+      if (!overview_timeline.fetching && overview_timeline.fetched) {
+        const base_date = subject.data.date_of_birth
+          ? subject.data.date_of_birth
+          : subject.data.expected_date_of_birth;
+        const overviewTimelines = [ ...overview_timeline.data ];
+        forEach(overviewTimelines, item => {
+          if (item.overview_timeline === 'during_pregnancy') {
+            item.weeks = 40 - moment(base_date).diff(item.notify_at, 'weeks');
+          } else {
+            item.weeks = Math.abs(moment(base_date).diff(item.notify_at, 'weeks'));
+          }
+        });
+        // find current task
+        let last_item = overviewTimelines[0];
+        let currentTimeline = overviewTimelines[0];
+        const current_date = new Date();
+        let currentIndexTimeline = 0;
+        if (moment(current_date).isAfter(last_item.notify_at)) {
+          currentTimeline = find(overviewTimelines, (item, index) => {
+            const startDate = moment(last_item.notify_at);
+            const endDate = moment(item.notify_at);
+            last_item = item;
+            currentIndexTimeline = Number(index - 2);
+            return moment(current_date).isBetween(startDate, endDate);
+          });
+        }
+        this.setState({
+          overviewTimelines,
+          currentTimeline,
+          currentIndexTimeline,
+          phSliderLoading: false,
+        });
+      }
+    }
+
     const groups = nextProps.milestones.groups;
     if (!groups.fetching && groups.fetched) {
       if (isEmpty(groups.data)) {
@@ -101,7 +155,6 @@ class OverviewScreen extends React.Component {
       } // isEmpty groups
     }
 
-    const subject = nextProps.registration.subject;
     const calendar = nextProps.milestones.calendar;
     if (!subject.fetching && subject.fetched) {
       if (!calendar.fetching && calendar.fetched) {
@@ -178,6 +231,35 @@ class OverviewScreen extends React.Component {
     } // task
   };
 
+  renderOverviewTimeline = item => {
+    const photo = item.item;
+    const timelineTitle =
+      photo.overview_timeline === 'during_pregnancy'
+        ? 'Belly Bulge'
+        : "Baby's Face";
+    let currentStyle = {};
+    if (this.state.currentTimeline.choice_id === photo.choice_id) {
+      currentStyle = styles.timelineCurrentItem;
+    }
+    const task = find(this.props.milestones.tasks.data, ['id', photo.task_id])
+    return (
+      <View key={item.currentIndex} style={styles.timeline_slide_container}>
+        {photo.uri && (
+          <Image source={{uri: photo.uri}} style={[styles.timelineImage, currentStyle]} />
+        )}
+        {!photo.uri && (
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate('MilestoneQuestions', { task })}
+          >
+            <Text style={[styles.timelineCircle, currentStyle]} />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.timelineTitle}>{timelineTitle}</Text>
+        <Text style={styles.timelineSubtitle}>Week {photo.weeks}</Text>
+      </View>
+    );
+  };
+
   renderScreeningItem = item => {
     const task = item.item;
     const longDate = new Date(task.notify_at).toLocaleDateString('en-US', {
@@ -225,33 +307,24 @@ class OverviewScreen extends React.Component {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-        >
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
+        <View style={styles.slider_container}>
+          <View style={[styles.slider, styles.timeline]}>
+            {this.state.phSliderLoading && (
+              <ActivityIndicator size="large" color={Colors.tint} />
+            )}
+            <Text style={styles.timelineHeader}>Developmental Timeline</Text>
+            <SideSwipe
+              index={this.state.currentIndexTimeline}
+              data={this.state.overviewTimelines}
+              renderItem={item => this.renderOverviewTimeline(item)}
+              itemWidth={tlCardWidth + tlCardMargin}
+              contentOffset={tlCardMargin - 2}
+              onIndexChange={index =>
+                this.setState(() => ({ currentIndexTimeline: index }))
               }
-              style={styles.welcomeImage}
             />
-            <TouchableOpacity
-              style={[styles.opacityStyle, {marginTop: 30}]}
-              onPress={() => this.testNotification({momentary_assessment: false})}
-            >
-              <Text>Fire regular notification</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.opacityStyle, {marginTop: 20}]}
-              onPress={() => this.testNotification({momentary_assessment: true})}
-            >
-              <Text>Fire momentary assessment notification</Text>
-            </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
 
         <View style={styles.slider_container}>
           <View style={styles.slider_header}>
@@ -319,26 +392,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  contentContainer: {
-    paddingTop: 30,
-  },
   opacityStyle: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
   },
   slider_container: {
     height: mgContainerHeight,
@@ -396,6 +454,49 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 5,
     marginBottom: 10,
+  },
+  timeline_slide_container: {
+    width: tlCardWidth,
+    height: tlCardHeight,
+    marginRight: tlCardMargin,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeline: {
+    marginTop: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timelineHeader: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  timelineTitle: {
+    fontSize: 10,
+    color: Colors.grey,
+  },
+  timelineSubtitle: {
+    fontSize: 9,
+    color: Colors.pink,
+  },
+  timelineCircle: {
+    width: tlPhotoSize,
+    height: tlPhotoSize,
+    borderRadius: tlPhotoSize / 2,
+    backgroundColor: Colors.lightGrey,
+  },
+  timelineImage: {
+    width: tlPhotoSize,
+    height: tlPhotoSize,
+    borderRadius: tlPhotoSize / 2,
+  },
+  timelineCurrentItem: {
+    borderWidth: 2,
+    borderColor: Colors.pink,
+  },
+  timelineBackgroundImage: {
+    width: '100%',
+    opacity: 0.2,
   },
   mg_touchable: {
     height: mgImageHeight,
@@ -455,6 +556,7 @@ const mapDispatchToProps = {
   resetApiMilestoneCalendar,
   apiCreateMilestoneCalendar,
   fetchSubject,
+  fetchOverViewTimeline,
 };
 export default connect(
   mapStateToProps,

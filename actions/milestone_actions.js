@@ -98,6 +98,10 @@ import {
   UPDATE_MILESTONE_ATTACHMENT_FULFILLED,
   UPDATE_MILESTONE_ATTACHMENT_REJECTED,
 
+  FETCH_OVERVIEW_TIMELINE_PENDING,
+  FETCH_OVERVIEW_TIMELINE_FULFILLED,
+  FETCH_OVERVIEW_TIMELINE_REJECTED,
+
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -346,19 +350,21 @@ export const resetMilestoneChoices = () => {
   };
 };
 
-export const fetchMilestoneChoices = (params={}) => {
+export const fetchMilestoneChoices = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_CHOICES_PENDING));
 
     const question_ids = `( ${params.question_ids.join(', ')} )`;
 
     let sql = 'SELECT * FROM choices';
-    sql = sql + ' WHERE question_id IN ' + question_ids;
-    sql = sql + ' ORDER BY question_id, position;';
+    if (question_ids) {
+      sql += ` WHERE question_id IN ${question_ids}`;
+    }
+    sql += ' ORDER BY question_id, position;';
 
     return (
       db.transaction(tx => {
-        tx.executeSql( 
+        tx.executeSql(
           sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_CHOICES_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_CHOICES_REJECTED, error))}
@@ -482,7 +488,7 @@ export const updateMilestoneAnswers = (section, answers) => {
       values.push(`( ${row} )`);
     });
 
-    const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES ${values.join(', ')} `;
+    const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES ${values.join(', ')};`;
 
     return (
       db.transaction(tx => {
@@ -661,4 +667,43 @@ export const updateMilestoneAttachment = attachment => {
       }) // transaction
     ) // return
   }; // dispatch
+};
+
+export const fetchOverViewTimeline = () => {
+  return dispatch => {
+    dispatch(Pending(FETCH_OVERVIEW_TIMELINE_PENDING));
+
+    let sql =
+      'SELECT DISTINCT \
+        ss.task_id AS task_id, \
+        mts.id AS milestone_trigger_id, \
+        cs.id AS choice_id, \
+        ans.id AS answer_id, \
+        cs.overview_timeline AS overview_timeline, \
+        mts.notify_at AS notify_at, \
+        ats.id AS attachment_id, \
+        ats.filename AS filename, \
+        ats.content_type AS content_type, \
+        ats.uri AS uri, \
+        ats.url AS url \
+      FROM choices AS cs';
+    sql += ' INNER JOIN questions AS qs ON qs.id = cs.question_id';
+    sql += ' INNER JOIN sections AS ss ON ss.id = qs.section_id';
+    sql += ' INNER JOIN milestone_triggers AS mts ON ss.task_id = mts.task_id';
+    sql += ' LEFT JOIN answers AS ans ON ans.choice_id = cs.id';
+    sql += ' LEFT JOIN attachments AS ats ON ans.choice_id = ats.choice_id';
+    sql += " WHERE cs.overview_timeline IN ('during_pregnancy', 'post_birth')";
+    sql += ' ORDER BY cs.overview_timeline, mts.notify_at;';
+
+    return (
+      db.transaction(tx => {
+        tx.executeSql(
+          sql, [],
+          (_, response) => {
+            dispatch(Response(FETCH_OVERVIEW_TIMELINE_FULFILLED, response))},
+          (_, error) => {dispatch(Response(FETCH_OVERVIEW_TIMELINE_REJECTED, error))}
+        );
+      })
+    );
+  };
 };

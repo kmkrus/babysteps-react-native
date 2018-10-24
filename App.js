@@ -32,8 +32,6 @@ export default class App extends Component {
 
   _loadResourcesAsync = async () => {
     await Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
       require('./assets/images/baby_book_cover_background.png'),
       require('./assets/images/baby_book_inside_background.png'),
       require('./assets/images/baby_book_picture_frame_bottom_left.png'),
@@ -50,6 +48,7 @@ export default class App extends Component {
       require('./assets/images/tour_slide_three.png'),
       require('./assets/images/tour_slide_two.png'),
       require('./assets/images/uofi_logo.png'),
+      require('./assets/images/timeline.png'),
     ]);
     await Font.loadAsync({
       // This is the font that we are using for our tab bar
