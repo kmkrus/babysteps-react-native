@@ -19,6 +19,10 @@ import {
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
 
+  UPDATE_MILESTONE_CALENDAR_PENDING,
+  UPDATE_MILESTONE_CALENDAR_FULFILLED,
+  UPDATE_MILESTONE_CALENDAR_REJECTED,
+
   RESET_API_MILESTONE_CALENDAR,
 
   API_CREATE_MILESTONE_CALENDAR_PENDING,
@@ -28,6 +32,10 @@ import {
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
   API_FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  API_UPDATE_MILESTONE_CALENDAR_PENDING,
+  API_UPDATE_MILESTONE_CALENDAR_FULFILLED,
+  API_UPDATE_MILESTONE_CALENDAR_REJECTED,
 
   FETCH_MILESTONE_TASKS_PENDING,
   FETCH_MILESTONE_TASKS_FULFILLED,
@@ -188,328 +196,821 @@ const initialState = {
 const reducer = (state = initialState, action, formData = []) => {
   switch (action.type) {
     case FETCH_MILESTONES_PENDING: {
-      return {...state, milestones: {...state.milestones, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        milestones: {
+          ...state.milestones,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONES_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, milestones: {...state.milestones, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        milestones: {
+          ...state.milestones,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONES_REJECTED: {
-      return {...state, milestones: {...state.milestones, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        milestones: {
+          ...state.milestones,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case RESET_API_MILESTONES: {
-      return {...state, api_milestones: {fetching: false, fetched: false, error: null } }
-      break;
+      return {
+        ...state,
+        api_milestones: {
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
 
     case API_FETCH_MILESTONES_PENDING: {
-      return {...state,
-        api_milestones: {...state.api_milestones, fetching: true, fetched: false, error: null },
+      return {
+        ...state,
+        api_milestones: {
+          ...state.api_milestones,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
       };
-      break;
     }
     case API_FETCH_MILESTONES_FULFILLED: {
       const data = action.payload.data;
-      return {...state,
-        api_milestones: {...state.api_milestones, fetching: false, fetched: true, error: null },
-        groups: {...state.groups, fetching: false, fetched: true, error: null, data: data.milestone_groups },
-        milestones: {...state.milestones, fetching: false, fetched: true, error: null, data: data.milestones },
-        tasks: {...state.tasks, fetching: false, fetched: true, error: null, data: data.tasks },
+      return {
+        ...state,
+        api_milestones: {
+          ...state.api_milestones,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+        groups: {
+          ...state.groups,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: data.milestone_groups,
+        },
+        milestones: {
+          ...state.milestones,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: data.milestones,
+        },
+        tasks: {
+          ...state.tasks,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: data.tasks,
+        },
       };
-      break;
     }
     case API_FETCH_MILESTONES_REJECTED: {
-      return {...state, 
-        api_milestones: {...state.api_milestones, fetching: false, error: action.payload},
+      return {
+        ...state,
+        api_milestones: {
+          ...state.api_milestones,
+          fetching: false,
+          error: action.payload,
+        },
       };
-      break;
     }
 
     case FETCH_MILESTONE_GROUPS_PENDING: {
-      return {...state, groups: { ...state.groups, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case FETCH_MILESTONE_GROUPS_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, groups: {...state.groups, fetching: false, fetched: true, data: data} }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_GROUPS_REJECTED: {
-      return {...state, groups: {...state.groups, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case FETCH_MILESTONE_CALENDAR_PENDING: {
-      return {...state, calendar: { ...state.calendar, fetching: true, fetched: false, error: null, data: []} }
-      break;
+      return {
+        ...state,
+        calendar: {
+          ...state.calendar,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_CALENDAR_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, calendar: { ...state.calendar, fetching: false, fetched: true, data: data} }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        calendar: {
+          ...state.calendar,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_CALENDAR_REJECTED: {
-      return {...state, calendar: { ...state.calendar, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        calendar: {
+          ...state.calendar,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case RESET_API_MILESTONE_CALENDAR: {
       return {...state, api_calendar: {fetching: false, fetched: false, error: null } }
-      break;
     }
 
     case API_CREATE_MILESTONE_CALENDAR_PENDING: {
-      return {...state,
-        api_calendar: { ...state.api_calendar, fetching: true, fetched: false, error: null },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
       };
-      break;
     }
     case API_CREATE_MILESTONE_CALENDAR_FULFILLED: {
-      return {...state,
-        api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
-        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+        calendar: {
+          ...state.calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.payload.data,
+        },
       };
-      break;
     }
     case API_CREATE_MILESTONE_CALENDAR_REJECTED: {
-      return {...state,
-        api_calendar: {...state.api_calendar, fetching: false, fetched: false, error: action.payload },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
       };
-      break;
     };
 
     case API_FETCH_MILESTONE_CALENDAR_PENDING: {
-      return {...state,
-        api_calendar: { ...state.api_calendar, fetching: true, fetched: false, error: null },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
       };
-      break;
     }
     case API_FETCH_MILESTONE_CALENDAR_FULFILLED: {
-      return {...state,
-        api_calendar: { ...state.api_calendar, fetching: false, fetched: true, error: null },
-        calendar: { ...state.calendar, fetching: false, fetched: true, error: null, data: action.payload.data },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+        calendar: {
+          ...state.calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.payload.data,
+        },
       };
-      break;
     }
     case API_FETCH_MILESTONE_CALENDAR_REJECTED: {
-      return {...state, 
-        api_calendar: { ...state.api_calendar, fetching: false, fetched: false, error: action.payload },
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
       };
-      break;
+    }
+
+    case API_UPDATE_MILESTONE_CALENDAR_PENDING: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_UPDATE_MILESTONE_CALENDAR_FULFILLED: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case API_UPDATE_MILESTONE_CALENDAR_REJECTED: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case FETCH_MILESTONE_TASKS_PENDING: {
-      return {...state, tasks: {...state.tasks, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_TASKS_FULFILLED: {
       const data = action.payload.rows['_array'];
-      return {...state, tasks: {...state.tasks, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_TASKS_REJECTED: {
-      return {...state, tasks: {...state.tasks, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case FETCH_MILESTONE_SECTIONS_PENDING: {
-      return {...state, sections: {...state.sections, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        sections: {
+          ...state.sections,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_SECTIONS_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, sections: {...state.sections, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        sections: {
+          ...state.sections,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_SECTIONS_REJECTED: {
-      return {...state, sections: {...state.sections, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        sections: {
+          ...state.sections,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case RESET_MILESTONE_QUESTIONS: {
-      return {...state, questions: {fetching: false, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        questions: {
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
 
     case FETCH_MILESTONE_QUESTIONS_PENDING: {
-      return {...state, questions: {...state.questions, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        questions: {
+          ...state.questions,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_QUESTIONS_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, questions: {...state.questions, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        questions: {
+          ...state.questions,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data, 
+        },
+      };
     }
     case FETCH_MILESTONE_QUESTIONS_REJECTED: {
-      return {...state, questions: {...state.questions, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        questions: {
+          ...state.questions,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case RESET_MILESTONE_CHOICES: {
-      return {...state, choices: { fetching: false, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        choices: {
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
 
     case FETCH_MILESTONE_CHOICES_PENDING: {
-      return {...state, choices: {...state.choices, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        choices: {
+          ...state.choices,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_CHOICES_FULFILLED: {
-      const data = action.payload.rows['_array']
-      return {...state, choices: {...state.choices, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        choices: {
+          ...state.choices,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_CHOICES_REJECTED: {
-      return {...state, choices: {...state.choices, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        choices: {
+          ...state.choices,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case RESET_MILESTONE_ANSWERS: {
-      return {...state, answers: {fetching: false, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        answers: {
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
 
     case FETCH_MILESTONE_ANSWERS_PENDING: {
-      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_ANSWERS_FULFILLED: {
-      let data = action.payload.rows['_array']
+      let data = action.payload.rows['_array'];
       _.map(data, (answer) => {
-        answer['answer_boolean'] = (answer['answer_boolean'] === 1)
+        answer.answer_boolean = (answer.answer_boolean === 1);
       });
-      return {...state, answers: {...state.answers, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_ANSWERS_REJECTED: {
-      return {...state, answers: {...state.answers, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case CREATE_MILESTONE_ANSWER_PENDING: {
-      return {...state, answer: {...state.answer, fetching: true, fetched: false, error: null}};
-      break;
+      return {
+        ...state,
+        answer: {
+          ...state.answer,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_MILESTONE_ANSWER_FULFILLED: {
-      return {...state, answer: {...state.answer, fetching: false, fetched: true, error: null}};
-      break;
+      return {
+        ...state,
+        answer: {
+          ...state.answer,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
     }
     case CREATE_MILESTONE_ANSWER_REJECTED: {
-      return {...state, answer: {...state.answer, fetching: false, fetched: false, error: action.payload}};
-      break;
+      return {
+        ...state,
+        answer: {
+          ...state.answer,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case UPDATE_MILESTONE_ANSWERS_PENDING: {
-      return {...state, answers: {...state.answers, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case UPDATE_MILESTONE_ANSWERS_FULFILLED: {
-      return {...state, answers: 
-        {...state.answers, fetching: false, fetched: true, error: null, data: action.formData} 
-      }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.formData,
+        },
+      };
     }
     case UPDATE_MILESTONE_ANSWERS_REJECTED: {
-      return {...state, answers: {...state.answers, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        answers: {
+          ...state.answers,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case API_CREATE_MILESTONE_ANSWER_PENDING: {
-      return {...state, apiAnswer: {...state.apiAnswer, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        apiAnswer: {
+          ...state.apiAnswer,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_CREATE_MILESTONE_ANSWER_FULFILLED: {
       const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id },
-        apiAnswer: {...state.apiAnswer, fetching: false, fetched: true, error: null, data: action.payload.data},
+      const accessToken = headers.access-token ? headers.access-token : state.auth.accessToken;
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          accessToken,
+          client: headers.client,
+          uid: headers.uid,
+          user_id: headers.user_id,
+        },
+        apiAnswer: {
+          ...state.apiAnswer,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.payload.data,
+        },
       };
-      break;
     }
     case API_CREATE_MILESTONE_ANSWER_REJECTED: {
-      return {...state, apiAnswer: {...state.apiAnswer, fetching: false, fetched: false, error: action.payload}};
-      break;
+      return {
+        ...state,
+        apiAnswer: {
+          ...state.apiAnswer,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case API_UPDATE_MILESTONE_ANSWERS_PENDING: {
-      return {...state, apiAnswers: {...state.apiAnswers, fetching: true, fetched: false, error: null}};
-      break;
+      return {
+        ...state,
+        apiAnswers: {
+          ...state.apiAnswers,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_UPDATE_MILESTONE_ANSWERS_FULFILLED: {
       const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiAnswers: {...state.apiAnswers, fetching: false, fetched: true, error: null }
-      }
-      break;
+      const accessToken = headers.access-token ? headers.access-token : state.auth.accessToken;
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          accessToken,
+          client: headers.client,
+          uid: headers.uid,
+          user_id: headers.user_id,
+        },
+        apiAnswers: {
+          ...state.apiAnswers,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
     }
     case API_UPDATE_MILESTONE_ANSWERS_REJECTED: {
-      return {...state, apiAnswers: {...state.apiAnswers, fetching: false, fetched: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        apiAnswers: {
+          ...state.apiAnswers,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case FETCH_MILESTONE_ATTACHMENTS_PENDING: {
-      return {...state, attachments: {...state.attachments, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        attachments: {
+          ...state.attachments,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_MILESTONE_ATTACHMENTS_FULFILLED: {
-      let data = action.payload.rows['_array']
-      return {...state, attachments: {...state.attachments, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      const data = action.payload.rows['_array'];
+      return {
+        ...state,
+        attachments: {
+          ...state.attachments,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_MILESTONE_ATTACHMENTS_REJECTED: {
-      return {...state, attachments: {...state.attachments, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        attachments: {
+          ...state.attachments,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case CREATE_MILESTONE_ATTACHMENT_PENDING: {
-      return {...state, attachment: {...state.attachment, fetching: true, fetched: false, error: null}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_MILESTONE_ATTACHMENT_FULFILLED: {
-      return {...state, attachment: {...state.attachment, fetching: false, fetched: true, error: null}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
     }
     case CREATE_MILESTONE_ATTACHMENT_REJECTED: {
-      return {...state, attachment: {...state.attachment, fetching: false, fetched: false, error: action.payload}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case UPDATE_MILESTONE_ATTACHMENT_PENDING: {
-      return {...state, attachment: {...state.attachment, fetching: true, fetched: false, error: null}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case UPDATE_MILESTONE_ATTACHMENT_FULFILLED: {
-      return {...state, attachment: {...state.attachment, fetching: false, fetched: true, error: null}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
     }
     case UPDATE_MILESTONE_ATTACHMENT_REJECTED: {
-      return {...state, attachment: {...state.attachment, fetching: false, fetched: false, error: action.payload}};
-      break;
+      return {
+        ...state,
+        attachment: {
+          ...state.attachment,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     case FETCH_OVERVIEW_TIMELINE_PENDING: {
-      return {...state, overview_timeline: {...state.overview_timeline, fetching: true, fetched: false, error: null, data: [] } }
-      break;
+      return {
+        ...state,
+        overview_timeline: {
+          ...state.overview_timeline,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+      };
     }
     case FETCH_OVERVIEW_TIMELINE_FULFILLED: {
       const data = action.payload.rows['_array'];
-      return {...state, overview_timeline: {...state.overview_timeline, fetching: false, fetched: true, error: null, data: data } }
-      break;
+      return {
+        ...state,
+        overview_timeline: {
+          ...state.overview_timeline,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
+      };
     }
     case FETCH_OVERVIEW_TIMELINE_REJECTED: {
-      return {...state, overview_timeline: {...state.overview_timeline, fetching: false, fetched: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        overview_timeline: {
+          ...state.overview_timeline,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
-  default:
-    return state
+    default: {
+      return state;
+    }
   }
 };
 

@@ -34,6 +34,10 @@ import {
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
 
+  UPDATE_MILESTONE_CALENDAR_PENDING,
+  UPDATE_MILESTONE_CALENDAR_FULFILLED,
+  UPDATE_MILESTONE_CALENDAR_REJECTED,
+
   RESET_API_MILESTONE_CALENDAR,
 
   API_CREATE_MILESTONE_CALENDAR_PENDING,
@@ -43,6 +47,10 @@ import {
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
   API_FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  API_UPDATE_MILESTONE_CALENDAR_PENDING,
+  API_UPDATE_MILESTONE_CALENDAR_FULFILLED,
+  API_UPDATE_MILESTONE_CALENDAR_REJECTED,
 
   FETCH_MILESTONE_TASKS_PENDING,
   FETCH_MILESTONE_TASKS_FULFILLED,
@@ -210,6 +218,25 @@ export const fetchMilestoneCalendar = () => {
 
 };
 
+export const updateMilestoneCalendar = (task_id) => {
+  return dispatch => {
+    dispatch(Pending(UPDATE_MILESTONE_CALENDAR_PENDING));
+    return (
+      db.transaction(tx => {
+        tx.executeSql(`UPDATE milestone_triggers SET completed_at = '${new Date().toISOString()}' WHERE task_id = ${task_id};`,
+          [],
+          (_, response) => { 
+            dispatch( Response(UPDATE_MILESTONE_CALENDAR_FULFILLED, response) );
+          },
+          (_, error) => { 
+            dispatch( Response(UPDATE_MILESTONE_CALENDAR_REJECTED, error) ) 
+          }
+        );
+      })
+    );
+  };
+};
+
 export const resetApiMilestoneCalendar = () => {
   return dispatch => {
     dispatch(Pending(RESET_API_MILESTONE_CALENDAR));
@@ -250,7 +277,7 @@ export const apiFetchMilestoneCalendar = params => {
     dispatch(Pending(API_FETCH_MILESTONE_CALENDAR_PENDING));
 
     if (CONSTANTS.COMPRESS_MILESTONE_CALENDAR) {
-      params.test = 'true';
+      params.testing = 'true';
     }
 
     return new Promise((resolve, reject) => {
@@ -269,6 +296,30 @@ export const apiFetchMilestoneCalendar = params => {
         })
         .catch(error => {
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
+};
+
+
+export const apiUpdateMilestoneCalendar = (id, data) => {
+  return dispatch => {
+    dispatch(Pending(API_UPDATE_MILESTONE_CALENDAR_PENDING));
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'put',
+        responseType: 'json',
+        baseURL: CONSTANTS.BASE_URL,
+        url: `/milestone_calendars/${id}`,
+        data,
+        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+      })
+        .then(response => {
+          dispatch(Response(API_UPDATE_MILESTONE_CALENDAR_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_UPDATE_MILESTONE_CALENDAR_REJECTED, error));
         });
     }); // return Promise
   }; // return dispatch

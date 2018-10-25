@@ -150,7 +150,7 @@ class ConsentAgreementForm extends Component {
             checked={this.state.screeningBlood == true}
             containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
             onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
-           />
+          />
 
           <CheckBox
             title='No, I do not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose. '
@@ -158,7 +158,7 @@ class ConsentAgreementForm extends Component {
             checked={this.state.screeningBlood == false}
             containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
             onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
-           />
+          />
 
         </View>
 

@@ -35,6 +35,8 @@ import {
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
   fetchOverViewTimeline,
+  updateMilestoneCalendar,
+  apiUpdateMilestoneCalendar,
 } from '../actions/milestone_actions';
 import { createBabyBookEntry } from '../actions/babybook_actions';
 import {
@@ -336,7 +338,6 @@ class MilestoneQuestionsScreen extends Component {
       const attachmentDir = Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
       answer.attachments = [];
       _.map(response.attachments, async att => {
-
         const attachment = {};
         if (response.id) {
           attachment.answer_id = response.id;
@@ -402,8 +403,10 @@ class MilestoneQuestionsScreen extends Component {
     const answers = this.state.answers;
     // TODO validation
     // TODO move to next section if more than one section in this task
+    // TOTO don't mark task complete if any sections are incomplete
     // TODO update milestone_triggers completed_at if task complete
     this.props.updateMilestoneAnswers(section, answers);
+    this.props.updateMilestoneCalendar(section.task_id);
 
     // save attachments
     if (_.find(answers, a => {return !!a.attachments })) {
@@ -423,6 +426,11 @@ class MilestoneQuestionsScreen extends Component {
       });
     } else if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
       this.props.apiUpdateMilestoneAnswers(this.props.session, section.id, answers);
+      const calendar = _.find(this.props.milestones.calendar.data, ['task_id', section.task_id]);
+      if (calendar && calendar.id) {
+        const date = new Date().toISOString();
+        this.props.apiUpdateMilestoneCalendar(calendar.id, {milestone_trigger: {completed_at: date}});
+      }
     }
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
@@ -556,6 +564,8 @@ const mapDispatchToProps = {
   updateMilestoneAttachment,
   createBabyBookEntry,
   fetchOverViewTimeline,
+  updateMilestoneCalendar,
+  apiUpdateMilestoneCalendar,
 };
 
 export default connect(
