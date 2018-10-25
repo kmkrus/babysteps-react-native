@@ -73,6 +73,12 @@ class MilestonesScreen extends Component {
 
   renderItem = item => {
     const task = item.item;
+    let checboxName = 'checkbox-blank-outline';
+    const calendar = find(this.props.milestones.calendar.data, ['task_id', task.id])
+    if (calendar && calendar.completed_at) {
+      checboxName = 'checkbox-marked-outline';
+    }
+
     return (
       <TouchableOpacity
         onPress={() =>
@@ -82,7 +88,7 @@ class MilestonesScreen extends Component {
         <View style={styles.itemContainer}>
           <View style={styles.itemLeft}>
             <MaterialCommunityIcons
-              name="checkbox-blank-outline"
+              name={checboxName}
               style={styles.itemCheckBox}
             />
             <Text style={styles.item}>{`${task.milestone_title} - ${task.name}`}</Text>
@@ -141,8 +147,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   itemCheckBox: {
-    fontSize: 22,
-    color: Colors.lightGrey,
+    fontSize: 24,
+    color: Colors.grey,
   },
   itemRightArrow: {
     fontSize: 22,
