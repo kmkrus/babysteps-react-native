@@ -108,7 +108,7 @@ class BabyBookEntryForm extends Component {
     this.setState({ permissionMessage: message.join(', ') });
   };
 
-  closeModal = image => {
+  closeCameraModal = image => {
     if (image) this.setState({ image });
     this.setState({ cameraModalVisible: false });
   };
@@ -216,7 +216,7 @@ class BabyBookEntryForm extends Component {
 
               <CameraModal
                 modalVisible={this.state.cameraModalVisible}
-                closeModal={image => this.closeModal(image)}
+                closeCameraModal={image => this.closeCameraModal(image)}
               />
             </Form>
           );

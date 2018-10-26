@@ -440,7 +440,7 @@ export class RenderFile extends Component {
           <CameraModal
             modalVisible={this.state.cameraModalVisible}
             closeCameraModal={image => this._closeCameraModal(image)}
-            question={this.props.question}
+            choice={this.state.choice}
           />
         )}
         {loadAudioModal && (

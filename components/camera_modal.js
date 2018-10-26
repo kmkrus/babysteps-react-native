@@ -17,6 +17,9 @@ import Colors from '../constants/Colors';
 
 // TODO fix horizontal styles
 const { width, height } = Dimensions.get('window');
+const cameraFacePositionMargin = 35;
+const cameraFacePositionWidth = width - (cameraFacePositionMargin * 2);
+const cameraFacePositionHeight = (height * 0.6) - cameraFacePositionMargin;
 
 const mediaTypes = {
   file_audio: 'audio',
@@ -163,7 +166,7 @@ class CameraModal extends Component {
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
           <View style={styles.bottomBarAction}>
-            <TouchableOpacity onPressIn={this.props.closeCameraModal}>
+            <TouchableOpacity onPressIn={() => this.props.closeCameraModal(null)}>
               <Image
                 style={{
                   width: 22,
@@ -317,6 +320,10 @@ class CameraModal extends Component {
 
   render() {
     const { confirmingImage, flashMode, type } = this.state;
+    let showCameraFacePosition = false;
+    if (this.props.choice !== undefined && this.props.choice) {
+      showCameraFacePosition = this.props.choice.overview_timeline === 'post_birth';
+    }
     return (
       <Modal
         animationType="slide"
@@ -342,6 +349,13 @@ class CameraModal extends Component {
               ? this.renderConfirmImage()
               : this.renderBottomBar()}
           </Camera>
+          {showCameraFacePosition && (
+            <Image
+              source={require('../assets/images/camera_face_position.png')}
+              style={styles.cameraFacePosition}
+              resizeMode='stretch'
+            />
+          )}
         </View>
       </Modal>
     );
@@ -395,6 +409,16 @@ const styles = StyleSheet.create({
     height: height - 165,
     alignSelf: 'flex-start',
     width: '100%',
+  },
+  cameraFacePosition: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: cameraFacePositionWidth,
+    height: cameraFacePositionHeight,
+    marginTop: cameraFacePositionMargin,
+    marginLeft: cameraFacePositionMargin,
+    marginRight: cameraFacePositionMargin,
   },
   takePictureButton: {
     width: 74,
