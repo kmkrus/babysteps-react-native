@@ -4,7 +4,6 @@ import {
   Text,
   View,
   ScrollView,
-  ImageBackground,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
@@ -16,7 +15,6 @@ import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
 import find from 'lodash/find';
-import findIndex from 'lodash/findIndex';
 import isEmpty from 'lodash/isEmpty';
 import filter from 'lodash/filter';
 import sortBy from 'lodash/sortBy';
@@ -42,7 +40,7 @@ import { fetchSubject } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
-import CONSTANTS from '../constants';
+
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
 
 const { width, height } = Dimensions.get('window');
