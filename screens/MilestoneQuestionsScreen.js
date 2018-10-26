@@ -53,6 +53,7 @@ import {
   RenderTextNumeric,
   RenderDate,
   RenderFile,
+  RenderExternalLink,
 } from '../components/milestone_question_elements';
 
 import Colors from '../constants/Colors';
@@ -271,6 +272,17 @@ class MilestoneQuestionsScreen extends Component {
             choices={question.choices}
             answers={this.state.answers}
             attachments={this.state.attachments}
+            saveResponse={this.saveResponse}
+            errorMessage={this.state.errorMessage}
+          />
+        );
+      }
+      case 'external_link': {
+        return (
+          <RenderExternalLink
+            question={question}
+            choices={question.choices}
+            answers={this.state.answers}
             saveResponse={this.saveResponse}
             errorMessage={this.state.errorMessage}
           />

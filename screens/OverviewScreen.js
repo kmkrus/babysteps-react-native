@@ -117,7 +117,7 @@ class OverviewScreen extends React.Component {
         let currentTimeline = overviewTimelines[0];
         const current_date = new Date();
         let currentIndexTimeline = 0;
-        if (moment(current_date).isAfter(last_item.notify_at)) {
+        if (last_item && moment(current_date).isAfter(last_item.notify_at)) {
           currentTimeline = find(overviewTimelines, (item, index) => {
             const startDate = moment(last_item.notify_at);
             const endDate = moment(item.notify_at);
