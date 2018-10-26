@@ -3,7 +3,6 @@ import {
   View,
   Image,
   StyleSheet,
-  FlatList,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
@@ -14,7 +13,7 @@ import {
   FormLabel,
   FormInput,
 } from 'react-native-elements';
-import { ImagePicker, Permissions, Video } from 'expo';
+import { ImagePicker, Permissions, Video, WebBrowser } from 'expo';
 import DatePicker from 'react-native-datepicker';
 
 import _ from 'lodash';
@@ -456,6 +455,32 @@ export class RenderFile extends Component {
   } // render
 }
 
+export class RenderExternalLink extends React.PureComponent {
+
+  handleLinkPress = choice => {
+    WebBrowser.openBrowserAsync(choice.body);
+    this.props.saveResponse(choice, { answer_boolean: true });
+  };
+
+  render() {
+    const collection = _.map(this.props.choices, choice => {
+      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const completed = answer && answer.answer_boolean;
+
+      //
+      return (
+        <View key={choice.id}>
+          <TouchableOpacity onPress={() => this.handleLinkPress(choice)}>
+            <Text style={styles.externalLink}>{choice.body}</Text>
+          </TouchableOpacity>
+          <Text style={styles.externalLinkHelper}>Press Confirm when completed.</Text>
+        </View>
+      );
+    });
+    return <View>{collection}</View>;
+  } // render
+}
+
 const styles = StyleSheet.create({
   checkBoxChoiceContainer: {
     padding: 0,
@@ -523,5 +548,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: videoWidth,
     height: videoHeight,
+  },
+  externalLink: {
+    padding: 10,
+    marginLeft: 20,
+    fontSize: 16,
+    color: Colors.tintColor,
+  },
+  externalLinkHelper: {
+    marginLeft: 30,
+    fontSize: 12,
+    color: Colors.grey,
   },
 });
