@@ -732,6 +732,8 @@ export const fetchOverViewTimeline = () => {
         ans.id AS answer_id, \
         cs.overview_timeline AS overview_timeline, \
         mts.notify_at AS notify_at, \
+        mts.available_start_at, \
+        mts.available_end_at, \
         ats.id AS attachment_id, \
         ats.filename AS filename, \
         ats.content_type AS content_type, \

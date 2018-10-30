@@ -15,10 +15,12 @@ import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
 import find from 'lodash/find';
+import findIndex from 'lodash/findIndex';
 import isEmpty from 'lodash/isEmpty';
 import filter from 'lodash/filter';
 import sortBy from 'lodash/sortBy';
 import forEach from 'lodash/forEach';
+import remove from 'lodash/remove';
 
 import moment from 'moment';
 
@@ -97,12 +99,21 @@ class OverviewScreen extends React.Component {
   componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     if (!subject.fetching && subject.fetched) {
+      const base_date = subject.data.date_of_birth
+        ? subject.data.date_of_birth
+        : subject.data.expected_date_of_birth;
+
+      const currentWeek = moment().diff(base_date, 'weeks');
+
       const overview_timeline = nextProps.milestones.overview_timeline;
       if (!overview_timeline.fetching && overview_timeline.fetched) {
-        const base_date = subject.data.date_of_birth
-          ? subject.data.date_of_birth
-          : subject.data.expected_date_of_birth;
+        
         const overviewTimelines = [ ...overview_timeline.data ];
+        // remove if not complete and after available_end_at
+        remove(overviewTimelines, item =>{
+          return (moment().isAfter(item.available_end_at) && !item.uri);
+        });
+        // calculate weeks
         forEach(overviewTimelines, item => {
           if (item.overview_timeline === 'during_pregnancy') {
             item.weeks = 40 - moment(base_date).diff(item.notify_at, 'weeks');
@@ -110,51 +121,76 @@ class OverviewScreen extends React.Component {
             item.weeks = Math.abs(moment(base_date).diff(item.notify_at, 'weeks'));
           }
         });
-        // find current task
-        let last_item = overviewTimelines[0];
-        let currentTimeline = overviewTimelines[0];
-        const current_date = new Date();
-        let currentIndexTimeline = 0;
-        if (last_item && moment(current_date).isAfter(last_item.notify_at)) {
-          currentTimeline = find(overviewTimelines, (item, index) => {
-            const startDate = moment(last_item.notify_at);
-            const endDate = moment(item.notify_at);
-            last_item = item;
-            currentIndexTimeline = Number(index - 2);
-            return moment(current_date).isBetween(startDate, endDate);
+
+        // find current incomplete task
+        let currentIndexTimeline = findIndex(overviewTimelines, item => {
+          return (
+            !item.uri &&
+            moment().isAfter(item.available_start_at) &&
+            moment().isBefore(item.available_end_at)
+          );
+        });
+        // if none, find current task
+        if (currentIndexTimeline === -1) {
+          currentIndexTimeline = findIndex(overviewTimelines, item => {
+            return (
+              moment().isAfter(item.available_start_at) &&
+              moment().isBefore(item.available_end_at)
+            );
           });
         }
+        // if none, find first incomplete
+        if (currentIndexTimeline === -1) {
+          currentIndexTimeline = findIndex(overviewTimelines, item => {
+            return !item.uri;
+          });
+        }
+        // if none, return last
+        if (currentIndexTimeline === -1) {
+          currentIndexTimeline = overviewTimelines.length - 1;
+        }
+        const currentTimeline = overviewTimelines[currentIndexTimeline];
+
         this.setState({
           overviewTimelines,
           currentTimeline,
           currentIndexTimeline,
           phSliderLoading: false,
         });
-      }
-    }
+      } // if overview fetched
+    
+      const groups = nextProps.milestones.groups;
+      if (!groups.fetching && groups.fetched) {
+        if (isEmpty(groups.data)) {
+          const api_milestones = nextProps.milestones.api_milestones;
+          if (!api_milestones.fetching && !api_milestones.fetched) {
+            this.props.apiFetchMilestones();
+          }
+        } else {
+          const milestoneGroups = filter(groups.data, {visible: 1});
+          milestoneGroups = sortBy(milestoneGroups, ['position']);
+          milestoneGroups.forEach((group, index) => {
+            group.uri = milestoneGroupImages[index];
+          });
+          // locate index of current milestone group
+          let currentIndexMilestones = findIndex(milestoneGroups, group => {
+            return (
+              currentWeek >= group.week_start_at &&
+              currentWeek <= group.week_end_at
+            );
+          });
+          currentIndexMilestones =
+            currentIndexMilestones === -1 ? 0 : currentIndexMilestones;
 
-    const groups = nextProps.milestones.groups;
-    if (!groups.fetching && groups.fetched) {
-      if (isEmpty(groups.data)) {
-        const api_milestones = nextProps.milestones.api_milestones;
-        if (!api_milestones.fetching && !api_milestones.fetched) {
-          this.props.apiFetchMilestones();
-        }
-      } else {
-        const milestoneGroups = filter(groups.data, {visible: 1});
-        milestoneGroups = sortBy(milestoneGroups, ['position']);
-        milestoneGroups.forEach((group, index) => {
-          group.uri = milestoneGroupImages[index];
-        });
-        this.setState({
-          milestoneGroups: milestoneGroups,
-          mgSliderLoading: false,
-        });
-      } // isEmpty groups
-    }
+          this.setState({
+            currentIndexMilestones,
+            milestoneGroups,
+            mgSliderLoading: false,
+          });
+        } // isEmpty groups
+      } // if groups fetched
 
-    const calendar = nextProps.milestones.calendar;
-    if (!subject.fetching && subject.fetched) {
+      const calendar = nextProps.milestones.calendar;
       if (!calendar.fetching && calendar.fetched) {
         if (isEmpty(calendar.data)) {
           const api_calendar = nextProps.milestones.api_calendar;
@@ -235,23 +271,42 @@ class OverviewScreen extends React.Component {
       photo.overview_timeline === 'during_pregnancy'
         ? 'Belly Bulge'
         : "Baby's Face";
-    let currentStyle = {};
-    if (this.state.currentTimeline.choice_id === photo.choice_id) {
-      currentStyle = styles.timelineCurrentItem;
-    }
-    const task = find(this.props.milestones.tasks.data, ['id', photo.task_id])
+    const currentTimeline = this.state.currentTimeline.choice_id === photo.choice_id;
+    const currentStyle = currentTimeline ? styles.timelineCurrentItem : {};
+
+    const task = find(this.props.milestones.tasks.data, ['id', photo.task_id]);
     return (
-      <View key={item.currentIndex} style={styles.timeline_slide_container}>
-        {photo.uri && (
-          <Image source={{uri: photo.uri}} style={[styles.timelineImage, currentStyle]} />
+      <View key={photo.choice_id} style={styles.timeline_slide_container}>
+        {!!photo.uri && (
+          <Image
+            source={{ uri: photo.uri }}
+            style={[styles.timelineImage, currentStyle]}
+            resizeMode='cover'
+          />
         )}
-        {!photo.uri && (
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('MilestoneQuestions', { task })}
-          >
-            <Text style={[styles.timelineCircle, currentStyle]} />
-          </TouchableOpacity>
-        )}
+        {!photo.uri &&
+          !currentTimeline && (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('MilestoneQuestions', { task })}
+            >
+              <Text style={[styles.timelineCircle, currentStyle]} />
+            </TouchableOpacity>
+          )}
+        {!photo.uri &&
+          !!currentTimeline && (
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('MilestoneQuestions', { task })}
+            >
+              <View style={styles.cameraImageContainer}>
+                <Image
+                  source={require('../assets/images/overview_camera.png')}
+                  style={styles.cameraImage}
+                  resizeMode="cover"
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+
         <Text style={styles.timelineTitle}>{timelineTitle}</Text>
         <Text style={styles.timelineSubtitle}>Week {photo.weeks}</Text>
       </View>
@@ -268,12 +323,14 @@ class OverviewScreen extends React.Component {
     });
 
     return (
-      <View style={styles.screening_slide_container}>
-        <Text numberOfLines={1} style={styles.screening_title}>{ task.title }</Text>
-        <Text numberOfLines={1} style={styles.screening_date}> { longDate }</Text>
-        <Text numberOfLines={3} style={styles.screening_text}>{ task.message }</Text>
+      <View key={item.currentIndex} style={styles.screening_slide_container}>
+        <TouchableOpacity>
+          <Text numberOfLines={1} style={styles.screening_title}>{ task.title }</Text>
+          <Text numberOfLines={1} style={styles.screening_date}> { longDate }</Text>
+          <Text numberOfLines={3} style={styles.screening_text}>{ task.message }</Text>
+        </TouchableOpacity>
         <View style={styles.screening_slide_link}>
-          <TouchableOpacity key={item.currentIndex} style={styles.screening_button}>
+          <TouchableOpacity style={styles.screening_button}>
             <Text style={styles.screening_button_text}>Get Started</Text>
           </TouchableOpacity>
         </View>
@@ -312,13 +369,13 @@ class OverviewScreen extends React.Component {
             )}
             <Text style={styles.timelineHeader}>Developmental Timeline</Text>
             <SideSwipe
-              index={this.state.currentIndexTimeline}
+              index={this.state.currentIndexTimeLine}
               data={this.state.overviewTimelines}
               renderItem={item => this.renderOverviewTimeline(item)}
               itemWidth={tlCardWidth + tlCardMargin}
-              contentOffset={tlCardMargin - 2}
+              contentOffset={tlCardMargin}
               onIndexChange={index =>
-                this.setState(() => ({ currentIndexTimeline: index }))
+                this.setState(() => ({ currentIndexTimeLine: index }))
               }
             />
           </View>
@@ -421,7 +478,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   slide_item_footer_text: {
-    color: Colors.white,
+    color: Colors.grey,
+    fontWeight: '400',
     width: '100%',
     backgroundColor: Colors.lightGrey,
     paddingVertical: 10,
@@ -492,9 +550,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.pink,
   },
-  timelineBackgroundImage: {
-    width: '100%',
-    opacity: 0.2,
+  cameraImageContainer: {
+    width: tlPhotoSize,
+    height: tlPhotoSize,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: tlPhotoSize / 2,
+    borderWidth: 2,
+    borderColor: Colors.pink,
+  },
+  cameraImage: {
+    width: tlPhotoSize * 0.6,
+    height: tlPhotoSize * 0.6 * 0.75,
   },
   mg_touchable: {
     height: mgImageHeight,
@@ -514,20 +581,23 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   screening_title: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.darkGrey,
-    fontWeight: '900',
+    fontWeight: '600',
   },
   screening_date: {
-    fontSize: 10,
-    color: Colors.darkGrey,
+    fontSize: 12,
+    color: Colors.green,
   },
   screening_text: {
     fontSize: 12,
     color: Colors.darkGrey,
   },
   screening_button: {
-    padding: 3,
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingRight: 15,
+    paddingLeft: 15,
     borderWidth: 1,
     borderColor: Colors.pink,
     backgroundColor: Colors.lightPink,
@@ -535,7 +605,7 @@ const styles = StyleSheet.create({
   },
   screening_button_text: {
     fontSize: 12,
-    color: Colors.darkPink,
+    color: Colors.pink,
   },
 });
 

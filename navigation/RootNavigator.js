@@ -7,7 +7,7 @@ import { createStackNavigator } from 'react-navigation';
 
 import find from 'lodash/find';
 
-import { showMessage } from "react-native-flash-message";
+import { showMessage } from 'react-native-flash-message';
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';

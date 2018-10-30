@@ -13,7 +13,9 @@
       "study_id": "INTEGER", 
       "position": "INTEGER",
       "visible": "INTEGER", 
-      "title": "TEXT"
+      "title": "TEXT",
+      "week_start_at": "INTEGER",
+      "week_end_at": "INTEGER",
     },
     "indexes": [
       "milestone_groups_study_id ON milestone_groups (study_id);",

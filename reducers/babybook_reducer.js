@@ -1,5 +1,4 @@
 import {
-
   RESET_BABYBOOK_ENTRIES,
 
   FETCH_BABYBOOK_ENTRIES_PENDING,
@@ -13,7 +12,6 @@ import {
   UPDATE_BABYBOOK_ENTRY_PENDING,
   UPDATE_BABYBOOK_ENTRY_FULFILLED,
   UPDATE_BABYBOOK_ENTRY_REJECTED,
-
 } from '../actions/types';
 
 import { _ } from 'lodash';
@@ -27,59 +25,126 @@ const initialState = {
   }
 };
 
-const reducer = (state=initialState, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
 
     case RESET_BABYBOOK_ENTRIES: {
-      return {...state, entries: {...state.entries, fetching: false, fetched: false, error: null }}
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
 
     case FETCH_BABYBOOK_ENTRIES_PENDING: {
-      return {...state, entries: { ...state.entries, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case FETCH_BABYBOOK_ENTRIES_FULFILLED: {
-      var data = action.payload.rows['_array'];
-      _.forEach(data, function(item) {
-        item.id = String(item.id) // key needs to be string for SideSwipe
-      })
-      data = _.orderBy(data, ['created_at'], ['desc'])
-      return {...state, entries: { ...state.entries, fetching: false, fetched: true, data: data }}
-      break;
+      let data = action.payload.rows['_array'];
+      _.forEach(data, item => {
+        item.id = String(item.id); // key needs to be string for SideSwipe
+      });
+      data = _.orderBy(data, ['created_at'], ['desc']);
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_BABYBOOK_ENTRIES_REJECTED: {
-      return {...state, entries: { ...state.entries, fetching: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case CREATE_BABYBOOK_ENTRY_PENDING: {
-      return {...state, entries: { ...state.entries, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_BABYBOOK_ENTRY_FULFILLED: {
-      return {...state, entries: { ...state.entries, fetching: false, fetched: true }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          fetched: true,
+        },
+      };
     }
     case CREATE_BABYBOOK_ENTRY_REJECTED: {
-      return {...state, entries: { ...state.entries, fetching: false, error: action.payload}}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case UPDATE_BABYBOOK_ENTRY_PENDING: {
-      return {...state, entries: { ...state.entries, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case UPDATE_BABYBOOK_ENTRY_FULFILLED: {
-      return {...state, entries: { ...state.entries, fetching: false, fetched: true }}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          fetched: true,
+        },
+      };
     }
     case UPDATE_BABYBOOK_ENTRY_REJECTED: {
-      return {...state, entries: { ...state.entries, fetching: false, error: action.payload}}
-      break;
+      return {
+        ...state,
+        entries: {
+          ...state.entries,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
-  default: 
-    return state
+    default: {
+      return state;
+    }
   }
 };
 
