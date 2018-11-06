@@ -5,7 +5,7 @@ export default {
   DROP_REGISTRATION_TABLES: false,
   DROP_ANSWER_TABLE: false,
   DROP_BABYBOOK_TABLES: false,
-  COMPRESS_MILESTONE_CALENDAR: true,
+  COMPRESS_MILESTONE_CALENDAR: false,
 
   // Custom Directories
   BABYBOOK_DIRECTORY: 'babybook',

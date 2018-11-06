@@ -36,33 +36,19 @@ import {
   fetchSubject,
 } from '../actions/registration_actions';
 
-import {
-  RenderCheckBox,
-  RenderCheckYesNo,
-  RenderTextShort,
-  RenderTextLong,
-  RenderTextNumeric,
-  RenderDate,
-  RenderFile,
-  RenderExternalLink,
-} from '../components/milestone_question_elements';
-
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import CONSTANTS from '../constants';
-import VideoFormats from '../constants/VideoFormats';
-import ImageFormats from '../constants/ImageFormats';
-import AudioFormats from '../constants/AudioFormats';
 
 const { width } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 const twoButtonWidth = (width / 2) - 30;
 
-class MilestoneQuestionsScreen extends Component {
+class MilestoneQuestionBirthScreen extends Component {
   static navigationOptions = ({ navigation }) => {
-    const section = navigation.getParam('section', {title: ''});
-    return { title: section.title };
+    const title = navigation.getParam('section', '');
+    return { title };
   };
 
   constructor(props) {
@@ -81,14 +67,14 @@ class MilestoneQuestionsScreen extends Component {
   }
 
   componentWillMount() {
-    this.props.resetMilestoneQuestions();
-    this.props.resetMilestoneChoices();
-    this.props.resetMilestoneAnswers();
-    const task = this.props.navigation.state.params.task;
-    this.props.fetchMilestoneSections({ task_id: task.id });
-    this.props.fetchUser();
-    this.props.fetchRespondent();
-    this.props.fetchSubject();
+    //this.props.resetMilestoneQuestions();
+    //this.props.resetMilestoneChoices();
+   //this.props.resetMilestoneAnswers();
+    //const task = this.props.navigation.state.params.task;
+    //this.props.fetchMilestoneSections({ task_id: task.id });
+   //this.props.fetchUser();
+    //this.props.fetchRespondent();
+    //this.props.fetchSubject();
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -160,124 +146,6 @@ class MilestoneQuestionsScreen extends Component {
     return true;
   }
 
-  renderItem = item => {
-    const question = item.item;
-    const question_number = _.isEmpty(question.question_number)
-      ? String(question.position)
-      : question.question_number;
-    const title = `${question_number}. ${question.title}`;
-    return (
-      <View style={styles.questionContainer}>
-        {question.attachment_url && (
-          <Image
-            style={styles.image}
-            source={{uri: question.attachment_url}}
-            resizeMethod="scale"
-            resizeMode="contain"
-          />
-        )}
-        <View style={styles.questionLeft}>
-          <Text style={styles.question}>{title}</Text>
-        </View>
-        <View>{this.renderChoices(question)}</View>
-      </View>
-    );
-  };
-
-  renderChoices = question => {
-    switch (question.rn_input_type) {
-      case 'check_box_multiple': {
-        return (
-          <RenderCheckBox
-            choices={question.choices}
-            format="multiple"
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'check_box_single': {
-        return (
-          <RenderCheckBox
-            choices={question.choices}
-            format="single"
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'check_box_yes_no': {
-        return (
-          <RenderCheckYesNo
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'date_time_date': {
-        return (
-          <RenderDate
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'text_short': {
-        return (
-          <RenderTextShort
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'text_long': {
-        return (
-          <RenderTextLong
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'number': {
-        return (
-          <RenderTextNumeric
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-          />
-        );
-      }
-      case 'file_audio':
-      case 'file_image':
-      case 'file_video': {
-        return (
-          <RenderFile
-            question={question}
-            choices={question.choices}
-            answers={this.state.answers}
-            attachments={this.state.attachments}
-            saveResponse={this.saveResponse}
-            errorMessage={this.state.errorMessage}
-          />
-        );
-      }
-      case 'external_link': {
-        return (
-          <RenderExternalLink
-            question={question}
-            choices={question.choices}
-            answers={this.state.answers}
-            saveResponse={this.saveResponse}
-            errorMessage={this.state.errorMessage}
-          />
-        );
-      }
-    }
-  };
 
   saveResponse = (choice, response, options = {}) => {
     let answer = {};
@@ -484,34 +352,6 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
-  questionContainer: {
-    flexDirection: 'column',
-    padding: 5,
-    justifyContent: 'space-between',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey,
-  },
-  questionLeft: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: itemWidth,
-  },
-  question: {
-    fontSize: 14,
-    paddingVertical: 2,
-    paddingLeft: 5,
-    color: Colors.tint,
-  },
-  image: {
-    flex: 1,
-    width: itemWidth,
-    height: itemWidth * 0.66,
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: Colors.black,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
   buttonContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -571,4 +411,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(MilestoneQuestionsScreen);
+)(MilestoneQuestionBirthScreen);

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { FormValidationMessage } from 'react-native-elements';
 import Colors from '../constants/Colors';
 
-export default class InputHelper extends React.PureComponent {
+export default class InputHelper extends PureComponent {
   render() {
     if (this.props.displayError) {
       return <FormValidationMessage>{this.props.error}</FormValidationMessage>;

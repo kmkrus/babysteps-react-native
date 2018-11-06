@@ -1,15 +1,19 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { PureComponent } from 'react';
+import { View } from 'react-native';
 
 import RNPickerSelect from 'react-native-picker-select';
+import { FormLabel } from 'react-native-elements';
+
 import InputHelper from './inputHelper';
 
 import Colors from '../constants/Colors';
 
-export default class PickerInput extends React.PureComponent {
+export default class PickerInput extends PureComponent {
   render() {
     const { error, helper, touched, name, label, ...props } = this.props;
-    const displayError = !!error && touched;
+    const displayError = !!error; //&& touched;
+
+    const labelColor = displayError ? Colors.errorColor : Colors.grey;
 
     const pickerStyle = {
       inputIOS: this.props.textInputStyle,
@@ -25,13 +29,18 @@ export default class PickerInput extends React.PureComponent {
       marginTop: 15,
     };
 
+    const labelProps = {
+      labelStyle: { color: labelColor, marginLeft: 0 },
+    };
+
     return (
       <View style={containerStyle}>
         <View>
-          <Text style={this.props.labelStyle}>{label}</Text>
+          <FormLabel {...labelProps}>{label}</FormLabel>
           <RNPickerSelect
             ref={input => (this.input = input)}
             onValueChange={value => this.props.handleChange(value)}
+            value={this.props.selectedValue}
             items={this.props.data}
             style={pickerStyle}
             hideIcon

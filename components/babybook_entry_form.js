@@ -156,14 +156,14 @@ class BabyBookEntryForm extends Component {
                 title="Attach Photo or Video"
                 buttonStyle={styles.libraryButton}
                 titleStyle={styles.buttonTitleStyle}
-                color={Colors.darkGreen}
+                color={Colors.green}
                 onPressIn={() => this.pickImage('library')}
               />
               <Button
                 title="Take a Photo or Video "
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
-                color={Colors.darkGreen}
+                color={Colors.green}
                 onPressIn={() => this.pickImage('new')}
               />
               <Text>{this.state.permissionMessage}</Text>
@@ -253,14 +253,14 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     backgroundColor: Colors.lightGreen,
-    borderColor: Colors.darkGreen,
+    borderColor: Colors.green,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
   },
   libraryButton: {
     backgroundColor: Colors.lightGreen,
-    borderColor: Colors.darkGreen,
+    borderColor: Colors.green,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,

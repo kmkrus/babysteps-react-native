@@ -1,10 +1,12 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { PureComponent } from 'react';
+import { View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
+import { FormLabel } from 'react-native-elements';
+
 import InputHelper from './inputHelper';
 import Colors from '../constants/Colors';
 
-export default class DatePickerInput extends React.PureComponent {
+export default class DatePickerInput extends PureComponent {
   focus() {
     this.input.onPressDate();
   }
@@ -14,13 +16,19 @@ export default class DatePickerInput extends React.PureComponent {
     const displayError = !!error && touched;
     const styles = {...this.props.style};
 
+    const labelColor = displayError ? Colors.errorColor : Colors.grey
+
     const containerProps = {
       style: this.props.containerStyle,
     };
 
+    const labelProps = {
+      labelStyle: { color: labelColor, marginLeft: 0 },
+    };
+
     return (
       <View {...containerProps}>
-        <Text style={this.props.labelStyle}>{this.props.label}</Text>
+        <FormLabel {...labelProps}>{this.props.label}</FormLabel>
         <DatePicker
           ref={input => (this.input = input)}
           style={styles}

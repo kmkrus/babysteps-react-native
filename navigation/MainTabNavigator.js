@@ -7,7 +7,8 @@ import OverviewScreen from '../screens/OverviewScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
 import MilestoneQuestionsScreen from '../screens/MilestoneQuestionsScreen';
 import MilestoneQuestionConfirmScreen from '../screens/MilestoneQuestionConfirmScreen';
-import TourScreen from '../screens/TourScreen';
+import MilestoneQuestionBirthScreen from '../screens/MilestoneQuestionBirthScreen';
+//import TourScreen from '../screens/TourScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
 import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
 
@@ -19,13 +20,23 @@ const headerOptions = {
   },
   headerTintColor: Colors.headerTint,
   headerTitleStyle: {
-    fontWeight: '900',
+    fontWeight: '400',
+    fontSize: 20,
   },
 };
 
-const OverviewStack = createStackNavigator({
-  Overview: OverviewScreen,
-});
+const OverviewStack = createStackNavigator(
+  {
+    Overview: OverviewScreen,
+    Milestones: MilestonesScreen,
+    MilestoneQuestions: MilestoneQuestionsScreen,
+    MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
+    MilestoneQuestionBirth: MilestoneQuestionBirthScreen,
+  },
+  {
+    navigationOptions: headerOptions,
+  },
+);
 
 OverviewStack.navigationOptions = {
   tabBarLabel: 'Overview',
@@ -46,6 +57,7 @@ const MilestonesStack = createStackNavigator(
     Milestones: MilestonesScreen,
     MilestoneQuestions: MilestoneQuestionsScreen,
     MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
+    MilestoneQuestionBirth: MilestoneQuestionBirthScreen,
   },
   {
     navigationOptions: headerOptions,

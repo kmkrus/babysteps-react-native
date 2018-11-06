@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button } from 'react-native-elements';
-
-import { Text } from 'react-native-elements';
+import { Text, Button } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -166,11 +164,12 @@ class RegistrationSubjectForm extends Component {
           date_of_birth: null,
           conception_method: 'natural',
           screening_blood: null,
+          outcome: 'live_birth',
         }}
         render={props => {
           return (
             <Form>
-              <Text  style={AppStyles.registrationHeader}>
+              <Text style={AppStyles.registrationHeader}>
                 Step 3: Update Your Baby&apos;s Profile
               </Text>
               <TextField

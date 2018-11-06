@@ -3,7 +3,7 @@ const errorColor = 'rgb(239, 51, 64)';
 const errorBackground = 'rgb(239, 175, 179)';
 const green = '#39e3be';
 const darkGreen = '#1d705e';
-const lightGreen = '#aae2d6';
+const lightGreen = '#e6fcf7';
 const grey = '#666';
 const darkGrey = '#333';
 const lightGrey = '#ddd';
@@ -46,6 +46,6 @@ export default {
   black,
   red,
   headerTint: white,
-  headerBackground: darkGreen,
+  headerBackground: green,
   tranparent,
 };

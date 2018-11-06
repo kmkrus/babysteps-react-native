@@ -63,6 +63,10 @@ import {
   API_CREATE_SUBJECT_FULFILLED,
   API_CREATE_SUBJECT_REJECTED,
 
+  API_UPDATE_SUBJECT_PENDING,
+  API_UPDATE_SUBJECT_FULFILLED,
+  API_UPDATE_SUBJECT_REJECTED,
+
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -486,14 +490,11 @@ export const apiCreateSubject = (session, data) => {
 };
 
 export const updateSubject = (data) => {
-  return function (dispatch) {
+  return function(dispatch) {
 
     dispatch( Pending(UPDATE_SUBJECT_PENDING) );
-
-    delete data.id 
-
-    const updateSQL = getUpdateSQL(data)
-
+    delete data.id;
+    const updateSQL = getUpdateSQL(data);
     return (
       db.transaction(tx => {
         tx.executeSql( 'UPDATE subjects SET ' + updateSQL.join(', ') + ';', 
@@ -509,3 +510,32 @@ export const updateSubject = (data) => {
     )
   };
 }
+
+export const apiUpdateSubject = (session, data) => {
+
+  const id = data.api_id;
+  delete data.id;
+  delete data.api_id;
+  
+  return function(dispatch) {
+
+    dispatch({
+      type: API_UPDATE_SUBJECT_PENDING,
+      payload: {
+        data: {subject: data},
+        session,
+      },
+      meta: {
+        offline: {
+          effect: {
+            method: 'PUT',
+            url: `/subjects/${id}`,
+            fulfilled: API_UPDATE_SUBJECT_FULFILLED,
+            rejected: API_UPDATE_SUBJECT_REJECTED,
+          },
+        },
+      },
+    });
+
+  };
+};

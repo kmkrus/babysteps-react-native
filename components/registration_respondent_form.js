@@ -7,6 +7,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import withInputAutoFocus, {
+  withTouched,
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
@@ -34,9 +35,19 @@ import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
 
-const TextField = compose(withInputAutoFocus, withNextInputAutoFocusInput)(TextFieldWithLabel);
-const PickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(Picker);
-const DatePickerInput = compose(withInputAutoFocus, withNextInputAutoFocusInput)(DatePicker);
+const TextField = compose(
+  withInputAutoFocus,
+  withTouched,
+  withNextInputAutoFocusInput,
+)(TextFieldWithLabel);
+const PickerInput = compose(
+  withInputAutoFocus,
+  withNextInputAutoFocusInput,
+)(Picker);
+const DatePickerInput = compose(
+  withInputAutoFocus,
+  withNextInputAutoFocusInput,
+)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
 

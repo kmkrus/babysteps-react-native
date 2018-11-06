@@ -248,7 +248,7 @@ export const apiCreateMilestoneCalendar = params => {
     dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
 
     if (CONSTANTS.COMPRESS_MILESTONE_CALENDAR) {
-      params.test = 'true';
+      params.testing = 'true';
     }
 
     return new Promise((resolve, reject) => {
@@ -745,8 +745,8 @@ export const fetchOverViewTimeline = () => {
     sql += ' INNER JOIN milestone_triggers AS mts ON ss.task_id = mts.task_id';
     sql += ' LEFT JOIN answers AS ans ON ans.choice_id = cs.id';
     sql += ' LEFT JOIN attachments AS ats ON ans.choice_id = ats.choice_id';
-    sql += " WHERE cs.overview_timeline IN ('during_pregnancy', 'post_birth')";
-    sql += ' ORDER BY cs.overview_timeline, mts.notify_at;';
+    sql += " WHERE cs.overview_timeline IN ('during_pregnancy', 'birth', 'post_birth')";
+    sql += ' ORDER BY mts.notify_at;';
 
     return (
       db.transaction(tx => {

@@ -1,15 +1,19 @@
-import React from 'react';
-import { Text, View, StyleSheet, TextInput } from 'react-native';
-import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
-import InputHelper from '../components/inputHelper';
+import React, { PureComponent } from 'react';
+import { View } from 'react-native';
+import {
+  FormLabel,
+  FormInput,
+  FormValidationMessage,
+} from 'react-native-elements';
+import InputHelper from './inputHelper';
 import Colors from '../constants/Colors';
 
-export default class TextFieldWithLabel extends React.PureComponent {
+export default class TextFieldWithLabel extends PureComponent {
   // Your custom input needs a focus function for `withNextInputAutoFocus` to work
 
   constructor(props) {
     super(props);
-    this.onPress = this.focus.bind(this)
+    this.onPress = this.focus.bind(this);
   }
 
   focus() {
@@ -18,19 +22,19 @@ export default class TextFieldWithLabel extends React.PureComponent {
 
   render() {
     const { error, helper, touched, ...props } = this.props;
-    const displayError = !!error && touched;
+    const displayError = !!error; //&& touched;
 
-    const labelColor = ( displayError ? Colors.errorColor : Colors.grey)
+    const labelColor = displayError ? Colors.errorColor : Colors.grey;
 
-    let containerProps = {
+    const containerProps = {
       style: this.props.containerStyle,
       onStartShouldSetResponder: () => true,
       onResponderRelease: this.onPress,
     };
 
-    let labelProps = {
-      labelStyle: {color: labelColor}
-    }
+    const labelProps = {
+      labelStyle: { color: labelColor },
+    };
 
     return (
       <View {...containerProps}>
@@ -39,7 +43,7 @@ export default class TextFieldWithLabel extends React.PureComponent {
           ref={input => (this.input = input)}
           autoCapitalize="none"
           autoCorrect={false}
-          containerStyle={ this.props.inputContainerStyle }
+          containerStyle={this.props.inputContainerStyle}
           {...this.props}
         />
         <InputHelper
@@ -48,7 +52,6 @@ export default class TextFieldWithLabel extends React.PureComponent {
           error={error}
         />
       </View>
-
     );
   }
 }

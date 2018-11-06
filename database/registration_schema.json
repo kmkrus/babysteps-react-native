@@ -36,6 +36,8 @@
       "gender": "TEXT",
       "expected_date_of_birth": "TEXT",
       "date_of_birth": "TEXT",
+      "outcome": "TEXT",
+      "date_of_loss": "TEXT",
       "days_premature": "INTEGER",
       "screening_blood": "INTEGER",
     },

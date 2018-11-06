@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   ScrollView,
   View,
+  Image,
   StyleSheet,
   SectionList,
   Dimensions,
@@ -9,17 +10,18 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-elements';
 
-import { showMessage, hideMessage } from "react-native-flash-message";
+import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
+
+import { showMessage } from "react-native-flash-message";
 
 import filter from 'lodash/filter';
 import groupBy from 'lodash/groupBy';
 import reduce from 'lodash/reduce';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
+import isEmpty from 'lodash/isEmpty';
 
 import moment from 'moment';
-
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
 import {
@@ -34,11 +36,14 @@ const { width } = Dimensions.get('window');
 
 const itemWidth = width - 60;
 
-let tasksForList = [];
-
 class MilestonesScreen extends Component {
   static navigationOptions = {
     title: 'Milestones',
+  };
+
+  state = {
+    tasksForList: [],
+    sectionIndex: 0,
   };
 
   componentWillMount() {
@@ -46,10 +51,12 @@ class MilestonesScreen extends Component {
     this.props.fetchMilestoneTasks();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextState) {
     const groups = filter(nextProps.milestones.groups.data, {visible: 1});
     const tasks = nextProps.milestones.tasks;
     const session = nextProps.session;
+    let tasksForList = [...this.state.tasksForList];
+
     if (!tasks.fetching && tasks.fetched) {
       tasksForList = filter(tasks.data, task => {
         if (
@@ -70,13 +77,32 @@ class MilestonesScreen extends Component {
         tasksForList,
         (acc, data, index) => {
           const group = find(groups, ['id', data[0].milestone_group_id]);
-          acc.push({ key: index, title: group.title, data });
+          acc.push({ key: index, id: group.id, title: group.title, data });
           return acc;
         },
         [],
       );
+      this.setState({ tasksForList });
+    }
+
+    const milestone = this.props.navigation.getParam('milestone', null);
+    if (!isEmpty(tasksForList) && !!milestone) {
+      const sectionIndex = findIndex(tasksForList, ['id', milestone.id]);
+      if (sectionIndex !== -1) {
+        this.setState({ sectionIndex });
+      }
     }
   }
+
+  getItemLayout = sectionListGetItemLayout({
+    // The height of the row with rowData at the given sectionIndex and rowIndex
+    getItemHeight: (rowData, sectionIndex, rowIndex) =>
+      sectionIndex === 0 ? 68 : 34,
+    // These three properties are optional
+    //getSeparatorHeight: () => 1 / PixelRatio.get(), // The height of your separators
+    getSectionHeaderHeight: () => 31.7, // The height of your section headers
+    getSectionFooterHeight: () => 10, // The height of your section footers
+  });
 
   handleOnPress = (task, calendar) => {
     if (moment().isBefore(calendar.available_start_at)) {
@@ -98,12 +124,12 @@ class MilestonesScreen extends Component {
 
   renderItem = item => {
     const task = item.item;
-    let checboxName = 'checkbox-blank-outline';
+    let checkboxSource = require('../assets/images/milestones_checkbox.png');
     let color = Colors.grey;
     const calendar = find(this.props.milestones.calendar.data, ['task_id', task.id]);
     if (calendar) {
       if (calendar.completed_at) {
-        checboxName = 'checkbox-marked-outline';
+        checkboxSource = require('../assets/images/milestones_checkbox_complete.png');
       }
       if (moment().isBefore(calendar.available_start_at)) {
         color = Colors.lightGrey;
@@ -114,22 +140,21 @@ class MilestonesScreen extends Component {
     }
 
     return (
-      <TouchableOpacity onPress={() => this.handleOnPress(task, calendar)}>
-        <View style={styles.itemContainer}>
+
+      <View style={styles.itemContainer}>
+        <TouchableOpacity onPress={() => this.handleOnPress(task, calendar)}>
           <View style={styles.itemLeft}>
-            <MaterialCommunityIcons
-              name={checboxName}
-              style={[styles.itemCheckBox, {color: color}]}
-            />
-            <Text style={[styles.item, {color: color}]}>
-              {`${task.milestone_title} - ${task.name}`}
-            </Text>
+            <Image source={checkboxSource} style={styles.itemCheckBox} />
+            <Text style={[styles.item, { color }]}>{task.name}</Text>
           </View>
-          <View style={styles.itemRight}>
-            <Ionicons name="md-arrow-forward" style={styles.itemRightArrow} />
-          </View>
+        </TouchableOpacity>
+        <View style={styles.itemRight}>
+          <Image
+            source={require('../assets/images/milestones_right_arrow.png')}
+            style={styles.itemRightArrow}
+          />
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -137,16 +162,27 @@ class MilestonesScreen extends Component {
     return <Text style={styles.section}>{headerItem.section.title}</Text>;
   };
 
+  handleOnLayout = () => {
+    //this.sectionList.scrollToLocation(this.state.sectionIndex);
+  };
+
   render() {
+
     return (
-      <ScrollView style={styles.container}>
+      <View onLayout={this.handleOnLayout} style={styles.container}>
         <SectionList
+          //debug={true}
+          ref={ref => this.sectionList = ref}
+          //initialNumToRender={this.state.tasksForList.length}
+          initialScrollIndex={this.state.sectionIndex}
+          onScrollToIndexFailed={info => console.log(info)}
+          getItemLayout={this.getItemLayout}
           renderSectionHeader={this.renderSectionHeader}
           renderItem={this.renderItem}
-          sections={tasksForList}
+          sections={this.state.tasksForList}
           keyExtractor={item => item.id}
         />
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -179,17 +215,17 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   itemCheckBox: {
-    fontSize: 24,
-    color: Colors.grey,
+    width: 16,
+    height: 16,
   },
   itemRightArrow: {
-    fontSize: 22,
-    color: Colors.lightGrey,
+    width: 14,
+    height: 14,
   },
   item: {
     fontSize: 14,
     paddingVertical: 2,
-    paddingLeft: 5,
+    paddingLeft: 10,
     color: Colors.tint,
   },
 });

@@ -382,14 +382,14 @@ export class RenderFile extends Component {
                 title={`Attach ${format}`}
                 buttonStyle={styles.libraryButton}
                 titleStyle={styles.buttonTitleStyle}
-                color={Colors.darkGreen}
+                color={Colors.green}
                 onPressIn={() => this.pickImage(choice, 'library')}
               />
               <Button
                 title={`Take a ${format}`}
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
-                color={Colors.darkGreen}
+                color={Colors.green}
                 onPressIn={() => this.pickImage(choice, 'new')}
               />
             </View>
@@ -399,7 +399,7 @@ export class RenderFile extends Component {
               title="Record Audio"
               buttonStyle={styles.libraryButton}
               titleStyle={styles.buttonTitleStyle}
-              color={Colors.darkGreen}
+              color={Colors.green}
               onPressIn={() => this.recordAudio(choice)}
             />
           )}
@@ -522,14 +522,14 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     backgroundColor: Colors.lightGreen,
-    borderColor: Colors.darkGreen,
+    borderColor: Colors.green,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
   },
   libraryButton: {
     backgroundColor: Colors.lightGreen,
-    borderColor: Colors.darkGreen,
+    borderColor: Colors.green,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,

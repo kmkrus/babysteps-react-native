@@ -51,6 +51,12 @@ export default class App extends Component {
       require('./assets/images/timeline.png'),
       require('./assets/images/camera_face_position.png'),
       require('./assets/images/overview_camera.png'),
+      require('./assets/images/overview_baby_icon.png'),
+      require('./assets/images/milestones_checkbox.png'),
+      require('./assets/images/milestones_checkbox_complete.png'),
+      require('./assets/images/milestones_checkbox_in_progress.png'),
+      require('./assets/images/milestones_checkbox_skipped.png'),
+      require('./assets/images/milestones_right_arrow.png'),
     ]);
     await Font.loadAsync({
       // This is the font that we are using for our tab bar
