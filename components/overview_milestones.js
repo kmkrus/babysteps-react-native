@@ -21,13 +21,6 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 
-import {
-  fetchMilestones,
-  resetApiMilestones,
-  apiFetchMilestones,
-  fetchMilestoneGroups,
-} from '../actions/milestone_actions';
-
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
 import Colors from '../constants/Colors';
 
@@ -53,11 +46,6 @@ class OverviewScreen extends React.Component {
     sliderLoading: true,
     milestoneGroups: [],
   };
-
-  componentWillMount() {
-    this.props.resetApiMilestones();
-    this.props.fetchMilestoneGroups();
-  }
 
   componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
@@ -229,13 +217,5 @@ const mapStateToProps = ({ milestones, registration }) => ({
   milestones,
   registration,
 });
-const mapDispatchToProps = {
-  fetchMilestones,
-  resetApiMilestones,
-  apiFetchMilestones,
-  fetchMilestoneGroups,
-};
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(OverviewScreen);
+
+export default connect(mapStateToProps)(OverviewScreen);

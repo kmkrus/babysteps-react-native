@@ -54,63 +54,54 @@ const sendSessionUpdate = (dispatch, data) => {
 
   const keys = _.keys(data);
   const values = _.values(data);
-  var updateSQL = []
+  let updateSQL = [];
 
-  _.forEach( keys, (key) => {
-    updateSQL.push( key + " = '" + data[key] + "'" )
-  })
+  _.forEach(keys, key => {
+    updateSQL.push(`${key} = '${data[key]}'`)
+  });
 
   return (
-
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE sessions SET ' + updateSQL.join(', ') + ';', 
-        [],
-        (_, response) => { dispatch( Response(UPDATE_SESSION_FULFILLED, response, data) ) },
-        (_, error) => { dispatch( Response(UPDATE_SESSION_REJECTED, error) ) }
+        `UPDATE sessions SET ${updateSQL.join(', ')};`, [],
+        (_, response) => dispatch(Response(UPDATE_SESSION_FULFILLED, response, data)),
+        (_, error) => dispatch(Response(UPDATE_SESSION_REJECTED, error)),
       );
     })
-    
-  )
-}
+  );
+};
 
-export const updateSession = (data) => {
-  return function (dispatch) {
-    sendSessionUpdate(dispatch, data)
-  }
-}
+export const updateSession = data => {
+  return function(dispatch) {
+    sendSessionUpdate(dispatch, data);
+  };
+};
 
 export const apiUpdateSession = (dispatch, data) => {
-  return sendSessionUpdate(dispatch, data)
+  return sendSessionUpdate(dispatch, data);
 }
 
 export const apiTokenRefresh = (dispatch, session) => {
-
   return (
-  
-    dispatch( { 
+    dispatch({
       type: API_TOKEN_REFRESH_PENDING,
-      
       payload: {
         session,
         data: {
-          email: session.email, 
-          password: session.password 
-        }
+          email: session.email,
+          password: session.password,
+        },
       }, // payload
-
       meta: {
         offline: {
-          effect: { 
+          effect: {
             method: 'POST',
             url: '/user_session',
             fulfilled: API_TOKEN_REFRESH_FULFILLED,
-            rejected: API_TOKEN_REFRESH_REJECTED
-          }
-        }
-      } // meta
-
+            rejected: API_TOKEN_REFRESH_REJECTED,
+          },
+        },
+      }, // meta
     })
-
-  )
-}
+  );
+};

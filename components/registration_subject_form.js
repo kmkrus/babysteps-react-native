@@ -18,7 +18,6 @@ import {
   updateSubject,
   apiCreateSubject,
 } from '../actions/registration_actions';
-import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import TextFieldWithLabel from './textFieldWithLabel';
@@ -109,9 +108,6 @@ class RegistrationSubjectForm extends Component {
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
           ) {
-            this.props.apiCreateMilestoneCalendar({
-              subject_id: apiSubject.data.id,
-            });
             this.props.updateSession({
               registration_state: States.REGISTERED_AS_IN_STUDY,
             });
@@ -272,7 +268,6 @@ const mapDispatchToProps = {
   createSubject,
   updateSubject,
   apiCreateSubject,
-  apiCreateMilestoneCalendar,
   updateSession,
 };
 

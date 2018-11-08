@@ -22,7 +22,7 @@ export default class TextFieldWithLabel extends PureComponent {
 
   render() {
     const { error, helper, touched, ...props } = this.props;
-    const displayError = !!error; //&& touched;
+    const displayError = !!error && touched;
 
     const labelColor = displayError ? Colors.errorColor : Colors.grey;
 

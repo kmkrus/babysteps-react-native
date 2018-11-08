@@ -459,7 +459,7 @@ class MilestoneQuestionsScreen extends Component {
               color={Colors.grey}
               buttonStyle={styles.buttonOneStyle}
               titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.props.navigation.navigate('Milestones')}
+              onPress={() => this.props.navigation.navigate('Overview')}
               title="Cancel"
             />
             <Button

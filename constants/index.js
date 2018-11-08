@@ -6,6 +6,8 @@ export default {
   DROP_ANSWER_TABLE: false,
   DROP_BABYBOOK_TABLES: false,
   COMPRESS_MILESTONE_CALENDAR: false,
+ 
+  TASK_BIRTH_QUESTIONAIRE_ID: 25,
 
   // Custom Directories
   BABYBOOK_DIRECTORY: 'babybook',

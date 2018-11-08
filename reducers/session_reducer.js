@@ -1,13 +1,12 @@
 import {
-
   UPDATE_ACCESS_TOKEN,
-  
+
   SET_FETCHING_TOKEN,
 
   API_TOKEN_REFRESH_PENDING,
   API_TOKEN_REFRESH_FULFILLED,
   API_TOKEN_REFRESH_REJECTED,
-  
+
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
   FETCH_SESSION_REJECTED,
@@ -31,69 +30,61 @@ const initialState = {
   user_id: null,
   email: null,
   password: null,
+  full_calendar_fetched: false,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_ACCESS_TOKEN: {
-      return{ ...state, access_token: action.payload };
-      break;
+      return { ...state, access_token: action.payload };
     }
 
     case SET_FETCHING_TOKEN: {
       return { ...state, fetching_token: true };
-      break;
     }
 
     case API_TOKEN_REFRESH_PENDING: {
       return { ...state, fetching_token: true, error: null };
-      break;
     }
     case API_TOKEN_REFRESH_FULFILLED: {
       const header = action.payload.headers;
-      return {...state, 
+      return {
+        ...state,
         fetching_token: false,
         access_token: header['access-token'],
-        client: header['client'],
-        uid: header['uid'],
-        user_id: header['user_id'],
+        client: header.client,
+        uid: header.uid,
+        user_id: header.user_id,
       }
-      break;
     }
     case API_TOKEN_REFRESH_REJECTED: {
-      return {...state, fetching_token: false, error: action.payload };
-      break;
+      return { ...state, fetching_token: false, error: action.payload };
     }
 
     case FETCH_SESSION_PENDING: {
-      return {...state, fetching: true, fetched: false, error: null };
-      break;
+      return { ...state, fetching: true, fetched: false, error: null };
     }
     case FETCH_SESSION_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      return {...state, fetching: false, fetched: true, ...data };
-      break;
+      return { ...state, fetching: false, fetched: true, ...data };
     }
     case FETCH_SESSION_REJECTED: {
-      return {...state, fetching: false, error: action.payload};
-      break;
+      return { ...state, fetching: false, error: action.payload };
     }
 
     case UPDATE_SESSION_PENDING: {
-      return {...state, fetching: true, fetched: false, error: null };
-      break;
+      return { ...state, fetching: true, fetched: false, error: null };
     }
     case UPDATE_SESSION_FULFILLED: {
-      return {...state, fetching: false, fetched: true, ...action.session };
-      break;
+      return { ...state, fetching: false, fetched: true, ...action.session };
     }
     case UPDATE_SESSION_REJECTED: {
-      return {...state, fetching: false, error: action.payload};
-      break;
+      return { ...state, fetching: false, error: action.payload };
     }
 
-  default:
-    return state;
+    default: {
+      return state;
+    }
   }
 };
 

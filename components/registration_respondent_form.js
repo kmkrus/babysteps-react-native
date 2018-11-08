@@ -172,13 +172,14 @@ class RegistrationRespondentForm extends Component {
     return (
       <Formik
         onSubmit={values => {
-          const respondent = {...values,
+          const respondent = {
+            ...values,
             user_id: user.data.api_id,
             email: user.data.email,
             first_name: user.data.first_name,
             last_name: user.data.last_name,
             accepted_tos_at: new Date().toISOString(),
-          }
+          };
           this.props.createRespondent(respondent);
         }}
         validationSchema={validationSchema}

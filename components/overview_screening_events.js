@@ -20,10 +20,10 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 
 import {
-  resetApiMilestoneCalendar,
-  fetchMilestoneCalendar,
   apiCreateMilestoneCalendar,
+  apiFetchMilestoneCalendar,
 } from '../actions/milestone_actions';
+import { updateSession } from '../actions/session_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -49,36 +49,31 @@ class OverviewScreen extends React.Component {
     currentIndexScreening: 0,
     sliderLoading: true,
     screeningEvents: [],
+    apiCreateCalendarSubmitted: false,
     apiFetchCalendarSubmitted: false,
   };
 
-  componentWillMount() {
-    this.props.resetApiMilestoneCalendar();
-    this.props.fetchMilestoneCalendar();
-  }
-
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextState) {
     const subject = nextProps.registration.subject;
     if (!subject.fetching && subject.fetched) {
+      let fetchCalendarParams = {};
+      if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+        fetchCalendarParams = { subject_id: subject.data.api_id };
+      } else {
+        fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
+      }
       const calendar = nextProps.milestones.calendar;
       if (!calendar.fetching && calendar.fetched) {
         if (isEmpty(calendar.data)) {
-          const api_calendar = nextProps.milestones.api_calendar;
           if (
-            !api_calendar.fetching &&
+            !nextProps.milestones.api_calendar.fetching &&
             subject.data !== undefined &&
-            !this.state.apiFetchCalendarSubmitted
+            !this.state.apiCreateCalendarSubmitted
           ) {
-            if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-              this.props.apiCreateMilestoneCalendar({
-                subject_id: subject.data.api_id,
-              });
-            } else {
-              this.props.apiCreateMilestoneCalendar({
-                base_date: subject.data.expected_date_of_birth,
-              });
-            }
-            this.setState({ apiFetchCalendarSubmitted: true });
+            // creates calendar on server, but only returns visible tasks
+            // no notifications generated
+            this.props.apiCreateMilestoneCalendar( fetchCalendarParams );
+            this.setState({ apiCreateCalendarSubmitted: true });
           }
         } else {
           let screeningEvents = filter(calendar.data, s => {
@@ -91,6 +86,15 @@ class OverviewScreen extends React.Component {
             screeningEvents,
             sliderLoading: false,
           });
+          // Fetch full calendar and create notifications
+          if (
+            !nextProps.session.full_calendar_fetched &&
+            !this.state.apiFetchCalendarSubmitted
+          ) {
+            this.props.apiFetchMilestoneCalendar( fetchCalendarParams );
+            this.setState({ apiFetchCalendarSubmitted: true });
+            this.props.updateSession({ full_calendar_fetched: true });
+          }
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
@@ -247,11 +251,13 @@ const mapStateToProps = ({ session, milestones, registration }) => ({
   milestones,
   registration,
 });
+
 const mapDispatchToProps = {
-  fetchMilestoneCalendar,
-  resetApiMilestoneCalendar,
+  updateSession,
   apiCreateMilestoneCalendar,
+  apiFetchMilestoneCalendar,
 };
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,

@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    padding: 5,
+    padding: 10,
     justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightGrey,

@@ -8,7 +8,8 @@
       "uid": "TEXT",
       "user_id": "INTEGER",
       "email": "TEXT",
-      "password": "TEXT"
+      "password": "TEXT",
+      "full_calendar_fetched": "INTEGER",
     },
     "indexes": [],
   },
@@ -83,17 +84,4 @@
       "r_s_subject_id ON respondents_subjects (subject_id);",
     ],
   },
-  "attachments": {
-    "columns": {
-      "id": "INTEGER PRIMARY KEY", 
-      "api_id": "INTEGER",
-      "attachment_type": "TEXT",
-      "attachment_id": "INTEGER",
-      "attachment_url": "TEXT",
-    },
-    "indexes": [
-      "attachments_attachment ON attachments (attachment_type, attachment_id)",
-    ],
-  },
-
 }

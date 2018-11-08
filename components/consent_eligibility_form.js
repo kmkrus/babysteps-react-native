@@ -19,16 +19,16 @@ class ConsentEligibilityForm extends Component {
   };
 
   handleOnPress = (buttonGroup, index) => {
-    var selectedState = this.state.selectedIndex
-    selectedState[buttonGroup] = index
-    this.setState( { selectedIndex: selectedState } )
+    var selectedState = this.state.selectedIndex;
+    selectedState[buttonGroup] = index;
+    this.setState({ selectedIndex: selectedState });
   };
 
   handleSubmit = () => {
-    if ( this.state.selectedIndex.length < 3 ) {
+    if (this.state.selectedIndex.length < 3) {
       return; // not complete
     }
-    if ( sum(this.state.selectedIndex) > 0 ) {
+    if (sum(this.state.selectedIndex) > 0) {
       // any no
       this.props.updateSession({
         registration_state: States.REGISTERING_NOT_ELIGIBLE,
@@ -47,8 +47,9 @@ class ConsentEligibilityForm extends Component {
       <View style={styles.container}>
         <View style={styles.elevated}>
           <Text style={styles.text}>
-            Do you have an infant younger than 24 months, are you currently 
-            pregnant or are you planning to become pregnant within the next six months?
+            Do you have an infant younger than 24 months, are you currently
+            pregnant or are you planning to become pregnant within the next six
+            months?
           </Text>
           <ButtonGroup
             onPress={value => this.handleOnPress(0, value)}
@@ -123,9 +124,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 22,
+    fontWeight: '400',
   },
   buttonSelected: {
-    color: Colors.darkGreen,
+    color: Colors.pink,
   },
   buttonContainer: {
     justifyContent: 'center',

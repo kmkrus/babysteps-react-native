@@ -9,7 +9,14 @@ import filter from 'lodash/filter';
 
 import { connect } from 'react-redux';
 
-import { fetchMilestoneTasks } from '../actions/milestone_actions';
+import { 
+  resetApiMilestoneCalendar,
+  fetchMilestoneCalendar,
+  resetApiMilestones,
+  fetchMilestoneGroups,
+  fetchMilestoneTasks,
+  fetchOverViewTimeline,
+} from '../actions/milestone_actions';
 
 import { fetchSubject } from '../actions/registration_actions';
 
@@ -39,6 +46,12 @@ class OverviewScreen extends React.Component {
 
   componentWillMount() {
     this.props.fetchSubject();
+    this.props.resetApiMilestoneCalendar();
+    this.props.fetchMilestoneCalendar();
+    this.props.resetApiMilestones();
+    this.props.fetchMilestoneGroups();
+    this.props.fetchMilestoneTasks();
+    this.props.fetchOverViewTimeline();
   }
 
   testNotification(noticeType = null) {
@@ -118,7 +131,12 @@ const mapStateToProps = ({ milestones }) => ({
 });
 const mapDispatchToProps = {
   fetchSubject,
+  resetApiMilestoneCalendar,
+  fetchMilestoneCalendar,
+  resetApiMilestones,
+  fetchMilestoneGroups,
   fetchMilestoneTasks,
+  fetchOverViewTimeline,
 };
 export default connect(
   mapStateToProps,

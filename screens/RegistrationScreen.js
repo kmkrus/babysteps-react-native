@@ -36,7 +36,7 @@ class RegistrationScreen extends Component {
 
   _scrollToInput = (reactNode: any) => {
     // Add a 'scroll' ref to your ScrollView
-    this.scroll.scrollToFocusedInput(reactNode)
+    this.scroll.scrollToFocusedInput(reactNode);
   }
 
   render() {

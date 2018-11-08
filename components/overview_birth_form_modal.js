@@ -8,6 +8,7 @@ import { compose } from 'recompose';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import withInputAutoFocus, {
+  withTouched,
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
@@ -17,6 +18,7 @@ import {
   updateSubject,
   apiUpdateSubject,
 } from '../actions/registration_actions';
+import { updateSession } from '../actions/session_actions';
 
 import TextFieldWithLabel from './textFieldWithLabel';
 import DatePicker from './datePickerInput';
@@ -24,13 +26,11 @@ import PickerInput from './pickerInput';
 
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
-
-//const TextField = TextFieldWithLabel;
-//const PickerInputField = PickerInput;
-//const DatePickerInput = DatePicker;
+import CONSTANTS from '../constants';
 
 const TextField = compose(
   withInputAutoFocus,
+  withTouched,
   withNextInputAutoFocusInput,
 )(TextFieldWithLabel);
 const PickerInputField = compose(
@@ -122,16 +122,23 @@ class OverviewBirthFormModal extends Component {
     }
     this.props.updateSubject(values);
     if (values.api_id) {
+      // update birth date on api
       this.props.apiUpdateSubject(this.props.session, values);
+      // set session to update calendar and notifications
+      this.props.updateSession({ full_calendar_fetched: false });
     }
     this.props.closeModal();
+
+    // go to birth questionaire
+    const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
+    this.props.navigation.navigate('MilestoneQuestions', { task });
   }
 
   render() {
     const subject = this.props.registration.subject.data;
     const dateError = this.state.dateError;
     const outcomeIsLiveBirth = this.state.outcomeIsLiveBirth;
-    const dateLabel = find(outcomes, ['value', this.state.outcome])
+    const dateLabel = find(outcomes, ['value', this.state.outcome]);
     return (
       <Modal
         animationType="slide"
@@ -326,13 +333,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session, registration }) => ({
+const mapStateToProps = ({ session, registration, milestones }) => ({
   session,
   registration,
+  milestones,
 });
 const mapDispatchToProps = {
   updateSubject,
   apiUpdateSubject,
+  updateSession,
 };
 
 export default connect(

@@ -130,7 +130,9 @@ class RegistrationExpectedDOB extends Component {
         render={props => {
           return (
             <Form>
-              <Text style={AppStyles.registrationHeader}>  Step 3: Update Your Baby&apos;s Profile</Text>
+              <Text style={AppStyles.registrationHeader}>
+                Step 3: Update Your Baby&apos;s Profile
+              </Text>
               <DatePickerInput
                 label="Your Baby's Due Date"
                 labelStyle={AppStyles.registrationLabel}
@@ -141,7 +143,7 @@ class RegistrationExpectedDOB extends Component {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
-                showIcon={ false }
+                showIcon={false}
                 style={{ width: "100%" }}
                 customStyles={{
                   dateInput: AppStyles.registrationDateInput,

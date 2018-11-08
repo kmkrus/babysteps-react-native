@@ -262,7 +262,6 @@ export const apiCreateMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
-          setNotifications(response.data);
           dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
         })
         .catch(error => {
@@ -291,8 +290,8 @@ export const apiFetchMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
-          setNotifications(response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
+          setNotifications(response.data);
         })
         .catch(error => {
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
@@ -300,7 +299,6 @@ export const apiFetchMilestoneCalendar = params => {
     }); // return Promise
   }; // return dispatch
 };
-
 
 export const apiUpdateMilestoneCalendar = (id, data) => {
   return dispatch => {
@@ -702,7 +700,7 @@ export const updateMilestoneAttachment = attachment => {
 
     const choice_id = attachment.choice_id;
     const values = this.parseFields(attachment, attachmentFields);
-    const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
+    const sql = `INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
 
     return (
       db.transaction(tx => {
@@ -748,15 +746,17 @@ export const fetchOverViewTimeline = () => {
     sql += " WHERE cs.overview_timeline IN ('during_pregnancy', 'birth', 'post_birth')";
     sql += ' ORDER BY mts.notify_at;';
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [],
-          (_, response) => {
-            dispatch(Response(FETCH_OVERVIEW_TIMELINE_FULFILLED, response))},
-          (_, error) => {dispatch(Response(FETCH_OVERVIEW_TIMELINE_REJECTED, error))}
-        );
-      })
-    );
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql,
+        [],
+        (_, response) => {
+          dispatch(Response(FETCH_OVERVIEW_TIMELINE_FULFILLED, response));
+        },
+        (_, error) => {
+          dispatch(Response(FETCH_OVERVIEW_TIMELINE_REJECTED, error));
+        },
+      );
+    });
   };
 };

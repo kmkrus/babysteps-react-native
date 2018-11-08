@@ -15,12 +15,11 @@ import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import forEach from 'lodash/forEach';
 import remove from 'lodash/remove';
+import isEmpty from 'lodash/isEmpty';
 
 import moment from 'moment';
 
 import { connect } from 'react-redux';
-
-import { fetchOverViewTimeline } from '../actions/milestone_actions';
 
 import OverviewBirthFormModal from '../components/overview_birth_form_modal';
 
@@ -48,10 +47,6 @@ class OverviewTimeline extends React.Component {
     birthFormModalVisible: false,
   };
 
-  componentWillMount() {
-    this.props.fetchOverViewTimeline();
-  }
-
   componentWillReceiveProps(nextProps) {
     let baseDate = '';
     let postBirth = false;
@@ -64,8 +59,14 @@ class OverviewTimeline extends React.Component {
         baseDate = subject.data.expected_date_of_birth;
       }
 
+      const calendar = nextProps.milestones.calendar;
       const overview_timeline = nextProps.milestones.overview_timeline;
-      if (!overview_timeline.fetching && overview_timeline.fetched) {
+      if (
+        !calendar.fetching &&
+        !overview_timeline.fetching &&
+        overview_timeline.fetched &&
+        !isEmpty(overview_timeline.data)
+      ) {
         const overviewTimelines = [ ...overview_timeline.data ];
         // leave verbose so it's easier to understand
         remove(overviewTimelines, item => {
@@ -103,12 +104,8 @@ class OverviewTimeline extends React.Component {
         });
 
         // move birth to end
-        overviewTimelines.push(
-          ...overviewTimelines.splice(
-            findIndex(overviewTimelines, ['overview_timeline', 'birth']),
-            1,
-          ),
-        );
+        const birth = remove(overviewTimelines, ['overview_timeline', 'birth']);
+        if (birth) overviewTimelines.push(birth[0]);
 
         // find current incomplete task
         let currentIndexTimeline = findIndex(overviewTimelines, item => {
@@ -161,6 +158,7 @@ class OverviewTimeline extends React.Component {
     const currentTimeline = this.state.currentTimeline.choice_id === item.choice_id;
     const currentStyle = currentTimeline ? styles.timelineCurrentItem : {};
     const task = find(this.props.milestones.tasks.data, ['id', item.task_id]);
+    const navigate = this.props.navigation.navigate;
 
     if (item.uri) {
       return (
@@ -251,6 +249,7 @@ class OverviewTimeline extends React.Component {
         <OverviewBirthFormModal
           modalVisible={this.state.birthFormModalVisible}
           closeModal={this.closeBirthModal}
+          navigation={this.props.navigation}
         />
       </View>
     );
@@ -322,10 +321,5 @@ const mapStateToProps = ({ milestones, registration }) => ({
   milestones,
   registration,
 });
-const mapDispatchToProps = {
-  fetchOverViewTimeline,
-};
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(OverviewTimeline);
+
+export default connect(mapStateToProps)(OverviewTimeline);
