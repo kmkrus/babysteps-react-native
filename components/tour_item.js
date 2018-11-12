@@ -3,7 +3,9 @@ import { View, Text, Animated, Dimensions, StyleSheet } from 'react-native';
 import tour_images from './tour_images';
 import tour_text from './tour_text';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+const containerHeight = height * 0.75;
+const imageHeight = height * 0.25;
 
 export class TourItem extends Component {
   static WIDTH = width;
@@ -44,20 +46,19 @@ export class TourItem extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     marginTop: 20,
-    width: width,
-    height: width,
+    width,
+    height: containerHeight,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'visible',
   },
   image: {
-    marginTop: 20,
     flex: 1,
     resizeMode: 'contain',
-    width: width - 200,
-    height: undefined,
-    marginBottom: 20,
+    height: imageHeight,
+    marginBottom: 10,
   },
   textBlock: {
     width: width - 40,

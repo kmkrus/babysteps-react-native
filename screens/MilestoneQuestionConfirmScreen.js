@@ -5,7 +5,9 @@ import { StackActions } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+const imageHeight = height / 3;
 
 class MilestoneQuestionConfirmScreen extends Component {
   static navigationOptions = {
@@ -53,19 +55,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'visible',
   },
-  image: {
-    width: width - 150,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  },
   textBlock: {
-    marginTop: 40,
+    marginTop: 10,
     width: width - 100,
     alignItems: 'center',
   },
+  image: {
+    height: imageHeight,
+    resizeMode: 'contain',
+    marginBottom: 10,
+  },
   header: {
-    marginBottom: 40,
+    marginBottom: 10,
     fontSize: 20,
+    color: Colors.green,
   },
   text: {
     textAlign: 'center',

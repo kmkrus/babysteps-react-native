@@ -9,7 +9,7 @@ import filter from 'lodash/filter';
 
 import { connect } from 'react-redux';
 
-import { 
+import {
   resetApiMilestoneCalendar,
   fetchMilestoneCalendar,
   resetApiMilestones,
@@ -70,7 +70,7 @@ class OverviewScreen extends React.Component {
     let index = Math.floor(Math.random() * filteredMilestones.length);
     milestone = filteredMilestones[index];
 
-    task = find(tasks.data,{milestone_id: milestone.id});
+    task = find(tasks.data, {milestone_id: milestone.id});
 
     console.log("Task", task);
     console.log("Milestone", milestone);

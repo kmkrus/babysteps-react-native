@@ -14,10 +14,6 @@ import Colors from '../constants/Colors';
 import BabyBookEntryForm from '../components/babybook_entry_form';
 
 class BabyBookEntryScreen extends Component {
-  state = {
-    submitted: false,
-  };
-
   static navigationOptions = ({ navigation }) => ({
     title: 'BabyBook',
     headerRight: (
@@ -43,6 +39,10 @@ class BabyBookEntryScreen extends Component {
       </View>
     ),
   });
+
+  state = {
+    submitted: false,
+  };
 
   componentWillMount() {
     this.props.resetBabyBookEntries();

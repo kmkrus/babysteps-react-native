@@ -17,7 +17,8 @@
       "answer_numeric": "INTEGER",
       "answer_boolean": "INTEGER",
       "answer_text": "TEXT",
-      "score": "INTEGER"
+      "answer_datetime": "TEXT",
+      "score": "INTEGER",
     },
     "indexes": [
       "answer_user_id ON answers (user_id);",

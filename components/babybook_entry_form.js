@@ -17,11 +17,12 @@ import {
   createBabyBookEntry,
 } from '../actions/babybook_actions';
 
-import DatePickerInput from './datePickerInput';
-import MaterialTextInput from './materialTextInput';
+import TextFieldWithLabel from './textFieldWithLabel';
+import DatePicker from './datePickerInput';
 import CameraModal from './camera_modal';
 
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
 import AudioFormats from '../constants/AudioFormats';
@@ -34,10 +35,14 @@ const previewHeight = width * 0.75;
 const videoWidth = previewWidth;
 const videoHeight = previewWidth;
 
-const TextInput = compose(
+const TextField = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
-)(MaterialTextInput);
+)(TextFieldWithLabel);
+const DatePickerInput = compose(
+  withInputAutoFocus,
+  withNextInputAutoFocusInput,
+)(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View);
 
@@ -144,11 +149,25 @@ class BabyBookEntryForm extends Component {
         render={props => {
           return (
             <Form>
-              <TextInput label="Title" name="title" type="name" />
+              <TextField
+                autoCapitalize="words"
+                label="Title"
+                name="title"
+                inputStyle={AppStyles.registrationTextInput}
+                inputContainerStyle={AppStyles.registrationTextInputContainer}
+              />
               <DatePickerInput
                 label="Date"
                 name="created_at"
                 date={props.values.created_at}
+                labelStyle={AppStyles.registrationLabel}
+                containerStyle={AppStyles.registrationDateContainer}
+                showIcon={false}
+                style={{ width: '100%' }}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationTextInput,
+                }}
                 handleChange={value => props.setFieldValue('created_at', value)}
               />
 
@@ -192,25 +211,27 @@ class BabyBookEntryForm extends Component {
               </View>
 
               <View style={styles.textAreaContainer}>
-                <TextInput
-                  style={styles.textArea}
-                  underlineColorAndroid="transparent"
+                <TextField
                   label="Details"
-                  placeholderTextColor="grey"
-                  numberOfLines={10}
-                  multiline
                   name="detail"
+                  autoCapitalize="sentences"
+                  underlineColorAndroid="transparent"
+                  placeholderTextColor="grey"
+                  multiline
+                  numberOfLines={10}
+                  inputStyle={AppStyles.registrationTextInput}
+                  inputContainerStyle={AppStyles.registrationTextInputContainer}
                 />
               </View>
 
               <View style={styles.buttonContainer}>
                 <Button
                   title="Save Entry"
-                  buttonStyle={styles.buttonStyle}
-                  titleStyle={styles.buttonTitleStyle}
                   disabled={props.isSubmitting || !this.state.image}
                   onPress={props.submitForm}
-                  color={Colors.pink}
+                  buttonStyle={AppStyles.buttonSubmit}
+                  titleStyle={{ fontWeight: 900 }}
+                  color={Colors.darkGreen}
                 />
               </View>
 

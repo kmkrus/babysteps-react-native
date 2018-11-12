@@ -69,7 +69,8 @@ export default class TourScreen extends Component {
     return (
       <ImageBackground
         source={require('../assets/images/background.png')}
-        style={styles.imageBackground}>
+        style={styles.imageBackground}
+      >
         <SideSwipe
           data={items}
           index={this.state.currentIndex}

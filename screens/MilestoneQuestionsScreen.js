@@ -133,7 +133,7 @@ class MilestoneQuestionsScreen extends Component {
     if (!answers.fetching && answers.fetched) {
       if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
         this.setState({
-          answers: this.props.milestones.answers.data,
+          answers: answers.data,
           answersFetched: true,
         });
       }
@@ -328,6 +328,7 @@ class MilestoneQuestionsScreen extends Component {
           answer.subject_id = subject.data.id;
           answer.subject_api_id = subject.data.api_id;
         }
+        _.assign(answer, response);
       } // format == single
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);

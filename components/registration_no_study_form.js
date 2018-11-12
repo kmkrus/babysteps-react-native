@@ -86,6 +86,7 @@ class RegistrationNoStudyForm extends Component {
               first_name: values.first_name,
               last_name: values.last_name,
               date_of_birth: values.date_of_birth,
+              expected_date_of_birth: '',
             });
             this.props.createSubject({ expected_date_of_birth: values.expected_date_of_birth });
           } else {
@@ -134,7 +135,7 @@ class RegistrationNoStudyForm extends Component {
                 labelStyle={AppStyles.registrationLabel}
                 name="expected_date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
-                date={props.values.date_of_birth}
+                date={props.values.expected_date_of_birth}
                 handleChange={ value => {
                   this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);

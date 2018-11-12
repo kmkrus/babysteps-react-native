@@ -117,9 +117,9 @@ class OverviewScreen extends React.Component {
         <TouchableOpacity
           onPress={() => navigate('MilestoneQuestions', { task })}
         >
-          <Text numberOfLines={1} style={styles.screening_title}>{ task.title }</Text>
+          <Text numberOfLines={1} style={styles.screening_title}>{ task.message }</Text>
           <Text numberOfLines={1} style={styles.screening_date}> { longDate }</Text>
-          <Text numberOfLines={3} style={styles.screening_text}>{ task.message }</Text>
+          <Text numberOfLines={3} style={styles.screening_text}>{ task.name }</Text>
         </TouchableOpacity>
         <View style={styles.screening_slide_link}>
           <TouchableOpacity

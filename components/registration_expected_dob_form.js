@@ -46,8 +46,8 @@ class RegistrationExpectedDOB extends Component {
   };
 
   componentWillMount() {
-    this.props.resetSubject()
-    this.props.fetchRespondent()
+    this.props.resetSubject();
+    this.props.fetchRespondent();
   }
 
   componentWillReceiveProps(nextProps, nextState) {

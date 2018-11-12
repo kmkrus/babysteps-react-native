@@ -12,7 +12,11 @@ import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
 import { Ionicons } from '@expo/vector-icons';
 
-import { _ } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
+import indexOf from 'lodash/indexOf';
+import map from 'lodash/map';
+import forEach from 'lodash/forEach';
+import sortBy from 'lodash/sortBy';
 
 import { connect } from 'react-redux';
 
@@ -39,46 +43,25 @@ const babybookDir = `${Expo.FileSystem.documentDirectory +
   CONSTANTS.BABYBOOK_DIRECTORY}/`;
 
 class BabyBookScreen extends Component {
-  state = {
-    currentIndex: 0,
-    data: [
-      {
-        id: '0',
-        file_name: null,
-        file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
-        type: 'cover',
-        imageHeight: imageWidth,
-      },
-    ],
-    shareAttributes: {
-      content: {
-        title: '',
-        message: 'none',
-        url: '', // ios only
-      },
-      options: {
-        subject: 'Nothing to Share', // for email
-        dialogTitle: 'Nothing to Share ', // Android only
-      },
-    },
-  };
-
   static navigationOptions = ({ navigation }) => ({
     headerTitle: (
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>BabyBook</Text>
 
         <View style={styles.headerButtonContainer}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.state.params.Share()}
-          >
-            <Ionicons
-              name={Platform.OS === 'ios' ? 'ios-share' : 'md-share'}
-              size={26}
-              color={Colors.white}
-            />
-          </TouchableOpacity>
+          {navigation.state.params &&
+            navigation.state.params.babybookEntries && (
+              <TouchableOpacity
+                style={styles.headerButton}
+                onPress={() => navigation.state.params.Share()}
+              >
+                <Ionicons
+                  name={Platform.OS === 'ios' ? 'ios-share' : 'md-share'}
+                  size={26}
+                  color={Colors.white}
+                />
+              </TouchableOpacity>
+            )}
 
           {false && (
             <TouchableOpacity
@@ -104,25 +87,58 @@ class BabyBookScreen extends Component {
     ),
   });
 
+  state = {
+    currentIndex: 0,
+    data: [
+      {
+        id: '0',
+        file_name: null,
+        file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
+        type: 'cover',
+        imageHeight: imageWidth,
+      },
+    ],
+    shareAttributes: {
+      content: {
+        title: '',
+        message: 'none',
+        url: '', // ios only
+      },
+      options: {
+        subject: 'Nothing to Share', // for email
+        dialogTitle: 'Nothing to Share ', // Android only
+      },
+    },
+  };
+
   componentWillMount() {
-    if (_.isEmpty(this.props.registration.subject.data)) {
+    if (isEmpty(this.props.registration.subject.data)) {
       this.props.fetchSubject();
     }
 
     this.props.fetchBabyBookEntries();
 
     // bind function to navigation
-    this.props.navigation.setParams({ Share: this.shareOpen.bind(this) });
+    this.props.navigation.setParams({
+      babybookEntries: false,
+      Share: this.shareOpen.bind(this),
+    });
 
     // set selected item from timeline
     const itemId = this.props.navigation.getParam('itemId', '0');
-    if (itemId != '0') {
-      const selectedIndex = _.indexOf(
-        _.map(this.state.data, 'id'),
+    if (itemId !== '0') {
+      const selectedIndex = indexOf(
+        map(this.state.data, 'id'),
         String(parseInt(itemId, 10) + 1), // increment by 1 to account for cover
       );
 
       this.setState({ currentIndex: selectedIndex });
+    }
+  }
+
+  componentDidMount() {
+    if (!isEmpty(this.props.babybook.entries.data)) {
+      this.props.navigation.setParams({ babybookEntries: true });
     }
   }
 
@@ -131,16 +147,16 @@ class BabyBookScreen extends Component {
       !nextProps.babybook.entries.fetching &&
       nextProps.babybook.entries.fetched
     ) {
-      if (!_.isEmpty(nextProps.babybook.entries.data)) {
+      if (!isEmpty(nextProps.babybook.entries.data)) {
         let data = [];
-        _.forEach(nextProps.babybook.entries.data, item => {
+        forEach(nextProps.babybook.entries.data, item => {
           if (item.file_name) {
             const uri = babybookDir + item.file_name;
             const uriParts = item.file_name.split('.');
             data.push({ ...item, file_uri: { uri } });
           }
         });
-        data = _.sortBy(data, i => i.created_at).reverse();
+        data = sortBy(data, i => i.created_at).reverse();
         // add entry for cover
         data = [{ ...data[0], id: '0' }].concat(data);
         this.setState({ data });
