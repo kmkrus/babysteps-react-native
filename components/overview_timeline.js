@@ -159,6 +159,7 @@ class OverviewTimeline extends React.Component {
   renderContent = item => {
     const currentTimeline = this.state.currentTimeline.choice_id === item.choice_id;
     const currentStyle = currentTimeline ? styles.timelineCurrentItem : {};
+    const available = moment().isAfter(item.available_start_at) && moment().isBefore(item.available_end_at);
     const task = find(this.props.milestones.tasks.data, ['id', item.task_id]);
     const navigate = this.props.navigation.navigate;
 
@@ -184,6 +185,11 @@ class OverviewTimeline extends React.Component {
         </TouchableOpacity>
       );
     }
+    if (!available) {
+      return (
+        <Text style={styles.timelineCircleItem} />
+      )
+    }
     if (!item.uri && !!currentTimeline) {
       return (
         <TouchableOpacity onPress={() => navigate('MilestoneQuestions', { task })}>
@@ -200,7 +206,9 @@ class OverviewTimeline extends React.Component {
     if (!item.uri && !currentTimeline) {
       return (
         <TouchableOpacity onPress={() => navigate('MilestoneQuestions', { task })}>
-          <Text style={[styles.timelineCircleItem, currentStyle]} />
+          <View style={[styles.timelineCircleItem, currentStyle]}>
+            <Text />
+          </View>
         </TouchableOpacity>
       );
     }
@@ -210,23 +218,11 @@ class OverviewTimeline extends React.Component {
     const item = data.item;
     const navigate = this.props.navigation.navigate;
     let timelineTitle = '';
-    switch (item.overview_timeline) {
-      case 'during_pregnancy':
-        timelineTitle = 'Belly Bulge';
-        break;
-      case 'birth':
-        timelineTitle = 'Birth';
-        break;
-      case 'post_birth':
-        timelineTitle = "Baby's Face";
-        break;
-    }
 
     return (
       <View key={data.itemIndex} style={styles.timelineItemContainer}>
         {this.renderContent(item)}
-        <Text style={styles.timelineTitle}>{timelineTitle}</Text>
-        <Text style={styles.timelineSubtitle}>Week {item.weeks}</Text>
+        <Text style={styles.timelineSubtitle}>{item.title}</Text>
       </View>
     );
   };
@@ -271,13 +267,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
   },
-  timelineTitle: {
-    fontSize: 10,
-    color: Colors.grey,
-  },
   timelineSubtitle: {
     fontSize: 9,
     color: Colors.pink,
+    textAlign: 'center',
+    flexWrap: 'wrap',
+    maxWidth: tlPhotoSize - 15,
+    marginTop: 5,
   },
   timelineItemContainer: {
     width: tlCardWidth + (tlCardMargin * 2),
@@ -289,10 +285,12 @@ const styles = StyleSheet.create({
     width: tlPhotoSize,
     height: tlPhotoSize,
     borderRadius: tlPhotoSize / 2,
+    overflow: 'hidden',
   },
   timelineCircleItem: {
     width: tlPhotoSize,
     height: tlPhotoSize,
+    overflow: 'hidden',
     borderRadius: tlPhotoSize / 2,
     backgroundColor: Colors.lightGrey,
   },

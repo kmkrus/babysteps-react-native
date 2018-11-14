@@ -28,6 +28,7 @@ import {
   fetchOverViewTimeline,
   updateMilestoneCalendar,
   apiUpdateMilestoneCalendar,
+  fetchMilestoneCalendar,
 } from '../actions/milestone_actions';
 import { createBabyBookEntry } from '../actions/babybook_actions';
 import {
@@ -433,6 +434,7 @@ class MilestoneQuestionsScreen extends Component {
         this.props.apiUpdateMilestoneCalendar(calendar.id, {milestone_trigger: {completed_at: date}});
       }
     }
+    this.props.fetchMilestoneCalendar();
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
 
@@ -567,6 +569,7 @@ const mapDispatchToProps = {
   fetchOverViewTimeline,
   updateMilestoneCalendar,
   apiUpdateMilestoneCalendar,
+  fetchMilestoneCalendar,
 };
 
 export default connect(

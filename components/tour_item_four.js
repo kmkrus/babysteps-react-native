@@ -52,7 +52,7 @@ export class TourItemFour extends Component {
 
         <View style={styles.textBlock}>
           <Text style={styles.title}>Environmental Influences on Child Health Outcomes (ECHO)</Text>
-          <Text style={styles.body}>Powered by Univeristy of Iowa physicians and researchers use of this app will also help us to better understand factors leading to permature birth or developmental disorders such as autism.</Text>
+          <Text style={styles.body}>Powered by University of Iowa physicians and researchers use of this app will also help us to better understand factors leading to premature birth or developmental disorders such as autism.</Text>
         </View>
       
 

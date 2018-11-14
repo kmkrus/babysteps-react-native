@@ -28,10 +28,7 @@ class MilestoneQuestionConfirmScreen extends Component {
             style={styles.image}
             source={require('../assets/images/thank_you_balloons.png')}
           />
-          <Text style={styles.header}>Thank You</Text>
-          <Text style={styles.text}>
-            {"We've received the answers to this questionaire and will follow up with you if necessary."}
-          </Text>
+          <Text style={styles.header}>You've completed this task!</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Button

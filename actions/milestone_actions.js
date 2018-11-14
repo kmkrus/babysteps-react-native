@@ -221,10 +221,12 @@ export const fetchMilestoneCalendar = () => {
 export const updateMilestoneCalendar = (task_id) => {
   return dispatch => {
     dispatch(Pending(UPDATE_MILESTONE_CALENDAR_PENDING));
+    const completed_at = new Date().toISOString();
+    const sql = 'UPDATE milestone_triggers SET completed_at = ? WHERE task_id = ?;';
     return (
       db.transaction(tx => {
-        tx.executeSql(`UPDATE milestone_triggers SET completed_at = '${new Date().toISOString()}' WHERE task_id = ${task_id};`,
-          [],
+        tx.executeSql(
+          sql, [completed_at, task_id],
           (_, response) => { 
             dispatch( Response(UPDATE_MILESTONE_CALENDAR_FULFILLED, response) );
           },
@@ -725,6 +727,7 @@ export const fetchOverViewTimeline = () => {
     let sql =
       'SELECT DISTINCT \
         ss.task_id AS task_id, \
+        ss.title AS title, \
         mts.id AS milestone_trigger_id, \
         cs.id AS choice_id, \
         ans.id AS answer_id, \

@@ -20,6 +20,8 @@ import sortBy from 'lodash/sortBy';
 import moment from 'moment';
 
 import { connect } from 'react-redux';
+import { apiFetchMilestones } from '../actions/milestone_actions';
+
 
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
 import Colors from '../constants/Colors';
@@ -196,19 +198,19 @@ const styles = StyleSheet.create({
   },
   mgItemFooter: {
     position: 'absolute',
+    bottom: 6,
     width: '100%',
-    height: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
   },
   mgItemFooterText: {
-    color: Colors.grey,
+    color: Colors.darkGrey,
     fontWeight: '400',
     width: '100%',
     backgroundColor: Colors.lightGrey,
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingLeft: 10,
   },
 });
@@ -218,4 +220,6 @@ const mapStateToProps = ({ milestones, registration }) => ({
   registration,
 });
 
-export default connect(mapStateToProps)(OverviewScreen);
+const mapDispatchToProps = { apiFetchMilestones };
+
+export default connect(mapStateToProps, mapDispatchToProps)(OverviewScreen);

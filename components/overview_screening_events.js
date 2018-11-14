@@ -77,7 +77,13 @@ class OverviewScreen extends React.Component {
           }
         } else {
           let screeningEvents = filter(calendar.data, s => {
-            return moment().isBefore(s.notify_at) && !s.momentary_assessment;
+            if (s.momentary_assessment) {
+              return false;
+            }
+            if (s.completed_at) {
+              return false;
+            }
+            return moment().isAfter(s.available_start_at) && moment().isBefore(s.available_end_at);
           });
           screeningEvents = sortBy(screeningEvents, s => {
             return moment(s.notify_at);
@@ -104,6 +110,7 @@ class OverviewScreen extends React.Component {
     const task = { ...data.item };
     task.trigger_id = task.id;
     task.id = task.task_id;
+    debugger
 
     const navigate = this.props.navigation.navigate;
     const longDate = new Date(task.notify_at).toLocaleDateString('en-US', {
@@ -151,16 +158,23 @@ class OverviewScreen extends React.Component {
           {this.state.sliderLoading && (
             <ActivityIndicator size="large" color={Colors.tint} />
           )}
-          <SideSwipe
-            index={this.state.currentIndexScreening}
-            data={this.state.screeningEvents}
-            renderItem={item => this.renderScreeningItem(item)}
-            itemWidth={scCardWidth + scCardMargin}
-            contentOffset={scCardMargin - 2}
-            onIndexChange={index =>
-              this.setState(() => ({ currentIndexScreening: index }))
-            }
-          />
+          {isEmpty(this.state.screeningEvents) && (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No Current Screening Events</Text>
+            </View>
+          )}
+          {!isEmpty(this.state.screeningEvents) && (
+            <SideSwipe
+              index={this.state.currentIndexScreening}
+              data={this.state.screeningEvents}
+              renderItem={item => this.renderScreeningItem(item)}
+              itemWidth={scCardWidth + scCardMargin}
+              //contentOffset={scCardMargin - 2}
+              onIndexChange={index =>
+                this.setState(() => ({ currentIndexScreening: index }))
+              }
+            />
+          )}
         </View>
       </View>
     );
@@ -243,6 +257,15 @@ const styles = StyleSheet.create({
   screening_button_text: {
     fontSize: 12,
     color: Colors.pink,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: Colors.pink,
+    fontSize: 16,
   },
 });
 
