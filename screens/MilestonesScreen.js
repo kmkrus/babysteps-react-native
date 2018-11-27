@@ -131,7 +131,7 @@ class MilestonesScreen extends Component {
       if (calendar.completed_at) {
         checkboxSource = require('../assets/images/milestones_checkbox_complete.png');
       }
-      if (moment().isBefore(calendar.available_start_at)) {
+      if (moment().isBefore(calendar.available_start_at) || moment().isAfter(calendar.available_end_at)) {
         color = Colors.lightGrey;
       }
     } else {

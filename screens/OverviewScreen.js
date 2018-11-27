@@ -94,10 +94,7 @@ class OverviewScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.container}>
         <View style={styles.slider_container}>
           <OverviewTimeline navigation={this.props.navigation} />
         </View>
@@ -109,7 +106,7 @@ class OverviewScreen extends React.Component {
         <View style={styles.slider_container}>
           <OverviewMilestones navigation={this.props.navigation} />
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }

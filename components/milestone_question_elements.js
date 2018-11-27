@@ -12,6 +12,7 @@ import {
   CheckBox,
   FormLabel,
   FormInput,
+  Slider,
 } from 'react-native-elements';
 import { ImagePicker, Permissions, Video, WebBrowser } from 'expo';
 import DatePicker from 'react-native-datepicker';
@@ -57,6 +58,8 @@ export class RenderCheckBox extends React.PureComponent {
         text = answer.answer_text;
       }
       const requireExplanation = (choice.require_explanation === 'if_true' && checked);
+      let option_group = 'text_short';
+      if (choice.rn_input_type) { option_group = choice.rn_input_type }
 
       return (
         <View key={choice.id} style={styles.checkBoxExplanationContainer}>
@@ -73,21 +76,44 @@ export class RenderCheckBox extends React.PureComponent {
               )
             }
           />
-          {requireExplanation && (
-            <FormInput
-              inputStyle={styles.textInput}
-              defaultValue={text}
-              onChangeText={value =>
-                this.props.saveResponse(
-                  choice,
-                  { answer_text: value },
-                  { preserve: true },
-                )
-              }
-              containerStyle={{ borderBottomColor: Colors.lightGrey }}
-              underlineColorAndroid={Colors.lightGrey}
-            />
-          )}
+          {requireExplanation &&
+            option_group === 'text_short' && (
+              <FormInput
+                autoCapitalize="words"
+                inputStyle={styles.textInput}
+                defaultValue={text}
+                onChangeText={value =>
+                  this.props.saveResponse(
+                    choice,
+                    { answer_text: value },
+                    { preserve: true },
+                  )
+                }
+                containerStyle={{ borderBottomColor: Colors.lightGrey }}
+                underlineColorAndroid={Colors.lightGrey}
+              />
+            )}
+          {requireExplanation &&
+            option_group === 'number_scale' && (
+              <View style={styles.sliderContainer}>
+                <Text>Years: {text}</Text>
+                <Slider
+                  style={styles.slider}
+                  trackStyle={styles.sliderTrack}
+                  thumbStyle={styles.sliderThumb}
+                  minimumValue={0}
+                  maximumValue={30}
+                  step={1}
+                  onSlidingComplete={value =>
+                    this.props.saveResponse(
+                      choice,
+                      { answer_text: value },
+                      { preserve: true },
+                    )
+                  }
+                />
+              </View>
+            )}
         </View>
       );
     });
@@ -137,6 +163,7 @@ export class RenderTextShort extends React.PureComponent {
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
           <FormInput
+            autoCapitalize="words"
             inputStyle={styles.textInput}
             defaultValue={text}
             onChangeText={value =>
@@ -164,6 +191,7 @@ export class RenderTextLong extends React.PureComponent {
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
           <FormInput
+            autoCapitalize="sentences"
             inputStyle={styles.textInput}
             defaultValue={text}
             multiline={true}
@@ -441,6 +469,7 @@ export class RenderFile extends Component {
             modalVisible={this.state.cameraModalVisible}
             closeCameraModal={image => this._closeCameraModal(image)}
             choice={this.state.choice}
+            question={this.props.question}
           />
         )}
         {loadAudioModal && (
@@ -456,7 +485,6 @@ export class RenderFile extends Component {
 }
 
 export class RenderExternalLink extends React.PureComponent {
-
   handleLinkPress = choice => {
     WebBrowser.openBrowserAsync(choice.body);
     this.props.saveResponse(choice, { answer_boolean: true });
@@ -559,5 +587,12 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     fontSize: 12,
     color: Colors.grey,
+  },
+  sliderContainer: {
+    marginLeft: 20,
+    marginRight: 10,
+  },
+  sliderThumb: {
+    backgroundColor: Colors.darkGreen,
   },
 });

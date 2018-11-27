@@ -143,11 +143,11 @@ class RootNavigator extends Component {
   async registerForNotifications() {
     // android permissions are given on install
     const { status: existingStatus } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS
+      Permissions.NOTIFICATIONS,
     );
     let finalStatus = existingStatus;
 
-    console.log("Notifications Permissions:",existingStatus)
+    console.log("Notifications Permissions:", existingStatus)
 
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.

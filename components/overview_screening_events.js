@@ -110,7 +110,6 @@ class OverviewScreen extends React.Component {
     const task = { ...data.item };
     task.trigger_id = task.id;
     task.id = task.task_id;
-    debugger
 
     const navigate = this.props.navigation.navigate;
     const longDate = new Date(task.notify_at).toLocaleDateString('en-US', {
@@ -169,7 +168,7 @@ class OverviewScreen extends React.Component {
               data={this.state.screeningEvents}
               renderItem={item => this.renderScreeningItem(item)}
               itemWidth={scCardWidth + scCardMargin}
-              //contentOffset={scCardMargin - 2}
+              contentOffset={scCardMargin - 2}
               onIndexChange={index =>
                 this.setState(() => ({ currentIndexScreening: index }))
               }

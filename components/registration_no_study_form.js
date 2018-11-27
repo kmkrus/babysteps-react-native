@@ -100,7 +100,9 @@ class RegistrationNoStudyForm extends Component {
         render={ props => {
           return (
             <Form>
-              <Text style={AppStyles.registrationHeader}>Update Your Profile</Text>
+              <Text style={AppStyles.registrationHeader}>
+                Update Your Profile
+              </Text>
 
               <TextField
                 autoCapitalize="words"
@@ -127,7 +129,10 @@ class RegistrationNoStudyForm extends Component {
                 handleChange={value => props.setFieldValue('date_of_birth', value)}
                 showIcon={ false }
                 style={{ width: "100%" }}
-                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
 
               <DatePickerInput
@@ -142,22 +147,24 @@ class RegistrationNoStudyForm extends Component {
                 }}
                 showIcon={ false }
                 style={{ width: "100%" }}
-                customStyles={{dateInput: AppStyles.registrationDateInput, dateText: AppStyles.registrationDateTextInput}}
+                customStyles={{
+                  dateInput: AppStyles.registrationDateInput,
+                  dateText: AppStyles.registrationDateTextInput,
+                }}
               />
 
               <Text style={styles.errorText}>{this.state.dobError}</Text>
-  
+
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="DONE"
                   onPress={props.submitForm}
                   buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={{fontWeight: 900}}
+                  titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
                   disabled={props.isSubmitting}
                 />
               </View>
-
             </Form>
           );
         }}

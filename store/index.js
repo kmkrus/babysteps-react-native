@@ -16,9 +16,7 @@ const store = createStore(
   reducers,
   compose(
     applyMiddleware(promise(), thunk, logger, api, apiAnswersFulfilled),
-    offline({
-      ...offlineConfig,
-    }),
+    offline(offlineConfig),
   ),
 );
 

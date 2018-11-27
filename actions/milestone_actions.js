@@ -405,13 +405,18 @@ export const fetchMilestoneChoices = (params = {}) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_CHOICES_PENDING));
 
-    const question_ids = `( ${params.question_ids.join(', ')} )`;
+    let question_ids = null;
 
-    let sql = 'SELECT * FROM choices';
-    if (question_ids) {
-      sql += ` WHERE question_id IN ${question_ids}`;
+    if (params.question_ids) {
+      question_ids = `( ${params.question_ids.join(', ')} )`;
     }
-    sql += ' ORDER BY question_id, position;';
+
+    let sql = 'SELECT cs.*, og.rn_input_type FROM choices AS cs';
+    sql += ' LEFT JOIN option_groups AS og ON og.id = cs.option_group_id';
+    if (question_ids) {
+      sql += ` WHERE cs.question_id IN ${question_ids}`;
+    }
+    sql += ' ORDER BY cs.question_id, cs.position;';
 
     return (
       db.transaction(tx => {

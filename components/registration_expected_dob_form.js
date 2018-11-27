@@ -4,11 +4,13 @@ import { Text } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
+
 import withInputAutoFocus, {
   withNextInputAutoFocusForm,
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
+
+import moment from 'moment';
 
 import { connect } from 'react-redux';
 import {
@@ -34,14 +36,8 @@ const DatePickerInput = compose(
 
 const Form = withNextInputAutoFocusForm(View);
 
-const validationSchema = Yup.object().shape({
-  //expected_date_of_birth: Yup.string()
-  //  .required('Expected Date of Birth is Required'),
-});
-
 class RegistrationExpectedDOB extends Component {
   state = {
-    dobError: null,
     submitted: false,
   };
 
@@ -107,19 +103,14 @@ class RegistrationExpectedDOB extends Component {
     return (
       <Formik
         onSubmit={values => {
-          if (values.expected_date_of_birth) {
-            const subject = {...values,
-              respondent_ids: [registration.respondent.data.api_id],
-              screening_blood: registration.subject.data.screening_blood,
-            };
-            this.props.createSubject(subject);
-          } else {
-            this.setState({
-              dobError: 'You must provide the Expected Date of Birth',
-            });
-          }
+          const subject = {
+            ...values,
+            respondent_ids: [registration.respondent.data.api_id],
+            screening_blood: registration.subject.data.screening_blood,
+          };
+          this.props.createSubject(subject);
         }}
-        validationSchema={validationSchema}
+        //validationSchema={validationSchema}
         initialValues={{
           respondent_ids: null,
           gender: 'unknown',
@@ -140,7 +131,6 @@ class RegistrationExpectedDOB extends Component {
                 containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.expected_date_of_birth}
                 handleChange={value => {
-                  this.setState({ dobError: null });
                   props.setFieldValue('expected_date_of_birth', value);
                 }}
                 showIcon={false}
@@ -149,9 +139,10 @@ class RegistrationExpectedDOB extends Component {
                   dateInput: AppStyles.registrationDateInput,
                   dateText: AppStyles.registrationDateTextInput,
                 }}
+                minDate={moment()}
+                maxDate={moment().add(9, "M").endOf('month')}
+                error={props.errors.expected_date_of_birth}
               />
-
-              <Text style={styles.errorText}>{this.state.dobError}</Text>
 
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
@@ -170,15 +161,6 @@ class RegistrationExpectedDOB extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  errorText: {
-    fontSize: 12,
-    marginTop: -20,
-    marginBottom: 20,
-    color: Colors.errorColor,
-  },
-});
 
 const mapStateToProps = ({ session, registration }) => ({
   session,

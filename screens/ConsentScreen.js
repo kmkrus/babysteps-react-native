@@ -24,9 +24,6 @@ class ConsentScreen extends Component {
     if (registration_state === States.REGISTERING_AS_ELIGIBLE) {
       return <ConsentDisclosureForm />;
     }
-    if (registration_state === States.REGISTERING_ACCEPT_TERMS) {
-      return <ConsentAgreementForm />;
-    }
     if (registration_state === States.REGISTERING_SIGNATURE) {
       return <ConsentSignatureForm />;
     }

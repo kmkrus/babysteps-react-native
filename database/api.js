@@ -14,7 +14,6 @@ import {
   RESET_API_MILESTONES,
   RESET_API_MILESTONE_CALENDAR,
   UPDATE_ACCESS_TOKEN,
-  SET_FETCHING_TOKEN,
 } from '../actions/types';
 
 const excludeTypes = [

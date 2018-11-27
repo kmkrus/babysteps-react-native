@@ -187,7 +187,7 @@ class RegistrationRespondentForm extends Component {
           respondent_type: 'mother',
           state: 'IA',
           marital_status: 'married',
-          pregnant: false,
+          pregnant: true,
         }}
         render={props => {
           return (

@@ -188,8 +188,8 @@ class BabyBookEntryForm extends Component {
               <Text>{this.state.permissionMessage}</Text>
 
               <View style={styles.pickImageContainer}>
-                {!!hasUri &&
-                  (!!isVideo && (
+                {hasUri &&
+                  isVideo && (
                     <Video
                       source={{ uri }}
                       rate={1.0}
@@ -201,11 +201,9 @@ class BabyBookEntryForm extends Component {
                       useNativeControls
                       style={styles.video}
                     />
-                  ) ||
-                    !isVideo && (
-                      <Image source={{ uri }} style={styles.image} />
-                  ))
-                }
+                  )}
+                {hasUri &&
+                  !isVideo && <Image source={{ uri }} style={styles.image} />}
 
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
@@ -260,13 +258,6 @@ const styles = StyleSheet.create({
   buttonTitleStyle: {
     fontWeight: '900',
   },
-  buttonStyle: {
-    width: 200,
-    backgroundColor: Colors.lightPink,
-    borderColor: Colors.pink,
-    borderWidth: 2,
-    borderRadius: 5,
-  },
   pickImageContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -302,11 +293,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     padding: 5,
     marginBottom: 20,
-  },
-  textArea: {
-    flex: 1,
-    height: 150,
-    justifyContent: 'flex-start',
   },
   textError: {
     textAlign: 'center',

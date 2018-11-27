@@ -161,7 +161,13 @@ class CameraModal extends Component {
   };
 
   renderBottomBar = () => {
-    const { videoTimer } = this.state;
+    const { videoTimer, limitOption, activeOption, isLandscape } = this.state;
+    let takePictureButtonColor = { backgroundColor: Colors.magenta };
+    if (videoTimer) {
+      if ((videoTimer.minutes() > 3) && (videoTimer.seconds() % 2 === 0)) {
+        takePictureButtonColor = {};
+      }
+    }
     return (
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
@@ -172,19 +178,21 @@ class CameraModal extends Component {
                   width: 22,
                   height: 22,
                   transform: [
-                    { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                    { rotateX: isLandscape ? '90deg' : '0deg' },
                   ],
                 }}
                 source={require('../assets/images/camera_cancel_camera_icon.png')}
               />
             </TouchableOpacity>
           </View>
+
           <TouchableOpacity
             onPressIn={this.handleTakePicture}
             style={styles.takePictureButton}
           >
-            <View style={styles.takePictureButtonInner} />
+            <View style={[styles.takePictureButtonInner, takePictureButtonColor]} />
           </TouchableOpacity>
+
           <View style={styles.bottomBarAction}>
             <TouchableOpacity onPressIn={this.handleChangeCameraType}>
               <Image
@@ -193,20 +201,20 @@ class CameraModal extends Component {
                   height: 27,
                   marginRight: 26,
                   transform: [
-                    { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                    { rotateX: isLandscape ? '90deg' : '0deg' },
                   ],
                 }}
                 source={require('../assets/images/camera_flip_direction_icon.png')}
               />
             </TouchableOpacity>
-            {this.state.activeOption === 'photo' ? (
+            {activeOption === 'photo' && (
               <TouchableOpacity onPressIn={this.handleChangeFlashMode}>
                 <Image
                   style={{
                     width: 28,
                     height: 27,
                     transform: [
-                      { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                      { rotateX: isLandscape ? '90deg' : '0deg' },
                     ],
                   }}
                   source={
@@ -216,22 +224,20 @@ class CameraModal extends Component {
                   }
                 />
               </TouchableOpacity>
-            ) : (
+            )}
+            {activeOption === 'video' && (
               <View>
                 <Text style={{ color: Colors.white }}>
-                  {videoTimer &&
-                    `${videoTimer.minutes()}:${padStart(
-                      videoTimer.seconds(),
-                      2,
-                      '0',
-                    )}`}
+                  {videoTimer && (
+                    `${videoTimer.minutes()}:${padStart(videoTimer.seconds(), 2, '0')}`
+                  )}
                 </Text>
               </View>
             )}
           </View>
         </View>
-        {!this.state.limitOption && (
-          <View style={styles.bottomBarMenu}>
+        <View style={styles.bottomBarMenu}>
+          {(!limitOption || activeOption === 'photo') && (
             <TouchableOpacity
               onPressIn={() => this.setState({ activeOption: 'photo' })}
             >
@@ -240,7 +246,7 @@ class CameraModal extends Component {
                   marginRight: 72,
                   fontSize: 15,
                   color:
-                    this.state.activeOption === 'photo'
+                    activeOption === 'photo'
                       ? Colors.magenta
                       : Colors.white,
                 }}
@@ -248,12 +254,14 @@ class CameraModal extends Component {
                 Photo
               </Text>
             </TouchableOpacity>
+          )}
+          {(!limitOption || activeOption === 'video') && (
             <TouchableOpacity onPressIn={this.handlePressVideoOption}>
               <Text
                 style={{
                   fontSize: 15,
                   color:
-                    this.state.activeOption === 'video'
+                    activeOption === 'video'
                       ? Colors.magenta
                       : Colors.white,
                 }}
@@ -261,8 +269,8 @@ class CameraModal extends Component {
                 Video
               </Text>
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
       </View>
     );
   };
@@ -303,9 +311,10 @@ class CameraModal extends Component {
     const { activeOption } = this.state;
     return (
       <View style={styles.imagePreview}>
-        {activeOption === 'photo' ? (
+        {activeOption === 'photo' && (
           <Image source={{ uri: this.image.uri }} style={{ flex: 1 }} />
-        ) : (
+        )}
+        {activeOption === 'video' && (
           <Video
             source={{ uri: this.image.uri }}
             shouldPlay={false}
@@ -319,10 +328,13 @@ class CameraModal extends Component {
   };
 
   render() {
-    const { confirmingImage, flashMode, type } = this.state;
+    const { confirmingImage, flashMode, type, videoTimer } = this.state;
     let showCameraFacePosition = false;
     if (this.props.choice !== undefined && this.props.choice) {
       showCameraFacePosition = this.props.choice.overview_timeline === 'post_birth';
+    }
+    if (videoTimer) {
+      console.log('SECONDS: ', videoTimer.seconds() );
     }
     return (
       <Modal
@@ -434,7 +446,6 @@ const styles = StyleSheet.create({
     width: 62,
     height: 62,
     borderRadius: 31,
-    backgroundColor: Colors.magenta,
     alignSelf: 'center',
   },
 });

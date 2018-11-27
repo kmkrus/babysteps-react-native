@@ -10,6 +10,8 @@ import withInputAutoFocus, {
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
+import moment from 'moment';
+
 import { connect } from 'react-redux';
 import {
   fetchRespondent,
@@ -228,6 +230,8 @@ class RegistrationSubjectForm extends Component {
                   dateInput: AppStyles.registrationDateInput,
                   dateText: AppStyles.registrationTextInput,
                 }}
+                maxDate={moment()}
+                maxDate={moment().subtract(24, "M")}
               />
 
               <Text style={styles.errorText}>{dobError}</Text>

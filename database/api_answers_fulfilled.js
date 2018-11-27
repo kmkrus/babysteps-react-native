@@ -24,8 +24,6 @@ const createAPIKeys = answer => {
   const keys = [
     { key: 'id', newKey: 'api_id' },
     { key: 'user_id', newKey: 'user_api_id' },
-    { key: 'respondent_id', newKey: 'respondent_api_id' },
-    { key: 'subject_id', newKey: 'subject_api_id' },
   ];
   _.map(keys, keyPair => {
     if (_.includes(_.keys(answer), keyPair.key)) {
@@ -33,6 +31,11 @@ const createAPIKeys = answer => {
       delete answer[keyPair.key];
     }
   });
+  answer.respondent_api_id = answer.respondent.id;
+  delete answer.respondent;
+  answer.subject_api_id = answer.subject.id;
+  delete answer.subject;
+  delete answer.created_at;
   return answer;
 };
 

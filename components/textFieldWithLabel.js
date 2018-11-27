@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, Keyboard } from 'react-native';
 import {
   FormLabel,
   FormInput,
@@ -19,6 +19,7 @@ export default class TextFieldWithLabel extends PureComponent {
   focus() {
     this.input.focus();
   }
+
 
   render() {
     const { error, helper, touched, ...props } = this.props;

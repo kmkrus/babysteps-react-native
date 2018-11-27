@@ -6,7 +6,7 @@
     "privacy": "public",
     "sdkVersion": "29.0.0",
     "platforms": ["ios", "android"],
-    "version": "0.5.3",
+    "version": "0.8.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -21,7 +21,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "10",
+      "buildNumber": "1",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
@@ -31,7 +31,8 @@
       }
     },
     "android": {
-      "package": "com.gofullstack.babysteps",
+      "versionCode": 2,
+      "package": "com.gofullstack.babysteps"
     },
   },
   "hooks": {

@@ -114,7 +114,8 @@
   "choices": {
     "columns": {
       "id": "INTEGER PRIMARY KEY", 
-      "question_id": "INTEGER", 
+      "question_id": "INTEGER",
+      "option_group_id": "INTEGER",
       "position": "INTEGER", 
       "body": "TEXT", 
       "score": "INTEGER",
@@ -124,6 +125,7 @@
     },
     "indexes": [
       "choices_question_id ON choices (question_id);",
+      "choices_option_group_id ON choices (option_group_id);",
       "choices_position ON choices (position);",
       "choices_overview_timeline ON choices (overview_timeline);"
     ]
