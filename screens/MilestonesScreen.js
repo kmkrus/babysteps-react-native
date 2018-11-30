@@ -12,7 +12,7 @@ import { Text } from 'react-native-elements';
 
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
-import { showMessage } from "react-native-flash-message";
+import { showMessage } from 'react-native-flash-message';
 
 import filter from 'lodash/filter';
 import groupBy from 'lodash/groupBy';
@@ -20,6 +20,7 @@ import reduce from 'lodash/reduce';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import isEmpty from 'lodash/isEmpty';
+import keys from 'lodash/keys';
 
 import moment from 'moment';
 
@@ -31,10 +32,13 @@ import {
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import CONSTANTS from '../constants';
 
 const { width } = Dimensions.get('window');
 
 const itemWidth = width - 60;
+
+let sectionRenderCount = 0;
 
 class MilestonesScreen extends Component {
   static navigationOptions = {
@@ -44,6 +48,8 @@ class MilestonesScreen extends Component {
   state = {
     tasksForList: [],
     sectionIndex: 0,
+    sectionID: null,
+    scrollToComplete: false,
   };
 
   componentWillMount() {
@@ -84,14 +90,24 @@ class MilestonesScreen extends Component {
       );
       this.setState({ tasksForList });
     }
+  }
 
-    const milestone = this.props.navigation.getParam('milestone', null);
-    if (!isEmpty(tasksForList) && !!milestone) {
-      const sectionIndex = findIndex(tasksForList, ['id', milestone.id]);
-      if (sectionIndex !== -1) {
-        this.setState({ sectionIndex });
+  shouldComponentUpdate(nextProps, nextState) {
+    if (!nextState.scrollToComplete &&  nextState.tasksForList.length !== 0) {
+      const milestone = this.props.navigation.getParam('milestone', null);
+      if (milestone) {
+        const sectionIndex = findIndex(this.state.tasksForList, ['id', milestone.id])
+        if (sectionIndex !== -1) {
+          this.sectionList.scrollToLocation({ sectionIndex, itemIndex: 0 });
+          this.setState({ scrollToComplete: true });
+        }
       }
     }
+    // trap section header render - don't update view
+    if (nextState.sectionID !== this.state.sectionID) {
+      return false;
+    }
+    return true;
   }
 
   getItemLayout = sectionListGetItemLayout({
@@ -105,22 +121,24 @@ class MilestonesScreen extends Component {
   });
 
   handleOnPress = (task, calendar) => {
-    if (moment().isBefore(calendar.available_start_at)) {
-      showMessage({
-        message: 'Sorry, this task is not available yet.',
-        type: 'warning',
-      });
-      return null;
-    }
-    if (moment().isAfter(calendar.available_end_at) && !calendar.completed_at) {
-      showMessage({
-        message: 'Sorry, this task is no longer available.',
-        type: 'warning',
-      });
-      return null;
+    if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {
+      if (moment().isBefore(calendar.available_start_at)) {
+        showMessage({
+          message: 'Sorry, this task is not available yet.',
+          type: 'warning',
+        });
+        return null;
+      }
+      if (moment().isAfter(calendar.available_end_at) && !calendar.completed_at) {
+        showMessage({
+          message: 'Sorry, this task is no longer available.',
+          type: 'warning',
+        });
+        return null;
+      }
     }
     this.props.navigation.navigate('MilestoneQuestions', { task });
-  }
+  };
 
   renderItem = item => {
     const task = item.item;
@@ -131,8 +149,10 @@ class MilestonesScreen extends Component {
       if (calendar.completed_at) {
         checkboxSource = require('../assets/images/milestones_checkbox_complete.png');
       }
-      if (moment().isBefore(calendar.available_start_at) || moment().isAfter(calendar.available_end_at)) {
-        color = Colors.lightGrey;
+      if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {
+        if (moment().isBefore(calendar.available_start_at) || moment().isAfter(calendar.available_end_at)) {
+          color = Colors.lightGrey;
+        }
       }
     } else {
       // if no calendar entry, don't show the task
@@ -140,7 +160,6 @@ class MilestonesScreen extends Component {
     }
 
     return (
-
       <View style={styles.itemContainer}>
         <TouchableOpacity onPress={() => this.handleOnPress(task, calendar)}>
           <View style={styles.itemLeft}>
@@ -158,18 +177,22 @@ class MilestonesScreen extends Component {
     );
   };
 
-  renderSectionHeader = headerItem => {
-    return <Text style={styles.section}>{headerItem.section.title}</Text>;
+  handleComponentUpdate = () => {
+    sectionRenderCount += 1;
+    this.setState({ sectionID: sectionRenderCount });
   };
 
-  handleOnLayout = () => {
-    //this.sectionList.scrollToLocation(this.state.sectionIndex);
+  renderSectionHeader = headerItem => {
+    return (
+      <View onLayout={this.handleComponentUpdate}>
+        <Text style={styles.section}>{headerItem.section.title}</Text>
+      </View>
+    );
   };
 
   render() {
-
     return (
-      <View onLayout={this.handleOnLayout} style={styles.container}>
+      <View style={styles.container}>
         <SectionList
           //debug={true}
           ref={ref => this.sectionList = ref}
@@ -194,7 +217,7 @@ const styles = StyleSheet.create({
   },
   section: {
     fontSize: 16,
-    padding: 5,
+    padding: 10,
     paddingLeft: 10,
     color: Colors.tint,
     backgroundColor: Colors.lightGrey,

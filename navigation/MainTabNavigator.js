@@ -1,6 +1,9 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import {
+  createStackNavigator,
+  createBottomTabNavigator
+} from 'react-navigation';
 
 import TabBarIcon from '../components/tab_bar_icon';
 import OverviewScreen from '../screens/OverviewScreen';
@@ -25,32 +28,6 @@ const headerOptions = {
   },
 };
 
-const OverviewStack = createStackNavigator(
-  {
-    Overview: OverviewScreen,
-    Milestones: MilestonesScreen,
-    MilestoneQuestions: MilestoneQuestionsScreen,
-    MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
-  },
-  {
-    navigationOptions: headerOptions,
-  },
-);
-
-OverviewStack.navigationOptions = {
-  tabBarLabel: 'Overview',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}` 
-          : 'md-information-circle'
-      }
-    />
-  ),
-};
-
 const MilestonesStack = createStackNavigator(
   {
     Milestones: MilestonesScreen,
@@ -71,6 +48,32 @@ MilestonesStack.navigationOptions = {
         Platform.OS === 'ios'
           ? `ios-list${focused ? '' : '-outline'}`
           : 'md-list'
+      }
+    />
+  ),
+};
+
+const OverviewStack = createStackNavigator(
+  {
+    Overview: OverviewScreen,
+    MilestonesStack: MilestonesScreen,
+    //MilestoneQuestions: MilestoneQuestionsScreen,
+    // MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
+  },
+  {
+    navigationOptions: headerOptions,
+  },
+);
+
+OverviewStack.navigationOptions = {
+  tabBarLabel: 'Overview',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === 'ios'
+          ? `ios-information-circle${focused ? '' : '-outline'}` 
+          : 'md-information-circle'
       }
     />
   ),

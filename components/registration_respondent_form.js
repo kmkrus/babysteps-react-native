@@ -197,7 +197,7 @@ class RegistrationRespondentForm extends Component {
               <PickerInput
                 label="Relationship"
                 labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationPickerText}
+                inputStyle={AppStyles.registrationPickerText}
                 prompt="Relationship"
                 name="respondent_type"
                 data={respondentTypes}
@@ -229,7 +229,7 @@ class RegistrationRespondentForm extends Component {
               <PickerInput
                 label="State"
                 labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationPickerText}
+                inputStyle={AppStyles.registrationPickerText}
                 prompt="State"
                 name="state"
                 data={States}
@@ -289,7 +289,7 @@ class RegistrationRespondentForm extends Component {
               <PickerInput
                 label="Marital Status"
                 labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationPickerText}
+                inputStyle={AppStyles.registrationPickerText}
                 prompt="Marital Status"
                 name="marital_status"
                 data={maritalStatuses}
@@ -301,7 +301,7 @@ class RegistrationRespondentForm extends Component {
                 inputStyle={AppStyles.registrationTextInput}
                 inputContainerStyle={AppStyles.registrationTextInputContainer}
                 label="Weight"
-                name="weight" 
+                name="weight"
                 type="text"
                 returnKeyType="done"
                 keyboardType="numeric"

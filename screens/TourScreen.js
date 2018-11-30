@@ -77,11 +77,13 @@ export default class TourScreen extends Component {
           shouldCapture={() => this.state.scrollEnabled}
           style={styles.sideSwipe}
           itemWidth={TourItem.WIDTH}
-          threshold={TourItem.WIDTH / 4}
+          //threshold={TourItem.WIDTH * 2}
+          useVelocityForIndex={false}
           extractKey={item => item.key}
           contentOffset={offset}
           onIndexChange={index =>
-            this.setState(() => ({ currentIndex: index }))}
+            this.setState(() => ({ currentIndex: index }))
+          }
           renderItem={page => this.renderItem(page)}
         />
 

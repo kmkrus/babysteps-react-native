@@ -77,6 +77,7 @@ const outcomes = [
 ];
 
 const genders = [
+  { label: 'Unkown', value: 'unknown' },
   { label: 'Female', value: 'female' },
   { label: 'Male', value: 'male' },
 ];
@@ -146,6 +147,10 @@ class OverviewBirthFormModal extends Component {
         visible={this.props.modalVisible}
         onRequestClose={() => {}}
       >
+        <View style={styles.header}>
+          <Text style={styles.headerText}>Baby Profile</Text>
+          <Text style={styles.closeButton} onPress={this.props.closeModal}>X</Text>
+        </View>
         <ScrollView keyboardShouldPersistTaps="handled">
           <Formik
             ref={ref => (this.node = ref)}
@@ -173,7 +178,7 @@ class OverviewBirthFormModal extends Component {
                     selectedValue={props.values.outcome}
                     handleChange={(value) => this._handleOutcomeChange(value)}
                     labelStyle={AppStyles.registrationLabel}
-                    textInputStyle={AppStyles.registrationPickerText}
+                    inputStyle={AppStyles.registrationPickerText}
                   />
 
                   {outcomeIsLiveBirth && (
@@ -205,7 +210,7 @@ class OverviewBirthFormModal extends Component {
                         selectedValue={props.values.conception_method}
                         handleChange={value => props.setFieldValue('conception_method', value)}
                         labelStyle={AppStyles.registrationLabel}
-                        textInputStyle={AppStyles.registrationPickerText}
+                        inputStyle={AppStyles.registrationPickerText}
                       />
 
                       <PickerInputField
@@ -216,7 +221,7 @@ class OverviewBirthFormModal extends Component {
                         selectedValue={props.values.gender}
                         handleChange={value => props.setFieldValue('gender', value)}
                         labelStyle={AppStyles.registrationLabel}
-                        textInputStyle={AppStyles.registrationPickerText}
+                        inputStyle={AppStyles.registrationPickerText}
                       />
 
                       <TextField
@@ -297,6 +302,30 @@ class OverviewBirthFormModal extends Component {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    height: 60,
+    backgroundColor: Colors.headerBackground,
+    elevation: 4,
+    shadowOffset: { width: 5, height: 5 },
+    shadowColor: Colors.grey,
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontWeight: '400',
+    fontSize: 20,
+    color: Colors.headerTint,
+    marginLeft: 20,
+  },
+  closeButton: {
+    fontWeight: '400',
+    fontSize: 25,
+    color: Colors.headerTint,
+    position: 'absolute',
+    top: 15,
+    right: 20,
+  },
   errorText: {
     fontSize: 14,
     marginTop: -5,

@@ -101,7 +101,8 @@ export default class App extends Component {
       <Provider store={store}>
         <View
           style={styles.container}
-          onLayout={() => console.log('*** layout changed')}>
+          onLayout={() => console.log('*** layout changed')}
+        >
           {Platform.OS === 'android' && <StatusBar barStyle="default" />}
           <RootNavigator />
           <FlashMessage position="top" />

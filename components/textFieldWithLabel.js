@@ -1,10 +1,6 @@
 import React, { PureComponent } from 'react';
-import { View, Keyboard } from 'react-native';
-import {
-  FormLabel,
-  FormInput,
-  FormValidationMessage,
-} from 'react-native-elements';
+import { View } from 'react-native';
+import { FormLabel, FormInput } from 'react-native-elements';
 import InputHelper from './inputHelper';
 import Colors from '../constants/Colors';
 
@@ -19,7 +15,6 @@ export default class TextFieldWithLabel extends PureComponent {
   focus() {
     this.input.focus();
   }
-
 
   render() {
     const { error, helper, touched, ...props } = this.props;

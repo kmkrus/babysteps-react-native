@@ -6,7 +6,7 @@ import { updateSession } from '../actions/session_actions';
 
 import ConsentEligibilityForm from '../components/consent_eligibility_form';
 import ConsentDisclosureForm from '../components/consent_disclosure_form';
-import ConsentAgreementForm from '../components/consent_agreement_form';
+//import ConsentAgreementForm from '../components/consent_agreement_form';
 import ConsentSignatureForm from '../components/consent_signature_form';
 
 import States from '../actions/states';

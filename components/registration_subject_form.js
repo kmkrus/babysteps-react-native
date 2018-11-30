@@ -200,7 +200,7 @@ class RegistrationSubjectForm extends Component {
                 selectedValue={props.values.gender}
                 handleChange={value => props.setFieldValue('gender', value)}
                 labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationPickerText}
+                inputStyle={AppStyles.registrationPickerText}
               />
 
               <PickerInput
@@ -211,7 +211,7 @@ class RegistrationSubjectForm extends Component {
                 selectedValue={props.values.conception_method}
                 handleChange={value => props.setFieldValue('conception_method', value)}
                 labelStyle={AppStyles.registrationLabel}
-                textInputStyle={AppStyles.registrationPickerText}
+                inputStyle={AppStyles.registrationPickerText}
               />
 
               <DatePickerInput

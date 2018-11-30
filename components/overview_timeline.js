@@ -239,7 +239,8 @@ class OverviewTimeline extends React.Component {
           data={this.state.overviewTimelines}
           renderItem={item => this.renderOverviewTimeline(item)}
           itemWidth={tlCardWidth + tlCardMargin}
-          //contentOffset={tlCardMargin}
+          //contentOffset={tlCardMargin}\
+          useVelocityForIndex={false}
           onIndexChange={index =>
             this.setState(() => ({ currentIndexTimeLine: index }))
           }

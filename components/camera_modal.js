@@ -56,7 +56,6 @@ class CameraModal extends Component {
   }
 
   onLayout = () => {
-    console.log('layout');
     if (!this.container) return;
 
     const dim = Dimensions.get('window');
@@ -237,7 +236,7 @@ class CameraModal extends Component {
           </View>
         </View>
         <View style={styles.bottomBarMenu}>
-          {(!limitOption || activeOption === 'photo') && (
+          {(!limitOption) && (
             <TouchableOpacity
               onPressIn={() => this.setState({ activeOption: 'photo' })}
             >
@@ -255,7 +254,7 @@ class CameraModal extends Component {
               </Text>
             </TouchableOpacity>
           )}
-          {(!limitOption || activeOption === 'video') && (
+          {(!limitOption) && (
             <TouchableOpacity onPressIn={this.handlePressVideoOption}>
               <Text
                 style={{

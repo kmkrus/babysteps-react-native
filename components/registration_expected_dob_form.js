@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Button, StyleSheet } from 'react-native';
-import { Text } from 'react-native-elements';
+import { View } from 'react-native';
+import { Text, Button } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -149,7 +149,7 @@ class RegistrationExpectedDOB extends Component {
                   title="NEXT"
                   onPress={props.submitForm}
                   buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={{fontWeight: 900}}
+                  titleStyle={ { fontWeight: 900 } }
                   color={Colors.darkGreen}
                   disabled={props.isSubmitting}
                 />

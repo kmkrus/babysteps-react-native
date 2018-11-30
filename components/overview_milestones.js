@@ -12,6 +12,8 @@ import {
 import SideSwipe from 'react-native-sideswipe';
 import { Ionicons } from '@expo/vector-icons';
 
+import { NavigationActions } from 'react-navigation';
+
 import findIndex from 'lodash/findIndex';
 import isEmpty from 'lodash/isEmpty';
 import filter from 'lodash/filter';
@@ -21,6 +23,7 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 import { apiFetchMilestones } from '../actions/milestone_actions';
+
 
 
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
@@ -82,7 +85,7 @@ class OverviewScreen extends React.Component {
             );
           });
           currentIndexMilestones =
-            currentIndexMilestones === -1 ? 0 : currentIndexMilestones;
+            (currentIndexMilestones === -1) ? 0 : currentIndexMilestones;
 
           this.setState({
             currentIndexMilestones,
@@ -100,7 +103,7 @@ class OverviewScreen extends React.Component {
     return (
       <View key={data.itemIndex} style={styles.mgSlideContainer}>
         <TouchableOpacity
-          onPress={() => navigate('Milestones', { milestone: group })}
+          onPress={() => navigate('MilestonesStack', { milestone: group })}
         >
           <Image source={group.uri} style={styles.mgItemImage} />
           <View style={styles.mgItemFooter}>
@@ -112,6 +115,7 @@ class OverviewScreen extends React.Component {
   };
 
   render() {
+    const navigate = this.props.navigation.navigate;
     return (
       <View style={styles.container}>
         <View style={styles.slider_header}>
@@ -120,7 +124,7 @@ class OverviewScreen extends React.Component {
           </View>
           <TouchableOpacity
             style={styles.opacityStyle}
-            onPress={()=>{this.props.navigation.navigate('Milestones')}} >
+            onPress={()=> navigate('Milestones')} >
             <Text style={styles.slider_link_text}>View all</Text>
             <Ionicons name='md-arrow-forward' style={styles.slider_link_icon} />
           </TouchableOpacity>
@@ -134,7 +138,8 @@ class OverviewScreen extends React.Component {
             data={this.state.milestoneGroups}
             renderItem={item => this.renderMilestoneItem(item)}
             itemWidth={width}
-            threshold={mgImageWidth / 4}
+            //threshold={mgImageWidth / 4}
+            useVelocityForIndex={false}
             style={styles.mgSlider}
             onIndexChange={index =>
               this.setState({ currentIndexMilestones: index })

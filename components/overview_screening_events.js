@@ -169,6 +169,7 @@ class OverviewScreen extends React.Component {
               renderItem={item => this.renderScreeningItem(item)}
               itemWidth={scCardWidth + scCardMargin}
               contentOffset={scCardMargin - 2}
+              useVelocityForIndex={false}
               onIndexChange={index =>
                 this.setState(() => ({ currentIndexScreening: index }))
               }

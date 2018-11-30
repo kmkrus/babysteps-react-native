@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
-import {
-  ScrollView,
-  View,
-  Image,
-  StyleSheet,
-  FlatList,
-  Dimensions,
-} from 'react-native';
+import { View, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { Text, Button } from 'react-native-elements';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import _ from 'lodash';
 
@@ -447,7 +441,14 @@ class MilestoneQuestionsScreen extends Component {
     });
 
     return (
-      <ScrollView style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        enableResetScrollToCoords={false}
+        enableAutomaticScroll={true}
+        enableOnAndroid={true}
+        extraScrollHeight={50}
+        innerRef={ref => {this.scroll = ref}}
+      >
         <View style={styles.listContainer}>
           <FlatList
             renderItem={this.renderItem}
@@ -474,14 +475,13 @@ class MilestoneQuestionsScreen extends Component {
             />
           </View>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: Colors.background,
   },
   listContainer: {

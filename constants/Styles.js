@@ -39,9 +39,8 @@ export default StyleSheet.create({
   registrationPickerText: {
     height: 36,
     color: Colors.black,
-    //font attributes rejected on android
-    //fontSize: 18,
-    //fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 
   registrationTextInputContainer: {
