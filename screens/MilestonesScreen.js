@@ -19,8 +19,6 @@ import groupBy from 'lodash/groupBy';
 import reduce from 'lodash/reduce';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
-import isEmpty from 'lodash/isEmpty';
-import keys from 'lodash/keys';
 
 import moment from 'moment';
 
@@ -123,16 +121,20 @@ class MilestonesScreen extends Component {
   handleOnPress = (task, calendar) => {
     if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {
       if (moment().isBefore(calendar.available_start_at)) {
+        const available = moment(calendar.available_start_at).format('MM/DD/YYYY');
         showMessage({
-          message: 'Sorry, this task is not available yet.',
+          message: `This task will be available ${available}. Please check back then.`,
           type: 'warning',
+          duration: 5500,
         });
         return null;
       }
       if (moment().isAfter(calendar.available_end_at) && !calendar.completed_at) {
+        const ended = moment(calendar.available_end_at).format('MM/DD/YYYY');
         showMessage({
-          message: 'Sorry, this task is no longer available.',
+          message: `Sorry, this task is expired on ${ended} and is no longer available.`,
           type: 'warning',
+          duration: 5500,
         });
         return null;
       }

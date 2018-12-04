@@ -400,7 +400,7 @@ class MilestoneQuestionsScreen extends Component {
     // TODO validation
     // TODO move to next section if more than one section in this task
     // TOTO don't mark task complete if any sections are incomplete
-    // TODO update milestone_triggers completed_at if task complete
+    
     this.props.updateMilestoneAnswers(section, answers);
     this.props.updateMilestoneCalendar(section.task_id);
 

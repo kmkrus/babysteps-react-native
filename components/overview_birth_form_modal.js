@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-import { Text, View, Modal, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import {
+  Text,
+  View,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import { Button } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 
 import find from 'lodash/find';
 
@@ -18,6 +26,7 @@ import {
   updateSubject,
   apiUpdateSubject,
 } from '../actions/registration_actions';
+import { deleteAllNotifications } from '../actions/notification_actions';
 import { updateSession } from '../actions/session_actions';
 
 import TextFieldWithLabel from './textFieldWithLabel';
@@ -122,18 +131,32 @@ class OverviewBirthFormModal extends Component {
       return null;
     }
     this.props.updateSubject(values);
+    this.props.updateMilestoneCalendar(section.task_id);
+
+    // TODO update calendar as complete
+
     if (values.api_id) {
       // update birth date on api
       this.props.apiUpdateSubject(this.props.session, values);
       // set session to update calendar and notifications
       this.props.updateSession({ full_calendar_fetched: false });
+
+      // TODO update calendar
     }
     this.props.closeModal();
 
-    // go to birth questionaire
-    const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
-    this.props.navigation.navigate('MilestoneQuestions', { task });
-  }
+    if (values.outcome === 'live_birth') {
+      // trigger generation of notifications
+      this.props.updateSession({ notification_period: 'post_birth' });
+      // go to birth questionaire
+      const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
+      this.props.navigation.navigate('MilestoneQuestions', { task });
+    } else {
+      this.props.deleteAllNotifications();
+      this.props.updateSession({ notification_period: 'no_birth' });
+      this.props.navigation.navigate('Overview');
+    }
+  };
 
   render() {
     const subject = this.props.registration.subject.data;
@@ -149,7 +172,14 @@ class OverviewBirthFormModal extends Component {
       >
         <View style={styles.header}>
           <Text style={styles.headerText}>Baby Profile</Text>
-          <Text style={styles.closeButton} onPress={this.props.closeModal}>X</Text>
+          <View style={styles.closeButton}>
+            <Ionicons
+              name="md-close"
+              size={30}
+              color="white"
+              onPress={this.props.closeModal}
+            />
+          </View>
         </View>
         <ScrollView keyboardShouldPersistTaps="handled">
           <Formik
@@ -319,9 +349,6 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   closeButton: {
-    fontWeight: '400',
-    fontSize: 25,
-    color: Colors.headerTint,
     position: 'absolute',
     top: 15,
     right: 20,
@@ -370,6 +397,7 @@ const mapStateToProps = ({ session, registration, milestones }) => ({
 const mapDispatchToProps = {
   updateSubject,
   apiUpdateSubject,
+  deleteAllNotifications,
   updateSession,
 };
 

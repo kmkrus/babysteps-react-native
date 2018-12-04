@@ -49,13 +49,15 @@
       "task_type": "TEXT", 
       "position": "INTEGER", 
       "study_only": "INTEGER", 
-      "baby_book": "INTEGER", 
+      "baby_book": "INTEGER",
+      "pregnancy_period": "TEXT",
       "name": "TEXT"
     },
     "indexes": [
       "tasks_milestone_id ON tasks (milestone_id);",
       "tasks_position ON tasks (position);",
       "tasks_task_type ON tasks (task_type);",
+      "tasks_pregnancy_period ON tasks {pregnancy_period);",
       "tasks_name ON tasks (name);"
     ]
   },
@@ -97,6 +99,7 @@
     },
     "indexes": [
       "questions_section_id ON questions (section_id);",
+      "questions_postion ON questions (position);",
       "questions_option_group_id ON questions (option_group_id);"
     ]
   },

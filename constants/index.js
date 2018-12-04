@@ -9,6 +9,8 @@ export default {
   TESTING_ENABLE_ALL_TASKS: true,
 
   TASK_BIRTH_QUESTIONAIRE_ID: 25,
+  PRE_BIRTH_BEGINNING_OF_STUDY: 373,
+  POST_BIRTH_END_OF_STUDY: 730,
 
   // Custom Directories
   BABYBOOK_DIRECTORY: 'babybook',

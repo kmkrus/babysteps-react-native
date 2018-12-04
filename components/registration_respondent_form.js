@@ -350,9 +350,9 @@ class RegistrationRespondentForm extends Component {
           );
         }}
       />
-    )
+    );
   }
-};
+}
 
 const styles = StyleSheet.create({
   checkboxContainer: {
@@ -366,7 +366,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session, registration }) => ({ session, registration });
+const mapStateToProps = ({ session, registration }) => ({
+  session,
+  registration,
+});
+
 const mapDispatchToProps = {
   fetchUser,
   resetRespondent,

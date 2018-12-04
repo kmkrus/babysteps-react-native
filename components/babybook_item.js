@@ -20,8 +20,8 @@ const { width, height } = Dimensions.get('window');
 const heightOffset = 180 ;// compensate for header and navbar
 const widthOffset = 40;
 
-const imageSize = width - widthOffset - 60
-const backgroundImage = require('../assets/images/baby_book_inside_background.png')
+const imageSize = width - widthOffset - 60;
+const backgroundImage = require('../assets/images/baby_book_inside_background.png');
 
 class BabyBookItem extends Component {
 
@@ -29,45 +29,39 @@ class BabyBookItem extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching) {
-      return false
+      return false;
     }
-    return true 
+    return true;
   }
 
   render() {
-    
     return (
-
       <View style={styles.container}>
-
         <ImageBackground
-          source={ backgroundImage }
+          source={backgroundImage}
           imageStyle={styles.backgroundImage}
-          style={styles.imageBackground}>
-
+          style={styles.imageBackground}
+        >
           <BabyBookGetImage 
             navigation={this.props.navigation}
             item={ this.props.item }
           />
-        
           <View style={styles.subtitle} >
             <Text style={styles.title}>{ this.props.item.title }</Text>
             <Text style={styles.date}>{ new Date(this.props.item.created_at).toDateString() }</Text>
             <Text style={styles.detail}>{ this.props.item.detail }</Text>
           </View>
-
         </ImageBackground>
-
       </View>
     );
-  };
+  }
 }
 
 const imageCorner = {
   height: 40,
   width: 40,
   position: 'absolute',
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -103,10 +97,12 @@ const styles = StyleSheet.create({
   detail: {
     paddingTop: 10,
     fontSize: 12,
-  }
-  
+  },
 });
 
-const mapStateToProps = ({ registration, babybook }) => ({ registration, babybook });
+const mapStateToProps = ({ registration, babybook }) => ({
+  registration,
+  babybook,
+});
 
-export default connect( mapStateToProps )( BabyBookItem );
+export default connect(mapStateToProps)(BabyBookItem);

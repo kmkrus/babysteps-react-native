@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: widthOffset / 2,
     alignItems: 'center',
     height: height - heightOffset,
     width: width - widthOffset,

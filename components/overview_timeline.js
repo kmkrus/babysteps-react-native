@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 
 import SideSwipe from 'react-native-sideswipe';
+import { showMessage } from 'react-native-flash-message';
 
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
@@ -25,6 +26,7 @@ import { fetchOverViewTimeline } from '../actions/milestone_actions';
 import OverviewBirthFormModal from '../components/overview_birth_form_modal';
 
 import Colors from '../constants/Colors';
+import CONSTANTS from '../constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -36,7 +38,7 @@ const wp = (percentage, direction) => {
 const tlPhotoSize = 65;
 const tlCardHeight = tlPhotoSize + 30;
 const tlCardWidth = tlPhotoSize;
-const tlCardMargin = (width - (tlCardWidth * 5)) / 10;
+const tlCardMargin = (width - (tlCardWidth * 4)) / 8;
 
 class OverviewTimeline extends React.Component {
 
@@ -156,12 +158,35 @@ class OverviewTimeline extends React.Component {
     this.setState({ birthFormModalVisible: false });
   };
 
+  handleOnPress = (item, task) => {
+    if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {
+      if (moment().isBefore(item.available_start_at)) {
+        const available = moment(item.available_start_at).format('MM/DD/YYYY');
+        showMessage({
+          message: `This task will be available ${available}. Please check back then.`,
+          type: 'warning',
+          duration: 5500,
+        });
+        return null;
+      }
+      if (moment().isAfter(item.available_end_at) && !item.completed_at) {
+        const ended = moment(item.available_end_at).format('MM/DD/YYYY');
+        showMessage({
+          message: `Sorry, this task is expired on ${ended} and is no longer available.`,
+          type: 'warning',
+          duration: 5500,
+        });
+        return null;
+      }
+    }
+    this.props.navigation.navigate('MilestoneQuestions', { task });
+  };
+
   renderContent = item => {
     const currentTimeline = this.state.currentTimeline.choice_id === item.choice_id;
     const currentStyle = currentTimeline ? styles.timelineCurrentItem : {};
     const available = moment().isAfter(item.available_start_at) && moment().isBefore(item.available_end_at);
     const task = find(this.props.milestones.tasks.data, ['id', item.task_id]);
-    const navigate = this.props.navigation.navigate;
 
     if (item.uri) {
       return (
@@ -187,13 +212,21 @@ class OverviewTimeline extends React.Component {
     }
     if (!available) {
       return (
-        <Text style={styles.timelineCircleItem} />
-      )
+        <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
+          <View style={styles.timelineIconContainer}>
+            <Image
+              source={require('../assets/images/overview_camera.png')}
+              style={[styles.timelineCameraIconImage, { opacity: 0.4 }]}
+              resizeMode="cover"
+            />
+          </View>
+        </TouchableOpacity>
+      );
     }
     if (!item.uri && !!currentTimeline) {
       return (
-        <TouchableOpacity onPress={() => navigate('MilestoneQuestions', { task })}>
-          <View style={styles.timelineIconContainer}>
+        <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
+          <View style={[styles.timelineIconContainer, styles.timelineCurrentIconContainer]}>
             <Image
               source={require('../assets/images/overview_camera.png')}
               style={styles.timelineCameraIconImage}
@@ -205,9 +238,13 @@ class OverviewTimeline extends React.Component {
     }
     if (!item.uri && !currentTimeline) {
       return (
-        <TouchableOpacity onPress={() => navigate('MilestoneQuestions', { task })}>
+        <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
           <View style={[styles.timelineCircleItem, currentStyle]}>
-            <Text />
+            <Image
+              source={require('../assets/images/overview_camera.png')}
+              style={styles.timelineCameraIconImage}
+              resizeMode="cover"
+            />
           </View>
         </TouchableOpacity>
       );
@@ -273,7 +310,8 @@ const styles = StyleSheet.create({
     color: Colors.pink,
     textAlign: 'center',
     flexWrap: 'wrap',
-    maxWidth: tlPhotoSize - 15,
+    maxWidth: tlPhotoSize - 5,
+    minHeight: 24,
     marginTop: 5,
   },
   timelineItemContainer: {
@@ -302,9 +340,13 @@ const styles = StyleSheet.create({
   timelineIconContainer: {
     width: tlPhotoSize,
     height: tlPhotoSize,
+    backgroundColor: Colors.lightGrey,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: tlPhotoSize / 2,
+  },
+  timelineCurrentIconContainer: {
+    backgroundColor: Colors.white,
     borderWidth: 2,
     borderColor: Colors.pink,
   },

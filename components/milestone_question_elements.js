@@ -406,6 +406,7 @@ export class RenderFile extends Component {
         <View key={choice.id} style={styles.fileImageContainer}>
           {(isImage || isVideo) && (
             <View>
+              <Text style={styles.questionBody}>{question.body}</Text>
               <Button
                 title={`Attach ${format}`}
                 buttonStyle={styles.libraryButton}
@@ -423,13 +424,16 @@ export class RenderFile extends Component {
             </View>
           )}
           {isAudio && (
-            <Button
-              title="Record Audio"
-              buttonStyle={styles.libraryButton}
-              titleStyle={styles.buttonTitleStyle}
-              color={Colors.green}
-              onPressIn={() => this.recordAudio(choice)}
-            />
+            <View>
+              <Text style={styles.questionBody}>{question.body}</Text>
+              <Button
+                title="Record Audio"
+                buttonStyle={styles.libraryButton}
+                titleStyle={styles.buttonTitleStyle}
+                color={Colors.green}
+                onPressIn={() => this.recordAudio(choice)}
+              />
+            </View>
           )}
           <Text style={styles.textError}>
             {this.state.permissionMessage}
@@ -541,6 +545,11 @@ const styles = StyleSheet.create({
     width: 200,
     marginBottom: 10,
     marginLeft: 20,
+  },
+  questionBody: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 20,
   },
   buttonTitleStyle: {
     fontWeight: '900',

@@ -104,6 +104,12 @@ export const UPDATE_SESSION_PENDING = 'update_session_pending';
 export const UPDATE_SESSION_FULFILLED = 'update_session_fulfilled';
 export const UPDATE_SESSION_REJECTED = 'update_session_rejected';
 
+export const UPDATE_NOTIFICATIONS_PENDING = 'set_notifications_pending';
+export const UPDATE_NOTIFICATIONS_FULFILLED = 'set_notifications_fulfilled';
+export const UPDATE_NOTIFICATIONS_REJECTED = 'set_notifications_rejected';
+
+export const DELETE_NOTIFICATIONS = 'delete_notifications';
+
 // Registration actions
 export const FETCH_USER_PENDING = 'fetch_user_pending';
 export const FETCH_USER_FULFILLED = 'fetch_user_fulfilled';

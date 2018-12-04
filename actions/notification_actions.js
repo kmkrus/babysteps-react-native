@@ -1,18 +1,8 @@
 import { SQLite } from 'expo';
-import axios from 'axios';
-import url from 'url';
 
-import { _ } from 'lodash';
-
-import { insertRows } from '../database/common';
-import { setNotifications } from '../notifications';
-import schema from '../database/milestones_schema.json';
-import trigger_schema from '../database/milestone_triggers_schema.json';
-
-import CONSTANTS from '../constants';
+import { setNotifications, deleteNotifications } from '../notifications';
 
 import {
-
   SHOW_MOMENTARY_ASSESSMENT,
   HIDE_MOMENTARY_ASSESSMENT,
 
@@ -20,6 +10,11 @@ import {
   FETCH_MOMENTARY_ASSESSMENT_FULFILLED,
   FETCH_MOMENTARY_ASSESSMENT_REJECTED,
 
+  UPDATE_NOTIFICATIONS_PENDING,
+  UPDATE_NOTIFICATIONS_FULFILLED,
+  UPDATE_NOTIFICATIONS_REJECTED,
+
+  DELETE_NOTIFICATIONS,
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -46,7 +41,7 @@ export const hideMomentaryAssessment = (data, formData) => {
 
 export const fetchMomentaryAssessment = params => {
   return dispatch => {
-    dispatch( Pending(FETCH_MOMENTARY_ASSESSMENT_PENDING) );
+    dispatch(Pending(FETCH_MOMENTARY_ASSESSMENT_PENDING));
     let sql = `SELECT 
         ts.*, 
         sc.id AS section_id, 
@@ -59,14 +54,37 @@ export const fetchMomentaryAssessment = params => {
     sql += ' INNER JOIN choices AS ch ON ch.question_id = qn.id';
     sql += ` WHERE ts.id = ${params.task_id}`;
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql( 
-          sql, [],
-          (_, response) => {dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_FULFILLED, response))},
-          (_, error) => {dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_REJECTED, error))}
-        );
-      })
-    );
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_FULFILLED, response)),
+        (_, error) => dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_REJECTED, error)),
+      );
+    })
+  };
+};
+
+export const updateNotifications = () => {
+  return function(dispatch) {
+    dispatch(Pending(UPDATE_NOTIFICATIONS_PENDING));
+    let sql = 'SELECT * FROM milestone_triggers ';
+    sql += 'ORDER BY milestone_triggers.notify_at;';
+    db.transaction(tx => {
+      tx.executeSql(
+        sql, [],
+        (_, response) => {
+          setNotifications(response.data);
+          dispatch(Response(UPDATE_NOTIFICATIONS_FULFILLED, response));
+        },
+        (_, error) => dispatch(Response(UPDATE_NOTIFICATIONS_REJECTED, error)),
+      );
+    });
+  };
+};
+
+export const deleteAllNotifications = () => {
+  return dispatch => {
+    deleteNotifications();
+    dispatch(Response(DELETE_NOTIFICATIONS));
   };
 };

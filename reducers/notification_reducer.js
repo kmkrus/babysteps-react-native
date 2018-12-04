@@ -6,6 +6,11 @@ import {
   FETCH_MOMENTARY_ASSESSMENT_FULFILLED,
   FETCH_MOMENTARY_ASSESSMENT_REJECTED,
 
+  UPDATE_NOTIFICATIONS_PENDING,
+  UPDATE_NOTIFICATIONS_FULFILLED,
+  UPDATE_NOTIFICATIONS_REJECTED,
+
+  DELETE_NOTIFICATIONS,
 } from '../actions/types';
 
 const initialState = {
@@ -16,43 +21,121 @@ const initialState = {
     error: null,
     data: {},
   },
+  notifications: {
+    fetching: false,
+    fetched: false,
+    error: null,
+  },
 };
 
 const reducer = (state = initialState, action, formData = []) => {
   switch (action.type) {
     case SHOW_MOMENTARY_ASSESSMENT: {
-      return {...state, show_momentary_assessment: true, fetching: false, fetched: false, error: null, data: action.payload};
-      break;
+      return {
+        ...state,
+        show_momentary_assessment: true,
+        momentary_assessment: {
+          ...state.momentary_assessment,
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: action.payload,
+        },
+      };
     }
     case HIDE_MOMENTARY_ASSESSMENT: {
-      return {...state, show_momentary_assessment: false, fetching: false, fetched: false, error: null, data: {},
-        momentary_assessment: {data: action.payload, answer: formData}
+      return {
+        ...state,
+        show_momentary_assessment: false,
+        momentary_assessment: {
+          ...state.momentary_assessment,
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: action.payload,
+          answer: formData,
+        },
       };
-      break;
     }
 
     case FETCH_MOMENTARY_ASSESSMENT_PENDING: {
-      return {...state, momentary_assessment:
-        {...state.momentary_assessment, fetching: true, fetched: false, error: null, data: {}},
+      return {
+        ...state,
+        momentary_assessment: {
+          ...state.momentary_assessment,
+          fetching: true,
+          fetched: false,
+          error: null,
+          data: {},
+        },
       };
-      break;
     }
     case FETCH_MOMENTARY_ASSESSMENT_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      return {...state, momentary_assessment:
-        {...state.momentary_assessment, fetching: false, fetched: true, error: null, data: data},
+      return {
+        ...state,
+        momentary_assessment: {
+          ...state.momentary_assessment,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data,
+        },
       };
-      break;
     }
     case FETCH_MOMENTARY_ASSESSMENT_REJECTED: {
-      return {...state, momentary_assessment:
-        {...state.momentary_assessment, fetching: false, fetched: false, error: action.payload},
+      return {
+        ...state,
+        momentary_assessment: {
+          ...state.momentary_assessment,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
       };
-      break;
     }
 
-  default:
-    return state;
+    case UPDATE_NOTIFICATIONS_PENDING: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case UPDATE_NOTIFICATIONS_FULFILLED: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case UPDATE_NOTIFICATIONS_REJECTED: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case DELETE_NOTIFICATIONS: {
+      return state;
+    }
+
+    default: {
+      return state;
+    }
   }
 };
 

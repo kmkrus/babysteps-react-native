@@ -24,13 +24,13 @@ const initialState = {
   error: null,
   id: null,
   registration_state: 'none',
+  notification_period: null,
   access_token: null,
   client: null,
   uid: null,
   user_id: null,
   email: null,
   password: null,
-  full_calendar_fetched: false,
 };
 
 const reducer = (state = initialState, action) => {

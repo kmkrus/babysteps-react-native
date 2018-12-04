@@ -19,10 +19,8 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 
-import {
-  apiCreateMilestoneCalendar,
-  apiFetchMilestoneCalendar,
-} from '../actions/milestone_actions';
+import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
+import { updateNotifications } from '../actions/notification_actions';
 import { updateSession } from '../actions/session_actions';
 
 import Colors from '../constants/Colors';
@@ -50,10 +48,10 @@ class OverviewScreen extends React.Component {
     sliderLoading: true,
     screeningEvents: [],
     apiCreateCalendarSubmitted: false,
-    apiFetchCalendarSubmitted: false,
+    updateNotificationsSubmitted: false,
   };
 
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     if (!subject.fetching && subject.fetched) {
       let fetchCalendarParams = {};
@@ -61,6 +59,9 @@ class OverviewScreen extends React.Component {
         fetchCalendarParams = { subject_id: subject.data.api_id };
       } else {
         fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
+        if (subject.data.date_of_birth) {
+          fetchCalendarParams = { base_date: subject.data.date_of_birth };
+        }
       }
       const calendar = nextProps.milestones.calendar;
       if (!calendar.fetching && calendar.fetched) {
@@ -72,7 +73,7 @@ class OverviewScreen extends React.Component {
           ) {
             // creates calendar on server, but only returns visible tasks
             // no notifications generated
-            this.props.apiCreateMilestoneCalendar( fetchCalendarParams );
+            this.props.apiCreateMilestoneCalendar(fetchCalendarParams);
             this.setState({ apiCreateCalendarSubmitted: true });
           }
         } else {
@@ -92,14 +93,16 @@ class OverviewScreen extends React.Component {
             screeningEvents,
             sliderLoading: false,
           });
-          // Fetch full calendar and create notifications
-          if (
-            !nextProps.session.full_calendar_fetched &&
-            !this.state.apiFetchCalendarSubmitted
-          ) {
-            this.props.apiFetchMilestoneCalendar( fetchCalendarParams );
-            this.setState({ apiFetchCalendarSubmitted: true });
-            this.props.updateSession({ full_calendar_fetched: true });
+          // Create notifications
+          if (!this.state.updateNotificationsSubmitted) {
+            const period = nextProps.session.notification_period;
+            let currentPeriod = 'pre_birth';
+            if (subject.data.date_of_birth) currentPeriod = 'post_birth';
+            if ((!period || period !== currentPeriod) && period !== 'no_birth') {
+              this.props.updateNotifications();
+              this.props.updateSession({ notification_period: currentPeriod });
+              this.setState({ updateNotificationsSubmitted: true });
+            }
           }
         } // isEmpty calendar data
       } // calendar fetcbhing
@@ -159,7 +162,7 @@ class OverviewScreen extends React.Component {
           )}
           {isEmpty(this.state.screeningEvents) && (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No Current Screening Events</Text>
+              <Text style={styles.emptyText}>You've completed all the tasks for this stage.  We'll notify you when there are new tasks to complete.</Text>
             </View>
           )}
           {!isEmpty(this.state.screeningEvents) && (
@@ -262,10 +265,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: scCardMargin,
+    height: scCardHeight,
+    width: scCardWidth,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.lightGrey,
+    borderRadius: 5,
   },
   emptyText: {
+    justifyContent: 'center',
+    textAlign: 'center',
     color: Colors.pink,
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 
@@ -278,7 +290,7 @@ const mapStateToProps = ({ session, milestones, registration }) => ({
 const mapDispatchToProps = {
   updateSession,
   apiCreateMilestoneCalendar,
-  apiFetchMilestoneCalendar,
+  updateNotifications,
 };
 
 export default connect(

@@ -8,7 +8,6 @@ import omit from 'lodash/omit';
 import keys from 'lodash/keys';
 
 import { insertRows } from '../database/common';
-import { setNotifications } from '../notifications';
 import schema from '../database/milestones_schema.json';
 import trigger_schema from '../database/milestone_triggers_schema.json';
 
@@ -202,20 +201,25 @@ export const fetchMilestoneGroups = () => {
   };
 };
 
-export const fetchMilestoneCalendar = () => {
+export const fetchMilestoneCalendar = (pregnancy_period = null) => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_CALENDAR_PENDING));
+    let sql = 'SELECT * FROM milestone_triggers ';
+    sql += 'WHERE momentary_assessment = 0 ';
+    if (pregnancy_period) {
+      sql += `WHERE pregnancy_period = '${pregnancy_period}' `;
+    }
+    sql += 'ORDER BY milestone_triggers.notify_at;';
     return (
       db.transaction(tx => {
         tx.executeSql(
-          'SELECT * FROM milestone_triggers ORDER BY milestone_triggers.notify_at;', [],
+          sql, [],
           (_, response) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response))},
           (_, error) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error))}
         );
       })
     )
   };
-
 };
 
 export const updateMilestoneCalendar = (task_id) => {
@@ -293,7 +297,6 @@ export const apiFetchMilestoneCalendar = params => {
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_FULFILLED, response));
-          setNotifications(response.data);
         })
         .catch(error => {
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));

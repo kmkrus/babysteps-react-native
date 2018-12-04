@@ -333,7 +333,8 @@ class AudioModal extends Component {
         {!haveRecordingPermission && (
           <View style={styles.container}>
             <Text style={styles.noPermissionsText}>
-              You must enable audio recording permissions in order to use this app.
+              You must enable audio recording permissions in order to use this
+              app.
             </Text>
           </View>
         )}
@@ -344,7 +345,7 @@ class AudioModal extends Component {
               style={[
                 styles.halfScreenContainer,
                 {
-                  marginBottom: 10, 
+                  marginBottom: 10,
                   opacity: this.state.isLoading ? DISABLED_OPACITY : 1.0,
                 },
               ]}
@@ -522,7 +523,6 @@ const styles = StyleSheet.create({
   },
   wrapper: {},
   halfScreenContainer: {
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',

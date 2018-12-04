@@ -9,7 +9,7 @@
       "user_id": "INTEGER",
       "email": "TEXT",
       "password": "TEXT",
-      "full_calendar_fetched": "INTEGER",
+      "notification_period": "TEXT",
     },
     "indexes": [],
   },
