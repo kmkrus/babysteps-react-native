@@ -374,7 +374,7 @@ export class RenderFile extends Component {
 
       let uri = null;
       let uriParts = [];
-      let image = {};
+      const image = {};
       let fileType = null;
       const answer = _.find(answers, ['choice_id', choice.id]);
       const attachment = _.find(attachments, ['choice_id', choice.id]);

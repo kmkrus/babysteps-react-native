@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { apiTokenRefresh } from '../actions/session_actions';
+import attemptRefresh from 'redux-refresh-token';
+
+import {
+  apiTokenRefresh,
+  apiTokenRefreshFailed,
+} from '../actions/session_actions';
 
 import CONSTANTS from '../constants';
 
@@ -81,9 +86,23 @@ export default store => next => action => {
       // Not signed in
       if (response.status === 401) {
         // not already getting fresh token
+        debugger
         if (!store.getState().session.fetching_token) {
           //store.dispatch(Pending(SET_FETCHING_TOKEN));
-          apiTokenRefresh(store.dispatch, session);
+          attemptRefresh({
+            // An action creator that determines what happens when the refresh failed
+            failure: apiTokenRefreshFailed,
+            // An action creator that creates an API request to refresh the token
+            refreshActionCreator: apiTokenRefresh(store.dispatch, session),
+            // This is the current access token. If the user is not authenticated yet
+            // this can be null or undefined
+            token: session.access_token,
+            // The next 3 parameters are simply the arguments of
+            // the middleware function
+            action,
+            next,
+            store,
+          });
         }
       } else {
         store.dispatch(Response(effect.rejected, error));

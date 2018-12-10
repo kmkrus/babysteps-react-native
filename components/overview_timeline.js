@@ -190,11 +190,13 @@ class OverviewTimeline extends React.Component {
 
     if (item.uri) {
       return (
-        <Image
-          source={{ uri: item.uri }}
-          style={[styles.timelineImage, currentStyle]}
-          resizeMode="cover"
-        />
+        <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
+          <Image
+            source={{ uri: item.uri }}
+            style={[styles.timelineImage, currentStyle]}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
       );
     }
     if (item.overview_timeline === 'birth') {

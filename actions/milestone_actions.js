@@ -524,15 +524,13 @@ export const createMilestoneAnswer = answer => {
     const values = this.parseFields(answer, answerFields);
     const sql =`INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES (${values});`;
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [],
-          (_, response) => dispatch(Response(CREATE_MILESTONE_ANSWER_FULFILLED, response)),
-          (_, error) => dispatch(Response(CREATE_MILESTONE_ANSWER_REJECTED, error))
-        );
-      }) // transaction
-    ) // return
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch(Response(CREATE_MILESTONE_ANSWER_FULFILLED, response)),
+        (_, error) => dispatch(Response(CREATE_MILESTONE_ANSWER_REJECTED, error))
+      );
+    }) // transaction
   }; // dispatch
 };
 
@@ -549,19 +547,17 @@ export const updateMilestoneAnswers = (section, answers) => {
 
     const sql = `INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES ${values.join(', ')};`;
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql( 'DELETE FROM answers WHERE section_id = ?', [section.id], 
-          (_, rows) => console.log('** Clear answers table for section ' + section.title ), 
-          (_, error) => console.log('*** Error in clearing answers table for section ' + section.title )
-        );
-        tx.executeSql( 
-          sql, [],
-          (_, response) => { dispatch( Response(UPDATE_MILESTONE_ANSWERS_FULFILLED, response, answers) ) },
-          (_, error) => { dispatch( Response(UPDATE_MILESTONE_ANSWERS_REJECTED, error) ) }
-        );
-      })
-    );
+    return db.transaction(tx => {
+      tx.executeSql( 'DELETE FROM answers WHERE section_id = ?', [section.id], 
+        (_, rows) => console.log('** Clear answers table for section ' + section.title ), 
+        (_, error) => console.log('*** Error in clearing answers table for section ' + section.title )
+      );
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch( Response(UPDATE_MILESTONE_ANSWERS_FULFILLED, response, answers)),
+        (_, error) => dispatch( Response(UPDATE_MILESTONE_ANSWERS_REJECTED, error))
+      );
+    });
   };
 };
 
@@ -673,15 +669,13 @@ export const fetchMilestoneAttachments = (params = {}) => {
     }
     sql += ' ORDER BY choice_id;';
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [],
-          (_, response) => {dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_FULFILLED, response))},
-          (_, error) => {dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_REJECTED, error))}
-        );
-      })
-    );
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_FULFILLED, response)),
+        (_, error) => dispatch(Response(FETCH_MILESTONE_ATTACHMENTS_REJECTED, error))
+      );
+    });
   };
 };
 
@@ -692,15 +686,13 @@ export const createMilestoneAttachment = attachment => {
     const values = this.parseFields(attachment, attachmentFields);
     const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
 
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [],
-          (_, response) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
-          (_, error) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_REJECTED, error))
-        );
-      }) // transaction
-    ) // return
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
+        (_, error) => dispatch(Response(CREATE_MILESTONE_ATTACHMENT_REJECTED, error))
+      );
+    }) // transaction
   }; // dispatch
 };
 
@@ -712,19 +704,17 @@ export const updateMilestoneAttachment = attachment => {
     const values = this.parseFields(attachment, attachmentFields);
     const sql = `INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
 
-    return (
-      db.transaction(tx => {
-         tx.executeSql( 'DELETE FROM attachments WHERE choice_id = ?', [choice_id],
-          (_, response) => console.log('** Clear attachments table for choice ' + choice_id),
-          (_, error) => console.log('*** Error in clearing attachments table for choice ' + choice_id)
-        );
-        tx.executeSql(
-          sql, [],
-          (_, response) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
-          (_, error) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_REJECTED, error))
-        );
-      }) // transaction
-    ) // return
+    return db.transaction(tx => {
+      tx.executeSql( 'DELETE FROM attachments WHERE choice_id = ?', [choice_id],
+        (_, response) => console.log('** Clear attachments table for choice ' + choice_id),
+        (_, error) => console.log('*** Error in clearing attachments table for choice ' + choice_id)
+      );
+      tx.executeSql(
+        sql, [],
+        (_, response) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_FULFILLED, response)),
+        (_, error) => dispatch(Response(UPDATE_MILESTONE_ATTACHMENT_REJECTED, error))
+      );
+    }) // transaction
   }; // dispatch
 };
 
@@ -754,7 +744,7 @@ export const fetchOverViewTimeline = () => {
     sql += ' INNER JOIN milestone_triggers AS mts ON ss.task_id = mts.task_id';
     sql += ' LEFT JOIN answers AS ans ON ans.choice_id = cs.id';
     sql += ' LEFT JOIN attachments AS ats ON ans.choice_id = ats.choice_id';
-    sql += " WHERE cs.overview_timeline IN ('during_pregnancy', 'birth', 'post_birth')";
+    sql += ` WHERE cs.overview_timeline IN ('during_pregnancy', 'birth', 'post_birth')`;
     sql += ' ORDER BY mts.notify_at;';
 
     return db.transaction(tx => {

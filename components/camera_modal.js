@@ -332,9 +332,9 @@ class CameraModal extends Component {
     if (this.props.choice !== undefined && this.props.choice) {
       showCameraFacePosition = this.props.choice.overview_timeline === 'post_birth';
     }
-    if (videoTimer) {
-      console.log('SECONDS: ', videoTimer.seconds() );
-    }
+    //if (videoTimer) {
+    //  console.log('SECONDS: ', videoTimer.seconds());
+    //}
     return (
       <Modal
         animationType="slide"

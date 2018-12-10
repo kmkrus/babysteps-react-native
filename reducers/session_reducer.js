@@ -6,6 +6,7 @@ import {
   API_TOKEN_REFRESH_PENDING,
   API_TOKEN_REFRESH_FULFILLED,
   API_TOKEN_REFRESH_REJECTED,
+  API_TOKEN_REFRESH_FAILED,
 
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
@@ -55,10 +56,14 @@ const reducer = (state = initialState, action) => {
         client: header.client,
         uid: header.uid,
         user_id: header.user_id,
-      }
+      };
     }
     case API_TOKEN_REFRESH_REJECTED: {
       return { ...state, fetching_token: false, error: action.payload };
+    }
+    case API_TOKEN_REFRESH_FAILED: {
+      console.log(API_TOKEN_REFRESH_FAILED);
+      return { ...state, fetching_token: false, error: 'action failed' };
     }
 
     case FETCH_SESSION_PENDING: {

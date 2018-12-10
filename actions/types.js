@@ -110,6 +110,13 @@ export const UPDATE_NOTIFICATIONS_REJECTED = 'set_notifications_rejected';
 
 export const DELETE_NOTIFICATIONS = 'delete_notifications';
 
+export const UPDATE_ACCESS_TOKEN = 'update_access_token';
+
+export const API_TOKEN_REFRESH_PENDING = 'api_token_refresh_pending';
+export const API_TOKEN_REFRESH_FULFILLED = 'api_token_refresh_fulfilled';
+export const API_TOKEN_REFRESH_REJECTED = 'api_token_refresh_rejected';
+export const API_TOKEN_REFRESH_FAILED = 'api_token_refresh_failed';
+
 // Registration actions
 export const FETCH_USER_PENDING = 'fetch_user_pending';
 export const FETCH_USER_FULFILLED = 'fetch_user_fulfilled';
@@ -170,12 +177,6 @@ export const API_CREATE_SUBJECT_REJECTED = 'api_create_subject_rejected';
 export const API_UPDATE_SUBJECT_PENDING = 'api_update_subject_pending';
 export const API_UPDATE_SUBJECT_FULFILLED = 'api_update_subject_fulfilled';
 export const API_UPDATE_SUBJECT_REJECTED = 'api_update_subject_rejected';
-
-export const API_TOKEN_REFRESH_PENDING = 'api_token_refresh_pending';
-export const API_TOKEN_REFRESH_FULFILLED = 'api_token_refresh_fulfilled';
-export const API_TOKEN_REFRESH_REJECTED = 'api_token_refresh_rejected';
-
-export const UPDATE_ACCESS_TOKEN = 'update_access_token';
 
 // Babybook actions
 

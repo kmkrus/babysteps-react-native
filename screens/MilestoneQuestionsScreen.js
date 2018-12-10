@@ -331,7 +331,8 @@ class MilestoneQuestionsScreen extends Component {
       _.remove(answers, ['choice_id', choice.id]);
     } // index = -1
     if (response.attachments) {
-      const attachmentDir = Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+      const attachmentDir =
+        Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
       answer.attachments = [];
       _.map(response.attachments, async att => {
         const attachment = {};

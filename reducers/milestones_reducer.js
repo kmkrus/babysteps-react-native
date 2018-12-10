@@ -792,7 +792,9 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_CREATE_MILESTONE_ANSWER_FULFILLED: {
       const headers = action.payload.headers;
-      const accessToken = headers.access-token ? headers.access-token : state.auth.accessToken;
+      const accessToken = headers['access-token']
+        ? headers['access-token']
+        : state.auth.accessToken;
       return {
         ...state,
         auth: {

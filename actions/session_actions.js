@@ -5,7 +5,8 @@ import {
   API_TOKEN_REFRESH_PENDING,
   API_TOKEN_REFRESH_FULFILLED,
   API_TOKEN_REFRESH_REJECTED,
-
+  API_TOKEN_REFRESH_FAILED,
+  
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
   FETCH_SESSION_REJECTED,
@@ -40,26 +41,23 @@ export const fetchSession = () => {
 };
 
 const sendSessionUpdate = (dispatch, data) => {
-  dispatch(Pending(UPDATE_SESSION_PENDING))
+  dispatch(Pending(UPDATE_SESSION_PENDING));
 
   const keys = _.keys(data);
-  const values = _.values(data);
-  let updateSQL = [];
+  const updateSQL = [];
 
   _.forEach(keys, key => {
     updateSQL.push(`${key} = '${data[key]}'`);
   });
 
-  return (
-    db.transaction(tx => {
-      tx.executeSql(
-        `UPDATE sessions SET ${updateSQL.join(', ')};`, [],
-        (_, response) => dispatch(Response(UPDATE_SESSION_FULFILLED, response, data)),
-        (_, error) => dispatch(Response(UPDATE_SESSION_REJECTED, error)),
-      );
-    })
-  );
-};
+  return db.transaction(tx => {
+    tx.executeSql(
+      `UPDATE sessions SET ${updateSQL.join(', ')};`, [],
+      (_, response) => dispatch(Response(UPDATE_SESSION_FULFILLED, response, data)),
+      (_, error) => dispatch(Response(UPDATE_SESSION_REJECTED, error)),
+    );
+  });
+ };
 
 export const updateSession = data => {
   return function(dispatch) {
@@ -72,6 +70,7 @@ export const apiUpdateSession = (dispatch, data) => {
 };
 
 export const apiTokenRefresh = (dispatch, session) => {
+  debugger
   return dispatch({
     type: API_TOKEN_REFRESH_PENDING,
     payload: {
@@ -94,3 +93,8 @@ export const apiTokenRefresh = (dispatch, session) => {
   });
 };
 
+export const apiTokenRefreshFailed = () => {
+  return function(dispatch) {
+    dispatch(Pending(API_TOKEN_REFRESH_FAILED));
+  };
+};
