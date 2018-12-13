@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
 
-import RNPickerSelect from 'react-native-picker-select';
 import { FormLabel, FormInput } from 'react-native-elements';
+
+import { compose } from "recompose";
+import makeInput, { KeyboardModal, withPickerValues } from 'react-native-formik';
 
 import find from 'lodash/find';
 
@@ -10,65 +12,34 @@ import InputHelper from './inputHelper';
 
 import Colors from '../constants/Colors';
 
-export default class PickerInput extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.onPress = this.focus.bind(this);
-  }
+const Picker = compose(makeInput, withPickerValues)(FormInput);
 
-  focus() {
-    this.input.focus();
-  }
+let textInput = null;
+
+export default class PickerInput extends PureComponent {
 
   render() {
-    const {
-      error,
-      helper,
-      touched,
-      name,
-      label,
-      inputStyle,
-      data,
-      ...props
-    } = this.props;
-
-    const displayError = !!error; //&& touched;
-
+    const { error, helper, touched, label, ...props } = this.props;
+    const displayError = !!error && touched;
     const labelColor = displayError ? Colors.errorColor : Colors.grey;
-
-    const containerStyle = {
-      borderBottomWidth: 0.25,
-      borderBottomColor: Colors.grey,
-      marginBottom: 1,
-      marginLeft: 20,
-      marginRight: 20,
-      marginTop: 15,
-    };
+    const containerStyle = { marginBottom: 1 };
 
     const labelProps = {
-      labelStyle: { color: labelColor, marginLeft: 0 },
+      labelStyle: { color: labelColor, marginLeft: 20 },
     };
-    
-    const selectedValue = find(data, ['value', this.props.selectedValue]).label;
 
+    const selectedValue = find(this.props.values, ['value', this.props.selectedValue]).label;
     return (
       <View style={containerStyle}>
         <View>
           <FormLabel {...labelProps}>{label}</FormLabel>
-          <RNPickerSelect
-            ref={input => (this.input = input)}
-            onValueChange={value => this.props.handleChange(value)}
-            items={data}
-            hideIcon
-          >
-            <FormInput
-              ref={input => (this.input = input)}
-              inputStyle={inputStyle}
-              value={selectedValue}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </RNPickerSelect>
+          <Picker
+            containerStyle={containerStyle}
+            value={selectedValue}
+            autoCapitalize="none"
+            autoCorrect={false}
+            {...this.props}
+          />
         </View>
         <InputHelper
           displayError={displayError}

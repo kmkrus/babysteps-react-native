@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { Notifications } from 'expo';
 
 import find from 'lodash/find';
@@ -18,7 +18,7 @@ import {
   fetchOverViewTimeline,
 } from '../actions/milestone_actions';
 
-import { fetchSubject } from '../actions/registration_actions';
+import { fetchSubject, updateSubject } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 
@@ -52,6 +52,7 @@ class OverviewScreen extends React.Component {
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneTasks();
     this.props.fetchOverViewTimeline();
+    //this.props.updateSubject({expected_date_of_birth: '2019-07-01', date_of_birth: ''})
   }
 
   testNotification(noticeType = null) {
@@ -128,6 +129,7 @@ const mapStateToProps = ({ milestones }) => ({
 });
 const mapDispatchToProps = {
   fetchSubject,
+  updateSubject,
   resetApiMilestoneCalendar,
   fetchMilestoneCalendar,
   resetApiMilestones,

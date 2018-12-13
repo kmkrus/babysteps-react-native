@@ -24,8 +24,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { apiFetchMilestones } from '../actions/milestone_actions';
 
-
-
 import milestoneGroupImages from '../constants/MilestoneGroupImages';
 import Colors from '../constants/Colors';
 
@@ -72,7 +70,7 @@ class OverviewScreen extends React.Component {
             this.props.apiFetchMilestones();
           }
         } else {
-          const milestoneGroups = filter(groups.data, {visible: 1});
+          let milestoneGroups = filter(groups.data, {visible: 1});
           milestoneGroups = sortBy(milestoneGroups, ['position']);
           milestoneGroups.forEach((group, index) => {
             group.uri = milestoneGroupImages[index];

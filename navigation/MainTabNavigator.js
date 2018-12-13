@@ -7,6 +7,7 @@ import {
 
 import TabBarIcon from '../components/tab_bar_icon';
 import OverviewScreen from '../screens/OverviewScreen';
+import OverviewBirthFormScreen from '../screens/OverviewBirthFormScreen';
 import MilestonesScreen from '../screens/MilestonesScreen';
 import MilestoneQuestionsScreen from '../screens/MilestoneQuestionsScreen';
 import MilestoneQuestionConfirmScreen from '../screens/MilestoneQuestionConfirmScreen';
@@ -56,6 +57,7 @@ MilestonesStack.navigationOptions = {
 const OverviewStack = createStackNavigator(
   {
     Overview: OverviewScreen,
+    OverviewBirthForm: OverviewBirthFormScreen,
     MilestonesStack: MilestonesScreen,
     //MilestoneQuestions: MilestoneQuestionsScreen,
     // MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,

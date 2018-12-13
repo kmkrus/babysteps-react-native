@@ -13,7 +13,7 @@ export default class DatePickerInput extends PureComponent {
 
   render() {
     const { error, helper, touched, ...props } = this.props;
-    const displayError = !!error;
+    const displayError = !!error && touched;
     const styles = {...this.props.style};
 
     const labelColor = displayError ? Colors.errorColor : Colors.grey;

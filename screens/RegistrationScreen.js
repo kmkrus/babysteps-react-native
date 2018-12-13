@@ -12,6 +12,7 @@ import RegistrationExpectedDOB from '../components/registration_expected_dob_for
 import RegistrationSubjectForm from '../components/registration_subject_form';
 
 import States from '../actions/states';
+import Colors from '../constants/Colors';
 
 class RegistrationScreen extends Component {
   static navigationOptions = {
@@ -37,15 +38,14 @@ class RegistrationScreen extends Component {
   _scrollToInput = (reactNode: any) => {
     // Add a 'scroll' ref to your ScrollView
     this.scroll.scrollToFocusedInput(reactNode);
-  }
+  };
 
   render() {
     return (
       <KeyboardAwareScrollView
-        contentContainerStyle={styles.body}
         enableResetScrollToCoords={false}
-        enableAutomaticScroll={true}
-        enableOnAndroid={true}
+        enableAutomaticScroll
+        enableOnAndroid
         extraScrollHeight={50}
         innerRef={ref => {this.scroll = ref}}
       >
@@ -58,9 +58,7 @@ class RegistrationScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  body: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.backgroundColor,
   },
 });
 

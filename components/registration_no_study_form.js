@@ -36,7 +36,8 @@ const DatePickerInput = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
 )(DatePicker);
-const Form = withNextInputAutoFocusForm(View);
+
+const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()

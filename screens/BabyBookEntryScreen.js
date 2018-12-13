@@ -48,10 +48,6 @@ class BabyBookEntryScreen extends Component {
     this.props.resetBabyBookEntries();
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return !nextProps.babybook.entries.fetching;
-  }
-
   componentWillReceiveProps(nextProps, nextState) {
     if (
       !nextProps.babybook.entries.fetching &&
@@ -65,6 +61,10 @@ class BabyBookEntryScreen extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !nextProps.babybook.entries.fetching;
+  }
+  
   render() {
     return (
       <KeyboardAwareScrollView enableOnAndroid>

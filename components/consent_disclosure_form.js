@@ -25,6 +25,7 @@ class ConsentDisclosureForm extends Component {
   state = {
     screeningBlood: null,
     errorMessage: '',
+    errorMessageLocation: 0,
     showItem: '',
   };
 
@@ -34,9 +35,7 @@ class ConsentDisclosureForm extends Component {
       "You must select whether or not you will allow collection of your baby's bloodspot.";
     if (screeningBlood === null) {
       this.setState({ errorMessage });
-      this._checkboxError.measure((fx, fy, width, height, px, py) => {
-        this._scrollView.scrollTo({ y: -py });
-      });
+      this._scrollView.scrollTo({ y: this.state.errorMessageLocation });
     } else {
       this.props.saveScreenBlood({ screeningBlood });
       this.props.updateSession({
@@ -49,10 +48,18 @@ class ConsentDisclosureForm extends Component {
     WebBrowser.openBrowserAsync(url);
   };
 
+  setShowItem = item => {
+    if (this.state.showItem === item) {
+      this.setState({ showItem: null });
+    } else {
+      this.setState({ showItem: item });
+    }
+  }
+
   render() {
     const showItem = this.state.showItem;
     return (
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollView}
         ref={ref => (this._scrollView = ref)}
       >
@@ -222,7 +229,7 @@ class ConsentDisclosureForm extends Component {
               title="Yes, I will allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
               textStyle={styles.checkboxText}
               checked={this.state.screeningBlood === true}
-              containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
+              containerStyle={!!this.state.errorMessage ? {borderColor: Colors.errorBackground} : {}}
               onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
             />
 
@@ -230,18 +237,23 @@ class ConsentDisclosureForm extends Component {
               title="No, I will not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
               textStyle={styles.checkboxText}
               checked={this.state.screeningBlood === false}
-              containerStyle={!!this.state.errorMessage ? {backgroundColor: Colors.errorBackground} : {}}
+              containerStyle={!!this.state.errorMessage ? {borderColor: Colors.errorBackground} : {}}
               onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
             />
           </View>
 
           <Text
             ref={ref => (this._checkboxError = ref)}
-            style={styles.textError}>{this.state.errorMessage}</Text>
-
-          <TouchableOpacity
-            onPress={() => this.setState({ showItem: 'item_01' })}
+            style={styles.textError}
+            onLayout={(event) => {
+              const {x, y, width, height} = event.nativeEvent.layout;
+              this.setState({ errorMessageLocation: y });
+            }}
           >
+            {this.state.errorMessage}
+          </Text>
+
+          <TouchableOpacity onPress={() => this.setShowItem('item_01')}>
             <View style={styles.toggleContainer}>
               <Ionicons
                 name={"md-arrow-" + (showItem === 'item_01' ? "dropdown" : "dropright")}
@@ -274,9 +286,7 @@ class ConsentDisclosureForm extends Component {
             </Text>
           )}
 
-          <TouchableOpacity
-            onPress={() => this.setState({ showItem: 'item_02' })}
-          >
+          <TouchableOpacity onPress={() => this.setShowItem('item_02')}>
             <View style={styles.toggleContainer}>
               <Ionicons
                 name={"md-arrow-" + (showItem === 'item_02' ? "dropdown" : "dropright")}
@@ -346,9 +356,7 @@ class ConsentDisclosureForm extends Component {
             with enough time for you to think about whether you still want to be
             in the study or if you would rather not participate.
           </Text>
-          <TouchableOpacity
-            onPress={() => this.setState({ showItem: 'item_03' })}
-          >
+          <TouchableOpacity onPress={() => this.setShowItem('item_03')}>
             <View style={styles.toggleContainer}>
               <Ionicons
                 name={"md-arrow-" + (showItem === 'item_03' ? "dropdown" : "dropright")}
@@ -468,9 +476,7 @@ class ConsentDisclosureForm extends Component {
               that reviews and approves research studies)
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => this.setState({ showItem: 'item_04' })}
-          >
+          <TouchableOpacity onPress={() => this.setShowItem('item_04')}>
             <View style={styles.toggleContainer}>
               <Ionicons
                 name={"md-arrow-" + (showItem === 'item_04' ? "dropdown" : "dropright")}
@@ -510,9 +516,7 @@ class ConsentDisclosureForm extends Component {
           <Text style={styles.text}>
             The Federal Health Insurance Portability and Accountability Act (HIPAA) requires your healthcare provider to obtain your permission for the research team to access or create “protected health information” about you for purposes of this research study.
           </Text>
-          <TouchableOpacity
-            onPress={() => this.setState({ showItem: 'item_05' })}
-          >
+          <TouchableOpacity onPress={() => this.setShowItem('item_05')}>
             <View style={styles.toggleContainer}>
               <Ionicons
                 name={"md-arrow-" + (showItem === 'item_05' ? "dropdown" : "dropright")}

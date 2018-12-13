@@ -28,7 +28,8 @@ const TextField = compose(
   withInputAutoFocus,
   withNextInputAutoFocusInput,
 )(TextFieldWithLabel);
-const Form = withNextInputAutoFocusForm(View);
+
+const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -135,7 +136,7 @@ class RegistrationUserForm extends Component {
               <TextField
                 keyboardType="email-address"
                 label="Email"
-                name="email" 
+                name="email"
                 type="email"
                 inputStyle={AppStyles.registrationTextInput}
                 inputContainerStyle={AppStyles.registrationTextInputContainer}
@@ -155,7 +156,6 @@ class RegistrationUserForm extends Component {
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
-                  disabled={props.isSubmitting}
                 />
               </View>
               <ErrorText apiUser={this.props.registration.apiUser} />

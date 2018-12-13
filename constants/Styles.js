@@ -37,10 +37,10 @@ export default StyleSheet.create({
   },
 
   registrationPickerText: {
-    height: 36,
-    color: Colors.black,
     fontSize: 18,
     fontWeight: 'bold',
+    color: Colors.black,
+    height: 36,
   },
 
   registrationTextInputContainer: {

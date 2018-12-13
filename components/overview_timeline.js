@@ -23,8 +23,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { fetchOverViewTimeline } from '../actions/milestone_actions';
 
-import OverviewBirthFormModal from '../components/overview_birth_form_modal';
-
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
 
@@ -150,14 +148,6 @@ class OverviewTimeline extends React.Component {
     } // if subject fetching
   }
 
-  handleBirthOnPress = () => {
-    this.setState({ birthFormModalVisible: true });
-  };
-
-  closeBirthModal = () => {
-    this.setState({ birthFormModalVisible: false });
-  };
-
   handleOnPress = (item, task) => {
     if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {
       if (moment().isBefore(item.available_start_at)) {
@@ -201,7 +191,7 @@ class OverviewTimeline extends React.Component {
     }
     if (item.overview_timeline === 'birth') {
       return (
-        <TouchableOpacity onPress={this.handleBirthOnPress}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('OverviewBirthForm')}>
           <View style={styles.timelineIconContainer}>
             <Image
               source={require('../assets/images/overview_baby_icon.png')}
@@ -283,11 +273,6 @@ class OverviewTimeline extends React.Component {
           onIndexChange={index =>
             this.setState(() => ({ currentIndexTimeLine: index }))
           }
-        />
-        <OverviewBirthFormModal
-          modalVisible={this.state.birthFormModalVisible}
-          closeModal={this.closeBirthModal}
-          navigation={this.props.navigation}
         />
       </View>
     );

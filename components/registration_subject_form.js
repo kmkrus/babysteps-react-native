@@ -43,7 +43,7 @@ const DatePickerInput = compose(
   withNextInputAutoFocusInput,
 )(DatePicker);
 
-const Form = withNextInputAutoFocusForm(View);
+const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 
 const validationSchema = Yup.object().shape({
   first_name: Yup.string()
@@ -196,9 +196,8 @@ class RegistrationSubjectForm extends Component {
                 label="Gender"
                 prompt="Gender"
                 name="gender"
-                data={genders}
+                values={genders}
                 selectedValue={props.values.gender}
-                handleChange={value => props.setFieldValue('gender', value)}
                 labelStyle={AppStyles.registrationLabel}
                 inputStyle={AppStyles.registrationPickerText}
               />
@@ -207,9 +206,8 @@ class RegistrationSubjectForm extends Component {
                 label="Conception Method"
                 prompt="Conception Method"
                 name="conception_method"
-                data={conceptionMethods}
+                values={conceptionMethods}
                 selectedValue={props.values.conception_method}
-                handleChange={value => props.setFieldValue('conception_method', value)}
                 labelStyle={AppStyles.registrationLabel}
                 inputStyle={AppStyles.registrationPickerText}
               />
