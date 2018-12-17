@@ -117,11 +117,11 @@ class RegistrationRespondentForm extends Component {
   componentWillReceiveProps(nextProps) {
     const respondent = nextProps.registration.respondent;
     const apiRespondent = nextProps.registration.apiRespondent;
-    const registration = nextProps.registration;
+    const session = nextProps.session;
     if (!respondent.fetching && respondent.fetched) {
       if (!apiRespondent.fetching) {
         if (!apiRespondent.fetched && !this.state.respondentSubmitted) {
-          this.props.apiCreateRespondent(nextProps.session, respondent.data);
+          this.props.apiCreateRespondent(session, respondent.data);
           this.setState({ respondentSubmitted: true });
         } else if (apiRespondent.data.id !== undefined) {
           // Upload signature image if we have respondent id
@@ -131,14 +131,6 @@ class RegistrationRespondentForm extends Component {
             this.saveSignature(api_id);
             this.setState({ signatureSubmitted: true });
           }
-          //if (this.props.registration.auth !== nextProps.registration.auth) {
-          //  this.props.updateSession({
-          //    access_token: registration.auth.accessToken,
-          //    client: registration.auth.client,
-          //    uid: registration.auth.uid,
-          //    user_id: registration.auth.user_id,
-          //  });
-          //}
           const registrationState = respondent.data.pregnant
             ? ActionStates.REGISTERING_EXPECTED_DOB
             : ActionStates.REGISTERING_SUBJECT;
@@ -172,25 +164,27 @@ class RegistrationRespondentForm extends Component {
     } // signatureFile exists
   };
 
-  render() {
+  _handleOnSubmit = values => {
     const user = this.props.registration.user;
+    const respondent = {
+      ...values,
+      user_id: user.data.api_id,
+      email: user.data.email,
+      first_name: user.data.first_name,
+      last_name: user.data.last_name,
+      accepted_tos_at: new Date().toISOString(),
+    };
+    this.props.createRespondent(respondent);
+  };
+
+  render() {
     return (
       <ScrollView
         ref={ref => this.scrollView = ref}
         keyboardShouldPersistTaps="handled"
       >
         <Formik
-          onSubmit={values => {
-            const respondent = {
-              ...values,
-              user_id: user.data.api_id,
-              email: user.data.email,
-              first_name: user.data.first_name,
-              last_name: user.data.last_name,
-              accepted_tos_at: new Date().toISOString(),
-            };
-            this.props.createRespondent(respondent);
-          }}
+          onSubmit={this._handleOnSubmit}
           validationSchema={validationSchema}
           initialValues={{
             respondent_type: 'mother',
@@ -325,7 +319,14 @@ class RegistrationRespondentForm extends Component {
                 />
 
                 <View style={AppStyles.registrationCheckBoxes}>
-                  <Text style={[AppStyles.registrationLabel, {marginTop: 20, marginBottom: 10}]}>Are You Currently Pregnant?</Text>
+                  <Text
+                    style={[
+                      AppStyles.registrationLabel,
+                      { marginTop: 20, marginBottom: 10 },
+                    ]}
+                  >
+                    Are You Currently Pregnant?
+                  </Text>
                   <CheckBox
                     title="Yes"
                     checked={props.values.pregnant}
@@ -347,7 +348,7 @@ class RegistrationRespondentForm extends Component {
                     title="NEXT"
                     onPress={props.submitForm}
                     buttonStyle={AppStyles.buttonSubmit}
-                    titleStyle={{fontWeight: 900}}
+                    titleStyle={{ fontWeight: 900 }}
                     color={Colors.darkGreen}
                     disabled={props.isSubmitting}
                   />
@@ -355,7 +356,7 @@ class RegistrationRespondentForm extends Component {
               </Form>
             );
           }}
-        /> 
+        />
       </ScrollView>
     );
   }

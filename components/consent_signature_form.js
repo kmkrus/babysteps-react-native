@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
-import Expo from 'expo';
+import { FileSystem } from 'expo';
 import ExpoPixi from 'expo-pixi';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
-import {
-  saveSignature,
-  apiUpdateRespondent,
-} from '../actions/registration_actions';
+import { apiUpdateRespondent } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -22,20 +19,21 @@ const twoButtonWidth = (width / 2) - 40;
 class ConsentSignatureForm extends Component {
 
   shouldComponentUpdate(nextProps) {
-    return (!nextProps.session.registration_state === States.REGISTERING_SIGNATURE)
-  };
-
+    return (
+      !nextProps.session.registration_state === States.REGISTERING_SIGNATURE
+    );
+  }
 
   handleSubmit = async () => {
     const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
-    const signatureDir = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
-    const resultDir = await Expo.FileSystem.getInfoAsync(signatureDir);
+    const signatureDir = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
+    const resultDir = await FileSystem.getInfoAsync(signatureDir);
 
     if (resultDir.exists) {
       const fileName = signatureDir + '/signature.png';
-      await Expo.FileSystem.deleteAsync(fileName, { idempotent: true });
-      await Expo.FileSystem.copyAsync({from: image.uri, to: fileName});
-      const resultFile = await Expo.FileSystem.getInfoAsync( fileName );
+      await FileSystem.deleteAsync(fileName, { idempotent: true });
+      await FileSystem.copyAsync({ from: image.uri, to: fileName });
+      const resultFile = await FileSystem.getInfoAsync(fileName);
       if (resultFile.exists) {
         this.props.updateSession({
           registration_state: States.REGISTERING_USER,
@@ -53,7 +51,6 @@ class ConsentSignatureForm extends Component {
   };
 
   render() {
-
     //GLView won't run with remote debugging running.  Shut off remote debugging or you will get a Can't Find Property 0 error message.
 
     return (
@@ -82,13 +79,13 @@ class ConsentSignatureForm extends Component {
             buttonStyle={styles.buttonOneStyle}
             titleStyle={styles.buttonTitleStyle}
             onPress={this.handleReset}
-            title='Reset' />
+            title="Reset" />
           <Button
             color={Colors.pink}
             buttonStyle={styles.buttonTwoStyle}
             titleStyle={styles.buttonTitleStyle}
             onPress={this.handleSubmit}
-            title='Done' />
+            title="Done" />
         </View>
       </View>
     ); // return
@@ -153,11 +150,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = ({ session, registration }) => ({
   session,
-  registration
+  registration,
 });
 const mapDispatchToProps = {
   updateSession,
-  saveSignature,
   apiUpdateRespondent,
 };
 

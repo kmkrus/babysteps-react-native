@@ -111,40 +111,76 @@ const initialState = {
 const reducer = (state=initialState, action, formData={}) => {
 
   switch (action.type) {
-    
     // FETCH USER
     case FETCH_USER_PENDING: {
-      return {...state, user: {...state.user, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: true,
+          fetched: false,
+           error: null,
+        },
+      };
     }
     case FETCH_USER_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      return {...state, 
-        user: {...state.user, fetching: false, fetched: true, data } 
-      }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_USER_REJECTED: {
-      return {...state, user: {...state.user, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     // CREATE USER
     case CREATE_USER_PENDING: {
-      return {...state, user: {...state.user, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_USER_FULFILLED: {
-      return {...state, user: 
-        {...state.user, fetching: false, fetched: true, 
-          data: {...action.formData, id: action.payload.insertId } 
-        } 
-      }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: false,
+          fetched: true,
+          data: {
+            ...action.formData,
+            id: action.payload.insertId,
+          },
+        },
+      };
     }
     case CREATE_USER_REJECTED: {
-      return {...state, user: {...state.user, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     case API_CREATE_USER_PENDING: {
@@ -205,198 +241,396 @@ const reducer = (state=initialState, action, formData={}) => {
           fetched: false,
           error: null,
         },
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
       };
     }
 
     // FETCH RESPONDENT
     case FETCH_RESPONDENT_PENDING: {
-      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case FETCH_RESPONDENT_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      return {...state, 
-        respondent: {...state.respondent, fetching: false, fetched: true, data } 
-      }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_RESPONDENT_REJECTED: {
-      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     // CREATE RESPONDENT
     case CREATE_RESPONDENT_PENDING: {
-      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_RESPONDENT_FULFILLED: {
-      return {...state, respondent: 
-        {...state.respondent, fetching: false, fetched: true, 
-          data:  Object.assign( {}, {id: action.payload.insertId},  action.formData ) 
-        } 
-      }
-      break;
+      const data = action.formData;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case CREATE_RESPONDENT_REJECTED: {
-      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     // CREATE RESPONDENT
     case UPDATE_RESPONDENT_PENDING: {
-      return {...state, respondent: {...state.respondent, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case UPDATE_RESPONDENT_FULFILLED: {
-      return {...state, respondent: 
-        {...state.respondent, fetching: false, fetched: true, 
-          data: Object.assign( {}, state.respondent.data, action.formData )
-        } 
-      }
-      break;
+      const data = Object.assign({}, state.respondent.data, action.formData);
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case UPDATE_RESPONDENT_REJECTED: {
-      return {...state, respondent: {...state.respondent, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     // API_CREATE_RESPONDENT
     case API_CREATE_RESPONDENT_PENDING: {
-      return {...state, apiRespondent: {...state.apiRespondent, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_CREATE_RESPONDENT_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload.data }
-      }
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: false,
+          fetched: true,
+          data: action.payload.data,
+        },
+      };
     }
     case API_CREATE_RESPONDENT_REJECTED: {
-      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     // API_UPDATE_RESPONDENT
     case API_UPDATE_RESPONDENT_PENDING: {
-      return {...state, apiRespondent: {...state.apiRespondent, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_UPDATE_RESPONDENT_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiRespondent: {...state.apiRespondent, fetching: false, fetched: true, data: action.payload.data }
-      }
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: false,
+          fetched: true,
+          data: action.payload.data,
+        },
+      };
     }
     case API_UPDATE_RESPONDENT_REJECTED: {
-      return {...state, apiRespondent: {...state.apiRespondent, fetching: false, fetched: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        apiRespondent: {
+          ...state.apiRespondent,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     // API_SAVE_SIGNATURE
     case API_SAVE_SIGNATURE_PENDING: {
-      return {...state, apiSignature: {...state.apiSignature, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        apiSignature: {
+          ...state.apiSignature,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_SAVE_SIGNATURE_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id },  
-        apiSignature: {...state.apiSignature, fetching: false, fetched: true }
-      }
-      break;
+      return {
+        ...state,
+        apiSignature: {
+          ...state.apiSignature,
+          fetching: false,
+          fetched: true,
+        }
+      };
     }
     case API_SAVE_SIGNATURE_REJECTED: {
-      return {...state, apiSignature: {...state.apiSignature, fetching: false, fetched: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        apiSignature: {
+          ...state.apiSignature,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
     // RESET SUBJECT
     case RESET_SUBJECT: {
-      return {...state, subject: {...state.subject, fetching: false, fetched: false, error:null}}
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
 
     // FETCH SUBJECT
     case FETCH_SUBJECT_PENDING: {
-      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case FETCH_SUBJECT_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      return {...state, 
-        subject: {...state.subject, fetching: false, fetched: true, data } 
-      }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case FETCH_SUBJECT_REJECTED: {
-      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          error: action.payload,
+        } 
+      };
     }
 
     // CREATE SUBJECT
     case CREATE_SUBJECT_PENDING: {
-      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case CREATE_SUBJECT_FULFILLED: {
-      return {...state, subject: 
-        {...state.subject, fetching: false, fetched: true, 
-          data: {...action.formData, id: action.payload.insertId } 
-        } 
-      }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          fetched: true,
+          data: action.formData,
+        },
+      };
     }
     case CREATE_SUBJECT_REJECTED: {
-      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
     // UPDATE SUBJECT
     case UPDATE_SUBJECT_PENDING: {
-      return {...state, subject: {...state.subject, fetching: true, fetched: false, error: null} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case UPDATE_SUBJECT_FULFILLED: {
-      return {...state, subject: 
-        {...state.subject, fetching: false, fetched: true, 
-          data: Object.assign( {}, state.subject.data, action.formData ) 
-        } 
-      }
-      break;
+      const data = Object.assign({}, state.subject.data, action.formData);
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
     }
     case UPDATE_SUBJECT_REJECTED: {
-      return {...state, subject: {...state.subject, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
    // API_CREATE_SUBJECT
     case API_CREATE_SUBJECT_PENDING: {
-      return {...state, apiSubject: {...state.apiSubject, fetching: true, fetched: false, error: null }}
-      break;
+      return {
+        ...state,
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_CREATE_SUBJECT_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiSubject: {...state.apiSubject, fetching: false, fetched: true, data: action.payload.data }
-      }
-      break;
+      const data = action.payload.data;
+      return {
+        ...state,
+        subject: {
+          ...state.subject,
+          data: {
+            ...state.subject.data,
+            api_id: data.id,
+          },
+        },
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: false,
+          fetched: true,
+          data: {
+            ...state.apiSubject.data,
+            data,
+          },
+        },
+      };
     }
     case API_CREATE_SUBJECT_REJECTED: {
-      return {...state, apiSubject: {...state.apiSubject, fetching: false, fetched: false, error: action.payload }}
-      break;
+      return {
+        ...state,
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
     }
 
-  default: 
-    return state
+    default: {
+      return state;
+    }
   }
 };
 

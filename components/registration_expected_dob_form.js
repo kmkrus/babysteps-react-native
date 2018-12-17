@@ -18,7 +18,10 @@ import {
   createSubject,
   updateSubject,
   apiCreateSubject,
+  resetRespondent,
   fetchRespondent,
+  updateRespondent,
+  apiUpdateRespondent,
 } from '../actions/registration_actions';
 import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
@@ -39,41 +42,37 @@ const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 class RegistrationExpectedDOB extends Component {
   state = {
     dobError: null,
-    submitted: false,
+    apiCreateSubjectSubmitted: false,
+    apiCreateMilestoneCalendarSubmitted: false,
   };
 
   componentWillMount() {
     this.props.resetSubject();
+    this.props.resetRespondent();
     this.props.fetchRespondent();
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     const apiSubject = nextProps.registration.apiSubject;
-    const auth = nextProps.registration.auth;
+    const apiRespondent = nextProps.registration.apiRespondent;
     const session = nextProps.session;
     if (!subject.fetching && subject.fetched) {
       if (!apiSubject.fetching) {
-        if (!apiSubject.fetched && !nextState.submitted) {
+        if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
           this.props.apiCreateSubject(session, subject.data);
-          this.setState({ submitted: true });
+          this.setState({ apiCreateSubjectSubmitted: true });
         } else if (apiSubject.data.id !== undefined) {
-          this.props.updateSubject({ api_id: apiSubject.data.id });
-          if (this.props.registration.auth !== nextProps.registration.auth) {
-            this.props.updateSession({
-              access_token: auth.accessToken,
-              client: auth.client,
-              uid: auth.uid,
-              user_id: auth.user_id,
-            });
-          }
           if (
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
           ) {
-            this.props.apiCreateMilestoneCalendar({
-              subject_id: apiSubject.data.id,
-            });
+            if (!this.state.apiCreateMilestoneCalendarSubmitted) {
+              this.props.apiCreateMilestoneCalendar({
+                subject_id: apiSubject.data.id,
+              });
+              this.setState({ apiCreateMilestoneCalendarSubmitted: true });
+            }
             this.props.updateSession({
               registration_state: States.REGISTERED_AS_IN_STUDY,
             });
@@ -99,25 +98,26 @@ class RegistrationExpectedDOB extends Component {
     return true;
   }
 
-  render() {
-    const registration = this.props.registration;
+  _handleOnSubmit = values => {
     const respondent = this.props.registration.respondent;
     const subject = this.props.registration.subject;
+    if (values.expected_date_of_birth) {
+      const newSubject = {
+        ...values,
+        respondent_ids: [respondent.data.api_id],
+        screening_blood: subject.data.screening_blood,
+      };
+      this.props.createSubject(newSubject);
+    } else {
+      this.setState({ dobError: 'You must provide the Date of Birth' });
+    }
+  };
+
+  render() {
     const dobError = this.state.dobError;
     return (
       <Formik
-        onSubmit={values => {
-          if (values.expected_date_of_birth) {
-            const newSubject = {
-              ...values,
-              respondent_ids: [respondent.data.api_id],
-              screening_blood: subject.data.screening_blood,
-            };
-            this.props.createSubject(newSubject);
-          } else {
-            this.setState({ dobError: 'You must provide the Date of Birth' });
-          }
-        }}
+        onSubmit={this._handleOnSubmit}
         //validationSchema={validationSchema}
         initialValues={{
           respondent_ids: null,
@@ -189,7 +189,10 @@ const mapDispatchToProps = {
   createSubject,
   updateSubject,
   apiCreateSubject,
+  resetRespondent,
   fetchRespondent,
+  updateRespondent,
+  apiUpdateRespondent,
   apiCreateMilestoneCalendar,
   updateSession,
 };

@@ -295,7 +295,7 @@ class OverviewBirthFormScreen extends Component {
                     <Text style={styles.errorText}>{dateError}</Text>
                     <Text style={styles.notLiveBirthText}>
                       We&apos;re so sorry to hear of your loss. We appreciate
-                      the contribution you have made to this study.
+                      the contribution you have made to BabySteps.
                     </Text>
                   </View>
                 )}

@@ -91,7 +91,6 @@ export default store => next => action => {
       // continue to use existing token
       const headers = response.headers;
       if (headers['access-token'] !== '') {
-        debugger
         const data = {
           access_token: headers['access-token'],
           client: headers.client,

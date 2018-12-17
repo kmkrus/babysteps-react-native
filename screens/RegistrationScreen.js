@@ -20,7 +20,7 @@ class RegistrationScreen extends Component {
   };
 
   componentWillMount() {
-    this.props.updateSession({ registration_state: States.REGISTERING_USER });
+    //this.props.updateSession({ registration_state: States.REGISTERING_USER });
   }
 
   selectForm = () => {
