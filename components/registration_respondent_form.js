@@ -101,7 +101,8 @@ const maritalStatuses = [
 
 class RegistrationRespondentForm extends Component {
   state = {
-    signature_submitted: false,
+    signatureSubmitted: false,
+    respondentSubmitted: false,
   };
 
   componentWillMount() {
@@ -119,33 +120,31 @@ class RegistrationRespondentForm extends Component {
     const registration = nextProps.registration;
     if (!respondent.fetching && respondent.fetched) {
       if (!apiRespondent.fetching) {
-        if (!apiRespondent.fetched) {
+        if (!apiRespondent.fetched && !this.state.respondentSubmitted) {
           this.props.apiCreateRespondent(nextProps.session, respondent.data);
+          this.setState({ respondentSubmitted: true });
         } else if (apiRespondent.data.id !== undefined) {
           // Upload signature image if we have respondent id
           const api_id = apiRespondent.data.id;
           this.props.updateRespondent({api_id: api_id});
-          if (!this.state.signature_submitted) {
+          if (!this.state.signatureSubmitted) {
             this.saveSignature(api_id);
-            this.setState({ signature_submitted: true });
+            this.setState({ signatureSubmitted: true });
           }
-          if (this.props.registration.auth !== nextProps.registration.auth) {
-            this.props.updateSession({
-              access_token: registration.auth.accessToken,
-              client: registration.auth.client,
-              uid: registration.auth.uid,
-              user_id: registration.auth.user_id,
-            });
-          }
-          if (respondent.data.pregnant) {
-            this.props.updateSession({
-              registration_state: ActionStates.REGISTERING_EXPECTED_DOB,
-            });
-          } else {
-            this.props.updateSession({
-              registration_state: ActionStates.REGISTERING_SUBJECT,
-            });
-          }
+          //if (this.props.registration.auth !== nextProps.registration.auth) {
+          //  this.props.updateSession({
+          //    access_token: registration.auth.accessToken,
+          //    client: registration.auth.client,
+          //    uid: registration.auth.uid,
+          //    user_id: registration.auth.user_id,
+          //  });
+          //}
+          const registrationState = respondent.data.pregnant
+            ? ActionStates.REGISTERING_EXPECTED_DOB
+            : ActionStates.REGISTERING_SUBJECT;
+          this.props.updateSession({
+            registration_state: registrationState,
+          });
         } // apiRespondent.fetched
       } // apiRespondent.fetching
     } // respondent.fetching

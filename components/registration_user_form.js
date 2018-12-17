@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 
+import isEmpty from 'lodash/isEmpty';
+
 import { compose } from 'recompose';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -45,7 +47,7 @@ const validationSchema = Yup.object().shape({
 class ErrorMessage extends Component {
   render() {
     const apiUser = this.props.apiUser;
-    if (apiUser.error) {
+    if (!isEmpty(apiUser.error)) {
       if (typeof(apiUser.error.response.data.errors.full_messages) !== 'undefined') {
         return apiUser.error.response.data.errors.full_messages.join('\n');
       }
@@ -55,17 +57,8 @@ class ErrorMessage extends Component {
   }
 }
 
-class ErrorText extends Component {
-  render() {
-    return (
-      <Text style={[styles.errorMessage, {color: this.props.apiUser.error ? Colors.errorColor : 'transparent'}]}>
-        <ErrorMessage apiUser={this.props.apiUser} />
-      </Text>
-    );
-  }
-}
-
 class RegistrationUserForm extends Component {
+
   componentWillMount() {
     this.props.apiFetchMilestones();
   }
@@ -104,11 +97,16 @@ class RegistrationUserForm extends Component {
     return true;
   }
 
+  _onSubmit = values => {
+    this.props.apiCreateUser(values);
+  };
+
   render() {
+    const apiUser = this.props.registration.apiUser;
     return (
       <Formik
         onSubmit={values => {
-          this.props.apiCreateUser(values);
+          this._onSubmit(values);
         }}
         validationSchema={validationSchema}
         render={props => {
@@ -158,7 +156,14 @@ class RegistrationUserForm extends Component {
                   color={Colors.darkGreen}
                 />
               </View>
-              <ErrorText apiUser={this.props.registration.apiUser} />
+              <Text
+                style={[
+                  styles.errorMessage,
+                  {color: apiUser.error ? Colors.errorColor : 'transparent'},
+                ]}
+              >
+                <ErrorMessage apiUser={apiUser} />
+              </Text>
             </Form>
           );
         }}

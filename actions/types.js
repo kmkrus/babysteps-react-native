@@ -94,6 +94,8 @@ export const FETCH_OVERVIEW_TIMELINE_FULFILLED = 'fetch_overview_timeline_fulfil
 export const FETCH_OVERVIEW_TIMELINE_REJECTED = 'fetch_overview_timeline_rejected';
 
 // Session actions
+export const UPDATE_SESSION_ACTION = 'update_session_action';
+
 export const SET_FETCHING_TOKEN = 'set_fetching_token';
 
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';

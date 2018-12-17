@@ -398,10 +398,12 @@ class MilestoneQuestionsScreen extends Component {
   handleConfirm = () => {
     const section = this.state.section;
     const answers = this.state.answers;
+    const session = this.props.session;
+    const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
     // TODO validation
     // TODO move to next section if more than one section in this task
     // TOTO don't mark task complete if any sections are incomplete
-    
+
     this.props.updateMilestoneAnswers(section, answers);
     this.props.updateMilestoneCalendar(section.task_id);
 
@@ -417,12 +419,16 @@ class MilestoneQuestionsScreen extends Component {
           this.props.fetchOverViewTimeline();
         });
         // cannot bulk update answers with attachments
-        if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-          this.props.apiCreateMilestoneAnswer(this.props.session, answer);
+        if (inStudy) {
+          debugger
+          this.props.apiCreateMilestoneAnswer(session, answer);
         }
       });
-    } else if (this.props.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-      this.props.apiUpdateMilestoneAnswers(this.props.session, section.id, answers);
+    } else if (inStudy) {
+      this.props.apiUpdateMilestoneAnswers(session, section.id, answers);
+    }
+    // mark calendar entry as complete on api
+    if (inStudy) {
       const calendar = _.find(this.props.milestones.calendar.data, ['task_id', section.task_id]);
       if (calendar && calendar.id) {
         const date = new Date().toISOString();

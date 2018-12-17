@@ -368,7 +368,14 @@ const reducer = (state = initialState, action, formData = []) => {
     }
 
     case RESET_API_MILESTONE_CALENDAR: {
-      return {...state, api_calendar: {fetching: false, fetched: false, error: null } }
+      return {
+        ...state,
+        api_calendar: {
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
 
     case API_CREATE_MILESTONE_CALENDAR_PENDING: {
@@ -410,7 +417,7 @@ const reducer = (state = initialState, action, formData = []) => {
           error: action.payload,
         },
       };
-    };
+    }
 
     case API_FETCH_MILESTONE_CALENDAR_PENDING: {
       return {
@@ -791,19 +798,8 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_CREATE_MILESTONE_ANSWER_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = headers['access-token']
-        ? headers['access-token']
-        : state.auth.accessToken;
       return {
         ...state,
-        auth: {
-          ...state.auth,
-          accessToken,
-          client: headers.client,
-          uid: headers.uid,
-          user_id: headers.user_id,
-        },
         apiAnswer: {
           ...state.apiAnswer,
           fetching: false,
@@ -837,17 +833,8 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_UPDATE_MILESTONE_ANSWERS_FULFILLED: {
-      const headers = action.payload.headers;
-      const accessToken = headers.access-token ? headers.access-token : state.auth.accessToken;
       return {
         ...state,
-        auth: {
-          ...state.auth,
-          accessToken,
-          client: headers.client,
-          uid: headers.uid,
-          user_id: headers.user_id,
-        },
         apiAnswers: {
           ...state.apiAnswers,
           fetching: false,

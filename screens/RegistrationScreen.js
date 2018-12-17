@@ -19,6 +19,10 @@ class RegistrationScreen extends Component {
     title: 'Registration',
   };
 
+  componentWillMount() {
+    this.props.updateSession({ registration_state: States.REGISTERING_USER });
+  }
+
   selectForm = () => {
     const registration_state = this.props.session.registration_state;
     if (registration_state === States.REGISTERING_USER) {

@@ -89,7 +89,7 @@ class RegistrationSubjectForm extends Component {
     const subject = nextProps.registration.subject;
     const apiSubject = nextProps.registration.apiSubject;
     const session = nextProps.session;
-    const auth = nextProps.registration.auth;
+    //const auth = nextProps.registration.auth;
 
     if (!subject.fetching && subject.fetched) {
       if (!apiSubject.fetching) {
@@ -98,14 +98,14 @@ class RegistrationSubjectForm extends Component {
           this.setState({ submitted: true });
         } else if (apiSubject.data.id !== undefined) {
           this.props.updateSubject({ api_id: apiSubject.data.id });
-          if (this.props.registration.auth !== nextProps.registration.auth) {
-            this.props.updateSession({
-              access_token: auth.accessToken,
-              client: auth.client,
-              uid: auth.uid,
-              user_id: auth.user_id,
-            });
-          }
+          //if (this.props.registration.auth !== nextProps.registration.auth) {
+          //  this.props.updateSession({
+          //    access_token: auth.accessToken,
+          //    client: auth.client,
+          //    uid: auth.uid,
+          //    user_id: auth.user_id,
+          //  });
+          //}
           if (
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY

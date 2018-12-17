@@ -6,7 +6,7 @@ import {
   API_TOKEN_REFRESH_FULFILLED,
   API_TOKEN_REFRESH_REJECTED,
   API_TOKEN_REFRESH_FAILED,
-  
+
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
   FETCH_SESSION_REJECTED,
@@ -52,12 +52,13 @@ const sendSessionUpdate = (dispatch, data) => {
 
   return db.transaction(tx => {
     tx.executeSql(
-      `UPDATE sessions SET ${updateSQL.join(', ')};`, [],
+      `UPDATE sessions SET ${updateSQL.join(', ')};`,
+      [],
       (_, response) => dispatch(Response(UPDATE_SESSION_FULFILLED, response, data)),
       (_, error) => dispatch(Response(UPDATE_SESSION_REJECTED, error)),
     );
   });
- };
+};
 
 export const updateSession = data => {
   return function(dispatch) {
@@ -70,7 +71,6 @@ export const apiUpdateSession = (dispatch, data) => {
 };
 
 export const apiTokenRefresh = (dispatch, session) => {
-  debugger
   return dispatch({
     type: API_TOKEN_REFRESH_PENDING,
     payload: {

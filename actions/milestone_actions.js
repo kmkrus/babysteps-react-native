@@ -170,34 +170,36 @@ export const apiFetchMilestones = () => {
         url: '/milestones',
         headers: {
           "milestone_token": CONSTANTS.MILESTONE_TOKEN,
-        }
+        },
       })
-      .then( response => {
-        Object.keys(response.data).map( name => {
-          insertRows(name, schema[name], response.data[name])
+        .then(response => {
+          Object.keys(response.data).map(name => {
+            insertRows(name, schema[name], response.data[name]);
+          });
+          dispatch(Response(API_FETCH_MILESTONES_FULFILLED, response));
         })
-        dispatch(Response(API_FETCH_MILESTONES_FULFILLED, response))
-      })
-      .catch(error => {
-         dispatch(Response(API_FETCH_MILESTONES_REJECTED, error))
-      });
+        .catch(error => {
+          dispatch(Response(API_FETCH_MILESTONES_REJECTED, error));
+        });
     }); // return Promise
-
   }; // return dispatch
 };
 
 export const fetchMilestoneGroups = () => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONE_GROUPS_PENDING));
-    return (
-      db.transaction(tx => {
-        tx.executeSql( 
-          'SELECT * FROM milestone_groups;', [],
-          (_, response) => {dispatch(Response(FETCH_MILESTONE_GROUPS_FULFILLED, response))},
-          (_, error) => {dispatch(Response(FETCH_MILESTONE_GROUPS_REJECTED, error))}
-        );
-      })
-    )
+    return db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM milestone_groups;',
+        [],
+        (_, response) => {
+          dispatch(Response(FETCH_MILESTONE_GROUPS_FULFILLED, response));
+        },
+        (_, error) => {
+          dispatch(Response(FETCH_MILESTONE_GROUPS_REJECTED, error));
+        },
+      );
+    });
   };
 };
 
@@ -210,36 +212,37 @@ export const fetchMilestoneCalendar = (pregnancy_period = null) => {
       sql += `WHERE pregnancy_period = '${pregnancy_period}' `;
     }
     sql += 'ORDER BY milestone_triggers.notify_at;';
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [],
-          (_, response) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response))},
-          (_, error) => {dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error))}
-        );
-      })
-    )
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql,
+        [],
+        (_, response) => {
+          dispatch(Response(FETCH_MILESTONE_CALENDAR_FULFILLED, response));
+        },
+        (_, error) => {
+          dispatch(Response(FETCH_MILESTONE_CALENDAR_REJECTED, error));
+        },
+      );
+    });
   };
 };
 
-export const updateMilestoneCalendar = (task_id) => {
+export const updateMilestoneCalendar = task_id => {
   return dispatch => {
     dispatch(Pending(UPDATE_MILESTONE_CALENDAR_PENDING));
     const completed_at = new Date().toISOString();
     const sql = 'UPDATE milestone_triggers SET completed_at = ? WHERE task_id = ?;';
-    return (
-      db.transaction(tx => {
-        tx.executeSql(
-          sql, [completed_at, task_id],
-          (_, response) => { 
-            dispatch( Response(UPDATE_MILESTONE_CALENDAR_FULFILLED, response) );
-          },
-          (_, error) => { 
-            dispatch( Response(UPDATE_MILESTONE_CALENDAR_REJECTED, error) ) 
-          }
-        );
-      })
-    );
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql, [completed_at, task_id],
+        (_, response) => {
+          dispatch(Response(UPDATE_MILESTONE_CALENDAR_FULFILLED, response));
+        },
+        (_, error) => {
+          dispatch(Response(UPDATE_MILESTONE_CALENDAR_REJECTED, error));
+        },
+      );
+    });
   };
 };
 

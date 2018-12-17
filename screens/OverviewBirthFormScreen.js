@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
+import { StackActions } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import find from 'lodash/find';
@@ -123,14 +124,25 @@ class OverviewBirthFormScreen extends Component {
   };
 
   _onSubmit = values => {
+    if (values.outcome === 'live_birth') {
+      if (!values.date_of_birth) {
+        this.setState({ dateError: 'You must provide the Date of Birth' });
+        return null;
+      }
+    } else if (!values.date_of_loss) {
+      this.setState({ dateError: 'You must provide the Date of Loss' });
+      return null;
+    }
 
     this.props.updateSubject(values);
-
-    if (values.api_id) {
+    const subject = this.props.registration.subject.data;
+    if (subject.api_id) {
+      const data = {...values, api_id: subject.api_id}
       // update birth date on api
-      this.props.apiUpdateSubject(this.props.session, values);
+      this.props.apiUpdateSubject(this.props.session, data);
       // update calendar
-      this.props.apiFetchMilestoneCalendar({ subject_id: values.api_id });
+      const fetchCalendarParams = { subject_id: subject.api_id };
+      this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
     }
 
     const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
@@ -142,13 +154,13 @@ class OverviewBirthFormScreen extends Component {
       this.props.updateSession({ notification_period: 'post_birth' });
 
       // go to birth questionaire
+      this.props.navigation.dispatch(StackActions.popToTop());
       this.props.navigation.navigate('MilestoneQuestions', { task });
     } else {
       this.props.deleteAllNotifications();
       this.props.updateSession({ notification_period: 'no_birth' });
       this.props.navigation.navigate('Overview');
     }
-
   };
 
   render() {
@@ -161,23 +173,12 @@ class OverviewBirthFormScreen extends Component {
         ref={ref => this.scrollView = ref}
         enableOnAndroid
         enableAutomaticScroll
-        extraScrollHeight={240}
+        extraScrollHeight={100}
         keyboardShouldPersistTaps="handled"
       >
         <Formik
           ref={ref => (this.node = ref)}
-          onSubmit={values => {
-            if (values.outcome === 'live_birth') {
-              if (!values.date_of_birth) {
-                this.setState({ dateError: 'You must provide the Date of Birth' });
-                return null;
-              }
-            } else if (!values.date_of_loss) {
-              this.setState({ dateError: 'You must provide the Date of Loss' });
-              return null;
-            }
-            this._onSubmit(values);
-          }}
+          onSubmit={values => this._onSubmit(values)}
           validationSchema={validationSchema}
           initialValues={{
             api_id: subject.api_id,
@@ -186,6 +187,7 @@ class OverviewBirthFormScreen extends Component {
             date_of_birth: new Date().toISOString(),
             conception_method: subject.conception_method,
             last_name: '',
+            middle_name: '',
             first_name: '',
           }}
           render={props => {

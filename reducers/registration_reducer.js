@@ -147,31 +147,65 @@ const reducer = (state=initialState, action, formData={}) => {
       break;
     }
 
-    // API CREATE USER
     case API_CREATE_USER_PENDING: {
-      return {...state, 
-        apiUser: {...state.apiUser, fetching: true, fetched: false, error: null},
-        user: {...state.user, fetching: false, fetched: false, error: null}
-      }
-      break;
+      return {
+        ...state,
+        apiUser: {
+          ...state.apiUser,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+        user: {
+          ...state.user,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
     case API_CREATE_USER_FULFILLED: {
       const headers = action.payload.headers;
       const accessToken = (headers['access-token']) ? headers['access-token'] : state.auth.accessToken;
-      return {...state, 
-        auth: {...state.auth, accessToken: accessToken, client: headers.client, uid: headers.uid, user_id: headers.user_id }, 
-        apiUser: {...state.apiUser, fetching: false, fetched: true, error: null, data: action.formData}
-      }
-      break;
+      return {
+        ...state,
+        apiUser: {
+          ...state.apiUser,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.formData,
+        },
+        auth: {
+          ...state.auth,
+          accessToken: accessToken,
+          client: headers.client,
+          uid: headers.uid,
+          user_id: headers.user_id,
+        },
+      };
     }
     case API_CREATE_USER_REJECTED: {
-      return {...state, apiUser: {...state.apiUser, fetching: false, error: action.payload} }
-      break;
+      return {
+        ...state,
+        apiUser: {
+          ...state.apiUser,
+          fetching: false,
+          error: action.payload,
+        },
+      };
     }
 
-     // RESET RESPONDENT
     case RESET_RESPONDENT: {
-      return {...state, respondent: {...state.respondent, fetching: false, fetched: false, error: null}}
+      return {
+        ...state,
+        respondent: {
+          ...state.respondent,
+          fetching: false,
+          fetched: false,
+          error: null,
+        },
+      };
     }
 
     // FETCH RESPONDENT

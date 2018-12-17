@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-import attemptRefresh from 'redux-refresh-token';
-
 import {
+  updateSession,
   apiTokenRefresh,
   apiTokenRefreshFailed,
 } from '../actions/session_actions';
@@ -10,6 +9,7 @@ import {
 import CONSTANTS from '../constants';
 
 import {
+  API_TOKEN_REFRESH_PENDING,
   API_CREATE_USER_PENDING,
   API_FETCH_MILESTONES_PENDING,
   API_CREATE_MILESTONE_CALENDAR_PENDING,
@@ -19,6 +19,7 @@ import {
   RESET_API_MILESTONES,
   RESET_API_MILESTONE_CALENDAR,
   UPDATE_ACCESS_TOKEN,
+  UPDATE_SESSION_ACTION,
 } from '../actions/types';
 
 const excludeTypes = [
@@ -42,12 +43,16 @@ const Response = (type, payload, session = {}) => {
 
 export default store => next => action => {
   if (!action.type.includes('api_') || !action.type.includes('_pending')) {
-    // not a pending api call
+    //console.log('***** not an offline api call');
     return next(action);
   }
   if (excludeTypes.includes(action.type)) {
-    console.log('***** not an offline api call ******');
+    console.log('***** milestone token api call');
     return next(action);
+  }
+  // save action in case we need to retry after token refresh
+  if (action.type !== API_TOKEN_REFRESH_PENDING) {
+    store.dispatch(Response(UPDATE_SESSION_ACTION, action));
   }
 
   const session = store.getState().session;
@@ -74,9 +79,26 @@ export default store => next => action => {
   })
     .then(response => {
       store.dispatch(Response(effect.fulfilled, response));
-      // if access-token in header is empty, continue to use existing token
-      if (response.headers['access-token'] !== '') {
-        store.dispatch(Response(UPDATE_ACCESS_TOKEN, response.headers['access-token']))
+      // retry if this was a token refresh
+      if (action.type === API_TOKEN_REFRESH_PENDING) {
+        const nextAction = store.getState().session.action;
+        store.dispatch(nextAction);
+      }
+      // remove action from store
+      store.dispatch(Response(UPDATE_SESSION_ACTION, null));
+      // update access token in store unless
+      // access-token in header is empty then
+      // continue to use existing token
+      const headers = response.headers;
+      if (headers['access-token'] !== '') {
+        debugger
+        const data = {
+          access_token: headers['access-token'],
+          client: headers.client,
+          uid: headers.uid,
+          user_id: headers.user_id,
+        };
+        updateSession(data);
       }
     })
     .catch(error => {
@@ -86,23 +108,8 @@ export default store => next => action => {
       // Not signed in
       if (response.status === 401) {
         // not already getting fresh token
-        debugger
         if (!store.getState().session.fetching_token) {
-          //store.dispatch(Pending(SET_FETCHING_TOKEN));
-          attemptRefresh({
-            // An action creator that determines what happens when the refresh failed
-            failure: apiTokenRefreshFailed,
-            // An action creator that creates an API request to refresh the token
-            refreshActionCreator: apiTokenRefresh(store.dispatch, session),
-            // This is the current access token. If the user is not authenticated yet
-            // this can be null or undefined
-            token: session.access_token,
-            // The next 3 parameters are simply the arguments of
-            // the middleware function
-            action,
-            next,
-            store,
-          });
+          apiTokenRefresh(store.dispatch, session);
         }
       } else {
         store.dispatch(Response(effect.rejected, error));
