@@ -122,7 +122,7 @@ class RootNavigator extends Component {
     // 'selected' app is open but was backgrounded (Andriod)
     // 'selected' app was not open and opened by selecting notification
     // 'selected' app was not open but opened by app icon (ios only)
-    if (!!data.momentary_assessment) {
+    if (data.momentary_assessment) {
       this._handleMomentaryAssessment(data);
     } else if (origin === 'selected') {
       this._handleNotificationOnPress(data);

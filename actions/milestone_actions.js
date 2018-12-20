@@ -588,7 +588,7 @@ export const apiCreateMilestoneAnswer = (session, data) => {
   });
   if (data.attachments) {
     forEach(data.attachments, (att, index) => {
-      formData.append(`answer[attachments][${index}]`, {
+      formData.append(`answer[attachments][]`, {
         uri: att.uri,
         name: att.filename,
         type: att.content_type,

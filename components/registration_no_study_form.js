@@ -49,6 +49,7 @@ const validationSchema = Yup.object().shape({
 class RegistrationNoStudyForm extends Component {
   state = {
     dobError: null,
+    apiCreateMilestoneCalendarSubmitted: false,
   };
 
   componentWillMount() {
@@ -60,10 +61,11 @@ class RegistrationNoStudyForm extends Component {
     const subject = nextProps.registration.subject;
     if (!respondent.fetching && !subject.fetching) {
       if (subject.fetched && subject.fetched) {
-        if (subject.data.expected_date_of_birth) {
+        if (!this.state.apiCreateMilestoneCalendarSubmitted) {
           this.props.apiCreateMilestoneCalendar({
             base_date: subject.data.expected_date_of_birth,
           });
+          this.setState({ apiCreateMilestoneCalendarSubmitted: true });
         }
         this.props.updateSession({
           registration_state: States.REGISTERED_AS_NO_STUDY,

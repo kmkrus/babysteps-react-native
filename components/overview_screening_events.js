@@ -160,11 +160,15 @@ class OverviewScreen extends React.Component {
           {this.state.sliderLoading && (
             <ActivityIndicator size="large" color={Colors.tint} />
           )}
-          {isEmpty(this.state.screeningEvents) && (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>You've completed all the tasks for this stage.  We'll notify you when there are new tasks to complete.</Text>
-            </View>
-          )}
+          {!this.state.sliderLoading && 
+            isEmpty(this.state.screeningEvents) && (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                  You've completed all the tasks for this stage. We'll notify
+                  you when there are new tasks to complete.
+                </Text>
+              </View>
+            )}
           {!isEmpty(this.state.screeningEvents) && (
             <SideSwipe
               index={this.state.currentIndexScreening}

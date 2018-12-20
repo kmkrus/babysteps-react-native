@@ -1,4 +1,5 @@
 import { SQLite } from 'expo';
+import moment from 'moment';
 
 import { setNotifications, deleteNotifications } from '../notifications';
 
@@ -56,22 +57,31 @@ export const fetchMomentaryAssessment = params => {
 
     return db.transaction(tx => {
       tx.executeSql(
-        sql, [],
-        (_, response) => dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_FULFILLED, response)),
-        (_, error) => dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_REJECTED, error)),
+        sql,
+        [],
+        (_, response) => {
+          dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_FULFILLED, response));
+        },
+        (_, error) => {
+          dispatch(Response(FETCH_MOMENTARY_ASSESSMENT_REJECTED, error));
+        },
       );
-    })
+    });
   };
 };
 
 export const updateNotifications = () => {
+  const today = moment().toISOString();
   return function(dispatch) {
     dispatch(Pending(UPDATE_NOTIFICATIONS_PENDING));
     let sql = 'SELECT * FROM milestone_triggers ';
-    sql += 'ORDER BY milestone_triggers.notify_at;';
+    sql += 'WHERE notify_at >= ? ';
+    sql += 'ORDER BY milestone_triggers.notify_at ';
+    sql += 'LIMIT 50';
     db.transaction(tx => {
       tx.executeSql(
-        sql, [],
+        sql,
+        [today],
         (_, response) => {
           setNotifications(response.data);
           dispatch(Response(UPDATE_NOTIFICATIONS_FULFILLED, response));

@@ -62,7 +62,9 @@ class RegistrationExpectedDOB extends Component {
         if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
           this.props.apiCreateSubject(session, subject.data);
           this.setState({ apiCreateSubjectSubmitted: true });
-        } else if (apiSubject.data.id !== undefined) {
+        }
+        if (apiSubject.fetched && apiSubject.data.id !== undefined) {
+          this.props.updateSubject({ api_id: apiSubject.data.id });
           if (
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
@@ -109,7 +111,7 @@ class RegistrationExpectedDOB extends Component {
       };
       this.props.createSubject(newSubject);
     } else {
-      this.setState({ dobError: 'You must provide the Date of Birth' });
+      this.setState({ dobError: 'You must provide the Expected Date of Birth' });
     }
   };
 

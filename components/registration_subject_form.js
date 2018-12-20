@@ -20,6 +20,7 @@ import {
   updateSubject,
   apiCreateSubject,
 } from '../actions/registration_actions';
+import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import TextFieldWithLabel from './textFieldWithLabel';
@@ -77,7 +78,8 @@ const conceptionMethods = [
 class RegistrationSubjectForm extends Component {
   state = {
     dobError: null,
-    submitted: false,
+    apiCreateSubjectSubmitted: false,
+    apiCreateMilestoneCalendarSubmitted: false,
   };
 
   componentWillMount() {
@@ -93,23 +95,21 @@ class RegistrationSubjectForm extends Component {
 
     if (!subject.fetching && subject.fetched) {
       if (!apiSubject.fetching) {
-        if (!apiSubject.fetched && !nextState.submitted) {
+        if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
           this.props.apiCreateSubject(session, subject.data);
-          this.setState({ submitted: true });
+          this.setState({ apiCreateSubjectSubmitted: true });
         } else if (apiSubject.data.id !== undefined) {
           this.props.updateSubject({ api_id: apiSubject.data.id });
-          //if (this.props.registration.auth !== nextProps.registration.auth) {
-          //  this.props.updateSession({
-          //    access_token: auth.accessToken,
-          //    client: auth.client,
-          //    uid: auth.uid,
-          //    user_id: auth.user_id,
-          //  });
-          //}
           if (
             !session.fetching &&
             session.registration_state !== States.REGISTERED_AS_IN_STUDY
           ) {
+            if (!this.state.apiCreateMilestoneCalendarSubmitted) {
+              this.props.apiCreateMilestoneCalendar({
+                subject_id: apiSubject.data.id,
+              });
+              this.setState({ apiCreateMilestoneCalendarSubmitted: true });
+            }
             this.props.updateSession({
               registration_state: States.REGISTERED_AS_IN_STUDY,
             });
@@ -270,6 +270,7 @@ const mapDispatchToProps = {
   createSubject,
   updateSubject,
   apiCreateSubject,
+  apiCreateMilestoneCalendar,
   updateSession,
 };
 

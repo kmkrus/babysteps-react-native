@@ -1,4 +1,3 @@
-
 import {
 
   FETCH_SESSION_PENDING,
@@ -88,6 +87,7 @@ const initialState = {
   apiRespondent: {
     fetching: false,
     fetched: false,
+    data: {},
     error: null,
   },
   apiSignature: {
@@ -104,6 +104,7 @@ const initialState = {
   apiSubject: {
     fetching: false,
     fetched: false,
+    data: {},
     error: null,
   },
 };
@@ -598,21 +599,11 @@ const reducer = (state=initialState, action, formData={}) => {
       const data = action.payload.data;
       return {
         ...state,
-        subject: {
-          ...state.subject,
-          data: {
-            ...state.subject.data,
-            api_id: data.id,
-          },
-        },
         apiSubject: {
           ...state.apiSubject,
           fetching: false,
           fetched: true,
-          data: {
-            ...state.apiSubject.data,
-            data,
-          },
+          data,
         },
       };
     }

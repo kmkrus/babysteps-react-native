@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { FileSystem } from 'expo';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -297,6 +298,7 @@ class MilestoneQuestionsScreen extends Component {
 
     const user = this.props.registration.user;
     const subject = this.props.registration.subject;
+    const apiSubject = this.props.registration.apiSubject;
     const respondent = this.props.registration.respondent;
 
     const index = _.findIndex(answers, { choice_id: choice.id });
@@ -304,35 +306,37 @@ class MilestoneQuestionsScreen extends Component {
     if (index === -1) {
       if (format === 'single' && !response.answer_boolean) {
         // Do not save response if only single response allowed and answer boolean false
-      } else {
-        answer = {
-          section_id: this.state.section.id,
-          question_id: choice.question_id,
-          choice_id: choice.id,
-          score: choice.score,
-        };
-        if (!_.isEmpty(user.data)) {
-          answer.user_id = user.data.id;
-          answer.user_api_id = user.data.api_id;
-        }
-        if (!_.isEmpty(respondent.data)) {
-          answer.respondent_id = respondent.data.id;
-          answer.respondent_api_id = respondent.data.api_id;
-        }
-        if (!_.isEmpty(subject.data)) {
-          answer.subject_id = subject.data.id;
-          answer.subject_api_id = subject.data.api_id;
-        }
-        _.assign(answer, response);
-      } // format == single
+        return null;
+      }
+      answer = {
+        section_id: this.state.section.id,
+        question_id: choice.question_id,
+        choice_id: choice.id,
+        score: choice.score,
+      };
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);
-      _.assign(answer, response);
       _.remove(answers, ['choice_id', choice.id]);
     } // index = -1
+
+    if (!_.isEmpty(user.data)) {
+      answer.user_id = user.data.id;
+      answer.user_api_id = user.data.api_id;
+    }
+    if (!_.isEmpty(respondent.data)) {
+      answer.respondent_id = respondent.data.id;
+      answer.respondent_api_id = respondent.data.api_id;
+    }
+    if (!_.isEmpty(subject.data)) {
+      answer.subject_id = subject.data.id;
+      answer.subject_api_id = subject.data.api_id;
+    }
+
+    _.assign(answer, response);
+
     if (response.attachments) {
       const attachmentDir =
-        Expo.FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+        FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
       answer.attachments = [];
       _.map(response.attachments, async att => {
         const attachment = {};
@@ -366,10 +370,10 @@ class MilestoneQuestionsScreen extends Component {
             attachment.content_type = '';
         }
 
-        await Expo.FileSystem.deleteAsync(attachment.uri, { idempotent: true });
-        await Expo.FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
+        await FileSystem.deleteAsync(attachment.uri, { idempotent: true });
+        await FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
 
-        const resultFile = await Expo.FileSystem.getInfoAsync(attachment.uri);
+        const resultFile = await FileSystem.getInfoAsync(attachment.uri);
         if (!resultFile.exists) {
           console.log('Error: attachment not saved: ', choice.id, attachment.filename);
           this.setState({errorMessage: 'Error: Attachment Not Saved'});
@@ -420,7 +424,6 @@ class MilestoneQuestionsScreen extends Component {
         });
         // cannot bulk update answers with attachments
         if (inStudy) {
-          debugger
           this.props.apiCreateMilestoneAnswer(session, answer);
         }
       });
