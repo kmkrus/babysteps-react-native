@@ -8,11 +8,12 @@ import {
 } from 'react-native';
 import { Video } from 'expo';
 
+import { values } from 'lodash';
+
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
-import ImageFormats from '../constants/ImageFormats';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const widthOffset = 40;
 const imageOffset = 60;
 
@@ -54,8 +55,13 @@ class BabyBookGetImage extends Component {
 
   render() {
     const imageContainerHeight = this.state.imageHeight + 2;
-    const uri = this.props.item.file_uri;
-    const isVideo = !!VideoFormats[this.props.item.file_type];
+    const item = this.props.item;
+    const uri = item.file_uri;
+    let isVideo = false;
+    if (item.file_type) {
+      const formats = values(VideoFormats);
+      isVideo = formats.includes(item.file_type);
+    }
     const imageHeight = this.state.imageHeight;
 
     return (
@@ -65,19 +71,16 @@ class BabyBookGetImage extends Component {
             this.handleImageOnPress();
           }}
         >
-          {isVideo ? (
+          {isVideo && (
             <Video
               source={uri}
-              rate={1.0}
-              volume={1.0}
-              isMuted={false}
               resizeMode={Video.RESIZE_MODE_COVER}
               shouldPlay={false}
-              isLooping
               useNativeControls
-              style={{ width: videoWidth, height: videoHeight }}
+              style={{ flex: 1, width: videoWidth, height: videoHeight }}
             />
-          ) : (
+          )}
+          {!isVideo && (
             <Image
               source={uri}
               style={[styles.image, { height: imageHeight }]}

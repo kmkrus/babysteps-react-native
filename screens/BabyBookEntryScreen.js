@@ -56,7 +56,7 @@ class BabyBookEntryScreen extends Component {
       if (!this.state.submitted) {
         this.setState({ submitted: true });
         this.props.fetchBabyBookEntries();
-        this.props.navigation.navigate('BabyBook');
+        this.props.navigation.navigate('BabyBook', { babybookEntries: true });
       }
     }
   }
@@ -64,7 +64,7 @@ class BabyBookEntryScreen extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !nextProps.babybook.entries.fetching;
   }
-  
+
   render() {
     return (
       <KeyboardAwareScrollView enableOnAndroid>

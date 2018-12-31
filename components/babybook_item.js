@@ -2,39 +2,37 @@ import React, { Component } from 'react';
 import {
   View,
   Text,
-  Animated,
-  Image,
   ImageBackground,
   Dimensions,
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 
-import { connect} from 'react-redux';
+import moment from 'moment';
 
-import BabyBookGetImage from '../components/babybook_get_image';
+import { connect } from 'react-redux';
 
-import Colors from '../constants/Colors';
-import CONSTANTS from '../constants';
+import BabyBookGetImage from './babybook_get_image';
 
 const { width, height } = Dimensions.get('window');
-const heightOffset = 180 ;// compensate for header and navbar
+const heightOffset = 180; // compensate for header and navbar
 const widthOffset = 40;
 
-const imageSize = width - widthOffset - 60;
 const backgroundImage = require('../assets/images/baby_book_inside_background.png');
 
 class BabyBookItem extends Component {
-
   static WIDTH = width;
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.registration.subject.fetching || this.props.babybook.entries.fetching) {
+  shouldComponentUpdate(nextProps) {
+    const subject = nextProps.registration.subject;
+    const babybook = nextProps.babybook;
+    if (subject.fetching || babybook.entries.fetching) {
       return false;
     }
     return true;
   }
 
   render() {
+    const item = this.props.item;
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -42,26 +40,19 @@ class BabyBookItem extends Component {
           imageStyle={styles.backgroundImage}
           style={styles.imageBackground}
         >
-          <BabyBookGetImage 
-            navigation={this.props.navigation}
-            item={ this.props.item }
-          />
-          <View style={styles.subtitle} >
-            <Text style={styles.title}>{ this.props.item.title }</Text>
-            <Text style={styles.date}>{ new Date(this.props.item.created_at).toDateString() }</Text>
-            <Text style={styles.detail}>{ this.props.item.detail }</Text>
+          <BabyBookGetImage navigation={this.props.navigation} item={item} />
+          <View style={styles.subtitle}>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.date}>
+              {moment(item.created_at).toISOString()}
+            </Text>
+            <Text style={styles.detail}>{item.detail}</Text>
           </View>
         </ImageBackground>
       </View>
     );
   }
 }
-
-const imageCorner = {
-  height: 40,
-  width: 40,
-  position: 'absolute',
-};
 
 const styles = StyleSheet.create({
   container: {

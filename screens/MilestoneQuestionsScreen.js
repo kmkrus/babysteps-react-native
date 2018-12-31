@@ -64,6 +64,7 @@ class MilestoneQuestionsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      task_id: null,
       section: {},
       questionsFetched: false,
       answersFetched: false,
@@ -71,23 +72,37 @@ class MilestoneQuestionsScreen extends Component {
       answers: [],
       attachments: [],
       errorMessage: '',
+      confirmed: false,
     };
 
     this.saveResponse = this.saveResponse.bind(this);
   }
 
   componentWillMount() {
-    this.props.resetMilestoneQuestions();
-    this.props.resetMilestoneChoices();
-    this.props.resetMilestoneAnswers();
-    const task = this.props.navigation.state.params.task;
-    this.props.fetchMilestoneSections({ task_id: task.id });
     this.props.fetchUser();
     this.props.fetchRespondent();
     this.props.fetchSubject();
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+    const task = nextProps.navigation.state.params.task;
+    if (task.id !== this.state.task_id) {
+      this.props.resetMilestoneQuestions();
+      this.props.resetMilestoneChoices();
+      this.props.resetMilestoneAnswers();
+      this.props.fetchMilestoneSections({ task_id: task.id });
+      this.setState({
+        task_id: task.id,
+        section: [],
+        questionsFetched: false,
+        answersFetched: false,
+        attachmentsFetched: false,
+        answers: [],
+        attachments: [],
+        confirmed: false,
+      });
+      return;
+    }
     const sections = nextProps.milestones.sections;
     const questions = nextProps.milestones.questions;
     if (!sections.fetching && sections.fetched) {
@@ -408,6 +423,8 @@ class MilestoneQuestionsScreen extends Component {
     // TODO move to next section if more than one section in this task
     // TOTO don't mark task complete if any sections are incomplete
 
+    this.setState({ confirmed: true });
+
     this.props.updateMilestoneAnswers(section, answers);
     this.props.updateMilestoneCalendar(section.task_id);
 
@@ -454,8 +471,8 @@ class MilestoneQuestionsScreen extends Component {
       <KeyboardAwareScrollView
         contentContainerStyle={styles.container}
         enableResetScrollToCoords={false}
-        enableAutomaticScroll={true}
-        enableOnAndroid={true}
+        enableAutomaticScroll
+        enableOnAndroid
         extraScrollHeight={50}
         innerRef={ref => {this.scroll = ref}}
       >
@@ -482,6 +499,7 @@ class MilestoneQuestionsScreen extends Component {
               titleStyle={styles.buttonTitleStyle}
               onPress={() => this.handleConfirm()}
               title="Confirm"
+              disabled={this.state.confirmed}
             />
           </View>
         )}

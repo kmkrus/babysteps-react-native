@@ -10,6 +10,7 @@
       "name": "TEXT",
       "momentary_assessment": "INTEGER",
       "pregnancy_period": "TEXT",
+      "frequency": "TEXT",
       "response_scale": "TEXT",
       "notify_at": "TEXT",
       "notify_count": "INTEGER",

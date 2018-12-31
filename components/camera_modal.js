@@ -17,9 +17,10 @@ import Colors from '../constants/Colors';
 
 // TODO fix horizontal styles
 const { width, height } = Dimensions.get('window');
-const cameraFacePositionMargin = 35;
-const cameraFacePositionWidth = width - (cameraFacePositionMargin * 2);
-const cameraFacePositionHeight = (height * 0.6) - cameraFacePositionMargin;
+const cameraPositionMargin = 35;
+const cameraPositionMarginTop = 70;
+const cameraPositionWidth = width - (cameraPositionMargin * 2);
+const cameraPositionHeight = (height * 0.6) - cameraPositionMargin;
 
 const mediaTypes = {
   file_audio: 'audio',
@@ -40,8 +41,10 @@ class CameraModal extends Component {
   };
 
   async componentWillMount() {
-    const camera = await Permissions.askAsync(Permissions.CAMERA);
-    if (!(camera.status === 'granted')) {
+    const camera = await Permissions.askAsync(Permissions.CAMERA, Permissions.AUDIO_RECORDING);
+    const hasCameraPermissions = camera.permissions.camera.status === 'granted';
+    const hasAudioPermissions = camera.permissions.audioRecording.status === 'granted';
+    if (!hasCameraPermissions || !hasAudioPermissions) {
       this.props.closeModal();
     }
   }
@@ -171,7 +174,7 @@ class CameraModal extends Component {
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
           <View style={styles.bottomBarAction}>
-            <TouchableOpacity onPressIn={() => this.props.closeCameraModal(null)}>
+            <TouchableOpacity onPress={() => this.props.closeCameraModal(null)}>
               <Image
                 style={{
                   width: 22,
@@ -186,14 +189,14 @@ class CameraModal extends Component {
           </View>
 
           <TouchableOpacity
-            onPressIn={this.handleTakePicture}
+            onPress={this.handleTakePicture}
             style={styles.takePictureButton}
           >
             <View style={[styles.takePictureButtonInner, takePictureButtonColor]} />
           </TouchableOpacity>
 
           <View style={styles.bottomBarAction}>
-            <TouchableOpacity onPressIn={this.handleChangeCameraType}>
+            <TouchableOpacity onPress={this.handleChangeCameraType}>
               <Image
                 style={{
                   width: 27,
@@ -207,7 +210,7 @@ class CameraModal extends Component {
               />
             </TouchableOpacity>
             {activeOption === 'photo' && (
-              <TouchableOpacity onPressIn={this.handleChangeFlashMode}>
+              <TouchableOpacity onPress={this.handleChangeFlashMode}>
                 <Image
                   style={{
                     width: 28,
@@ -238,7 +241,7 @@ class CameraModal extends Component {
         <View style={styles.bottomBarMenu}>
           {(!limitOption) && (
             <TouchableOpacity
-              onPressIn={() => this.setState({ activeOption: 'photo' })}
+              onPress={() => this.setState({ activeOption: 'photo' })}
             >
               <Text
                 style={{
@@ -255,7 +258,7 @@ class CameraModal extends Component {
             </TouchableOpacity>
           )}
           {(!limitOption) && (
-            <TouchableOpacity onPressIn={this.handlePressVideoOption}>
+            <TouchableOpacity onPress={this.handlePressVideoOption}>
               <Text
                 style={{
                   fontSize: 15,
@@ -277,7 +280,7 @@ class CameraModal extends Component {
   renderConfirmImage = () => (
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarConfirmActions}>
-        <TouchableOpacity onPressIn={this.handleCancelImage}>
+        <TouchableOpacity onPress={this.handleCancelImage}>
           <Image
             style={{
               width: 27,
@@ -289,7 +292,7 @@ class CameraModal extends Component {
             source={require('../assets/images/camera_delete_media_save_video.png')}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPressIn={this.handleConfirmImage}>
+        <TouchableOpacity onPress={this.handleConfirmImage}>
           <Image
             style={{
               width: 27,
@@ -317,7 +320,7 @@ class CameraModal extends Component {
           <Video
             source={{ uri: this.image.uri }}
             shouldPlay={false}
-            resizeMode={Expo.Video.RESIZE_MODE_COVER}
+            resizeMode={Video.RESIZE_MODE_COVER}
             style={{ flex: 1 }}
             useNativeControls
           />
@@ -326,12 +329,39 @@ class CameraModal extends Component {
     );
   };
 
-  render() {
-    const { confirmingImage, flashMode, type, videoTimer } = this.state;
-    let showCameraFacePosition = false;
-    if (this.props.choice !== undefined && this.props.choice) {
-      showCameraFacePosition = this.props.choice.overview_timeline === 'post_birth';
+  renderCameraPostion = choice => {
+    if (choice !== undefined && choice) {
+      let cameraPositionTemplate = '';
+      if (choice.overview_timeline === 'post_birth') {
+        cameraPositionTemplate = require('../assets/images/camera_face_position.png');
+      }
+      if (choice.overview_timeline === 'during_pregnancy') {
+        cameraPositionTemplate = require('../assets/images/camera_belly_position.png');
+      }
+      if (cameraPositionTemplate) {
+        return (
+          <Image
+            source={cameraPositionTemplate}
+            style={styles.cameraPosition}
+            resizeMode="stretch"
+          />
+        );
+      }
     }
+    return null;
+  };
+
+  handleOnShow = () => {
+    this.camera.resumePreview();
+  };
+
+  handleOnDismiss = () => {
+    this.camera.pausePreview();
+  };
+
+  render() {
+    const { confirmingImage, flashMode, type } = this.state;
+    const choice = this.props.choice;
     //if (videoTimer) {
     //  console.log('SECONDS: ', videoTimer.seconds());
     //}
@@ -340,17 +370,17 @@ class CameraModal extends Component {
         animationType="slide"
         transparent={false}
         visible={this.props.modalVisible}
+        onShow={() => this.handleOnShow()}
+        onDismiss={() => this.handleOnDismiss()}
         onRequestClose={() => {}}
       >
         <View
           style={styles.camera}
-          ref={r => (this.container = r)}
+          ref={ref => (this.container = ref)}
           //          onLayout={this.onLayout}
         >
           <Camera
-            ref={ref => {
-              this.camera = ref;
-            }}
+            ref={ref => (this.camera = ref)}
             style={styles.camera}
             type={type}
             flashMode={flashMode}
@@ -360,13 +390,8 @@ class CameraModal extends Component {
               ? this.renderConfirmImage()
               : this.renderBottomBar()}
           </Camera>
-          {showCameraFacePosition && (
-            <Image
-              source={require('../assets/images/camera_face_position.png')}
-              style={styles.cameraFacePosition}
-              resizeMode='stretch'
-            />
-          )}
+          {}
+          {!confirmingImage && this.renderCameraPostion(choice)}
         </View>
       </Modal>
     );
@@ -421,15 +446,15 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     width: '100%',
   },
-  cameraFacePosition: {
+  cameraPosition: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: cameraFacePositionWidth,
-    height: cameraFacePositionHeight,
-    marginTop: cameraFacePositionMargin,
-    marginLeft: cameraFacePositionMargin,
-    marginRight: cameraFacePositionMargin,
+    width: cameraPositionWidth,
+    height: cameraPositionHeight,
+    marginTop: cameraPositionMarginTop,
+    marginLeft: cameraPositionMargin,
+    marginRight: cameraPositionMargin,
   },
   takePictureButton: {
     width: 74,

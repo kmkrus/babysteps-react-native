@@ -11,6 +11,7 @@ import {
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
 import { Ionicons } from '@expo/vector-icons';
+import { FileSystem } from 'expo';
 
 import isEmpty from 'lodash/isEmpty';
 import indexOf from 'lodash/indexOf';
@@ -36,10 +37,9 @@ import CONSTANTS from '../constants';
 const { width, height } = Dimensions.get('window');
 const heightOffset = 180; // compensate for header and navbar
 const contentOffset = (width - BabyBookItem.WIDTH) / 2;
-const widthOffset = 40;
 const imageWidth = BabyBookGetImage.IMAGE_WIDTH;
 
-const babybookDir = `${Expo.FileSystem.documentDirectory +
+const babybookDir = `${FileSystem.documentDirectory +
   CONSTANTS.BABYBOOK_DIRECTORY}/`;
 
 class BabyBookScreen extends Component {

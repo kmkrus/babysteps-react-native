@@ -20,7 +20,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
-import { updateNotifications } from '../actions/notification_actions';
 import { updateSession } from '../actions/session_actions';
 
 import Colors from '../constants/Colors';
@@ -48,7 +47,6 @@ class OverviewScreen extends React.Component {
     sliderLoading: true,
     screeningEvents: [],
     apiCreateCalendarSubmitted: false,
-    updateNotificationsSubmitted: false,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -75,6 +73,8 @@ class OverviewScreen extends React.Component {
             // no notifications generated
             this.props.apiCreateMilestoneCalendar(fetchCalendarParams);
             this.setState({ apiCreateCalendarSubmitted: true });
+            // reset last updated date to rebuild notifications
+            this.props.updateSession({ notifications_updated_at: null });
           }
         } else {
           let screeningEvents = filter(calendar.data, s => {
@@ -93,17 +93,6 @@ class OverviewScreen extends React.Component {
             screeningEvents,
             sliderLoading: false,
           });
-          // Create notifications
-          if (!this.state.updateNotificationsSubmitted) {
-            const period = nextProps.session.notification_period;
-            let currentPeriod = 'pre_birth';
-            if (subject.data.date_of_birth) currentPeriod = 'post_birth';
-            if ((!period || period !== currentPeriod) && period !== 'no_birth') {
-              this.props.updateNotifications();
-              this.props.updateSession({ notification_period: currentPeriod });
-              this.setState({ updateNotificationsSubmitted: true });
-            }
-          }
         } // isEmpty calendar data
       } // calendar fetcbhing
     } // subject fetching
@@ -126,9 +115,9 @@ class OverviewScreen extends React.Component {
         <TouchableOpacity
           onPress={() => navigate('MilestoneQuestions', { task })}
         >
-          <Text numberOfLines={1} style={styles.screening_title}>{ task.message }</Text>
-          <Text numberOfLines={1} style={styles.screening_date}> { longDate }</Text>
-          <Text numberOfLines={3} style={styles.screening_text}>{ task.name }</Text>
+          <Text numberOfLines={1} style={styles.screening_title}>{task.message}</Text>
+          <Text numberOfLines={1} style={styles.screening_date}>{longDate}</Text>
+          <Text numberOfLines={3} style={styles.screening_text}>{task.name}</Text>
         </TouchableOpacity>
         <View style={styles.screening_slide_link}>
           <TouchableOpacity
@@ -294,7 +283,6 @@ const mapStateToProps = ({ session, milestones, registration }) => ({
 const mapDispatchToProps = {
   updateSession,
   apiCreateMilestoneCalendar,
-  updateNotifications,
 };
 
 export default connect(

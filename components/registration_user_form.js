@@ -47,7 +47,7 @@ const validationSchema = Yup.object().shape({
 class ErrorMessage extends Component {
   render() {
     const apiUser = this.props.apiUser;
-    if (!isEmpty(apiUser.error)) {
+    if (apiUser.error && !isEmpty(apiUser.error.data)) {
       if (typeof(apiUser.error.response.data.errors.full_messages) !== 'undefined') {
         return apiUser.error.response.data.errors.full_messages.join('\n');
       }

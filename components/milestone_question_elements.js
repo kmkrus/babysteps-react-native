@@ -320,10 +320,7 @@ export class RenderFile extends Component {
     if (file && !file.cancelled) {
       file.file_type = this.props.question.rn_input_type;
       file.title = this.props.question.title;
-      this.props.saveResponse(
-        this.state.choice,
-        {attachments: [file]}
-      );
+      this.props.saveResponse(this.state.choice, { attachments: [file] });
       this.setState({ choice: null });
     }
   };
@@ -340,7 +337,7 @@ export class RenderFile extends Component {
       message << 'Camera Roll Permissions not granted - cannot open photo album';
     }
     if (source === 'video' && !this.state.hasAudioPermission) {
-      message << 'Audio Recording Permissions not granted - cannot open video preview';
+      message << 'Audio Recording Permissions not granted - cannot open audio preview';
     }
     this.setState({ permissionMessage: message.join(', ') });
   };
@@ -412,14 +409,14 @@ export class RenderFile extends Component {
                 buttonStyle={styles.libraryButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
-                onPressIn={() => this.pickImage(choice, 'library')}
+                onPress={() => this.pickImage(choice, 'library')}
               />
               <Button
                 title={`Take a ${format}`}
                 buttonStyle={styles.cameraButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
-                onPressIn={() => this.pickImage(choice, 'new')}
+                onPress={() => this.pickImage(choice, 'new')}
               />
             </View>
           )}
@@ -431,7 +428,7 @@ export class RenderFile extends Component {
                 buttonStyle={styles.libraryButton}
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
-                onPressIn={() => this.recordAudio(choice)}
+                onPress={() => this.recordAudio(choice)}
               />
             </View>
           )}

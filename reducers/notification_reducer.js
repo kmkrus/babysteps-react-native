@@ -10,6 +10,10 @@ import {
   UPDATE_NOTIFICATIONS_FULFILLED,
   UPDATE_NOTIFICATIONS_REJECTED,
 
+  UPDATE_MOMENTARY_ASSESSMENTS_PENDING,
+  UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED,
+  UPDATE_MOMENTARY_ASSESSMENTS_REJECTED,
+
   DELETE_NOTIFICATIONS,
 } from '../actions/types';
 
@@ -20,6 +24,11 @@ const initialState = {
     fetched: false,
     error: null,
     data: {},
+  },
+  momentary_assessments: {
+    fetching: false,
+    fetched: false,
+    error: null,
   },
   notifications: {
     fetching: false,
@@ -122,6 +131,40 @@ const reducer = (state = initialState, action, formData = []) => {
         ...state,
         notifications: {
           ...state.notifications,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case UPDATE_MOMENTARY_ASSESSMENTS_PENDING: {
+      return {
+        ...state,
+        momentary_assessments: {
+          ...state.momentary_assessments,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED: {
+      return {
+        ...state,
+        momentary_assessments: {
+          ...state.momentary_assessments,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case UPDATE_MOMENTARY_ASSESSMENTS_REJECTED: {
+      return {
+        ...state,
+        momentary_assessments: {
+          ...state.momentary_assessments,
           fetching: false,
           fetched: false,
           error: action.payload,

@@ -53,13 +53,14 @@ class OverviewScreen extends React.Component {
     this.props.fetchMilestoneTasks();
     this.props.fetchOverViewTimeline();
     //this.props.updateSubject({expected_date_of_birth: '2019-07-01', date_of_birth: ''})
+    // only uncomment after registering when data is available
+    //this.testNotification({momentary_assessment: true});
   }
 
   testNotification(noticeType = null) {
     const tasks = this.props.milestones.tasks;
     const milestones = this.props.milestones.milestones;
-    console.log(milestones);
-    console.log("testNotification",arguments)
+    console.log("testNotification", arguments)
     if (!tasks.fetching && isEmpty(tasks.data)) {
       this.props.fetchMilestoneTasks();
       return;
@@ -91,7 +92,7 @@ class OverviewScreen extends React.Component {
       });
       this.setState({testNotificationCreated: true});
     } // task
-  };
+  }
 
   render() {
     return (

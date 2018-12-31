@@ -29,6 +29,8 @@ const initialState = {
   id: null,
   registration_state: 'none',
   notification_period: null,
+  notifications_permission: null,
+  notifications_updated_at: null,
   access_token: null,
   client: null,
   uid: null,

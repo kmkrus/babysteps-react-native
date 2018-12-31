@@ -108,7 +108,7 @@ class BabyBookEntryForm extends Component {
       message << 'Camera Roll Permissions not granted - cannot open photo album';
     }
     if (source === 'video' && !this.state.hasAudioPermission) {
-      message << 'Audio Recording Permissions not granted - cannot open video preview';
+      message << 'Audio Recording Permissions not granted - cannot open audio preview';
     }
     this.setState({ permissionMessage: message.join(', ') });
   };
@@ -122,8 +122,6 @@ class BabyBookEntryForm extends Component {
     const image = this.state.image;
     let hasUri = false;
     let isVideo = false;
-    let isImage = false;
-    let isAudio = false;
     let uri = null;
     let uriParts = [];
 
@@ -133,8 +131,6 @@ class BabyBookEntryForm extends Component {
       uriParts = uri.split('.');
       const fileType = uriParts[uriParts.length - 1];
       isVideo = !!VideoFormats[fileType];
-      isImage = !!ImageFormats[fileType];
-      isAudio = !!AudioFormats[fileType];
     }
 
     return (

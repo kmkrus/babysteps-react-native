@@ -6,12 +6,19 @@ import { Notifications, Permissions } from 'expo';
 import { createStackNavigator } from 'react-navigation';
 
 import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import moment from 'moment';
 
 import { showMessage } from 'react-native-flash-message';
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
-import { showMomentaryAssessment } from '../actions/notification_actions';
+import {
+  showMomentaryAssessment,
+  updateNotifications,
+  updateMomentaryAssessments,
+  deleteAllNotifications,
+} from '../actions/notification_actions';
 
 import AppNavigator from './AppNavigator';
 import NavigationService from './NavigationService';
@@ -24,6 +31,7 @@ import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
+import CONSTANTS from '../constants';
 
 const headerOptions = {
   headerStyle: {
@@ -88,6 +96,9 @@ const TourNoStudyNavigator = createStackNavigator(
 class RootNavigator extends Component {
   componentWillMount() {
     this.props.fetchSession();
+    // uncomment to test generation of notifications
+    //const notifications_updated_at = moment().subtract(30, 'days').toISOString();
+    //this.props.updateSession({ notifications_updated_at });
   }
 
   componentDidMount() {
@@ -100,6 +111,40 @@ class RootNavigator extends Component {
       });
     }
     this._notificationSubscription = this.registerForNotifications();
+  }
+
+  componentWillUpdate(nextProps) {
+    // update local notifications every 7 days to stay under the
+    // IOS limit of 64 notifications
+    const calendar = nextProps.milestones.calendar;
+    const session = nextProps.session;
+    const subject = nextProps.registration.subject.data;
+    if (!isEmpty(calendar.data) && !isEmpty(subject)) {
+      const notifications_permission = nextProps.session.notifications_permission;
+      if (!session.fetching && notifications_permission === 'granted') {
+        const today = moment();
+        let notifications_updated_at = moment(session.notifications_updated_at);
+        const next_notification_update_at = notifications_updated_at.add(7, 'days');
+        if (
+          !notifications_updated_at.isValid() ||
+          today.isAfter(next_notification_update_at)
+        ) {
+          let studyEndDate = '';
+          if (subject.date_of_birth) {
+            studyEndDate = moment(subject.date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
+          } else {
+            studyEndDate = moment(subject.expected_date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
+          }
+          this.props.deleteAllNotifications();
+          this.props.updateNotifications();
+          this.props.updateMomentaryAssessments(studyEndDate);
+          notifications_updated_at = today.toISOString();
+          this.props.updateSession({ notifications_updated_at });
+        } else {
+          console.log('****** Next Notfication Update Scheduled: ', next_notification_update_at.toISOString());
+        } // notifications_updated_at
+      } // session.fetching
+    } // calendar.data
   }
 
   componentWillUnmount() {
@@ -158,6 +203,8 @@ class RootNavigator extends Component {
       finalStatus = status;
     }
 
+    this.props.updateSession({ notifications_permission: finalStatus });
+
     // Stop here if the user did not grant permissions
     if (finalStatus !== 'granted') {
       console.log('Notifications Permission Denied');
@@ -194,11 +241,24 @@ class RootNavigator extends Component {
   }
 }
 
-const mapStateToProps = ({ session, milestones }) => ({ session, milestones });
+const mapStateToProps = ({
+  session,
+  milestones,
+  registration,
+  notifications,
+}) => ({
+  session,
+  milestones,
+  registration,
+  notifications,
+});
 const mapDispatchToProps = {
   updateSession,
   fetchSession,
   showMomentaryAssessment,
+  updateNotifications,
+  updateMomentaryAssessments,
+  deleteAllNotifications,
 };
 
 export default connect(

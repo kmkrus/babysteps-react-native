@@ -1,7 +1,11 @@
 import { SQLite } from 'expo';
 import moment from 'moment';
 
-import { setNotifications, deleteNotifications } from '../notifications';
+import {
+  setNotifications,
+  setMomentaryAssessments,
+  deleteNotifications,
+} from '../notifications';
 
 import {
   SHOW_MOMENTARY_ASSESSMENT,
@@ -14,6 +18,10 @@ import {
   UPDATE_NOTIFICATIONS_PENDING,
   UPDATE_NOTIFICATIONS_FULFILLED,
   UPDATE_NOTIFICATIONS_REJECTED,
+
+  UPDATE_MOMENTARY_ASSESSMENTS_PENDING,
+  UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED,
+  UPDATE_MOMENTARY_ASSESSMENTS_REJECTED,
 
   DELETE_NOTIFICATIONS,
 } from './types';
@@ -74,19 +82,41 @@ export const updateNotifications = () => {
   const today = moment().toISOString();
   return function(dispatch) {
     dispatch(Pending(UPDATE_NOTIFICATIONS_PENDING));
-    let sql = 'SELECT * FROM milestone_triggers ';
-    sql += 'WHERE notify_at >= ? ';
-    sql += 'ORDER BY milestone_triggers.notify_at ';
-    sql += 'LIMIT 50';
+    const sql =
+      'SELECT * FROM milestone_triggers AS mt \
+        WHERE mt.momentary_assessment = 0 AND mt.notify_at >= ? \
+        ORDER BY mt.notify_at \
+        LIMIT 10';
     db.transaction(tx => {
       tx.executeSql(
         sql,
         [today],
         (_, response) => {
-          setNotifications(response.data);
-          dispatch(Response(UPDATE_NOTIFICATIONS_FULFILLED, response));
+          const entries = response.rows['_array'];
+          setNotifications(entries);
+          dispatch(Response(UPDATE_NOTIFICATIONS_FULFILLED, entries));
         },
         (_, error) => dispatch(Response(UPDATE_NOTIFICATIONS_REJECTED, error)),
+      );
+    });
+  };
+};
+
+export const updateMomentaryAssessments = studyEndDate => {
+  return function(dispatch) {
+    dispatch(Pending(UPDATE_MOMENTARY_ASSESSMENTS_PENDING));
+    const sql =
+      'SELECT * FROM milestone_triggers AS mt WHERE mt.momentary_assessment = 1';
+    db.transaction(tx => {
+      tx.executeSql(
+        sql,
+        [],
+        (_, response) => {
+          const entries = response.rows['_array'];
+          setMomentaryAssessments(entries, studyEndDate);
+          dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED, entries));
+        },
+        (_, error) => dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_REJECTED, error)),
       );
     });
   };
