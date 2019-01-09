@@ -14,6 +14,7 @@
       "section_id": "INTEGER",
       "question_id": "INTEGER",
       "choice_id": "INTEGER",
+      "pregnancy": "INTEGER",
       "answer_numeric": "INTEGER",
       "answer_boolean": "INTEGER",
       "answer_text": "TEXT",

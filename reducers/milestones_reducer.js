@@ -431,7 +431,6 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_FETCH_MILESTONE_CALENDAR_FULFILLED: {
-      debugger
       return {
         ...state,
         api_calendar: {

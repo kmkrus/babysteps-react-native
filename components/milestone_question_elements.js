@@ -4,6 +4,7 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  Platform,
   TouchableOpacity,
 } from 'react-native';
 import {
@@ -14,11 +15,15 @@ import {
   FormInput,
   Slider,
 } from 'react-native-elements';
-import { ImagePicker, Permissions, Video, WebBrowser } from 'expo';
+import { ImagePicker, Video, WebBrowser, Permissions } from 'expo';
 import DatePicker from 'react-native-datepicker';
 
 import _ from 'lodash';
 
+import registerForPermission, {
+  renderNoPermissionsMessage,
+  openSettingsDialog,
+} from './permissions';
 import CameraModal from './camera_modal';
 import AudioModal from './audio_modal';
 
@@ -275,38 +280,58 @@ export class RenderDate extends React.PureComponent {
 }
 
 export class RenderFile extends Component {
-  state = {
-    choice: null,
-    hasCameraPermission: null,
-    hasCameraRollPermission: null,
-    hasAudioPermission: null,
-    permissionMessage: '',
-    imageError: '',
-    cameraModalVisible: false,
-    audioModalVisible: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      choice: null,
+      hasCameraPermission: false,
+      hasCameraRollPermission: false,
+      hasAudioPermission: false,
+      permissionMessage: '',
+      imageError: '',
+      cameraModalVisible: false,
+      audioModalVisible: false,
+    };
+    this._isMounted = false;
+  }
 
-  handleCameraRollPermission = async () => {
-    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({
-      hasCameraRollPermission: camera_roll.status === 'granted',
-    });
-  };
+  async componentDidMount() {
+    this._isMounted = true;
+    let message = [];
+    const hasCameraRollPermission = await registerForPermission(Permissions.CAMERA_ROLL);
+    const hasCameraPermission = await registerForPermission(Permissions.CAMERA);
+    const hasAudioPermission = await registerForPermission(Permissions.AUDIO_RECORDING);
+    if (!hasCameraRollPermission) message = renderNoPermissionsMessage('library', message);
+    if (!hasCameraPermission) message = renderNoPermissionsMessage('camera', message);
+    if (!hasAudioPermission) message = renderNoPermissionsMessage('audio', message);
+    // disable setState to avoid memory leaks if closing before async finished
+    if (this._isMounted) {
+      this.setState({
+        hasCameraRollPermission,
+        hasCameraPermission,
+        hasAudioPermission,
+        permissionMessage: message.join(', '),
+      });
+      if (Platform.OS === 'ios' && message.length !== 0) {
+        openSettingsDialog();
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   pickImage = async (choice, source = null) => {
     let image = {};
+    const hasCameraRollPermission = this.state.hasCameraRollPermission;
     this.setState({ choice });
-    if (source === 'library') {
-      await this.handleCameraRollPermission();
-      if (this.state.hasCameraRollPermission) {
-        const mediaType = mediaTypes[this.props.question.rn_input_type];
-        image = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: mediaType,
-        });
-        this.saveFile(image);
-      } else {
-        this.renderNoPermissions(source);
-      }
+    if (source === 'library' && hasCameraRollPermission) {
+      const mediaType = mediaTypes[this.props.question.rn_input_type];
+      image = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: mediaType,
+      });
+      this.saveFile(image);
     } else {
       this.setState({ cameraModalVisible: true });
     }
@@ -323,23 +348,6 @@ export class RenderFile extends Component {
       this.props.saveResponse(this.state.choice, { attachments: [file] });
       this.setState({ choice: null });
     }
-  };
-
-  renderNoPermissions = source => {
-    const message = [];
-    if (
-      ['camera', 'video'].includes(source) &&
-      !this.state.hasCameraPermission
-    ) {
-      message << 'Camera Permissions not granted - cannot open camera preview';
-    }
-    if (source === 'library' && !this.state.hasCameraRollPermission) {
-      message << 'Camera Roll Permissions not granted - cannot open photo album';
-    }
-    if (source === 'video' && !this.state.hasAudioPermission) {
-      message << 'Audio Recording Permissions not granted - cannot open audio preview';
-    }
-    this.setState({ permissionMessage: message.join(', ') });
   };
 
   _closeAudioModal = sound => {
@@ -359,6 +367,12 @@ export class RenderFile extends Component {
     const attachments = this.props.attachments;
     let loadCameraModal = false;
     let loadAudioModal = false;
+
+    const hasCameraRollPermission = this.state.hasCameraRollPermission;
+    const hasCameraPermission = this.state.hasCameraPermission;
+    const hasAudioPermission = this.state.hasAudioPermission;
+    const permissionMessage = this.state.permissionMessage;
+    const errorMessage = this.props.errorMessage;
 
     const collection = _.map(this.props.choices, choice => {
       let isVideo = false;
@@ -410,6 +424,7 @@ export class RenderFile extends Component {
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
                 onPress={() => this.pickImage(choice, 'library')}
+                disabled={!hasCameraRollPermission}
               />
               <Button
                 title={`Take a ${format}`}
@@ -417,6 +432,7 @@ export class RenderFile extends Component {
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
                 onPress={() => this.pickImage(choice, 'new')}
+                disabled={!hasCameraPermission}
               />
             </View>
           )}
@@ -429,13 +445,14 @@ export class RenderFile extends Component {
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
                 onPress={() => this.recordAudio(choice)}
+                disabled={!hasAudioPermission}
               />
             </View>
           )}
-          <Text style={styles.textError}>
-            {this.state.permissionMessage}
-            {this.props.errorMessage}
-          </Text>
+          {!!permissionMessage && (
+            <Text style={styles.textError}>{permissionMessage}</Text>
+          )}
+          {!!errorMessage && <Text style={styles.textError}>{errorMessage}</Text>}
 
           <View style={styles.pickImageContainer}>
             {displayVideo && (
@@ -533,7 +550,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   textError: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '400',
     color: Colors.red,
     alignSelf: 'center',

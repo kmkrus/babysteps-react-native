@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 
 import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -44,20 +45,11 @@ const validationSchema = Yup.object().shape({
   last_name: Yup.string().required('Last Name is Required'),
 });
 
-class ErrorMessage extends Component {
-  render() {
-    const apiUser = this.props.apiUser;
-    if (apiUser.error && !isEmpty(apiUser.error.data)) {
-      if (typeof(apiUser.error.response.data.errors.full_messages) !== 'undefined') {
-        return apiUser.error.response.data.errors.full_messages.join('\n');
-      }
-      return apiUser.error.message;
-    }
-    return '';
-  }
-}
-
 class RegistrationUserForm extends Component {
+  state = {
+    createUserSubmitted: false,
+    apiErrorMessage: '',
+  };
 
   componentWillMount() {
     this.props.apiFetchMilestones();
@@ -65,8 +57,14 @@ class RegistrationUserForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     const registration = nextProps.registration;
-    if (!registration.apiUser.fetching && !registration.user.fetching) {
-      if (registration.apiUser.fetched) {
+    const apiUser = nextProps.registration.apiUser;
+    const user = nextProps.registration.user;
+    if (!apiUser.fetching) {
+      if (apiUser.error) {
+        const apiErrorMessage = get(apiUser.error, 'response.data.errors.full_messages', []).join('\n')
+        this.setState({ apiErrorMessage });
+      }
+      if (apiUser.fetched) {
         if (this.props.registration.auth !== registration.auth) {
           this.props.updateSession({
             access_token: registration.auth.accessToken,
@@ -77,12 +75,15 @@ class RegistrationUserForm extends Component {
             password: registration.apiUser.data.password,
           });
         }
-        if (!registration.user.fetched) {
+        if (!user.fetching && !user.fetched && !this.state.createUserSubmitted) {
           this.props.createUser({
             ...registration.apiUser.data,
             api_id: registration.auth.user_id,
           });
-        } else if (registration.user.fetched) {
+          this.setState({ createUserSubmitted: true });
+          return null;
+        }
+        if (!user.fetching && user.fetched) {
           this.props.updateSession({ registration_state: States.REGISTERING_RESPONDENT });
         }
       }
@@ -99,6 +100,7 @@ class RegistrationUserForm extends Component {
 
   _onSubmit = values => {
     this.props.apiCreateUser(values);
+    this.setState({ apiErrorMessage: '' });
   };
 
   render() {
@@ -156,13 +158,8 @@ class RegistrationUserForm extends Component {
                   color={Colors.darkGreen}
                 />
               </View>
-              <Text
-                style={[
-                  styles.errorMessage,
-                  {color: apiUser.error ? Colors.errorColor : 'transparent'},
-                ]}
-              >
-                <ErrorMessage apiUser={apiUser} />
+              <Text style={styles.errorMessage}>
+                {this.state.apiErrorMessage}
               </Text>
             </Form>
           );
@@ -178,6 +175,7 @@ const styles = StyleSheet.create({
     margin: 20,
     textAlign: 'center',
     height: 24,
+    color: Colors.errorColor,
   },
 });
 

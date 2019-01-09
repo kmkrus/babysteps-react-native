@@ -228,8 +228,6 @@ class RegistrationSubjectForm extends Component {
                   dateInput: AppStyles.registrationDateInput,
                   dateText: AppStyles.registrationTextInput,
                 }}
-                maxDate={moment()}
-                maxDate={moment().subtract(24, "M")}
               />
 
               <Text style={styles.errorText}>{dobError}</Text>

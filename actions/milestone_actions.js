@@ -477,6 +477,7 @@ const answerFields = [
   'section_id',
   'question_id',
   'choice_id',
+  'pregnancy',
   'answer_numeric',
   'answer_boolean',
   'answer_text',

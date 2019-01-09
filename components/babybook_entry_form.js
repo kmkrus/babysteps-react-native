@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Text, View, Image, StyleSheet, Dimensions } from 'react-native';
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Linking,
+  Platform,
+} from 'react-native';
 import { Button } from 'react-native-elements';
 import { ImagePicker, Permissions, Video } from 'expo';
 
@@ -17,6 +25,10 @@ import {
   createBabyBookEntry,
 } from '../actions/babybook_actions';
 
+import registerForPermission, {
+  renderNoPermissionsMessage,
+  openSettingsDialog,
+} from './permissions';
 import TextFieldWithLabel from './textFieldWithLabel';
 import DatePicker from './datePickerInput';
 import CameraModal from './camera_modal';
@@ -51,30 +63,46 @@ const validationSchema = Yup.object().shape({
 });
 
 class BabyBookEntryForm extends Component {
-  state = {
-    image: null,
-    imageError: '',
-    hasCameraPermission: null,
-    hasCameraRollPermission: null,
-    hasAudioPermission: null,
-    permissionMessage: '',
-    cameraModalVisible: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      image: null,
+      imageError: '',
+      hasCameraPermission: false,
+      hasCameraRollPermission: false,
+      permissionMessage: '',
+      cameraModalVisible: false,
+    };
+    this._isMounted = false;
+  }
 
   async componentDidMount() {
-    await this.handleCameraRollPermission();
+    this._isMounted = true;
+    let message = [];
+    const hasCameraRollPermission = await registerForPermission(Permissions.CAMERA_ROLL);
+    const hasCameraPermission = await registerForPermission(Permissions.CAMERA);
+    if (!hasCameraRollPermission) message = renderNoPermissionsMessage('library', message);
+    if (!hasCameraPermission) message = renderNoPermissionsMessage('camera', message);
+    // disable setState to avoid memory leaks if closing before async finished
+    if (this._isMounted) {
+      this.setState({
+        hasCameraRollPermission,
+        hasCameraPermission,
+        permissionMessage: message.join(', '),
+      });
+      if (Platform.OS === 'ios' && message.length !== 0) {
+        openSettingsDialog();
+      }
+    }
   }
 
   shouldComponentUpdate(nextProps) {
     return !nextProps.babybook.entries.fetching;
   }
 
-  handleCameraRollPermission = async () => {
-    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    this.setState({
-      hasCameraRollPermission: camera_roll.status === 'granted',
-    });
-  };
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   pickImage = async (source = null) => {
     let image = {};
@@ -96,23 +124,6 @@ class BabyBookEntryForm extends Component {
     }
   };
 
-  renderNoPermissions = source => {
-    const message = [];
-    if (
-      ['camera', 'video'].includes(source) &&
-      !this.state.hasCameraPermission
-    ) {
-      message << 'Camera Permissions not granted - cannot open camera preview';
-    }
-    if (source === 'library' && !this.state.hasCameraRollPermission) {
-      message << 'Camera Roll Permissions not granted - cannot open photo album';
-    }
-    if (source === 'video' && !this.state.hasAudioPermission) {
-      message << 'Audio Recording Permissions not granted - cannot open audio preview';
-    }
-    this.setState({ permissionMessage: message.join(', ') });
-  };
-
   closeCameraModal = image => {
     if (image) this.setState({ image });
     this.setState({ cameraModalVisible: false });
@@ -120,6 +131,9 @@ class BabyBookEntryForm extends Component {
 
   render() {
     const image = this.state.image;
+    const hasCameraPermission  = this.state.hasCameraPermission;
+    const hasCameraRollPermission = this.state.hasCameraRollPermission;
+    const permissionMessage = this.state.permissionMessage;
     let hasUri = false;
     let isVideo = false;
     let uri = null;
@@ -157,7 +171,7 @@ class BabyBookEntryForm extends Component {
                 name="created_at"
                 date={props.values.created_at}
                 labelStyle={AppStyles.registrationLabel}
-                containerStyle={AppStyles.registrationDateContainer}
+                containerStyle={[AppStyles.registrationDateContainer, { marginBottom: 20 }]}
                 showIcon={false}
                 style={{ width: '100%' }}
                 customStyles={{
@@ -173,6 +187,7 @@ class BabyBookEntryForm extends Component {
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
                 onPressIn={() => this.pickImage('library')}
+                disabled={!hasCameraRollPermission}
               />
               <Button
                 title="Take a Photo or Video "
@@ -180,8 +195,11 @@ class BabyBookEntryForm extends Component {
                 titleStyle={styles.buttonTitleStyle}
                 color={Colors.green}
                 onPressIn={() => this.pickImage('new')}
+                disabled={!hasCameraPermission}
               />
-              <Text>{this.state.permissionMessage}</Text>
+              {!!permissionMessage && (
+                <Text style={styles.textError}>{permissionMessage}</Text>
+              )}
 
               <View style={styles.pickImageContainer}>
                 {hasUri &&
@@ -294,6 +312,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.errorColor,
     fontSize: 11,
+    fontWeight: '400',
     padding: 5,
   },
 });

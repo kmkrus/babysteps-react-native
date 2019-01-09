@@ -24,7 +24,7 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "7",
+      "buildNumber": "8",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
@@ -34,8 +34,15 @@
       }
     },
     "android": {
-      "versionCode": 7,
-      "package": "com.gofullstack.babysteps"
+      "versionCode": 8,
+      "package": "com.gofullstack.babysteps",
+      "permissions": [
+        "AUDIO_RECORDING",
+        "CAMERA",
+        "CAMERA_ROLL",
+        "NOTIFICATIONS",
+        "VIBRATE"
+      ]
     }
   },
   "hooks": {

@@ -69,9 +69,12 @@ class AudioModal extends Component {
 
   async componentDidMount() {
     const response = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    this.setState({
-      recordingPermission: response.status === 'granted',
-    });
+    if (response.status === 'granted') {
+      this.setState({ recordingPermission: true });
+    } else {
+      this.renderNoPermissions('audio');
+      this.closeAudioModal();
+    }
   }
 
   _updateScreenForSoundStatus = status => {

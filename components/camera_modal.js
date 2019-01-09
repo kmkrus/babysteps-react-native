@@ -10,13 +10,16 @@ import {
   Image,
 } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import { Camera, Permissions, Video } from 'expo';
+import { Camera, Video } from 'expo';
 import * as moment from 'moment';
 import padStart from 'lodash/padStart';
 import Colors from '../constants/Colors';
 
 // TODO fix horizontal styles
 const { width, height } = Dimensions.get('window');
+const imageWidth = width;
+const imageHeight = height * 0.7;
+const imageButtonsHeight = height * 0.3;
 const cameraPositionMargin = 35;
 const cameraPositionMarginTop = 70;
 const cameraPositionWidth = width - (cameraPositionMargin * 2);
@@ -40,15 +43,6 @@ class CameraModal extends Component {
     videoTimer: null,
   };
 
-  async componentWillMount() {
-    const camera = await Permissions.askAsync(Permissions.CAMERA, Permissions.AUDIO_RECORDING);
-    const hasCameraPermissions = camera.permissions.camera.status === 'granted';
-    const hasAudioPermissions = camera.permissions.audioRecording.status === 'granted';
-    if (!hasCameraPermissions || !hasAudioPermissions) {
-      this.props.closeModal();
-    }
-  }
-
   componentDidMount() {
     if (this.props.question) {
       this.setState({
@@ -61,9 +55,7 @@ class CameraModal extends Component {
   onLayout = () => {
     if (!this.container) return;
 
-    const dim = Dimensions.get('window');
-    const { width, height } = dim;
-    if (dim.width >= dim.height) {
+    if (width >= height) {
       this.setState({ isLandscape: true });
       return;
     }
@@ -105,10 +97,6 @@ class CameraModal extends Component {
   };
 
   handlePressVideoOption = async () => {
-    const audio = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-    if (!(audio.status === 'granted')) {
-      return;
-    }
     this.setState({ activeOption: 'video', videoTimer: moment.duration(0) });
   };
 
@@ -126,6 +114,7 @@ class CameraModal extends Component {
     }
 
     this.image = await this.camera.takePictureAsync();
+    this.camera.pausePreview();
     this.setState({ confirmingImage: true });
   };
 
@@ -152,11 +141,13 @@ class CameraModal extends Component {
     if (this.videoTimeInterval) clearInterval(this.videoTimeInterval);
     this.videoTimer = moment.duration(0);
     this.image = null;
+    this.camera.resumePreview();
     this.setState({ confirmingImage: false, videoTimer: moment.duration(0) });
   };
 
   handleConfirmImage = () => {
     if (this.videoTimeInterval) clearInterval(this.videoTimeInterval);
+    this.videoTimer = moment.duration(0);
     this.props.closeCameraModal(this.image);
     this.image = null;
     this.setState({ confirmingImage: false, videoTimer: moment.duration(0) });
@@ -189,7 +180,7 @@ class CameraModal extends Component {
           </View>
 
           <TouchableOpacity
-            onPress={this.handleTakePicture}
+            onPress={() => this.handleTakePicture()}
             style={styles.takePictureButton}
           >
             <View style={[styles.takePictureButtonInner, takePictureButtonColor]} />
@@ -277,44 +268,50 @@ class CameraModal extends Component {
     );
   };
 
-  renderConfirmImage = () => (
-    <View style={styles.bottomBar}>
-      <View style={styles.bottomBarConfirmActions}>
-        <TouchableOpacity onPress={this.handleCancelImage}>
-          <Image
-            style={{
-              width: 27,
-              height: 27,
-              transform: [
-                { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
-              ],
-            }}
-            source={require('../assets/images/camera_delete_media_save_video.png')}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={this.handleConfirmImage}>
-          <Image
-            style={{
-              width: 27,
-              height: 27,
-              transform: [
-                { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
-              ],
-              marginBottom: 4,
-            }}
-            source={require('../assets/images/camera_accept_media_icon.png')}
-          />
-        </TouchableOpacity>
+  renderConfirmImage = () => {
+    return (
+      <View style={styles.bottomBar}>
+        <View style={styles.bottomBarConfirmActions}>
+          <TouchableOpacity onPress={() => this.handleCancelImage()}>
+            <Image
+              style={{
+                width: 27,
+                height: 27,
+                transform: [
+                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                ],
+              }}
+              source={require('../assets/images/camera_delete_media_save_video.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.handleConfirmImage()}>
+            <Image
+              style={{
+                width: 27,
+                height: 27,
+                transform: [
+                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
+                ],
+                marginBottom: 4,
+              }}
+              source={require('../assets/images/camera_accept_media_icon.png')}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   renderImagePreview = () => {
     const { activeOption } = this.state;
     return (
       <View style={styles.imagePreview}>
         {activeOption === 'photo' && (
-          <Image source={{ uri: this.image.uri }} style={{ flex: 1 }} />
+          <Image
+            source={{ uri: this.image.uri }}
+            style={{ width: imageWidth, height: imageHeight }}
+            resizeMode="contain"
+          />
         )}
         {activeOption === 'video' && (
           <Video
@@ -325,11 +322,12 @@ class CameraModal extends Component {
             useNativeControls
           />
         )}
+        {this.renderConfirmImage()}
       </View>
     );
   };
 
-  renderCameraPostion = choice => {
+  renderCameraPosition = choice => {
     if (choice !== undefined && choice) {
       let cameraPositionTemplate = '';
       if (choice.overview_timeline === 'post_birth') {
@@ -359,25 +357,28 @@ class CameraModal extends Component {
     this.camera.pausePreview();
   };
 
+  renderCameraContents = (confirmingImage, choice) => {
+    if (confirmingImage && this.image) {
+      return this.renderImagePreview();
+    }
+    return this.renderBottomBar();
+  };
+
   render() {
     const { confirmingImage, flashMode, type } = this.state;
     const choice = this.props.choice;
-    //if (videoTimer) {
-    //  console.log('SECONDS: ', videoTimer.seconds());
-    //}
     return (
       <Modal
         animationType="slide"
         transparent={false}
         visible={this.props.modalVisible}
-        onShow={() => this.handleOnShow()}
-        onDismiss={() => this.handleOnDismiss()}
+        onShow={this.handleOnShow}
+        onDismiss={this.handleOnDismiss}
         onRequestClose={() => {}}
       >
         <View
           style={styles.camera}
           ref={ref => (this.container = ref)}
-          //          onLayout={this.onLayout}
         >
           <Camera
             ref={ref => (this.camera = ref)}
@@ -385,13 +386,9 @@ class CameraModal extends Component {
             type={type}
             flashMode={flashMode}
           >
-            {confirmingImage && this.image && this.renderImagePreview()}
-            {confirmingImage
-              ? this.renderConfirmImage()
-              : this.renderBottomBar()}
+            {this.renderCameraContents(confirmingImage, choice)}
           </Camera>
-          {}
-          {!confirmingImage && this.renderCameraPostion(choice)}
+          {!confirmingImage && this.renderCameraPosition(choice)}
         </View>
       </Modal>
     );
@@ -423,7 +420,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomBarConfirmActions: {
-    height: 110,
+    height: imageButtonsHeight,
     flex: 1,
     justifyContent: 'space-evenly',
     flexDirection: 'row',
@@ -442,9 +439,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   imagePreview: {
-    height: height - 165,
-    alignSelf: 'flex-start',
-    width: '100%',
+    flex: 1,
+    width: imageWidth,
+    height: imageHeight,
   },
   cameraPosition: {
     position: 'absolute',
