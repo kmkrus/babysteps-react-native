@@ -230,6 +230,7 @@ class MilestoneQuestionsScreen extends Component {
         question_id: choice.question_id,
         choice_id: choice.id,
         score: choice.score,
+        pregnancy: 0,
       };
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);

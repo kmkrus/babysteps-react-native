@@ -14,11 +14,14 @@ import {
 export class RenderChoices extends PureComponent {
 
   render() {
-    const question = this.props.question;
-    const answers = this.props.answers;
-    const attachments = this.props.attachments;
-    const errorMessage = this.props.errorMessage;
-    const saveResponse = this.props.saveResponse;
+    const {
+      question,
+      answers,
+      attachments,
+      errorMessage,
+      saveResponse,
+      pregnancy=0,
+    } = this.props
 
     switch (question.rn_input_type) {
       case 'check_box_multiple': {
@@ -27,6 +30,7 @@ export class RenderChoices extends PureComponent {
             choices={question.choices}
             format="multiple"
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -37,6 +41,7 @@ export class RenderChoices extends PureComponent {
             choices={question.choices}
             format="single"
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -46,6 +51,7 @@ export class RenderChoices extends PureComponent {
           <RenderCheckYesNo
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -55,6 +61,7 @@ export class RenderChoices extends PureComponent {
           <RenderDate
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -64,6 +71,7 @@ export class RenderChoices extends PureComponent {
           <RenderTextShort
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -73,6 +81,7 @@ export class RenderChoices extends PureComponent {
           <RenderTextLong
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -82,6 +91,7 @@ export class RenderChoices extends PureComponent {
           <RenderTextNumeric
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
           />
         );
@@ -94,6 +104,7 @@ export class RenderChoices extends PureComponent {
             question={question}
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             attachments={attachments}
             saveResponse={saveResponse}
             errorMessage={errorMessage}
@@ -106,6 +117,7 @@ export class RenderChoices extends PureComponent {
             question={question}
             choices={question.choices}
             answers={answers}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
             errorMessage={errorMessage}
           />

@@ -56,7 +56,7 @@ export class RenderCheckBox extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
       let text = '';
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
 
       if (answer) {
         checked = answer.answer_boolean;
@@ -130,7 +130,7 @@ export class RenderCheckYesNo extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         checked = answer.answer_boolean;
       }
@@ -160,7 +160,7 @@ export class RenderTextShort extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         text = answer.answer_text;
       }
@@ -188,7 +188,7 @@ export class RenderTextLong extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         text = answer.answer_text;
       }
@@ -218,7 +218,7 @@ export class RenderTextNumeric extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         text = answer.answer_text;
       }
@@ -246,7 +246,7 @@ export class RenderDate extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
       let text = new Date().toISOString().slice(0, 10);
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         text = answer.answer_text;
       }
@@ -387,6 +387,7 @@ export class RenderFile extends Component {
       let uriParts = [];
       const image = {};
       let fileType = null;
+      // will not support pregnancy history if attachment is added to questionaire
       const answer = _.find(answers, ['choice_id', choice.id]);
       const attachment = _.find(attachments, ['choice_id', choice.id]);
 
@@ -510,7 +511,7 @@ export class RenderExternalLink extends React.PureComponent {
 
   render() {
     const collection = _.map(this.props.choices, choice => {
-      const answer = _.find(this.props.answers, ['choice_id', choice.id]);
+      const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       const completed = answer && answer.answer_boolean;
 
       //

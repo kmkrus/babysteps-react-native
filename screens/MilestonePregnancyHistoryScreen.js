@@ -68,7 +68,8 @@ class MilestonePregnancyHistoryScreen extends Component {
       answers: [],
       attachments: [],
       errorMessage: '',
-      confirmDisabled: true,
+      showConfirm: false,
+      confirmed: false,
     };
 
     this.saveResponse = this.saveResponse.bind(this);
@@ -98,7 +99,9 @@ class MilestonePregnancyHistoryScreen extends Component {
         currentPregnancy: 0,
         answers: [],
         attachments: [],
-        confirmDisabled: true,
+        showNextPregnancy: false,
+        showConfirm: false,
+        confirmed: false,
       });
       return;
     }
@@ -150,7 +153,6 @@ class MilestonePregnancyHistoryScreen extends Component {
         });
       }
     }
-
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -185,6 +187,7 @@ class MilestonePregnancyHistoryScreen extends Component {
         <RenderChoices
           question={question}
           answers={this.state.answers}
+          pregnancy={this.state.currentPregnancy}
           attachments={this.state.attachments}
           saveResponse={this.saveResponse}
           errorMessage={this.state.errorMessage}
@@ -253,15 +256,25 @@ class MilestonePregnancyHistoryScreen extends Component {
     }
     _.assign(answer, response);
     answers.push(answer);
+    // first question
     if (choice.question_id === firstQuestion.id) {
+      const numberOfPregnancies = Math.trunc(answer.answer_text);
+      const currentPregnancy = 1;
+      let showConfirm = false;
+      let showNextPregnancy = true;
+      if (numberOfPregnancies === 1 ) {
+        showConfirm = true;
+        showNextPregnancy = false;
+      };
       this.setState({
-        numberOfPregnancies: Math.trunc(answer.answer_text),
-        currentPregnancy: 1,
+        numberOfPregnancies,
+        currentPregnancy,
+        showNextPregnancy,
+        showConfirm,
         answers,
       });
     } else {
       const answerQuestionIDs = _.map(answers, 'question_id');
-      debugger
       this.setState({ answers });
     }
   };
@@ -290,6 +303,19 @@ class MilestonePregnancyHistoryScreen extends Component {
     }
     this.props.fetchMilestoneCalendar();
     this.props.navigation.navigate('MilestoneQuestionConfirm');
+  };
+
+  handleNextPregnancy = () => {
+    const currentPregnancy = this.state.currentPregnancy + 1;
+    const numberOfPregnancies = this.state.numberOfPregnancies;
+    let showConfirm = false;
+    let showNextPregnancy = true;
+    if (currentPregnancy === numberOfPregnancies) {
+      showConfirm = true;
+      showNextPregnancy = false;
+    };
+    this.setState({ currentPregnancy, showConfirm, showNextPregnancy });
+    this.scroll.scrollTo(0, 0, true);
   };
 
   render() {
@@ -341,14 +367,25 @@ class MilestonePregnancyHistoryScreen extends Component {
               onPress={() => this.props.navigation.navigate('Overview')}
               title="Cancel"
             />
-            <Button
-              color={Colors.pink}
-              buttonStyle={styles.buttonTwoStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.handleConfirm()}
-              title="Confirm"
-              disabled={this.state.confirmDisabled}
-            />
+            {this.state.showNextPregnancy && (
+              <Button
+                color={Colors.pink}
+                buttonStyle={styles.buttonTwoStyle}
+                titleStyle={styles.buttonTitleStyle}
+                onPress={() => this.handleNextPregnancy()}
+                title="Next Pregnancy"
+              />
+            )}
+            {this.state.showConfirm && (
+              <Button
+                color={Colors.pink}
+                buttonStyle={styles.buttonTwoStyle}
+                titleStyle={styles.buttonTitleStyle}
+                onPress={() => this.handleConfirm()}
+                title="Confirm"
+                disabled={this.state.confirmed}
+              />
+            )}
           </View>
         )}
       </KeyboardAwareScrollView>
