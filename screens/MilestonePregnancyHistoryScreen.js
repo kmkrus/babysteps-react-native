@@ -6,6 +6,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import _ from 'lodash';
 
+import NumberConverter from 'number-to-words';
+
 import { connect } from 'react-redux';
 import {
   fetchMilestoneSections,
@@ -41,12 +43,12 @@ import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
 import AudioFormats from '../constants/AudioFormats';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 const twoButtonWidth = (width / 2) - 30;
 
-class MilestoneQuestionsScreen extends Component {
+class MilestonePregnancyHistoryScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const section = navigation.getParam('section', {title: ''});
     return { title: section.title };
@@ -58,12 +60,15 @@ class MilestoneQuestionsScreen extends Component {
       task_id: null,
       section: {},
       questionsFetched: false,
+      questionIDs: [],
       answersFetched: false,
       attachmentsFetched: false,
+      numberOfPregnancies: 0,
+      currentPregnancy: 0,
       answers: [],
       attachments: [],
       errorMessage: '',
-      confirmed: false,
+      confirmDisabled: true,
     };
 
     this.saveResponse = this.saveResponse.bind(this);
@@ -86,11 +91,14 @@ class MilestoneQuestionsScreen extends Component {
         task_id: task.id,
         section: [],
         questionsFetched: false,
+        questionIDs: [],
         answersFetched: false,
         attachmentsFetched: false,
+        numberOfPregnancies: 0,
+        currentPregnancy: 0,
         answers: [],
         attachments: [],
-        confirmed: false,
+        confirmDisabled: true,
       });
       return;
     }
@@ -105,7 +113,7 @@ class MilestoneQuestionsScreen extends Component {
           this.props.fetchMilestoneQuestions({ section_id: section.id });
           this.props.resetMilestoneChoices();
           this.props.fetchMilestoneAnswers({ section_id: section.id });
-          this.props.fetchMilestoneAttachments({ section_id: section.id });
+          //this.props.fetchMilestoneAttachments({ section_id: section.id });
         } else {
           if (!questions.fetching) {
             if (
@@ -121,7 +129,9 @@ class MilestoneQuestionsScreen extends Component {
           if (!questions.fetching && questions.fetched) {
             if (!nextProps.milestones.choices.fetching) {
               if (_.isEmpty(nextProps.milestones.choices.data)) {
-                this.setState({ questionsFetched: true });
+                // question IDs for repeat questions
+                const questionIDs = _.map(questions.data.slice(1), 'id');
+                this.setState({ questionsFetched: true, questionIDs });
                 const question_ids = _.map(questions.data, 'id');
                 this.props.fetchMilestoneChoices({ question_ids });
               }
@@ -141,15 +151,6 @@ class MilestoneQuestionsScreen extends Component {
       }
     }
 
-    const attachments = nextProps.milestones.attachments;
-    if (!attachments.fetching && attachments.fetched) {
-      if (_.isEmpty(this.state.attachments) && !this.state.attachmentsFetched) {
-        this.setState({
-          attachments: this.props.milestones.attachments.data,
-          attachmentsFetched: true,
-        });
-      }
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -195,7 +196,6 @@ class MilestoneQuestionsScreen extends Component {
   saveResponse = (choice, response, options = {}) => {
     let answer = {};
     const answers = [...this.state.answers];
-    const attachments = [...this.state.attachments];
     const format = options.format;
     const preserve = options.preserve;
 
@@ -217,8 +217,10 @@ class MilestoneQuestionsScreen extends Component {
     const subject = this.props.registration.subject;
     const apiSubject = this.props.registration.apiSubject;
     const respondent = this.props.registration.respondent;
+    const firstQuestion = this.props.milestones.questions.data[0];
+    const currentPregnancy = this.state.currentPregnancy;
 
-    const index = _.findIndex(answers, { choice_id: choice.id });
+    const index = _.findIndex(answers, { choice_id: choice.id, pregnancy: currentPregnancy });
 
     if (index === -1) {
       if (format === 'single' && !response.answer_boolean) {
@@ -230,6 +232,7 @@ class MilestoneQuestionsScreen extends Component {
         question_id: choice.question_id,
         choice_id: choice.id,
         score: choice.score,
+        pregnancy: currentPregnancy,
       };
     } else {
       answer = _.find(answers, ['choice_id', choice.id]);
@@ -248,72 +251,19 @@ class MilestoneQuestionsScreen extends Component {
       answer.subject_id = subject.data.id;
       answer.subject_api_id = subject.data.api_id;
     }
-
     _.assign(answer, response);
-
-    if (response.attachments) {
-      const attachmentDir =
-        FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
-      answer.attachments = [];
-      _.map(response.attachments, async att => {
-        const attachment = {};
-        if (response.id) {
-          attachment.answer_id = response.id;
-        }
-
-        attachment.filename = att.uri.substring(
-          att.uri.lastIndexOf('/') + 1,
-          att.uri.length,
-        );
-
-        attachment.uri = attachmentDir + '/' + attachment.filename;
-
-        const fileType = att.uri.substring(
-          att.uri.lastIndexOf('.') + 1,
-          att.uri.length,
-        );
-
-        switch (att.file_type) {
-          case 'file_image':
-            attachment.content_type = ImageFormats[fileType];
-            break;
-          case 'file_video':
-            attachment.content_type = VideoFormats[fileType];
-            break;
-          case 'file_audio':
-            attachment.content_type = AudioFormats[fileType];
-            break;
-          default:
-            attachment.content_type = '';
-        }
-
-        await FileSystem.deleteAsync(attachment.uri, { idempotent: true });
-        await FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
-
-        const resultFile = await FileSystem.getInfoAsync(attachment.uri);
-        if (!resultFile.exists) {
-          console.log('Error: attachment not saved: ', choice.id, attachment.filename);
-          this.setState({errorMessage: 'Error: Attachment Not Saved'});
-        }
-
-        answer.answer_boolean = true;
-
-        _.assign(attachment, {
-          title: att.title,
-          section_id: this.state.section.id,
-          choice_id: choice.id,
-          width: att.width,
-          height: att.height,
-        });
-
-        _.remove(attachments, ['choice_id', choice.id]);
-        attachments.push(attachment);
-        this.setState({ attachments });
-        answer.attachments.push(attachment);
-      });
-    } // response.attachments
     answers.push(answer);
-    this.setState({ answers });
+    if (choice.question_id === firstQuestion.id) {
+      this.setState({
+        numberOfPregnancies: Math.trunc(answer.answer_text),
+        currentPregnancy: 1,
+        answers,
+      });
+    } else {
+      const answerQuestionIDs = _.map(answers, 'question_id');
+      debugger
+      this.setState({ answers });
+    }
   };
 
   handleConfirm = () => {
@@ -330,27 +280,8 @@ class MilestoneQuestionsScreen extends Component {
     this.props.updateMilestoneAnswers(section, answers);
     this.props.updateMilestoneCalendar(section.task_id);
 
-    // save attachments
-    if (_.find(answers, a => {return !!a.attachments })) {
-      _.map(answers, answer => {
-        _.map(answer.attachments, attachment => {
-          if (attachment.content_type.includes('video') || attachment.content_type.includes('image')) {
-            this.props.createBabyBookEntry({title: null, detail: null}, attachment);
-          }
-          delete attachment.title;
-          this.props.updateMilestoneAttachment(attachment);
-          this.props.fetchOverViewTimeline();
-        });
-        // cannot bulk update answers with attachments
-        if (inStudy) {
-          this.props.apiCreateMilestoneAnswer(session, answer);
-        }
-      });
-    } else if (inStudy) {
-      this.props.apiUpdateMilestoneAnswers(session, section.id, answers);
-    }
-    // mark calendar entry as complete on api
     if (inStudy) {
+      this.props.apiUpdateMilestoneAnswers(session, section.id, answers);
       const calendar = _.find(this.props.milestones.calendar.data, ['task_id', section.task_id]);
       if (calendar && calendar.id) {
         const date = new Date().toISOString();
@@ -362,10 +293,19 @@ class MilestoneQuestionsScreen extends Component {
   };
 
   render() {
-    const milestones = this.props.milestones;
-    const data = _.map(milestones.questions.data, question => {
+    const questions = this.props.milestones.questions;
+    const choices = this.props.milestones.choices;
+    const numberOfPregnancies = this.state.numberOfPregnancies;
+    const currentPregnancy = this.state.currentPregnancy;
+    let currentQuestions = [];
+    if (!_.isEmpty(questions.data) && numberOfPregnancies === 0) {
+      currentQuestions = questions.data.slice(0, 1);
+    } else {
+      currentQuestions = questions.data.slice(1);
+    }
+    const data = _.map(currentQuestions, question => {
       return _.extend({}, question, {
-        choices: _.filter(milestones.choices.data, ['question_id', question.id]),
+        choices: _.filter(choices.data, ['question_id', question.id]),
       });
     });
 
@@ -376,8 +316,14 @@ class MilestoneQuestionsScreen extends Component {
         enableAutomaticScroll
         enableOnAndroid
         extraScrollHeight={50}
+        //stickyHeaderIndices={[0]}
         innerRef={ref => {this.scroll = ref}}
       >
+        {numberOfPregnancies > 0 && (
+          <Text style={styles.pregnancyTitle}>
+            {_.capitalize(NumberConverter.toWordsOrdinal(currentPregnancy))} Pregnancy
+          </Text>
+        )}
         <View style={styles.listContainer}>
           <FlatList
             renderItem={this.renderItem}
@@ -401,7 +347,7 @@ class MilestoneQuestionsScreen extends Component {
               titleStyle={styles.buttonTitleStyle}
               onPress={() => this.handleConfirm()}
               title="Confirm"
-              disabled={this.state.confirmed}
+              disabled={this.state.confirmDisabled}
             />
           </View>
         )}
@@ -413,6 +359,15 @@ class MilestoneQuestionsScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.background,
+  },
+  pregnancyTitle: {
+    fontSize: 16,
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: 15,
+    color: Colors.tint,
+    backgroundColor: Colors.lightGrey,
+    fontWeight: '900',
   },
   listContainer: {
     flex: 1,
@@ -450,6 +405,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     width: '100%',
+    //maxHeight: 95,
     marginTop: 20,
     marginBottom: 20,
   },
@@ -459,6 +415,7 @@ const styles = StyleSheet.create({
   buttonOneStyle: {
     flex: 1,
     width: twoButtonWidth,
+    //maxHeight: 95,
     backgroundColor: Colors.lightGrey,
     borderColor: Colors.grey,
     borderWidth: 2,
@@ -467,6 +424,7 @@ const styles = StyleSheet.create({
   buttonTwoStyle: {
     flex: 1,
     width: twoButtonWidth,
+    //maxHeight: 95,
     backgroundColor: Colors.lightPink,
     borderColor: Colors.pink,
     borderWidth: 2,
@@ -505,4 +463,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(MilestoneQuestionsScreen);
+)(MilestonePregnancyHistoryScreen);

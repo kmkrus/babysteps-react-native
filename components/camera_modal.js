@@ -350,11 +350,17 @@ class CameraModal extends Component {
   };
 
   handleOnShow = () => {
-    this.camera.resumePreview();
+    const camera = this.camera;
+    if (camera) {
+      camera.resumePreview();
+    }
   };
 
   handleOnDismiss = () => {
-    this.camera.pausePreview();
+    const camera = this.camera;
+    if (camera) {
+      camera.pausePreview();
+    }
   };
 
   renderCameraContents = (confirmingImage, choice) => {
@@ -372,8 +378,8 @@ class CameraModal extends Component {
         animationType="slide"
         transparent={false}
         visible={this.props.modalVisible}
-        onShow={this.handleOnShow}
-        onDismiss={this.handleOnDismiss}
+        onShow={() => this.handleOnShow()}
+        onDismiss={() => this.handleOnDismiss()}
         onRequestClose={() => {}}
       >
         <View

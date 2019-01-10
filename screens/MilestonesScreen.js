@@ -139,7 +139,12 @@ class MilestonesScreen extends Component {
         return null;
       }
     }
-    this.props.navigation.navigate('MilestoneQuestions', { task });
+    const navigate = this.props.navigation.navigate;
+    if (task.task_type === 'pregnancy_history') {
+      navigate('MilestonePregnancyHistory', { task });
+    } else {
+      navigate('MilestoneQuestions', { task });
+    }
   };
 
   renderItem = item => {
