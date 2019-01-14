@@ -14,9 +14,5 @@ if (__DEV__) {
 
 console.disableYellowBox = true;
 
-const AppEntry = () => {
-  const App = require('./App').default;
-  return <App />;
-};
-
-registerRootComponent(AppEntry);
+const App = require('./App').default;
+registerRootComponent(App);
