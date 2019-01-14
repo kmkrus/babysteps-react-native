@@ -13,6 +13,7 @@ import checkMilestonesSchema from './database/check_milestones_schema';
 import checkMilestoneTriggersSchema from './database/check_milestone_triggers_schema';
 import checkRegistrationSchema from './database/check_registration_schema';
 import checkAnswersSchema from './database/check_answers_schema';
+import checkNotificationsSchema from './database/check_notifications_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
 import checkCustomDirectories from './components/check_custom_directories';
 
@@ -79,6 +80,7 @@ export default class App extends Component {
     await checkMilestonesSchema();
     await checkMilestoneTriggersSchema();
     await checkAnswersSchema();
+    await checkNotificationsSchema();
     await checkBabyBookSchema();
     await checkCustomDirectories();
   };

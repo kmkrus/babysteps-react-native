@@ -310,7 +310,7 @@ class CameraModal extends Component {
           <Image
             source={{ uri: this.image.uri }}
             style={{ width: imageWidth, height: imageHeight }}
-            resizeMode="contain"
+            resizeMode="cover"
           />
         )}
         {activeOption === 'video' && (

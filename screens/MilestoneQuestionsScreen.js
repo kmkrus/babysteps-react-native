@@ -25,7 +25,10 @@ import {
   apiUpdateMilestoneCalendar,
   fetchMilestoneCalendar,
 } from '../actions/milestone_actions';
-import { createBabyBookEntry } from '../actions/babybook_actions';
+import {
+  createBabyBookEntry,
+  fetchBabyBookEntries,
+} from '../actions/babybook_actions';
 import {
   fetchUser,
   fetchRespondent,
@@ -335,7 +338,10 @@ class MilestoneQuestionsScreen extends Component {
     if (_.find(answers, a => {return !!a.attachments })) {
       _.map(answers, answer => {
         _.map(answer.attachments, attachment => {
-          if (attachment.content_type.includes('video') || attachment.content_type.includes('image')) {
+          if (
+            attachment.content_type.includes('video') ||
+            attachment.content_type.includes('image')
+          ) {
             this.props.createBabyBookEntry({title: null, detail: null}, attachment);
           }
           delete attachment.title;
@@ -359,6 +365,7 @@ class MilestoneQuestionsScreen extends Component {
       }
     }
     this.props.fetchMilestoneCalendar();
+    this.props.fetchBabyBookEntries();
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
 
@@ -497,6 +504,7 @@ const mapDispatchToProps = {
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
   createBabyBookEntry,
+  fetchBabyBookEntries,
   fetchOverViewTimeline,
   updateMilestoneCalendar,
   apiUpdateMilestoneCalendar,

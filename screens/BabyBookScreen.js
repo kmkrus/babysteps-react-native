@@ -173,15 +173,6 @@ class BabyBookScreen extends Component {
     );
   }
 
-  shareOpen() {
-    if (this.state.shareAttributes.content) {
-      Share.share(
-        this.state.shareAttributes.content,
-        this.state.shareAttributes.options,
-      );
-    }
-  }
-
   handleIndexChange(index) {
     this.setState({ currentIndex: index });
     this.setShareAttributes(index);
@@ -205,6 +196,13 @@ class BabyBookScreen extends Component {
         },
       },
     });
+  }
+
+  shareOpen() {
+    const shareAttributes = this.state.shareAttributes;
+    if (shareAttributes.content) {
+      Share.share(shareAttributes.content, shareAttributes.options);
+    }
   }
 
   renderItem({ item, itemIndex }) {

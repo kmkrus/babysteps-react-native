@@ -1,6 +1,8 @@
 import { SQLite } from 'expo';
 import moment from 'moment';
 
+import map from 'lodash/map';
+
 import {
   setNotifications,
   setMomentaryAssessments,
@@ -14,6 +16,10 @@ import {
   FETCH_MOMENTARY_ASSESSMENT_PENDING,
   FETCH_MOMENTARY_ASSESSMENT_FULFILLED,
   FETCH_MOMENTARY_ASSESSMENT_REJECTED,
+
+  CREATE_NOTIFICATIONS_PENDING,
+  CREATE_NOTIFICATIONS_FULFILLED,
+  CREATE_NOTIFICATIONS_REJECTED,
 
   UPDATE_NOTIFICATIONS_PENDING,
   UPDATE_NOTIFICATIONS_FULFILLED,
@@ -78,22 +84,54 @@ export const fetchMomentaryAssessment = params => {
   };
 };
 
+export const createNotifications = entries => {
+  return dispatch => {
+    dispatch(Pending(CREATE_NOTIFICATIONS_PENDING));
+    const notificationFields = [
+      'task_id',
+      'notify_at',
+      'momentary_assessment',
+      'response_scale',
+      'title',
+      'body',
+      'type',
+      'channel_id',
+    ];
+    const values = map(entries, entry => {
+      return `( ${entry.task_id}, '${entry.notify_at}', ${entry.momentary_assessment}, '${entry.response_scale}', '${entry.message}', '${entry.name}', 'info', 'screeningEvents')`
+    });
+    const sql =`INSERT INTO notifications ( ${notificationFields.join(', ')} ) VALUES ${values.join(', ')};`;
+
+    return db.transaction(tx => {
+      tx.executeSql(
+        sql,
+        [],
+        (_, response) => {
+          dispatch(Response(CREATE_NOTIFICATIONS_FULFILLED, response));
+        },
+        (_, error) => dispatch(Response(CREATE_NOTIFICATIONS_REJECTED, error)),
+      );
+    });
+  };
+};
+
 export const updateNotifications = () => {
   const today = moment().toISOString();
-  return function(dispatch) {
+  return dispatch => {
     dispatch(Pending(UPDATE_NOTIFICATIONS_PENDING));
     const sql =
       'SELECT * FROM milestone_triggers AS mt \
         WHERE mt.momentary_assessment = 0 AND mt.notify_at >= ? \
         ORDER BY mt.notify_at \
-        LIMIT 10';
-    db.transaction(tx => {
+        LIMIT 10;';
+    return db.transaction(tx => {
       tx.executeSql(
         sql,
         [today],
         (_, response) => {
           const entries = response.rows['_array'];
           setNotifications(entries);
+          createNotifications(entries);
           dispatch(Response(UPDATE_NOTIFICATIONS_FULFILLED, entries));
         },
         (_, error) => dispatch(Response(UPDATE_NOTIFICATIONS_REJECTED, error)),
@@ -103,17 +141,18 @@ export const updateNotifications = () => {
 };
 
 export const updateMomentaryAssessments = studyEndDate => {
-  return function(dispatch) {
+  return dispatch => {
     dispatch(Pending(UPDATE_MOMENTARY_ASSESSMENTS_PENDING));
     const sql =
       'SELECT * FROM milestone_triggers AS mt WHERE mt.momentary_assessment = 1';
-    db.transaction(tx => {
+    return db.transaction(tx => {
       tx.executeSql(
         sql,
         [],
         (_, response) => {
           const entries = response.rows['_array'];
           setMomentaryAssessments(entries, studyEndDate);
+          createNotifications(entries);
           dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED, entries));
         },
         (_, error) => dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_REJECTED, error)),
@@ -126,5 +165,13 @@ export const deleteAllNotifications = () => {
   return dispatch => {
     deleteNotifications();
     dispatch(Response(DELETE_NOTIFICATIONS));
+    return db.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM notifications;',
+        [],
+        (_, rows) => console.log('** Clear notifications table'),
+        (_, error) => console.log('*** Error in clearing notifications table'),
+      );
+    });
   };
 };

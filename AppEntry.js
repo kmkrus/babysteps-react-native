@@ -10,13 +10,13 @@ if (__DEV__) {
     Logs.enableExpoCliLogging();
   }
   KeepAwake.activate();
-}
-
-console.disableYellowBox = true;
-
-const AppEntry = () => {
+  const AppEntry = () => {
+    const App = require('./App').default;
+    return <App />;
+  };
+  console.disableYellowBox = true;
+  registerRootComponent(AppEntry);
+} else {
   const App = require('./App').default;
-  return <App />;
+  registerRootComponent(App);
 };
-
-registerRootComponent(AppEntry);

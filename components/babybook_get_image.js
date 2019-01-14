@@ -18,6 +18,7 @@ const widthOffset = 40;
 const imageOffset = 60;
 
 const imageWidth = width - (widthOffset + imageOffset);
+const imageMaxHeight =  height * 0.4;
 const videoWidth = imageWidth;
 const videoHeight = imageWidth;
 
@@ -120,6 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: imageWidth + 2,
+    maxHeight: imageMaxHeight,
     backgroundColor: Colors.white,
     borderColor: Colors.lightGrey,
     borderWidth: 2,
@@ -127,6 +129,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: imageWidth,
+    maxHeight: imageMaxHeight,
   },
   imageCornerTopLeft: {
     ...imageCorner,

@@ -70,7 +70,7 @@ class OverviewScreen extends React.Component {
             this.props.apiFetchMilestones();
           }
         } else {
-          let milestoneGroups = filter(groups.data, {visible: 1});
+          let milestoneGroups = filter(groups.data, { visible: 1 });
           milestoneGroups = sortBy(milestoneGroups, ['position']);
           milestoneGroups.forEach((group, index) => {
             group.uri = milestoneGroupImages[index];
@@ -83,7 +83,7 @@ class OverviewScreen extends React.Component {
             );
           });
           currentIndexMilestones =
-            (currentIndexMilestones === -1) ? 0 : currentIndexMilestones;
+            currentIndexMilestones >= 0 ? currentIndexMilestones : 0;
 
           this.setState({
             currentIndexMilestones,
@@ -112,8 +112,30 @@ class OverviewScreen extends React.Component {
     );
   };
 
+  renderSlider = () => {
+    const milestoneGroups = this.state.milestoneGroups;
+    if (milestoneGroups.length > 0) {
+      const currentIndexMilestones = this.state.currentIndexMilestones;
+      return (
+        <SideSwipe
+          index={currentIndexMilestones}
+          data={milestoneGroups}
+          renderItem={this.renderMilestoneItem}
+          itemWidth={width}
+          //threshold={mgImageWidth / 4}
+          useVelocityForIndex={false}
+          style={styles.mgSlider}
+          onIndexChange={currentIndexMilestones =>
+            this.setState({ currentIndexMilestones })
+          }
+        />
+      );
+    }
+  };
+
   render() {
     const navigate = this.props.navigation.navigate;
+    const sliderLoading = this.state.sliderLoading;
     return (
       <View style={styles.container}>
         <View style={styles.slider_header}>
@@ -128,21 +150,10 @@ class OverviewScreen extends React.Component {
           </TouchableOpacity>
         </View>
         <View style={styles.slider}>
-          {this.state.sliderLoading &&
+          {sliderLoading && (
             <ActivityIndicator size="large" color={Colors.tint} />
-          }
-          <SideSwipe
-            index={this.state.currentIndexMilestones}
-            data={this.state.milestoneGroups}
-            renderItem={item => this.renderMilestoneItem(item)}
-            itemWidth={width}
-            //threshold={mgImageWidth / 4}
-            useVelocityForIndex={false}
-            style={styles.mgSlider}
-            onIndexChange={index =>
-              this.setState({ currentIndexMilestones: index })
-            }
-          />
+          )}
+          {this.renderSlider()}
         </View>
       </View>
     );

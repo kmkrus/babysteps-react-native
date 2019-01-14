@@ -133,7 +133,7 @@ export const createUser = user => {
 
     return db.transaction(tx => {
       tx.executeSql(
-        'DELETE FROM users',
+        'DELETE FROM users;',
         [],
         (_, rows) => console.log('** Clear users table'),
         (_, error) => console.log('*** Error in clearing users table'),

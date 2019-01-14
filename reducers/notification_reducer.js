@@ -6,6 +6,10 @@ import {
   FETCH_MOMENTARY_ASSESSMENT_FULFILLED,
   FETCH_MOMENTARY_ASSESSMENT_REJECTED,
 
+  CREATE_NOTIFICATIONS_PENDING,
+  CREATE_NOTIFICATIONS_FULFILLED,
+  CREATE_NOTIFICATIONS_REJECTED,
+
   UPDATE_NOTIFICATIONS_PENDING,
   UPDATE_NOTIFICATIONS_FULFILLED,
   UPDATE_NOTIFICATIONS_REJECTED,
@@ -97,6 +101,40 @@ const reducer = (state = initialState, action, formData = []) => {
         ...state,
         momentary_assessment: {
           ...state.momentary_assessment,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case CREATE_NOTIFICATIONS_PENDING: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case CREATE_NOTIFICATIONS_FULFILLED: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case CREATE_NOTIFICATIONS_REJECTED: {
+      return {
+        ...state,
+        notifications: {
+          ...state.notifications,
           fetching: false,
           fetched: false,
           error: action.payload,

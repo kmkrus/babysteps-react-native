@@ -27,7 +27,7 @@
     "react-native-device-info": "^0.21.5",
     "react-native-elements": "^0.19.1",
     "react-native-flash-message": "^0.1.9",
-    "react-native-formik": "^1.6.0",
+    "react-native-formik": "^1.7.1",
     "react-native-iphone-x-helper": "^1.0.3",
     "react-native-keyboard-aware-scroll-view": "^0.7.2",
     "react-native-material-textfield": "^0.12.0",

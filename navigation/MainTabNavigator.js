@@ -16,6 +16,7 @@ import MilestoneQuestionConfirmScreen from '../screens/MilestoneQuestionConfirmS
 //import TourScreen from '../screens/TourScreen';
 import BabyBookScreen from '../screens/BabyBookScreen';
 import BabyBookEntryScreen from '../screens/BabyBookEntryScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 import Colors from '../constants/Colors';
 
@@ -107,8 +108,27 @@ BabyBookStack.navigationOptions = {
   ),
 };
 
+const SettingsStack = createStackNavigator(
+  {
+    Settings: SettingsScreen,
+  }, {
+    navigationOptions: headerOptions,
+  },
+);
+
+SettingsStack.navigationOptions = {
+  tabBarLabel: 'Settings',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
+    />
+  ),
+};
+
 export default createBottomTabNavigator({
   Overview: OverviewStack,
   Milestones: MilestonesStack,
   BabyBook: BabyBookStack,
+  Settings: SettingsStack,
 });
