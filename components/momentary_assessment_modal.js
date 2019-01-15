@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { Text, View, Image, Modal, Dimensions, StyleSheet } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 
-import find from 'lodash/find';
-import isEmpty from 'lodash/isEmpty';
-
 import { connect } from 'react-redux';
 import { createMilestoneAnswer, apiCreateMilestoneAnswer } from '../actions/milestone_actions';
 import { fetchMomentaryAssessment, hideMomentaryAssessment } from '../actions/notification_actions';
@@ -24,12 +21,12 @@ class MomentaryAssessment extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     const notifications = nextProps.notifications;
-    const milestones = nextProps.milestones;
+    const momentary_assessment = notifications.momentary_assessment;
     if (notifications.show_momentary_assessment) {
-      if (!notifications.momentary_assessment.fetching && !notifications.momentary_assessment.fetched) {
-        this.props.fetchMomentaryAssessment({task_id: notifications.data.task_id});
-        if (notifications.data.response_scale) {
-          this.setState({response_scale: notifications.data.response_scale});
+      if (!momentary_assessment.fetching && !momentary_assessment.fetched) {
+        this.props.fetchMomentaryAssessment({ task_id: momentary_assessment.data.task_id });
+        if (momentary_assessment.data.response_scale) {
+          this.setState({ response_scale: momentary_assessment.data.response_scale });
         }
       }
     }

@@ -96,9 +96,6 @@ const TourNoStudyNavigator = createStackNavigator(
 class RootNavigator extends Component {
   componentWillMount() {
     this.props.fetchSession();
-    // uncomment to test generation of notifications
-    //const notifications_updated_at = moment().subtract(30, 'days').toISOString();
-    //this.props.updateSession({ notifications_updated_at });
   }
 
   componentDidMount() {
@@ -113,6 +110,14 @@ class RootNavigator extends Component {
     this._notificationSubscription = this.registerForNotifications();
   }
 
+  shouldComponentUpdate(nextProps) {
+    const notifications = nextProps.notifications;
+    if (notifications.notifications.fetching || notifications.momentary_assessments.fetching) {
+      return false;
+    }
+    return true;
+  }
+
   componentWillUpdate(nextProps) {
     // update local notifications every 7 days to stay under the
     // IOS limit of 64 notifications
@@ -124,6 +129,7 @@ class RootNavigator extends Component {
       if (!session.fetching && notifications_permission === 'granted') {
         const today = moment();
         let notifications_updated_at = moment(session.notifications_updated_at);
+        // change this to 30 seconds to get more frequent updates
         const next_notification_update_at = notifications_updated_at.add(7, 'days');
         if (
           !notifications_updated_at.isValid() ||
@@ -135,13 +141,14 @@ class RootNavigator extends Component {
           } else {
             studyEndDate = moment(subject.expected_date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
           }
+
+          notifications_updated_at = today.toISOString();
+          this.props.updateSession({ notifications_updated_at });
           this.props.deleteAllNotifications();
           this.props.updateNotifications();
           this.props.updateMomentaryAssessments(studyEndDate);
-          notifications_updated_at = today.toISOString();
-          this.props.updateSession({ notifications_updated_at });
         } else {
-          console.log('****** Next Notfication Update Scheduled: ', next_notification_update_at.toISOString());
+          // console.log('****** Next Notfication Update Scheduled: ', next_notification_update_at.toISOString());
         } // notifications_updated_at
       } // session.fetching
     } // calendar.data
@@ -192,7 +199,7 @@ class RootNavigator extends Component {
     );
     let finalStatus = existingStatus;
 
-    console.log("Notifications Permissions:", existingStatus)
+    // console.log("Notifications Permissions:", existingStatus)
 
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.

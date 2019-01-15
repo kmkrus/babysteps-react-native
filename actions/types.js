@@ -205,10 +205,10 @@ export const UPDATE_MOMENTARY_ASSESSMENTS_PENDING = 'update_momentary_assessment
 export const UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED = 'update_momentary_assessments_fulfilled';
 export const UPDATE_MOMENTARY_ASSESSMENTS_REJECTED = 'update_momentary_assessments_rejected';
 
+export const FETCH_NOTIFICATIONS_PENDING = 'fetch_notifications_pending';
+export const FETCH_NOTIFICATIONS_FULFILLED = 'fetch_notifications_fulfilled';
+export const FETCH_NOTIFICATIONS_REJECTED = 'fetch_notifications_rejected';
+
 export const FETCH_MOMENTARY_ASSESSMENT_PENDING = 'fetch_momentary_assessment_pending';
 export const FETCH_MOMENTARY_ASSESSMENT_FULFILLED = 'fetch_momentary_assessment_fulfilled';
 export const FETCH_MOMENTARY_ASSESSMENT_REJECTED = 'fetch_momentary_assessment_rejected';
-
-export const CREATE_NOTIFICATIONS_PENDING = 'create_notifications_pending';
-export const CREATE_NOTIFICATIONS_FULFILLED = 'create_notifications_fulfilled';
-export const CREATE_NOTIFICATIONS_REJECTED = 'create_notifications_rejected';

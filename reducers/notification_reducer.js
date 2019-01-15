@@ -6,9 +6,9 @@ import {
   FETCH_MOMENTARY_ASSESSMENT_FULFILLED,
   FETCH_MOMENTARY_ASSESSMENT_REJECTED,
 
-  CREATE_NOTIFICATIONS_PENDING,
-  CREATE_NOTIFICATIONS_FULFILLED,
-  CREATE_NOTIFICATIONS_REJECTED,
+  FETCH_NOTIFICATIONS_PENDING,
+  FETCH_NOTIFICATIONS_FULFILLED,
+  FETCH_NOTIFICATIONS_REJECTED,
 
   UPDATE_NOTIFICATIONS_PENDING,
   UPDATE_NOTIFICATIONS_FULFILLED,
@@ -38,6 +38,7 @@ const initialState = {
     fetching: false,
     fetched: false,
     error: null,
+    data: [],
   },
 };
 
@@ -108,7 +109,7 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
 
-    case CREATE_NOTIFICATIONS_PENDING: {
+    case FETCH_NOTIFICATIONS_PENDING: {
       return {
         ...state,
         notifications: {
@@ -119,7 +120,8 @@ const reducer = (state = initialState, action, formData = []) => {
         },
       };
     }
-    case CREATE_NOTIFICATIONS_FULFILLED: {
+    case FETCH_NOTIFICATIONS_FULFILLED: {
+      const data = action.payload.rows['_array'];
       return {
         ...state,
         notifications: {
@@ -127,10 +129,11 @@ const reducer = (state = initialState, action, formData = []) => {
           fetching: false,
           fetched: true,
           error: null,
+          data,
         },
       };
     }
-    case CREATE_NOTIFICATIONS_REJECTED: {
+    case FETCH_NOTIFICATIONS_REJECTED: {
       return {
         ...state,
         notifications: {

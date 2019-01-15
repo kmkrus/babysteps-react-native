@@ -2,8 +2,11 @@ import { Notifications, SQLite } from 'expo';
 
 import moment from 'moment';
 import forEach from 'lodash/forEach';
+import map from 'lodash/map';
 
 const db = SQLite.openDatabase('babysteps.db');
+
+const notifications = [];
 
 function scheduleNotificaton(localNotification, scheduleTime) {
   const schedulingOptions = { time: scheduleTime.valueOf() };
@@ -11,7 +14,10 @@ function scheduleNotificaton(localNotification, scheduleTime) {
     localNotification,
     schedulingOptions,
   );
-  console.log('****** Notfication Scheduled: ', scheduleTime.toISOString(), localNotification.body );
+  const notify_at = scheduleTime.toISOString();
+  const data = localNotification.data;
+  // console.log('****** Notfication Scheduled: ', notify_at, data.body);
+  notifications.push({ ...data, notify_at, channel_id: 'screeningEvents' });
 }
 
 function localNotificationMessage(entry) {
@@ -65,8 +71,8 @@ function getRandomInt(min, max) {
 }
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
-  let cycleDate = moment(entry.notify_at);
-  if (moment().isAfter(entry.notify_at)) cycleDate = moment();
+  let cycleDate = moment(entry.notify_at).startOf('day');
+  if (moment().isAfter(entry.notify_at)) cycleDate = moment().startOf('day');
   // only construct 14 days of momentary assessments
   // in order to stay under the 64 local notifications
   // limit of IOS.
@@ -82,7 +88,7 @@ async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
         .add(getRandomInt(0, 59), 'minutes');
       const localNotification = localNotificationMessage(entry);
       scheduleNotificaton(localNotification, scheduleTime);
-      cycleDate = scheduleTime;
+      cycleDate = scheduleTime.startOf('day');
     }
   }
 }
@@ -91,6 +97,7 @@ export const setMomentaryAssessments = (entries, studyEndDate) => {
   forEach(entries, entry => {
     buildMomentaryAssessmentEntries(entry, studyEndDate);
   });
+  createNotifications(notifications);
 };
 
 export const setNotifications = entries => {
@@ -105,5 +112,35 @@ export const setNotifications = entries => {
 
 export const deleteNotifications = () => {
   Notifications.cancelAllScheduledNotificationsAsync();
-  console.log('****** All Notifications Cancelled');
+  // console.log('****** All Notifications Cancelled');
+};
+
+export const createNotifications = entries => {
+  const notificationFields = [
+    'task_id',
+    'notify_at',
+    'momentary_assessment',
+    'response_scale',
+    'title',
+    'body',
+    'type',
+    'channel_id',
+  ];
+  const values = map(entries, entry => {
+    return `(${entry.task_id}, "${entry.notify_at}", ${entry.momentary_assessment}, "${entry.response_scale}", "${entry.title}", "${entry.body}", "info", "screeningEvents")`
+  });
+  const sql =`INSERT INTO notifications ( ${notificationFields.join(', ')} ) VALUES ${values.join(', ')};`;
+
+  return db.transaction(tx => {
+    tx.executeSql(
+      sql,
+      [],
+      (_, response) => {
+        // console.log('****** Notifications Saved');
+      },
+      (_, error) => {
+        console.log('****** Notifications Error', error);
+      },
+    );
+  });
 };
