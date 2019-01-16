@@ -110,7 +110,6 @@ const initialState = {
 };
 
 const reducer = (state=initialState, action, formData={}) => {
-
   switch (action.type) {
     // FETCH USER
     case FETCH_USER_PENDING: {
@@ -561,7 +560,7 @@ const reducer = (state=initialState, action, formData={}) => {
       };
     }
     case UPDATE_SUBJECT_FULFILLED: {
-      const data = Object.assign({}, state.subject.data, action.formData);
+      const data = {...state.subject.data, ...action.formData};
       return {
         ...state,
         subject: {
@@ -619,6 +618,41 @@ const reducer = (state=initialState, action, formData={}) => {
       };
     }
 
+    // API_UPDATE_SUBJECT
+    case API_UPDATE_SUBJECT_PENDING: {
+      return {
+        ...state,
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_UPDATE_SUBJECT_FULFILLED: {
+      const data = action.payload.data;
+      return {
+        ...state,
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: false,
+          fetched: true,
+          data,
+        },
+      };
+    }
+    case API_UPDATE_SUBJECT_REJECTED: {
+      return {
+        ...state,
+        apiSubject: {
+          ...state.apiSubject,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
     default: {
       return state;
     }

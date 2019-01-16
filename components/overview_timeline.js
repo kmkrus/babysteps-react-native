@@ -70,21 +70,23 @@ class OverviewTimeline extends React.Component {
             const overviewTimelines = [ ...overview_timeline.data ];
             // leave verbose so it's easier to understand
             remove(overviewTimelines, item => {
-              if (!postBirth && item.overview_timeline === 'birth') {
-                return false;
+              if (item.overview_timeline === 'birth') {
+                if (!postBirth) return false;
               }
               // remove if not complete and after available_end_at
               if (!item.uri && moment().isAfter(item.available_end_at)) {
                 return true;
               }
-              // only tasks for relevant period
-              // only completed pre-birth tasks
-              if (postBirth && item.overview_timeline === 'during_pregnancy' && item.uri) {
-                return false
+              // tasks for pre-birth period
+              if (item.overview_timeline === 'during_pregnancy') {
+                // return all if during pre-birth or birth period
+                if (!postBirth) return false;
+                // only completed pre-birth tasks after birth
+                if (postBirth && item.uri) return false;
               }
-              // all post-birth tasks
-              if (postBirth && item.overview_timeline === 'post_birth') {
-                return false;
+              // all post-birth tasks only if post-birth
+              if (item.overview_timeline === 'post_birth') {
+                if (postBirth) return false;
               }
               // otherwise remove
               return true;

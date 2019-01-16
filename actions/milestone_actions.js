@@ -29,6 +29,8 @@ import {
   FETCH_MILESTONE_GROUPS_FULFILLED,
   FETCH_MILESTONE_GROUPS_REJECTED,
 
+  RESET_MILESTONE_CALENDAR,
+
   FETCH_MILESTONE_CALENDAR_PENDING,
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
@@ -202,6 +204,12 @@ export const fetchMilestoneGroups = () => {
         },
       );
     });
+  };
+};
+
+export const resetMilestoneCalendar = () => {
+  return dispatch => {
+    dispatch(Pending(RESET_MILESTONE_CALENDAR));
   };
 };
 

@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator
+} from 'react-native';
 import { Button } from 'react-native-elements';
 import { StackActions } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -17,10 +23,13 @@ import withInputAutoFocus, {
 
 import { connect } from 'react-redux';
 import {
+  resetSubject,
   updateSubject,
   apiUpdateSubject,
 } from '../actions/registration_actions';
 import {
+  resetMilestoneCalendar,
+  fetchMilestoneCalendar,
   updateMilestoneCalendar,
   apiFetchMilestoneCalendar,
 } from '../actions/milestone_actions';
@@ -34,6 +43,7 @@ import PickerInput from '../components/pickerInput';
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
 import CONSTANTS from '../constants';
+import States from '../actions/states';
 
 const TextField = compose(
   withInputAutoFocus,
@@ -106,11 +116,114 @@ class OverviewBirthFormScreen extends Component {
   };
 
   state = {
-    submitted: false,
     outcomeIsLiveBirth: true,
     outcome: 'live_birth',
     dateError: null,
+    values: {},
+    submittedSave: false,
+    submittedApiUpdateSubject: false,
+    submittedFetchMilestoneCalendar: false,
+    submittedApiFetchMilestoneCalendar: false,
   };
+
+  componentWillMount() {
+    this.props.resetSubject();
+    this.props.resetMilestoneCalendar();
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const subject = nextProps.registration.subject;
+    const apiSubject = nextProps.registration.apiSubject;
+    const calendar = nextProps.milestones.calendar;
+    const apiCalendar = nextProps.milestones.api_calendar;
+    const values = this.state.values;
+    if (
+      subject.fetching ||
+      apiSubject.fetching ||
+      calendar.fetching ||
+      apiCalendar.fetching
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    // incrementally save and update environs
+    if (nextState.submittedSave) {
+      const session = nextProps.session;
+      const subject = nextProps.registration.subject;
+      const apiSubject = nextProps.registration.apiSubject;
+      const calendar = nextProps.milestones.calendar;
+      const apiCalendar = nextProps.milestones.api_calendar;
+      const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
+      const outcomeIsLiveBirth = nextState.outcomeIsLiveBirth;
+      if (!subject.fetching && subject.fetched) {
+        if (inStudy && subject.data.api_id) {
+          if (!nextState.submittedApiUpdateSubject) {
+            // update birth date on api
+            const values = nextState.values;
+            const data = {...values, api_id: subject.data.api_id}
+            this.props.apiUpdateSubject(session, data);
+            this.setState({ submittedApiUpdateSubject: true });
+          } else {
+            if (!apiSubject.fetching && apiSubject.fetched){
+              if (!nextState.submittedApiFetchMilestoneCalendar) {
+                // update api calendar
+                const fetchCalendarParams = { subject_id: subject.data.api_id };
+                this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
+                this.setState({ submittedApiFetchMilestoneCalendar: true });
+              } else {
+                if (!apiCalendar.fetching && apiCalendar.fetched) {
+                  if (!nextState.submittedFetchMilestoneCalendar) {
+                    this.props.fetchMilestoneCalendar();
+                    this.setState({ submittedFetchMilestoneCalendar: true });
+                  } else {
+                   
+                  } // submittedFetchMilestoneCalendar
+                } // apiCalendar.fetched
+              } // submittedApiMilestoneCalendar
+            } // apiSubject.fetched
+          } // submittedApiUpdateSubject
+        } else { // inStudy
+          if (outcomeIsLiveBirth) {
+            if (!nextState.submittedApiFetchMilestoneCalendar) {
+                // update api calendar
+                const fetchCalendarParams = { base_date: values.date_of_birth };
+                this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
+                this.setState({ submittedApiFetchMilestoneCalendar: true });
+            } else {
+              if (!apiCalendar.fetching && apiCalendar.fetched) {
+                if (!nextState.submittedFetchMilestoneCalendar) {
+                  this.props.fetchMilestoneCalendar();
+                  this.setState({ submittedFetchMilestoneCalendar: true });
+                } // submittedFetchMilestoneCalendar
+              } // apiCalendar.fetched
+            } // submittedApiMilestoneCalendar
+          } // outcome is live birth
+        } // else inStudy
+        if (outcomeIsLiveBirth) {
+          if (
+            nextState.submittedFetchMilestoneCalendar &&
+            !calendar.fetching &&
+            calendar.fetched
+          ) {
+            // trigger generation of notifications and set period
+            this.props.updateSession({ notifications_updated_at: '', notification_period: 'post_birth' });
+            // reset navigation stack
+            this.props.navigation.dispatch(StackActions.popToTop());
+            // go to birth questionaire
+            const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
+            this.props.navigation.navigate('MilestoneQuestions', { task });
+          } // calandar.fetched
+        } else {
+          this.props.deleteAllNotifications();
+          this.props.updateSession({ notification_period: 'no_birth' });
+          this.props.navigation.navigate('Overview');
+        } // outcome is live birth
+      } // subject.fetching
+    } // submittedSave
+  }
 
   _handleOutcomeChange = value => {
     this.node.setFieldValue('outcome', value);
@@ -133,40 +246,15 @@ class OverviewBirthFormScreen extends Component {
       this.setState({ dateError: 'You must provide the Date of Loss' });
       return null;
     }
-
+    this.setState({ values, submittedSave: true });
     this.props.updateSubject(values);
-    const subject = this.props.registration.subject.data;
-    if (subject.api_id) {
-      const data = {...values, api_id: subject.api_id}
-      // update birth date on api
-      this.props.apiUpdateSubject(this.props.session, data);
-      // update calendar
-      const fetchCalendarParams = { subject_id: subject.api_id };
-      this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
-    }
-
-    const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
-    // mark task as complete
-    this.props.updateMilestoneCalendar(task.id);
-
-    if (values.outcome === 'live_birth') {
-      // trigger generation of notifications
-      this.props.updateSession({ notification_period: 'post_birth' });
-
-      // go to birth questionaire
-      this.props.navigation.dispatch(StackActions.popToTop());
-      this.props.navigation.navigate('MilestoneQuestions', { task });
-    } else {
-      this.props.deleteAllNotifications();
-      this.props.updateSession({ notification_period: 'no_birth' });
-      this.props.navigation.navigate('Overview');
-    }
   };
 
   render() {
     const subject = this.props.registration.subject.data;
     const dateError = this.state.dateError;
     const outcomeIsLiveBirth = this.state.outcomeIsLiveBirth;
+    const submittedSave = this.state.submittedSave
     const dateLabel = find(outcomes, ['value', this.state.outcome]);
     return (
       <KeyboardAwareScrollView 
@@ -306,6 +394,7 @@ class OverviewBirthFormScreen extends Component {
                     buttonStyle={styles.buttonOneStyle}
                     titleStyle={styles.buttonTitleStyle}
                     onPress={() => this.props.navigation.navigate('Overview')}
+                    disable={submittedSave}
                     title="CANCEL"
                   />
                   <Button
@@ -313,9 +402,15 @@ class OverviewBirthFormScreen extends Component {
                     buttonStyle={styles.buttonTwoStyle}
                     titleStyle={styles.buttonTitleStyle}
                     onPress={props.submitForm}
+                    disable={submittedSave}
                     title="SAVE"
                   />
                 </View>
+                {submittedSave && (
+                  <View style={styles.submittedSave}>
+                    <ActivityIndicator size="large" color={Colors.tint} />
+                  </View>
+                )}
               </Form>
             );
           }}
@@ -360,6 +455,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
   },
+  submittedSave: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 const mapStateToProps = ({ session, registration, milestones }) => ({
@@ -368,8 +472,11 @@ const mapStateToProps = ({ session, registration, milestones }) => ({
   milestones,
 });
 const mapDispatchToProps = {
+  resetSubject,
   updateSubject,
   apiUpdateSubject,
+  resetMilestoneCalendar,
+  fetchMilestoneCalendar,
   updateMilestoneCalendar,
   apiFetchMilestoneCalendar,
   deleteAllNotifications,
