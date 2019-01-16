@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   screening_slide_link: {
-    marginTop: 10,
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
   },
@@ -232,14 +231,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.darkGrey,
     fontWeight: '600',
+    marginBottom: 3,
   },
   screening_date: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.green,
+    marginBottom: 6,
   },
   screening_text: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.darkGrey,
+    marginBottom: 10,
   },
   screening_button: {
     paddingTop: 5,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   screening_button_text: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.pink,
   },
   emptyContainer: {
