@@ -9,6 +9,8 @@ import {
 
 import { _ } from 'lodash';
 
+import moment from 'moment';
+
 import { connect } from 'react-redux';
 
 import BabyBookGetImage from './babybook_get_image';
@@ -35,9 +37,9 @@ class BabyBookCoverItem extends Component {
       }
       let dob = '';
       if (!_.isEmpty(subject.date_of_birth)) {
-        dob = `Born: ${subject.date_of_birth}`;
+        dob = `Born: ${moment(subject.date_of_birth).format('MMMM DD, YYYY')}`;
       } else {
-        dob = `Expected: ${subject.expected_date_of_birth}`;
+        dob = `Expected: ${moment(subject.expected_date_of_birth).format('MMMM DD, YYYY')}`;
       }
       return (
         <View>

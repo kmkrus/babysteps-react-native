@@ -15,6 +15,8 @@ import {
   FETCH_MILESTONE_GROUPS_FULFILLED,
   FETCH_MILESTONE_GROUPS_REJECTED,
 
+  RESET_MILESTONE_CALENDAR,
+
   FETCH_MILESTONE_CALENDAR_PENDING,
   FETCH_MILESTONE_CALENDAR_FULFILLED,
   FETCH_MILESTONE_CALENDAR_REJECTED,
@@ -328,6 +330,23 @@ const reducer = (state = initialState, action, formData = []) => {
           ...state.groups,
           fetching: false,
           error: action.payload,
+        },
+      };
+    }
+
+    case RESET_MILESTONE_CALENDAR: {
+      return {
+        ...state,
+        calender: {
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+        api_calendar: {
+          fetching: false,
+          fetched: false,
+          error: null,
         },
       };
     }

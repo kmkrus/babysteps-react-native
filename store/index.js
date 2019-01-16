@@ -10,6 +10,11 @@ import apiAnswersFulfilled from '../database/api_answers_fulfilled';
 
 import reducers from '../reducers';
 
+let composeEnhancers = compose;
+if (__DEV__) {
+  composeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;
+}
+
 const logger = createLogger();
 
 const store = createStore(

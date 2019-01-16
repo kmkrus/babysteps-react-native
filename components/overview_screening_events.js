@@ -112,17 +112,12 @@ class OverviewScreen extends React.Component {
     task.trigger_id = task.id;
     task.id = task.task_id;
 
-    const longDate = new Date(task.notify_at).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const longDate = moment(task.available_end_at).format('dddd, MMMM D, YYYY' );
     return (
       <View key={data.itemIndex} style={styles.screening_slide_container}>
         <TouchableOpacity onPress={() => this.handleOnPress(task)}>
           <Text numberOfLines={1} style={styles.screening_title}>{task.message}</Text>
-          <Text numberOfLines={1} style={styles.screening_date}>{longDate}</Text>
+          <Text numberOfLines={1} style={styles.screening_date}>Due by {longDate}</Text>
           <Text numberOfLines={3} style={styles.screening_text}>{task.name}</Text>
         </TouchableOpacity>
         <View style={styles.screening_slide_link}>

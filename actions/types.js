@@ -13,6 +13,8 @@ export const FETCH_MILESTONE_GROUPS_PENDING = 'fetch_milestone_groups_pending';
 export const FETCH_MILESTONE_GROUPS_FULFILLED = 'fetch_milestone_groups_fulfilled';
 export const FETCH_MILESTONE_GROUPS_REJECTED = 'fetch_milestone_groups_rejected';
 
+export const RESET_MILESTONE_CALENDAR = 'reset_milestone_calendar';
+
 export const FETCH_MILESTONE_CALENDAR_PENDING = 'fetch_milestone_calendar_pending';
 export const FETCH_MILESTONE_CALENDAR_FULFILLED = 'fetch_milestone_calendar_fulfilled';
 export const FETCH_MILESTONE_CALENDAR_REJECTED = 'fetch_milestone_calendar_rejected';
