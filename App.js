@@ -75,6 +75,11 @@ export default class App extends Component {
       'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       FontAwesome: require('./assets/fonts/FontAwesome.ttf'),
     });
+
+    //Fix on iOS for missing font error
+    //https://github.com/react-native-training/react-native-elements/issues/1005#issuecomment-405408180
+    await Font.loadAsync("Material Icons", require("@expo/vector-icons/fonts/MaterialIcons.ttf"));
+
     // async check of schemas
     await checkRegistrationSchema();
     await checkMilestonesSchema();
