@@ -33,7 +33,8 @@ const wp = (percentage, direction) => {
   return Math.round(value);
 };
 
-const containerHeight = wp(30, height);
+const containerHeight = wp(32, height);
+const timelineHeight = wp(26, height);
 
 class OverviewScreen extends React.Component {
   static navigationOptions = {
@@ -97,7 +98,7 @@ class OverviewScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.slider_container}>
+        <View style={styles.timline_container}>
           <OverviewTimeline navigation={this.props.navigation} />
         </View>
 
@@ -117,6 +118,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
+  },
+  timline_container: {
+    height: timelineHeight,
+    borderTopWidth: 2,
+    borderTopColor: Colors.lightGrey,
   },
   slider_container: {
     height: containerHeight,

@@ -34,10 +34,10 @@ const wp = (percentage, direction) => {
   return Math.round(value);
 };
 
-const mgContainerHeight = wp(30, height);
-const mgImageHeight = wp(80, mgContainerHeight);
-const mgImageWidth = wp(80, width);
-const mgImageMargin = wp(10, width);
+const mgContainerHeight = wp(32, height);
+const mgImageHeight = wp(96, mgContainerHeight);
+const mgImageWidth = wp(92, width);
+const mgImageMargin = wp(4, width);
 
 class OverviewScreen extends React.Component {
   static navigationOptions = {
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   slider: {
     flex: 1,
     paddingLeft: 5,
-    marginBottom: 10,
+    marginBottom: 0,
   },
   mgSlider: {
     width,
@@ -209,10 +209,11 @@ const styles = StyleSheet.create({
     width: mgImageWidth,
     height: mgImageHeight,
     borderRadius: 5,
+    top: '-20%'
   },
   mgItemFooter: {
     position: 'absolute',
-    bottom: 6,
+    bottom: 30,
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
