@@ -156,7 +156,7 @@ class BabyBookScreen extends Component {
             data.push({ ...item, file_uri: { uri } });
           }
         });
-        data = sortBy(data, i => i.created_at).reverse();
+        data = sortBy(data, i => i.created_at);
         // add entry for cover
         data = [{ ...data[0], id: '0' }].concat(data);
         this.setState({ data });
