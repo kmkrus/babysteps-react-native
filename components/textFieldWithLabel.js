@@ -20,13 +20,6 @@ export default class TextFieldWithLabel extends PureComponent {
     const { error, helper, touched, isValidating, ...props } = this.props;
     const displayError = !!error && (touched || isValidating);
 
-    console.group(`Validating ${props.label}`);
-    console.log('error',error);
-    console.log('helper',helper);
-    console.log('touched',touched);
-    console.log('this.props',this.props);
-    console.groupEnd();
-
     const labelColor = displayError ? Colors.errorColor : Colors.grey;
 
     const containerProps = {
