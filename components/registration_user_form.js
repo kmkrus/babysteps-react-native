@@ -110,6 +110,7 @@ class RegistrationUserForm extends Component {
         onSubmit={values => {
           this._onSubmit(values);
         }}
+        initialValues={{ first_name: '', last_name: '', email: '', password: '' }}
         validationSchema={validationSchema}
         render={props => {
           return (

@@ -188,8 +188,16 @@ class RegistrationRespondentForm extends Component {
           validationSchema={validationSchema}
           initialValues={{
             respondent_type: 'mother',
+            address_1: '',
+            city: '',
             state: 'IA',
+            zip_code: '',
+            home_phone: '',
+            date_of_birth: '',
+            drivers_license_number: '',
             marital_status: 'married',
+            weight: '',
+            height: '',
             pregnant: true,
           }}
           render={props => {
