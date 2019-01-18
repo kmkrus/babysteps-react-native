@@ -116,7 +116,7 @@ class BabyBookScreen extends Component {
       this.props.fetchSubject();
     }
 
-    this.props.fetchBabyBookEntries();
+    //this.props.fetchBabyBookEntries();
 
     // bind function to navigation
     this.props.navigation.setParams({
@@ -140,6 +140,17 @@ class BabyBookScreen extends Component {
     if (!isEmpty(this.props.babybook.entries.data)) {
       this.props.navigation.setParams({ babybookEntries: true });
     }
+    this.willFocusBabyBook = this.props.navigation.addListener(
+      'willFocus',
+      () => {
+        this.props.fetchBabyBookEntries();
+      }
+    );
+  }
+
+  componentWillUnmount() {
+    // Remove nav focus listener
+    this.willFocusBabyBook.remove();
   }
 
   componentWillReceiveProps(nextProps) {
