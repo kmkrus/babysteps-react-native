@@ -103,6 +103,7 @@ class RegistrationRespondentForm extends Component {
   state = {
     signatureSubmitted: false,
     respondentSubmitted: false,
+    apiErrorMessage: '',
   };
 
   componentWillMount() {
@@ -112,6 +113,9 @@ class RegistrationRespondentForm extends Component {
 
   componentDidMount() {
     this.scrollView.scrollTo({ y: 0 });
+    if (['none', 'unknown'].includes(this.props.session.connectionType)) {
+      this.setState({apiErrorMessage: 'The internet is not currently available'});
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -351,6 +355,10 @@ class RegistrationRespondentForm extends Component {
                   />
                 </View>
 
+                <Text style={styles.errorMessage}>
+                  {this.state.apiErrorMessage}
+                </Text>
+
                 <View style={AppStyles.registrationButtonContainer}>
                   <Button
                     title="NEXT"
@@ -379,6 +387,13 @@ const styles = StyleSheet.create({
   },
   checkboxText: {
     fontSize: 12,
+  },
+  errorMessage: {
+    fontSize: 16,
+    margin: 20,
+    textAlign: 'center',
+    height: 24,
+    color: Colors.errorColor,
   },
 });
 

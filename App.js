@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+  AppState,
+  NetInfo,
+} from 'react-native';
 import { Provider } from 'react-redux';
 import { AppLoading, Asset, Font } from 'expo';
 import FlashMessage from 'react-native-flash-message';
@@ -19,6 +26,8 @@ import checkCustomDirectories from './components/check_custom_directories';
 
 import MomentaryAssessment from './components/momentary_assessment_modal';
 
+import ApiOfflineListener from './database/api_offline_listener';
+
 import store from './store';
 
 import CONSTANTS from './constants';
@@ -29,6 +38,21 @@ Sentry.config(CONSTANTS.SENTRY_URL).install();
 export default class App extends Component {
   state = {
     isLoadingComplete: false,
+  };
+
+  componentWillUnmount() {
+    NetInfo.removeEventListener('connectionChange', () => {});
+    AppState.removeEventListener('change', () => {});
+  }
+
+  _handleFinishLoading = () => {
+    this.setState({ isLoadingComplete: true });
+  };
+
+  _handleLoadingError = error => {
+    // In this case, you might want to report the error to your error
+    // reporting service, for example Sentry
+    console.warn(error);
   };
 
   _loadResourcesAsync = async () => {
@@ -90,16 +114,6 @@ export default class App extends Component {
     await checkCustomDirectories();
   };
 
-  _handleLoadingError = error => {
-    // In this case, you might want to report the error to your error
-    // reporting service, for example Sentry
-    console.warn(error);
-  };
-
-  _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
-  };
-
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
@@ -121,6 +135,7 @@ export default class App extends Component {
           <RootNavigator />
           <FlashMessage position="top" />
           <MomentaryAssessment />
+          <ApiOfflineListener />
         </View>
       </Provider>
     );
