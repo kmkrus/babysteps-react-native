@@ -33,8 +33,8 @@ const wp = (percentage, direction) => {
 };
 
 const scContainerHeight = wp(30, height);
-const scCardHeight = wp(70, scContainerHeight);
-const scCardWidth = wp(80, width);
+const scCardHeight = wp(80, scContainerHeight);
+const scCardWidth = wp(92, width);
 const scCardMargin = (width - scCardWidth) / 2;
 
 class OverviewScreen extends React.Component {
@@ -139,7 +139,7 @@ class OverviewScreen extends React.Component {
           <View style={styles.slider_title}>
             <Text style={styles.slider_title_text}>Screening Events</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Milestones')}
             style={styles.opacityStyle}>
             <Text style={styles.slider_link_text}>View all</Text>
@@ -150,7 +150,7 @@ class OverviewScreen extends React.Component {
           {this.state.sliderLoading && (
             <ActivityIndicator size="large" color={Colors.tint} />
           )}
-          {!this.state.sliderLoading && 
+          {!this.state.sliderLoading &&
             isEmpty(this.state.screeningEvents) && (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   screening_slide_link: {
-    marginTop: 10,
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
   },
@@ -232,14 +231,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.darkGrey,
     fontWeight: '600',
+    marginBottom: 3,
   },
   screening_date: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.green,
+    marginBottom: 6,
   },
   screening_text: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.darkGrey,
+    marginBottom: 10,
   },
   screening_button: {
     paddingTop: 5,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   screening_button_text: {
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.pink,
   },
   emptyContainer: {
