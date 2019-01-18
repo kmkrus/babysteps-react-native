@@ -41,7 +41,8 @@
         "CAMERA",
         "CAMERA_ROLL",
         "NOTIFICATIONS",
-        "VIBRATE"
+        "VIBRATE",
+        "ACCESS_NETWORK_STATE"
       ]
     }
   },

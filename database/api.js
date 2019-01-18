@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { AppState, NetInfo } from 'react-native';
 
-import { updateSession, apiTokenRefresh } from '../actions/session_actions';
+import { updateSession, apiTokenRefresh, updatePendingActions } from '../actions/session_actions';
 import { getApiUrl } from './common';
 
 import {
@@ -45,13 +46,26 @@ export default store => next => action => {
     console.log('***** milestone token api call');
     return next(action);
   }
+
+  const session = store.getState().session;
+  const effect = action.meta.offline.effect;
+
+  // Store action if there is no network connection
+  // Cross-platform: [none, wifi, cellular, unknown]
+  // Android: [bluetooth, ethernet, wimax]
+  if (['none', 'unknown'].includes(session.connectionType)) {
+    if (action.type !== API_TOKEN_REFRESH_PENDING) {
+      const pending_actions = [...session.pending_actions];
+      pending_actions.push(action);
+      updatePendingActions(store.dispatch, pending_actions);
+    }
+    return next(action);
+  }
+
   // save action in case we need to retry after token refresh
   if (action.type !== API_TOKEN_REFRESH_PENDING) {
     store.dispatch(Response(UPDATE_SESSION_ACTION, action));
   }
-
-  const session = store.getState().session;
-  const effect = action.meta.offline.effect;
 
   const headers = {
     'ACCESS-TOKEN': session.access_token,
@@ -106,6 +120,7 @@ export default store => next => action => {
         // not already getting fresh token
         if (!store.getState().session.fetching_token) {
           apiTokenRefresh(store.dispatch, session);
+          return false;
         }
       } else {
         store.dispatch(Response(effect.rejected, error));

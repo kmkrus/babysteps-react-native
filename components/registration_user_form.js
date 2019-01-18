@@ -55,6 +55,12 @@ class RegistrationUserForm extends Component {
     this.props.apiFetchMilestones();
   }
 
+  componentDidMount() {
+    if (['none', 'unknown'].includes(this.props.session.connectionType)) {
+      this.setState({apiErrorMessage: 'The internet is not currently available'});
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const registration = nextProps.registration;
     const apiUser = nextProps.registration.apiUser;
@@ -150,6 +156,10 @@ class RegistrationUserForm extends Component {
                 inputContainerStyle={AppStyles.registrationTextInputContainer}
               />
 
+              <Text style={styles.errorMessage}>
+                {this.state.apiErrorMessage}
+              </Text>
+
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="NEXT"
@@ -159,9 +169,6 @@ class RegistrationUserForm extends Component {
                   color={Colors.darkGreen}
                 />
               </View>
-              <Text style={styles.errorMessage}>
-                {this.state.apiErrorMessage}
-              </Text>
             </Form>
           );
         }}
@@ -180,7 +187,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ registration }) => ({ registration });
+const mapStateToProps = ({ session, registration }) => ({
+  session,
+  registration,
+});
 const mapDispatchToProps = {
   createUser,
   fetchUser,

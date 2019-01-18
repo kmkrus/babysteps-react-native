@@ -98,6 +98,14 @@ export const FETCH_OVERVIEW_TIMELINE_REJECTED = 'fetch_overview_timeline_rejecte
 // Session actions
 export const UPDATE_SESSION_ACTION = 'update_session_action';
 
+export const UPDATE_SESSION_PENDING_ACTIONS_PENDING = 'update_session_pending_actions_pending';
+export const UPDATE_SESSION_PENDING_ACTIONS_FULFILLED = 'update_session_pending_actions_fulfilled';
+export const UPDATE_SESSION_PENDING_ACTIONS_REJECTED = 'update_session_pending_actions_rejected';
+
+export const DISPATCH_SESSION_PENDING_ACTIONS_PENDING = 'dispatch_session_pending_actions_pending';
+export const DISPATCH_SESSION_PENDING_ACTIONS_FULFILLED = 'dispatch_session_pending_actions_fulfilled';
+export const DISPATCH_SESSION_PENDING_ACTIONS_REJECTED = 'dispatch_session_pending_actions_rejected';
+
 export const SET_FETCHING_TOKEN = 'set_fetching_token';
 
 export const FETCH_SESSION_PENDING = 'fetch_session_pending';
@@ -107,6 +115,10 @@ export const FETCH_SESSION_REJECTED = 'fetch_session_rejected';
 export const UPDATE_SESSION_PENDING = 'update_session_pending';
 export const UPDATE_SESSION_FULFILLED = 'update_session_fulfilled';
 export const UPDATE_SESSION_REJECTED = 'update_session_rejected';
+
+export const UPDATE_CONNECTION_TYPE = 'update_connection_type';
+
+// Notification actions
 
 export const UPDATE_NOTIFICATIONS_PENDING = 'set_notifications_pending';
 export const UPDATE_NOTIFICATIONS_FULFILLED = 'set_notifications_fulfilled';

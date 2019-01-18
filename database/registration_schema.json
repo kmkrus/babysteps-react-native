@@ -12,6 +12,7 @@
       "notifications_permission": "TEXT",
       "notification_period": "TEXT",
       "notifications_updated_at": "TEXT",
+      "pending_actions": "TEXT",
     },
     "indexes": [],
   },
