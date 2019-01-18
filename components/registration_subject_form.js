@@ -163,6 +163,8 @@ class RegistrationSubjectForm extends Component {
           conception_method: 'natural',
           screening_blood: null,
           outcome: 'live_birth',
+          first_name: '',
+          last_name: '',
         }}
         render={props => {
           return (
