@@ -52,6 +52,12 @@ class RegistrationExpectedDOB extends Component {
     this.props.fetchRespondent();
   }
 
+  componentDidMount() {
+    if (['none', 'unknown'].includes(this.props.session.connectionType)) {
+      this.setState({ dobError: 'The internet is not currently available' });
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     const apiSubject = nextProps.registration.apiSubject;

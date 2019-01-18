@@ -49,6 +49,7 @@ class RegistrationUserForm extends Component {
   state = {
     createUserSubmitted: false,
     apiErrorMessage: '',
+    user_registration_complete: false,
   };
 
   componentWillMount() {
@@ -89,16 +90,31 @@ class RegistrationUserForm extends Component {
           this.setState({ createUserSubmitted: true });
           return null;
         }
-        if (!user.fetching && user.fetched) {
-          this.props.updateSession({ registration_state: States.REGISTERING_RESPONDENT });
+        if (
+          !user.fetching &&
+          user.fetched &&
+          !this.state.user_registration_complete
+        ) {
+          this.setState({ user_registration_complete: true });
+          const registration_state = States.REGISTERING_RESPONDENT;
+          this.props.updateSession({ registration_state });
         }
       }
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     const registration = nextProps.registration;
+    const nextRegistrationState = nextProps.session.registration_state;
+    const thisRegistrationState = this.props.session.registration_state;
+    const userRegistrationComplete = nextState.user_registration_complete;
     if (registration.apiUser.fetching || registration.user.fetching) {
+      return false;
+    }
+    if (
+      nextRegistrationState !== thisRegistrationState ||
+      userRegistrationComplete
+    ) {
       return false;
     }
     return true;
