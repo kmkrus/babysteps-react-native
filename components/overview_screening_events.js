@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     marginLeft: scCardMargin,
     height: scCardHeight,
     width: scCardWidth,
-    padding: 10,
+    padding: 20,
     borderWidth: 1,
     borderColor: Colors.lightGrey,
     borderRadius: 5,

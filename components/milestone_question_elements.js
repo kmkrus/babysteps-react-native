@@ -470,7 +470,7 @@ export class RenderFile extends Component {
               />
             )}
             {displayImage && (
-              <Image source={{ uri }} style={styles.image} />
+              <Image source={{ uri }} resizeMode="cover" style={styles.image} />
             )}
             {displayAudio && (
               <Text>Recording Attached</Text>

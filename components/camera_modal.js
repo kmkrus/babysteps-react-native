@@ -157,10 +157,17 @@ class CameraModal extends Component {
     const { videoTimer, limitOption, activeOption, isLandscape } = this.state;
     let takePictureButtonColor = { backgroundColor: Colors.magenta };
     if (videoTimer) {
-      if ((videoTimer.minutes() > 3) && (videoTimer.seconds() % 2 === 0)) {
-        takePictureButtonColor = {};
+      const minutes = videoTimer.minutes();
+      const seconds = videoTimer.seconds();
+      if (minutes >= 3) {
+        if (seconds % 2 === 0) {
+          takePictureButtonColor = { backgroundColor: Colors.red };
+        } else {
+          takePictureButtonColor = { backgroundColor: Colors.black };
+        }
       }
     }
+
     return (
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
@@ -426,11 +433,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomBarConfirmActions: {
-    height: imageButtonsHeight,
+    height: 110,
     flex: 1,
+    paddingBottom: 10,
+    paddingTop: 10,
     justifyContent: 'space-evenly',
     flexDirection: 'row',
     alignItems: 'center',
+    borderColor: Colors.red,
+    borderWidth: 1,
   },
   bottomBarMenu: {
     height: isIphoneX() ? 50 : 30,

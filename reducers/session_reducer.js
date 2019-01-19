@@ -163,7 +163,7 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_SESSION_FULFILLED: {
       const data = action.payload.rows['_array'][0];
-      if (data.pending_actions === null) {
+      if (data.pending_actions === null || data.pending_actions === undefined) {
         data.pending_actions = [];
       } else {
         data.pending_actions = JSON.parse(data.pending_actions);

@@ -85,7 +85,10 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case FETCH_MOMENTARY_ASSESSMENT_FULFILLED: {
-      const data = action.payload.rows['_array'][0];
+      let data = {};
+      if (action && action.payload && action.payload.rows) {
+        data = action.payload.rows['_array'][0];
+      }
       return {
         ...state,
         momentary_assessment: {
