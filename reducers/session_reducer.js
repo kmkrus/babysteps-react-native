@@ -83,11 +83,15 @@ const reducer = (state = initialState, action) => {
     }
 
     case DISPATCH_SESSION_PENDING_ACTIONS_PENDING: {
-      return state;
+      return {
+        ...state,
+        dispatching_pending_actions: true,
+      };
     }
     case DISPATCH_SESSION_PENDING_ACTIONS_FULFILLED: {
       return {
         ...state,
+        dispatching_pending_actions: false,
         pending_actions: [],
       };
     }
