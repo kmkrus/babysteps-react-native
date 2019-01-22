@@ -337,7 +337,7 @@ const reducer = (state = initialState, action, formData = []) => {
     case RESET_MILESTONE_CALENDAR: {
       return {
         ...state,
-        calender: {
+        calendar: {
           fetching: false,
           fetched: false,
           error: null,

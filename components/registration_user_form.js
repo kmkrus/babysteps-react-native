@@ -47,6 +47,7 @@ const validationSchema = Yup.object().shape({
 
 class RegistrationUserForm extends Component {
   state = {
+    isSubmitting: false,
     createUserSubmitted: false,
     apiErrorMessage: '',
     user_registration_complete: false,
@@ -58,7 +59,7 @@ class RegistrationUserForm extends Component {
 
   componentDidMount() {
     if (['none', 'unknown'].includes(this.props.session.connectionType)) {
-      this.setState({apiErrorMessage: 'The internet is not currently available'});
+      this.setState({isSubmitting: true, apiErrorMessage: 'The internet is not currently available'});
     }
   }
 
@@ -69,7 +70,7 @@ class RegistrationUserForm extends Component {
     if (!apiUser.fetching) {
       if (apiUser.error) {
         const apiErrorMessage = get(apiUser.error, 'response.data.errors.full_messages', []).join('\n')
-        this.setState({ apiErrorMessage });
+        this.setState({ isSubmitting: false, apiErrorMessage });
       }
       if (apiUser.fetched) {
         if (this.props.registration.auth !== registration.auth) {
@@ -122,7 +123,7 @@ class RegistrationUserForm extends Component {
 
   _onSubmit = values => {
     this.props.apiCreateUser(values);
-    this.setState({ apiErrorMessage: '' });
+    this.setState({ isSubmitting: true, apiErrorMessage: '' });
   };
 
   render() {
@@ -183,6 +184,7 @@ class RegistrationUserForm extends Component {
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
+                  disabled={this.state.isSubmitting}
                 />
               </View>
             </Form>

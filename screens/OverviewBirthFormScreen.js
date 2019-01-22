@@ -77,8 +77,8 @@ const validationSchema = Yup.object().shape({
     is: 'live_birth',
     then: Yup.string()
       .typeError("Your baby's gender is required")
-      .required("Your baby's gender is required")
-      .matches(/(male|female)/, "You must select a gender"),
+      .required("Your baby's gender is required"),
+      //.matches(/(male|female)/, "You must select a gender"),
   }),
   conception_method: Yup.string().when('outcome', {
     is: 'live_birth',

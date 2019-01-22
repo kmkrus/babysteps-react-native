@@ -41,6 +41,7 @@ const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 
 class RegistrationExpectedDOB extends Component {
   state = {
+    isSubmitting: false,
     dobError: null,
     apiCreateSubjectSubmitted: false,
     apiCreateMilestoneCalendarSubmitted: false,
@@ -54,7 +55,7 @@ class RegistrationExpectedDOB extends Component {
 
   componentDidMount() {
     if (['none', 'unknown'].includes(this.props.session.connectionType)) {
-      this.setState({ dobError: 'The internet is not currently available' });
+      this.setState({ isSubmitting: true, dobError: 'The internet is not currently available' });
     }
   }
 
@@ -115,6 +116,7 @@ class RegistrationExpectedDOB extends Component {
         respondent_ids: [respondent.data.api_id],
         screening_blood: subject.data.screening_blood,
       };
+      this.setState({ isSubmitting: true });
       this.props.createSubject(newSubject);
     } else {
       this.setState({ dobError: 'You must provide the Expected Date of Birth' });
@@ -165,8 +167,9 @@ class RegistrationExpectedDOB extends Component {
                   title="NEXT"
                   onPress={props.submitForm}
                   buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={ { fontWeight: 900 } }
+                  titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
+                  disabled={this.state.isSubmitting}
                 />
               </View>
             </Form>

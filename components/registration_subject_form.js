@@ -77,6 +77,7 @@ const conceptionMethods = [
 
 class RegistrationSubjectForm extends Component {
   state = {
+    isSubmitting: false,
     dobError: null,
     apiCreateSubjectSubmitted: false,
     apiCreateMilestoneCalendarSubmitted: false,
@@ -89,7 +90,7 @@ class RegistrationSubjectForm extends Component {
 
   componentDidMount() {
     if (['none', 'unknown'].includes(this.props.session.connectionType)) {
-      this.setState({ dobError: 'The internet is not currently available' });
+      this.setState({ isSubmitting: true, dobError: 'The internet is not currently available' });
     }
   }
 
@@ -156,6 +157,7 @@ class RegistrationSubjectForm extends Component {
               respondent_ids: [respondent.data.api_id],
               screening_blood: subject.data.screening_blood,
             };
+            this.setState({ isSubmitting: true });
             this.props.createSubject(newSubject);
           } else {
             this.setState({ dobError: 'You must provide the Date of Birth' });
@@ -247,6 +249,7 @@ class RegistrationSubjectForm extends Component {
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={ { fontWeight: 900 } }
                   color={Colors.darkGreen}
+                  disabled={this.state.isSubmitting}
                 />
               </View>
             </Form>

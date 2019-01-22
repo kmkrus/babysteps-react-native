@@ -83,7 +83,7 @@ class OverviewScreen extends React.Component {
             );
           });
           currentIndexMilestones =
-            currentIndexMilestones >= 0 ? currentIndexMilestones : 0;
+            currentIndexMilestones >= 0 ? currentIndexMilestones + 1 : 0;
 
           this.setState({
             currentIndexMilestones,
