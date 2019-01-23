@@ -23,7 +23,7 @@ export default {
   REMOVE_ATTACHMENTS_DIRECTORY: false, // will delete all answer attachments
 
   // API
-  BASE_PRODUCTION_URL: 'https://app-8756.on-aptible.com/api',
+  BASE_PRODUCTION_URL: 'https://api.babystepsapp.net/api',
   BASE_STAGING_URL: 'https://app-8756.on-aptible.com/api',
   BASE_DEVELOPMENT_URL: 'https://app-8756.on-aptible.com/api',
   //BASE_DEVELOPMENT_URL: 'http://10.1.10.140:3000/api',
