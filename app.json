@@ -34,7 +34,7 @@
       }
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 12,
       "package": "com.gofullstack.babysteps",
       "permissions": [
         "AUDIO_RECORDING",
@@ -44,18 +44,18 @@
         "VIBRATE",
         "ACCESS_NETWORK_STATE"
       ]
-    }
-  },
-  "hooks": {
-    "postPublish": [
-      {
-        "file": "sentry-expo/upload-sourcemaps",
-        "config": {
-          "organization": "Babysteps",
-          "project": "babysteps_react_native",
-          "authToken": "44bb6f65629c4f69b182f8a4d908e3c0a6d2d04cf1614976a781a8b571814280"
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "babysteps",
+            "project": "babysteps-react-native",
+            "authToken": "44bb6f65629c4f69b182f8a4d908e3c0a6d2d04cf1614976a781a8b571814280"
+          }
         }
-      }
-    ]
+      ]
+    }
   }
 }
