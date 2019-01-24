@@ -24,8 +24,8 @@ export default {
 
   // API
   BASE_PRODUCTION_URL: 'https://api.babystepsapp.net/api',
-  BASE_STAGING_URL: 'https://app-8756.on-aptible.com/api',
-  BASE_DEVELOPMENT_URL: 'https://app-8756.on-aptible.com/api',
+  BASE_STAGING_URL: 'https://app-13198.on-aptible.com/api',
+  BASE_DEVELOPMENT_URL: 'https://app-13198.on-aptible.com/api',
   //BASE_DEVELOPMENT_URL: 'http://10.1.10.140:3000/api',
 
   MILESTONE_TOKEN: '816fb58eb3ef6dc4dcf85a230b2049da33bac3b7a744d26f33ca3b89ae136d41',
