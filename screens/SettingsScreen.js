@@ -8,6 +8,8 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import { fetchNotifications } from '../actions/notification_actions';
 
+import { getApiUrl } from '../database/common';
+
 import Colors from '../constants/Colors';
 
 class SettingsScreen extends React.Component {
@@ -44,18 +46,34 @@ class SettingsScreen extends React.Component {
     );
   };
 
+  getReleaseChannel(manifest) {
+    const releaseChannel = manifest.releaseChannel; // returns undefined in DEV
+    if (__DEV__ || releaseChannel === undefined) {
+      return 'Development';
+    }
+    if (releaseChannel.indexOf('staging') !== -1) {
+      return 'Staging';
+    }
+    return 'Production';
+  }
+
   render() {
     const { manifest } = Constants;
     const build =
       Platform.OS === 'android'
         ? manifest.android.versionCode
         : manifest.ios.buildNumber;
+    const releaseChannel = this.getReleaseChannel(manifest);
+
     return (
       <View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>BabySteps App Information:</Text>
-          <Text >
+          <Text>
             Version: {manifest.version}:{build}
+          </Text>
+          <Text>
+            Release: {releaseChannel}
           </Text>
         </View>
         {this.renderNotificationList()}
