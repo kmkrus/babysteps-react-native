@@ -440,8 +440,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: Colors.red,
-    borderWidth: 1,
   },
   bottomBarMenu: {
     height: isIphoneX() ? 50 : 30,

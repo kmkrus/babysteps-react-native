@@ -35,7 +35,7 @@
     },
     "android": {
       "versionCode": 13,
-      "package": "com.gofullstack.babysteps",
+      "package": "com.gofullstack.babysteps.dev",
       "permissions": [
         "AUDIO_RECORDING",
         "CAMERA",
