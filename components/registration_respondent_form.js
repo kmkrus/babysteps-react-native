@@ -191,7 +191,7 @@ class RegistrationRespondentForm extends Component {
           onSubmit={this._handleOnSubmit}
           validationSchema={validationSchema}
           initialValues={{
-            respondent_type: 'father',
+            respondent_type: 'mother',
             address_1: '',
             city: '',
             state: 'IA',
