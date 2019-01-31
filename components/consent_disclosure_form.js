@@ -27,6 +27,7 @@ class ConsentDisclosureForm extends Component {
     errorMessage: '',
     errorMessageLocation: 0,
     showItem: '',
+    scrollOffset: 800,
   };
 
   handleSubmit = () => {
@@ -35,7 +36,7 @@ class ConsentDisclosureForm extends Component {
       "You must select whether or not you will allow collection of your baby's bloodspot.";
     if (screeningBlood === null) {
       this.setState({ errorMessage });
-      this._scrollView.scrollTo({ y: this.state.errorMessageLocation });
+      this._scrollView.scrollTo({ y: this.state.errorMessageLocation + this.state.scrollOffset });
     } else {
       this.props.saveScreenBlood({ screeningBlood });
       this.props.updateSession({
@@ -63,6 +64,53 @@ class ConsentDisclosureForm extends Component {
         contentContainerStyle={styles.scrollView}
         ref={ref => (this._scrollView = ref)}
       >
+
+        <View style={styles.elevated}>
+          <Ionicons
+            name="md-phone-portrait"
+            size={28}
+            style={styles.icon}
+            color={Colors.iconDefault}
+          />
+          <Text style={styles.header}>Assessment of Social Environment: A Pilot Study using Smart Phone Technology</Text>
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Principal Investigator:</Text>{'\n'}
+            <Text style={styles.bullet}>{'\u2022'} </Text>
+            <Text style={styles.listText}>
+              Lane Strathearn MD PhD
+            </Text>          </Text>
+          <Text style={styles.text}>
+            <Text style={styles.bold}>Research Team Contact:</Text>{'\n'}
+              <Text style={styles.bullet}>{'\u2022'} </Text>
+              <Text style={styles.listText}>
+                Guifeng Xu MD (319 356 7044)
+              </Text>{'\n'}
+              <Text style={styles.bullet}>{'\u2022'} </Text>
+              <Text style={styles.listText}>
+                Carol Mertens PhD (319 356 7044)
+              </Text>{'\n'}
+              <Text style={styles.bullet}>{'\u2022'} </Text>
+              <Text style={styles.listText}>Lane Strathearn MD PhD (319 356 7044)</Text>
+          </Text>
+          <Text style={styles.text}>
+          This consent form describes the research study to help you decide if you want to participate.  This form provides important information about what you will be asked to do during the study, about the risks and benefits of the study, and about your rights as a research subject.
+          </Text>
+          <Text style={styles.text}>
+            <Text style={styles.bullet}>{'\u2022'} </Text>
+            <Text style={styles.listText}>
+              If you have any questions about or do not understand something in this form, you should ask the research team for more information.
+            </Text>{'\n'}
+            <Text style={styles.bullet}>{'\u2022'} </Text>
+            <Text style={styles.listText}>
+              You should discuss your participation with anyone you choose such as family or friends.
+            </Text>{'\n'}
+            <Text style={styles.bullet}>{'\u2022'} </Text>
+            <Text style={styles.listText}>
+            Do not agree to participate in this study unless the research team has answered your questions and you decide that you want to be part of this study.
+            </Text>
+          </Text>
+        </View>
+
         <View style={styles.elevated}>
           <Ionicons
             name="md-construct"
@@ -219,7 +267,11 @@ class ConsentDisclosureForm extends Component {
             the medical record.
           </Text>
 
-          <View style={styles.checkboxView}>
+          <View style={styles.checkboxView} onLayout={(event) => {
+              const {x, y, width, height} = event.nativeEvent.layout;
+              this.setState({ errorMessageLocation: y });
+            }}
+            >
             <Text style={styles.header}>
               Please indicate below if you agree to the use of your baby’s
               newborn screening blood spots for genetic testing:
@@ -245,10 +297,6 @@ class ConsentDisclosureForm extends Component {
           <Text
             ref={ref => (this._checkboxError = ref)}
             style={styles.textError}
-            onLayout={(event) => {
-              const {x, y, width, height} = event.nativeEvent.layout;
-              this.setState({ errorMessageLocation: y });
-            }}
           >
             {this.state.errorMessage}
           </Text>
@@ -341,9 +389,9 @@ class ConsentDisclosureForm extends Component {
             There are also some personal questions on the questionnaires that
             you may be asked to complete that might make you feel uncomfortable.
             If you find these questions distressing, you may decline to answer
-            them. 
+            them.
           </Text>
-          <Text style={styles.text}>
+          <Text style={[styles.text, styles.underline]}>
             There may be information uncovered during the course of this
             research study indicating physical or sexual abuse of a child under
             the age of 18. The researcher conducting this study is required to
@@ -565,7 +613,7 @@ class ConsentDisclosureForm extends Component {
                 information about you for purposes of this study has no
                 expiration date. You may withdraw your permission for us to use
                 your health information for this research study by sending a
-                ritten notice to Dr. Lane Strathearn, 100 Hawkins Dr, CDD, Iowa
+                written notice to Dr. Lane Strathearn, 100 Hawkins Dr, CDD, Iowa
                 City IA. However, we may still use your health information that
                 was collected before withdrawing your permission. Also, if we
                 have sent your health information to a third party, such as the
@@ -633,7 +681,7 @@ class ConsentDisclosureForm extends Component {
 
         <View style={styles.buttonContainer}>
           <Button
-            title="NEXT"
+            title="AGREE"
             onPress={this.handleSubmit}
             color={Colors.pink}
             buttonStyle={styles.buttonNext}
@@ -668,6 +716,12 @@ const styles = StyleSheet.create({
     //textAlign: 'center',
     fontSize: 12,
     padding: 5,
+  },
+  underline: {
+    textDecorationLine: 'underline'
+  },
+  bold: {
+    fontWeight: '600'
   },
   textError: {
     textAlign: 'center',
