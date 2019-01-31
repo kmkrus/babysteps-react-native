@@ -37,11 +37,9 @@ const TextField = compose(
 )(TextFieldWithLabel);
 const PickerInput = compose(
   withInputAutoFocus,
-  withNextInputAutoFocusInput,
 )(Picker);
 const DatePickerInput = compose(
   withInputAutoFocus,
-  withNextInputAutoFocusInput,
 )(DatePicker);
 
 const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });

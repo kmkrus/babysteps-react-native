@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { FormLabel, FormInput } from 'react-native-elements';
 
 import { compose } from 'recompose';
-import makeInput, { withPickerValues } from 'react-native-formik';
+import makeInput, { withPickerValues, KeyboardModal } from 'react-native-formik';
 
 import find from 'lodash/find';
 
@@ -15,6 +15,10 @@ import Colors from '../constants/Colors';
 const Picker = compose(makeInput, withPickerValues)(FormInput);
 
 export default class PickerInput extends PureComponent {
+
+  focus() {
+
+  }
 
   render() {
     const { error, helper, touched, label, name, values, ...props } = this.props;
@@ -41,6 +45,9 @@ export default class PickerInput extends PureComponent {
             autoCorrect={false}
             values={values}
             {...this.props}
+            onChangeText={(value) => {
+              KeyboardModal.dismiss();
+            }}
           />
         </View>
         <InputHelper
