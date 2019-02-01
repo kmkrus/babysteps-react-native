@@ -120,6 +120,9 @@ class ConsentDisclosureForm extends Component {
           />
           <Text style={styles.header}>What is the Purpose of this Study?</Text>
           <Text style={styles.text}>
+            This is a research study.
+          </Text>
+          <Text style={styles.text}>
             We are inviting you to participate in this research study because
             you are either pregnant or the mother of a child under 2 years of
             age. In this study both you and your child will be considered
@@ -476,11 +479,26 @@ class ConsentDisclosureForm extends Component {
             ($20 for interview + $20 for app testing). A link will be sent to
             your email address.
           </Text>
-          <Text style={styles.text}>
+
+          <TouchableOpacity onPress={() => this.setShowItem('item_06')}>
+            <View style={styles.toggleContainer}>
+              <Ionicons
+                name={"md-arrow-" + (showItem === 'item_06' ? "dropdown" : "dropright")}
+                size={32}
+                style={styles.iconToggle}
+                color={Colors.iconDefault}
+              />
+              <Text style={styles.subTitle}>Who is funding this study?</Text>
+            </View>
+          </TouchableOpacity>
+
+          {showItem === 'item_06' && (
+            <Text style={styles.text}>
             The University and the research team are receiving no payments from
             other agencies, organizations or companies to conduct this research
             study.
-          </Text>
+            </Text>
+          )}
         </View>
 
         <View style={styles.elevated}>
