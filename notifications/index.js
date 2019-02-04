@@ -17,7 +17,7 @@ function scheduleNotificaton(localNotification, scheduleTime) {
   const notify_at = scheduleTime.toISOString();
   const data = localNotification.data;
   // console.log('****** Notfication Scheduled: ', notify_at, data.body);
-  notifications.push({ ...data, notify_at, channel_id: 'screeningEvents' });
+  createNotifications([{ ...data, notify_at, channel_id: 'screeningEvents' }]);
 }
 
 function localNotificationMessage(entry) {
@@ -72,7 +72,7 @@ function getRandomInt(min, max) {
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
   let cycleDate = moment(entry.notify_at).startOf('day');
-  if (moment().isAfter(entry.notify_at)) cycleDate = moment().startOf('day');
+  if (entry.notify_at === null || moment().isAfter(entry.notify_at)) cycleDate = moment().startOf('day');
   // only construct 14 days of momentary assessments
   // in order to stay under the 64 local notifications
   // limit of IOS.
@@ -97,7 +97,6 @@ export const setMomentaryAssessments = (entries, studyEndDate) => {
   forEach(entries, entry => {
     buildMomentaryAssessmentEntries(entry, studyEndDate);
   });
-  createNotifications(notifications);
 };
 
 export const setNotifications = entries => {
@@ -130,6 +129,8 @@ export const createNotifications = entries => {
     return `(${entry.task_id}, "${entry.notify_at}", ${entry.momentary_assessment}, "${entry.response_scale}", "${entry.title}", "${entry.body}", "info", "screeningEvents")`
   });
   const sql =`INSERT INTO notifications ( ${notificationFields.join(', ')} ) VALUES ${values.join(', ')};`;
+
+  console.log("Creating Notification", entries, sql);
 
   return db.transaction(tx => {
     tx.executeSql(
