@@ -81,6 +81,35 @@ class RegistrationSubjectForm extends Component {
     apiCreateMilestoneCalendarSubmitted: false,
   };
 
+  getInitialValues() {
+    let initialValues = {};
+    if (__DEV__) {
+      initialValues = {
+        respondent_ids: null,
+        gender: 'female',
+        date_of_birth: moment().subtract(1, 'years').format("YYYY/MM/DD"),
+        conception_method: 'natural',
+        screening_blood: null,
+        outcome: 'live_birth',
+        first_name: 'Test',
+        middle_name: 'Tester',
+        last_name: 'Child',
+      };
+    } else {
+      initialValues = {
+        respondent_ids: null,
+        gender: 'female',
+        date_of_birth: null,
+        conception_method: 'natural',
+        screening_blood: null,
+        outcome: 'live_birth',
+        first_name: '',
+        last_name: '',
+      };
+    }
+    return initialValues;
+  }
+
   componentWillMount() {
     this.props.resetSubject();
     this.props.fetchRespondent();
@@ -162,16 +191,7 @@ class RegistrationSubjectForm extends Component {
           }
         }}
         validationSchema={validationSchema}
-        initialValues={{
-          respondent_ids: null,
-          gender: 'female',
-          date_of_birth: null,
-          conception_method: 'natural',
-          screening_blood: null,
-          outcome: 'live_birth',
-          first_name: '',
-          last_name: '',
-        }}
+        initialValues={this.getInitialValues()}
         render={props => {
           return (
             <Form>

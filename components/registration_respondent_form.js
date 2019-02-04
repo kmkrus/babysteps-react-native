@@ -106,6 +106,43 @@ class RegistrationRespondentForm extends Component {
     apiErrorMessage: '',
   };
 
+  getInitialValues() {
+    let initialValues = {};
+    if (__DEV__) {
+      initialValues = {
+        respondent_type: 'mother',
+        address_1: '555 Test Address',
+        city: 'Test City',
+        state: 'IA',
+        zip_code: '55555',
+        home_phone: '555-555-5555',
+        date_of_birth: '1981-04-01',
+        drivers_license_number: '5555-5555-5555',
+        marital_status: 'married',
+        weight: '200',
+        height: '72',
+        pregnant: true,
+      }
+    } else {
+      initialValues = {
+        respondent_type: 'mother',
+        address_1: '',
+        city: '',
+        state: 'IA',
+        zip_code: '',
+        home_phone: '',
+        date_of_birth: '',
+        drivers_license_number: '',
+        marital_status: 'married',
+        weight: '',
+        height: '',
+        pregnant: true,
+      };
+    }
+    return initialValues;
+  }
+
+
   componentWillMount() {
     this.props.fetchUser();
     this.props.resetRespondent();
@@ -190,20 +227,7 @@ class RegistrationRespondentForm extends Component {
         <Formik
           onSubmit={this._handleOnSubmit}
           validationSchema={validationSchema}
-          initialValues={{
-            respondent_type: 'mother',
-            address_1: '',
-            city: '',
-            state: 'IA',
-            zip_code: '',
-            home_phone: '',
-            date_of_birth: '',
-            drivers_license_number: '',
-            marital_status: 'married',
-            weight: '',
-            height: '',
-            pregnant: true,
-          }}
+          initialValues={this.getInitialValues()}
           render={props => {
             return (
               <Form>

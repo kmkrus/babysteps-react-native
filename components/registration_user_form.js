@@ -45,6 +45,8 @@ const validationSchema = Yup.object().shape({
   last_name: Yup.string().required('Last Name is Required'),
 });
 
+
+
 class RegistrationUserForm extends Component {
   state = {
     isSubmitting: false,
@@ -52,6 +54,17 @@ class RegistrationUserForm extends Component {
     apiErrorMessage: '',
     user_registration_complete: false,
   };
+
+  getInitialValues() {
+    //return {};
+    let initialValues = {};
+    if (__DEV__) {
+      initialValues = { first_name: 'Test', last_name: 'Tester', email: 'test+' + Date.now()+ "@gmail.com", password: 'test1234' };
+    } else {
+      initialValues = { first_name: '', last_name: '', email: '', password: '' };
+    }
+    return initialValues;
+  }
 
   componentWillMount() {
     this.props.apiFetchMilestones();
@@ -133,7 +146,7 @@ class RegistrationUserForm extends Component {
         onSubmit={values => {
           this._onSubmit(values);
         }}
-        initialValues={{ first_name: '', last_name: '', email: '', password: '' }}
+        initialValues={this.getInitialValues()}
         validationSchema={validationSchema}
         render={props => {
           return (
