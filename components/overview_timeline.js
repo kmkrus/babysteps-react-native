@@ -26,6 +26,8 @@ import { fetchOverViewTimeline } from '../actions/milestone_actions';
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants';
 
+import AutoHeightImage from './auto_height_image'
+
 const { width, height } = Dimensions.get('window');
 
 const wp = (percentage, direction) => {
@@ -185,11 +187,16 @@ class OverviewTimeline extends React.Component {
     if (item.uri) {
       return (
         <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
-          <Image
+          <View style={[
+          styles.timelineImage, currentStyle
+        ]}>
+          <AutoHeightImage
             source={{ uri: item.uri }}
-            style={[styles.timelineImage, currentStyle]}
+            width={tlPhotoSize}
+            style={styles.croppedImage}
             resizeMode="cover"
           />
+          </View>
         </TouchableOpacity>
       );
     }
@@ -316,6 +323,11 @@ const styles = StyleSheet.create({
     height: tlPhotoSize,
     borderRadius: tlPhotoSize / 2,
     overflow: 'hidden',
+  },
+  croppedImage: {
+    position: 'absolute',
+    left: 0,
+    top: -14,
   },
   timelineCircleItem: {
     width: tlPhotoSize,

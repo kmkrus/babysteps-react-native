@@ -18,6 +18,8 @@ import {
 import { ImagePicker, Video, WebBrowser, Permissions } from 'expo';
 import DatePicker from 'react-native-datepicker';
 
+import AutoHeightImage from './auto_height_image'
+
 import _ from 'lodash';
 
 import registerForPermission, {
@@ -470,7 +472,7 @@ export class RenderFile extends Component {
               />
             )}
             {displayImage && (
-              <Image source={{ uri }} resizeMode="cover" style={styles.image} />
+              <AutoHeightImage source={{ uri }} style={styles.image} width={previewWidth} />
             )}
             {displayAudio && (
               <Text>Recording Attached</Text>
@@ -592,9 +594,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    flex: 1,
     width: previewWidth,
-    height: previewHeight,
   },
   video: {
     flex: 1,

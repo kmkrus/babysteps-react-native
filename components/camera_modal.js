@@ -18,7 +18,7 @@ import Colors from '../constants/Colors';
 // TODO fix horizontal styles
 const { width, height } = Dimensions.get('window');
 const imageWidth = width;
-const imageHeight = height * 0.7;
+const imageHeight = height;
 const imageButtonsHeight = height * 0.3;
 const cameraPositionMargin = 35;
 const cameraPositionMarginTop = 70;
@@ -277,7 +277,7 @@ class CameraModal extends Component {
 
   renderConfirmImage = () => {
     return (
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar,styles.bottomBarConfirm]}>
         <View style={styles.bottomBarConfirmActions}>
           <TouchableOpacity onPress={() => this.handleCancelImage()}>
             <Image
@@ -410,12 +410,14 @@ class CameraModal extends Component {
 
 const styles = StyleSheet.create({
   bottomBar: {
-    backgroundColor: Colors.black,
     justifyContent: 'space-between',
     height: 165,
     width: '100%',
-    flexDirection: 'column',
-    alignSelf: 'flex-end',
+    position: 'absolute',
+    bottom: 0,
+  },
+  bottomBarConfirm: {
+    backgroundColor: 'rgba(0,0,0,.3)',
   },
   bottomBarAction: {
     flex: 0.3,
