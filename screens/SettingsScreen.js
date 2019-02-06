@@ -21,8 +21,8 @@ class SettingsScreen extends React.Component {
     this.props.fetchNotifications();
   }
 
-  renderNotificationList() {
-    if (__DEV__) {
+  renderNotificationList(releaseChannel) {
+    if (releaseChannel != 'Production') {
       const notifications = this.props.notifications.notifications.data;
       return (
         <View style={styles.section}>
@@ -76,7 +76,7 @@ class SettingsScreen extends React.Component {
             Release: {releaseChannel}
           </Text>
         </View>
-        {this.renderNotificationList()}
+        {this.renderNotificationList(releaseChannel)}
       </View>
     );
   }
