@@ -13,6 +13,8 @@ import { values } from 'lodash';
 import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
 
+import AutoHeightImage from './auto_height_image';
+
 const { width, height } = Dimensions.get('window');
 const widthOffset = 40;
 const imageOffset = 60;
@@ -58,12 +60,15 @@ class BabyBookGetImage extends Component {
     const imageContainerHeight = this.state.imageHeight + 2;
     const item = this.props.item;
     const uri = item.file_uri;
+    const isPlaceholder = item.placeholder;
     let isVideo = false;
     if (item.file_type) {
       const formats = values(VideoFormats);
       isVideo = formats.includes(item.file_type);
     }
     const imageHeight = this.state.imageHeight;
+    console.log(item);
+    console.log(uri);
 
     return (
       <View style={[styles.imageContainer, { height: imageContainerHeight }]}>
@@ -72,7 +77,13 @@ class BabyBookGetImage extends Component {
             this.handleImageOnPress();
           }}
         >
-          {isVideo && (
+          {isPlaceholder && (
+            <Image
+              source={uri}
+              style={[styles.image, { height: imageHeight }]}
+            />
+          )}
+          {isVideo && !isPlaceholder && (
             <Video
               source={uri}
               resizeMode={Video.RESIZE_MODE_COVER}
@@ -81,10 +92,12 @@ class BabyBookGetImage extends Component {
               style={{ flex: 1, width: videoWidth, height: videoHeight }}
             />
           )}
-          {!isVideo && (
-            <Image
+          {!isVideo && !isPlaceholder && (
+            <AutoHeightImage
               source={uri}
-              style={[styles.image, { height: imageHeight }]}
+              width={imageWidth}
+              style={styles.croppedImage}
+              resizeMode="cover"
             />
           )}
         </TouchableOpacity>
@@ -118,23 +131,25 @@ const imageCorner = {
 
 const styles = StyleSheet.create({
   imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
     width: imageWidth + 2,
     maxHeight: imageMaxHeight,
     backgroundColor: Colors.white,
     borderColor: Colors.lightGrey,
     borderWidth: 2,
     padding: 5,
+    overflow: 'hidden',
   },
   image: {
-    width: imageWidth,
-    maxHeight: imageMaxHeight,
   },
   imageCornerTopLeft: {
     ...imageCorner,
     top: -2,
     left: -2,
+  },
+  croppedImage: {
+    position: 'absolute',
+    left: 0,
+    top: -60,
   },
   imageCornerTopRight: {
     ...imageCorner,

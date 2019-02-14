@@ -96,6 +96,7 @@ class BabyBookScreen extends Component {
         file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
         type: 'cover',
         imageHeight: imageWidth,
+        placeholder: true,
       },
     ],
     shareAttributes: {
@@ -169,6 +170,7 @@ class BabyBookScreen extends Component {
         });
         data = sortBy(data, i => i.created_at);
         // add entry for cover
+        console.log('data[0]',data[0]);
         data = [{ ...data[0], id: '0' }].concat(data);
         this.setState({ data });
         // update share
@@ -226,6 +228,7 @@ class BabyBookScreen extends Component {
   }
 
   render() {
+    console.log('this.state.data',this.state.data);
     return (
       <View style={styles.container}>
         <PageControl
@@ -240,6 +243,7 @@ class BabyBookScreen extends Component {
           indicatorSize={{ width: 10, height: 10 }}
           onPageIndicatorPress={index => this.handleIndexChange(index)}
         />
+
         <View style={styles.viewContainer}>
           <SideSwipe
             data={this.state.data}
