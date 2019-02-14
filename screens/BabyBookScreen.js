@@ -89,7 +89,7 @@ class BabyBookScreen extends Component {
 
   state = {
     currentIndex: 0,
-    data: [
+    data2: [
       {
         id: '0',
         file_name: null,
@@ -99,6 +99,7 @@ class BabyBookScreen extends Component {
         placeholder: true,
       },
     ],
+    data: [],
     shareAttributes: {
       content: {
         title: '',
@@ -175,6 +176,17 @@ class BabyBookScreen extends Component {
         this.setState({ data });
         // update share
         this.setShareAttributes(this.state.currentIndex);
+      } else {
+        this.setState([
+          {
+            id: '0',
+            file_name: null,
+            file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
+            type: 'cover',
+            imageHeight: imageWidth,
+            placeholder: true,
+          }
+        ]);
       }
     }
   }
@@ -193,22 +205,24 @@ class BabyBookScreen extends Component {
 
   setShareAttributes(index) {
     // for share
-    const item = this.state.data[index];
-    const uri = babybookDir + item.file_name;
+    if(this.state.data.length > index){
+      const item = this.state.data[index];
+      const uri = babybookDir + item.file_name;
 
-    this.setState({
-      shareAttributes: {
-        content: {
-          title: item.title,
-          message: item.detail,
-          url: uri, // ios only
+      this.setState({
+        shareAttributes: {
+          content: {
+            title: item.title,
+            message: item.detail,
+            url: uri, // ios only
+          },
+          options: {
+            subject: item.title, // for email
+            dialogTitle: `Share ${item.title}`, // Android only
+          },
         },
-        options: {
-          subject: item.title, // for email
-          dialogTitle: `Share ${item.title}`, // Android only
-        },
-      },
-    });
+      });
+    }
   }
 
   shareOpen() {
@@ -245,18 +259,20 @@ class BabyBookScreen extends Component {
         />
 
         <View style={styles.viewContainer}>
-          <SideSwipe
-            data={this.state.data}
-            index={this.state.currentIndex}
-            shouldCapture={() => true}
-            style={[styles.carouselFill, { width }]}
-            itemWidth={BabyBookItem.WIDTH}
-            threshold={BabyBookItem.WIDTH / 2}
-            contentOffset={contentOffset}
-            extractKey={item => item.id}
-            onIndexChange={index => this.handleIndexChange(index)}
-            renderItem={page => this.renderItem(page)}
-          />
+          {this.state.data.length > 0 && (
+            <SideSwipe
+              data={this.state.data}
+              index={this.state.currentIndex}
+              shouldCapture={() => true}
+              style={[styles.carouselFill, { width }]}
+              itemWidth={BabyBookItem.WIDTH}
+              threshold={BabyBookItem.WIDTH / 2}
+              contentOffset={contentOffset}
+              extractKey={item => item.id}
+              onIndexChange={index => this.handleIndexChange(index)}
+              renderItem={page => this.renderItem(page)}
+            />
+          )}
         </View>
       </View>
     );
