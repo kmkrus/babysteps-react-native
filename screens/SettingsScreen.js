@@ -69,7 +69,7 @@ class SettingsScreen extends React.Component {
     let version = `${manifest.version}:${build}`;
     let body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}`;
 
-    Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body})`);
+    Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body}`);
   };
 
   getAppVersion = () => {
