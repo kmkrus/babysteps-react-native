@@ -1,7 +1,9 @@
 import React from 'react';
-import { Text, View, FlatList, StyleSheet, Platform } from 'react-native';
+import { Linking, Text, View, FlatList, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { Constants } from 'expo';
+import { MaterialIcons } from '@expo/vector-icons';
+
 
 import moment from 'moment';
 
@@ -11,6 +13,8 @@ import { fetchNotifications } from '../actions/notification_actions';
 import { getApiUrl } from '../database/common';
 
 import Colors from '../constants/Colors';
+
+const { manifest } = Constants;
 
 class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -57,12 +61,28 @@ class SettingsScreen extends React.Component {
     return 'Production';
   }
 
-  render() {
-    const { manifest } = Constants;
+  _handleFeedbackPress = () => {
+
+    const build = this.getAppVersion();
+    const releaseChannel = this.getReleaseChannel(manifest);
+
+    let version = `${manifest.version}:${build}`;
+    let body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}`;
+
+    Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body})`);
+  };
+
+  getAppVersion = () => {
     const build =
       Platform.OS === 'android'
         ? manifest.android.versionCode
         : manifest.ios.buildNumber;
+    return build;
+  }
+
+
+  render() {
+    const build = this.getAppVersion();
     const releaseChannel = this.getReleaseChannel(manifest);
 
     return (
@@ -75,6 +95,12 @@ class SettingsScreen extends React.Component {
           <Text>
             Release: {releaseChannel}
           </Text>
+          <TouchableOpacity style={styles.feedbackContainer} onPress={this._handleFeedbackPress}>
+            <Text style={styles.feedbackText}>
+              Provide Feedback
+            </Text>
+            <MaterialIcons name="keyboard-arrow-right" size={28} color="#bdc6cf" style={styles.feedbackIcon} />
+          </TouchableOpacity>
         </View>
         {this.renderNotificationList(releaseChannel)}
       </View>
@@ -92,6 +118,29 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
+  feedbackContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderTopColor: '#bbb',
+    borderBottomColor: '#bbb',
+    marginTop: 20,
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 10,
+    position: 'relative',
+  },
+  feedbackText: {
+    fontSize: 16,
+    color: '#43484d',
+    marginLeft: 10,
+  },
+  feedbackIcon: {
+    right: 9,
+    position: 'absolute',
+    top: 12,
+  }
+
+
 });
 
 const mapStateToProps = ({ session, notifications }) => ({ session, notifications });
