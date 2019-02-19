@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Video } from 'expo';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { values } from 'lodash';
 
@@ -56,6 +57,12 @@ class BabyBookGetImage extends Component {
     }
   };
 
+  handleVideoOnPress = () => {
+    console.log("Launch Full Screen Video");
+    this.videoPlayer.presentFullscreenPlayer();
+    this.videoPlayer.replayAsync();
+  }
+
   render() {
     const imageContainerHeight = this.state.imageHeight + 2;
     const item = this.props.item;
@@ -67,16 +74,14 @@ class BabyBookGetImage extends Component {
       isVideo = formats.includes(item.file_type);
     }
     const imageHeight = this.state.imageHeight;
-    console.log(item);
-    console.log(uri);
+
+    let containerStyle = styles.imageContainer;
+    if(isVideo){
+      containerStyle = styles.videoContainer;
+    }
 
     return (
-      <View style={[styles.imageContainer, { height: imageContainerHeight }]}>
-        <TouchableOpacity
-          onPressIn={() => {
-            this.handleImageOnPress();
-          }}
-        >
+      <View style={[containerStyle, { height: imageContainerHeight }]}>
           {isPlaceholder && (
             <Image
               source={uri}
@@ -84,13 +89,20 @@ class BabyBookGetImage extends Component {
             />
           )}
           {isVideo && !isPlaceholder && (
-            <Video
-              source={uri}
-              resizeMode={Video.RESIZE_MODE_COVER}
-              shouldPlay={false}
-              useNativeControls
-              style={{ flex: 1, width: videoWidth, height: videoHeight }}
-            />
+            <View>
+              <Video
+                source={uri}
+                resizeMode={Video.RESIZE_MODE_COVER}
+                shouldPlay={false}
+                useNativeControls={false}
+                onPress={this.handleVideoOnPress}
+                ref={ref => this.videoPlayer = ref}
+                style={{ flex: 1, width: videoWidth, height: videoHeight }}
+              />
+              <TouchableOpacity onPress={this.handleVideoOnPress} style={[styles.videoOverlay,{width: videoWidth, height: videoHeight }]}>
+                <MaterialIcons name="play-arrow" size={80} color="#fff" style={styles.videPlayIcon} />
+              </TouchableOpacity>
+            </View>
           )}
           {!isVideo && !isPlaceholder && (
             <AutoHeightImage
@@ -100,7 +112,6 @@ class BabyBookGetImage extends Component {
               resizeMode="cover"
             />
           )}
-        </TouchableOpacity>
 
         <Image
           style={styles.imageCornerTopLeft}
@@ -139,7 +150,28 @@ const styles = StyleSheet.create({
     padding: 5,
     overflow: 'hidden',
   },
+  videoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: imageWidth + 2,
+    maxHeight: imageMaxHeight,
+    backgroundColor: Colors.white,
+    borderColor: Colors.lightGrey,
+    borderWidth: 2,
+    padding: 5,
+    position: 'relative',
+  },
+  videoOverlay: {
+     flex: 1,
+     position: 'absolute',
+     top: 0,
+     left: 0,
+     justifyContent: 'center',
+     alignItems: 'center',
+  },
   image: {
+  },
+  videPlayIcon: {
   },
   imageCornerTopLeft: {
     ...imageCorner,

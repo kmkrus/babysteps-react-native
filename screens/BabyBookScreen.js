@@ -171,7 +171,6 @@ class BabyBookScreen extends Component {
         });
         data = sortBy(data, i => i.created_at);
         // add entry for cover
-        console.log('data[0]',data[0]);
         data = [{ ...data[0], id: '0' }].concat(data);
         this.setState({ data });
         // update share
@@ -242,7 +241,6 @@ class BabyBookScreen extends Component {
   }
 
   render() {
-    console.log('this.state.data',this.state.data);
     return (
       <View style={styles.container}>
         <PageControl
@@ -263,14 +261,15 @@ class BabyBookScreen extends Component {
             <SideSwipe
               data={this.state.data}
               index={this.state.currentIndex}
-              shouldCapture={() => true}
               style={[styles.carouselFill, { width }]}
               itemWidth={BabyBookItem.WIDTH}
               threshold={BabyBookItem.WIDTH / 2}
               contentOffset={contentOffset}
               extractKey={item => item.id}
+              useVelocityForIndex={false}
               onIndexChange={index => this.handleIndexChange(index)}
               renderItem={page => this.renderItem(page)}
+              useNativeDriver={true}
             />
           )}
         </View>

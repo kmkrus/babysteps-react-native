@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { 
+import {
   View,
   ScrollView,
   Text,
@@ -47,16 +47,15 @@ class BabyBookTimelineScreen extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (!this.props.babybook.entries.fetching) 
+    return (!this.props.babybook.entries.fetching)
   }
 
   onEventPress(data) {
-    console.log(data)
     
   }
 
   render() {
-    
+
     if ( this.props.babybook.entries.data.length ) {
       data = this.props.babybook.entries.data
       _.forEach(data, function(item) {
@@ -90,23 +89,23 @@ class BabyBookTimelineScreen extends Component {
 
             timeContainerStyle={{minWidth:52, marginTop: -5}}
             timeStyle={{fontSize: 10, textAlign: 'center', color: Colors.grey, padding:5}}
-            
+
             descriptionStyle={{color: Colors.grey}}
             options={{
               style:{paddingTop:5}
             }}
             innerCircle={'icon'}
-            onEventPress={ (item) => {this.props.navigation.navigate('BabyBook', {itemId: item.id})} }                    
+            onEventPress={ (item) => {this.props.navigation.navigate('BabyBook', {itemId: item.id})} }
             separator={false}
             titleStyle={{textAlign: 'center', color: Colors.pink}}
             detailContainerStyle={{ marginTop: -10, marginBottom: 20, paddingLeft: 5, paddingRight: 5}}
             renderFullLine={true}
           />
-        
+
       </View>
     ) // return
 
-  } // render 
+  } // render
 
 }
 

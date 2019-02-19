@@ -37,7 +37,6 @@ export default class AutoHeightImage extends React.Component {
 
 
   render = () => {
-    console.log('AutoSizeImage',this.props, this.state);
     return (
       <Image
         source={this.props.source}

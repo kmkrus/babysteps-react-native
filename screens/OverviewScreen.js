@@ -66,7 +66,6 @@ class OverviewScreen extends React.Component {
   testNotification(noticeType = null) {
     const tasks = this.props.milestones.tasks;
     const milestones = this.props.milestones.milestones;
-    console.log("testNotification", arguments)
     if (!tasks.fetching && isEmpty(tasks.data)) {
       this.props.fetchMilestoneTasks();
       return;
@@ -79,9 +78,6 @@ class OverviewScreen extends React.Component {
     milestone = filteredMilestones[index];
 
     task = find(tasks.data, {milestone_id: milestone.id});
-
-    console.log("Task", task);
-    console.log("Milestone", milestone);
 
     if (milestone && task) {
       Notifications.presentLocalNotificationAsync({
