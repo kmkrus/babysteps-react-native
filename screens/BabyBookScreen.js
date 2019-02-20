@@ -176,7 +176,7 @@ class BabyBookScreen extends Component {
         // update share
         this.setShareAttributes(this.state.currentIndex);
       } else {
-        this.setState([
+        this.setState({data: [
           {
             id: '0',
             file_name: null,
@@ -185,7 +185,7 @@ class BabyBookScreen extends Component {
             imageHeight: imageWidth,
             placeholder: true,
           }
-        ]);
+        ]});
       }
     }
   }
@@ -241,6 +241,7 @@ class BabyBookScreen extends Component {
   }
 
   render() {
+    console.log('Rendering',this.state.data);
     return (
       <View style={styles.container}>
         <PageControl
