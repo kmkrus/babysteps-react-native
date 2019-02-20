@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { View, Image, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
 import { FileSystem } from 'expo';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import _ from 'lodash';
+
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { connect } from 'react-redux';
 import {
@@ -44,10 +46,12 @@ import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
 import AudioFormats from '../constants/AudioFormats';
 
-const { width } = Dimensions.get('window');
+const { width , height } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 const twoButtonWidth = (width / 2) - 30;
+
+if (Platform.OS == 'android') {}
 
 class MilestoneQuestionsScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -378,42 +382,44 @@ class MilestoneQuestionsScreen extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView
-        contentContainerStyle={styles.container}
-        enableResetScrollToCoords={false}
-        enableAutomaticScroll
-        enableOnAndroid
-        extraScrollHeight={50}
-        innerRef={ref => {this.scroll = ref}}
-      >
-        <View style={styles.listContainer}>
-          <FlatList
-            renderItem={this.renderItem}
-            data={data}
-            keyExtractor={item => String(item.id)}
-          />
-        </View>
-
-        {this.state.questionsFetched && (
-          <View style={styles.buttonContainer}>
-            <Button
-              color={Colors.grey}
-              buttonStyle={styles.buttonOneStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.props.navigation.navigate('Overview')}
-              title="Cancel"
-            />
-            <Button
-              color={Colors.pink}
-              buttonStyle={styles.buttonTwoStyle}
-              titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.handleConfirm()}
-              title="Confirm"
-              disabled={this.state.confirmed}
+      <View style={{height: height}}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.container}
+          enableResetScrollToCoords={false}
+          enableAutomaticScroll
+          enableOnAndroid
+          extraScrollHeight={50}
+          innerRef={ref => {this.scroll = ref}}
+        >
+          <View style={styles.listContainer}>
+            <FlatList
+              renderItem={this.renderItem}
+              data={data}
+              keyExtractor={item => String(item.id)}
             />
           </View>
+        </KeyboardAwareScrollView>
+
+        {this.state.questionsFetched && (
+        <View style={[styles.buttonContainer, (Platform.OS == 'android' ? styles.buttonContainerAndroid : styles.buttonContainerIOS)] }>
+          <Button
+            color={Colors.grey}
+            buttonStyle={styles.buttonOneStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={() => this.props.navigation.navigate('Overview')}
+            title="Cancel"
+          />
+          <Button
+            color={Colors.pink}
+            buttonStyle={styles.buttonTwoStyle}
+            titleStyle={styles.buttonTitleStyle}
+            onPress={() => this.handleConfirm()}
+            title="Confirm"
+            disabled={this.state.confirmed}
+          />
+        </View>
         )}
-      </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
@@ -458,8 +464,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     width: '100%',
-    marginTop: 20,
-    marginBottom: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: Colors.lightGrey,
+    backgroundColor: Colors.background,
+    position: 'absolute',
+  },
+  buttonContainerAndroid: {
+    bottom: 126,
+  },
+  buttonContainerIOS: {
+    bottom: isIphoneX() ? 172 : 110,
   },
   buttonTitleStyle: {
     fontWeight: '900',
