@@ -58,7 +58,6 @@ class BabyBookGetImage extends Component {
   };
 
   handleVideoOnPress = () => {
-    console.log("Launch Full Screen Video");
     this.videoPlayer.presentFullscreenPlayer();
     this.videoPlayer.replayAsync();
   }
@@ -170,8 +169,8 @@ const styles = StyleSheet.create({
      alignItems: 'center',
   },
   image: {
-  },
-  videPlayIcon: {
+    width: imageWidth,
+    maxHeight: imageMaxHeight,
   },
   imageCornerTopLeft: {
     ...imageCorner,

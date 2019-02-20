@@ -241,7 +241,6 @@ class BabyBookScreen extends Component {
   }
 
   render() {
-    console.log('Rendering',this.state.data);
     return (
       <View style={styles.container}>
         <PageControl
