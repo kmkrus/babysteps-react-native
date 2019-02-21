@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, FlatList, Dimensions, Platform } from 'react-n
 import { FileSystem } from 'expo';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Video } from 'expo';
 
 import _ from 'lodash';
 
@@ -169,6 +170,39 @@ class MilestoneQuestionsScreen extends Component {
     return true;
   }
 
+  renderImageAttachement(url) {
+      return (<Image
+        style={styles.image}
+        source={{uri: url}}
+        resizeMethod="scale"
+        resizeMode="contain"
+      />
+    );
+  }
+
+  renderVideoAttachment(url) {
+    return (
+      <Video
+        source={{uri: url}}
+        resizeMode={Video.RESIZE_MODE_COVER}
+        shouldPlay={true}
+        isLooping={true}
+        ref={ref => this.videoPlayer = ref}
+        style={styles.video}
+      />
+    );
+  }
+
+
+  renderAttachment(attachment_url){
+    const fileExtension = attachment_url.split('.').pop();
+    if(_.has(VideoFormats,fileExtension)){
+      return this.renderVideoAttachment(attachment_url);
+    } else {
+      return this.renderImageAttachement(attachment_url);
+    }
+  }
+
   renderItem = item => {
     const question = item.item;
     const question_number = _.isEmpty(question.question_number)
@@ -177,14 +211,7 @@ class MilestoneQuestionsScreen extends Component {
     const title = `${question_number}. ${question.title}`;
     return (
       <View style={styles.questionContainer}>
-        {question.attachment_url && (
-          <Image
-            style={styles.image}
-            source={{uri: question.attachment_url}}
-            resizeMethod="scale"
-            resizeMode="contain"
-          />
-        )}
+        {question.attachment_url && this.renderAttachment(question.attachment_url)}
         <View style={styles.questionLeft}>
           <Text style={styles.question}>{title}</Text>
         </View>
@@ -458,6 +485,17 @@ const styles = StyleSheet.create({
     borderColor: Colors.black,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  video: {
+    flex: 1,
+    width: itemWidth,
+    height: itemWidth * 0.66,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: Colors.black,
+    borderRadius: 5,
+    marginBottom: 10,
+
   },
   buttonContainer: {
     flex: 1,
