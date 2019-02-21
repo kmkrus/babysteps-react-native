@@ -26,7 +26,7 @@ class MomentaryAssessment extends Component {
       if (!momentary_assessment.fetching && !momentary_assessment.fetched) {
         this.props.fetchMomentaryAssessment({ task_id: momentary_assessment.data.task_id });
         if (momentary_assessment.data.response_scale) {
-          this.setState({ response_scale: momentary_assessment.data.response_scale });
+          this.setState({ selectedIndex: null, response_scale: momentary_assessment.data.response_scale });
         }
       }
     }
@@ -49,13 +49,52 @@ class MomentaryAssessment extends Component {
       choice_id: momentary_assessment.choice_id,
       answer_numeric: selectedIndex + 1,
     };
-
-    this.props.hideMomentaryAssessment(momentary_assessment, answer);
+    setTimeout(() => {
+      this.props.hideMomentaryAssessment(momentary_assessment, answer);
+    }, 2000);
+    //
     this.props.createMilestoneAnswer(answer);
     this.props.apiCreateMilestoneAnswer(session, answer);
   }
 
+  getModalContent(task) {
+
+    if(this.state.selectedIndex !== null){
+      return this.getThankYouContent();
+    } else {
+      return this.getTaskContent(task);
+    }
+
+  }
+
+  getThankYouContent(){
+    return (
+      <View>
+        <Image
+          style={styles.image}
+          source={require('../assets/images/thank_you_balloons.png')}
+        />
+        <Text>Thank you for your response!</Text>
+      </View>
+    );
+  }
+
+
+  getTaskContent(task){
+    return (
+      <View>
+        <Image
+          style={styles.image}
+          source={require('../assets/images/exclaim.png')}
+        />
+        <Text>{task && task.title}</Text>
+      </View>
+    );
+  }
+
   render() {
+
+
     const showModal = this.props.notifications.show_momentary_assessment;
     const task = this.props.notifications.momentary_assessment.data;
     let buttons = ['1', '2', '3', '4', '5'];
@@ -78,18 +117,15 @@ class MomentaryAssessment extends Component {
           //          onLayout={this.onLayout}
         >
           <View style={styles.modal}>
-            <Image
-              style={styles.image}
-              source={require('../assets/images/exclaim.png')}
-            />
-            <Text>{task && task.title}</Text>
+            {this.getModalContent(task)}
             <ButtonGroup
               onPress={this._handleOnPress}
               selectedIndex={selectedIndex}
               buttons={buttons}
               buttonStyle={{ backgroundColor: Colors.background }}
               textStyle={{ color: Colors.pink }}
-              selectedTextStyle={{ color: Colors.pink, fontWeight: '900' }}
+              selectedTextStyle={{ color: Colors.darkGreen, fontWeight: '900' }}
+              selectedButtonStyle={{backgroundColor: Colors.lightGreen, borderColor: Colors.darkGreen}}
               innerBorderStyle={{ width: 2, color: Colors.pink }}
               containerStyle={{ borderWidth: 2, borderColor: Colors.pink, marginTop: 20 }}
             />
