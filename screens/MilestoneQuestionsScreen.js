@@ -57,13 +57,14 @@ if (Platform.OS == 'android') {}
 class MilestoneQuestionsScreen extends Component {
   static navigationOptions = ({ navigation }) => {
     const section = navigation.getParam('section', {title: ''});
-    return { title: section.title };
+    return { title: 'Screening Event' };
   };
 
   constructor(props) {
     super(props);
     this.state = {
       task_id: null,
+      task_name: '',
       section: {},
       questionsFetched: false,
       answersFetched: false,
@@ -92,6 +93,7 @@ class MilestoneQuestionsScreen extends Component {
       this.props.fetchMilestoneSections({ task_id: task.id });
       this.setState({
         task_id: task.id,
+        task_name: task.name,
         section: [],
         questionsFetched: false,
         answersFetched: false,
@@ -103,6 +105,10 @@ class MilestoneQuestionsScreen extends Component {
       return;
     }
     const sections = nextProps.milestones.sections;
+
+
+    console.log('Sections',sections);
+
     const questions = nextProps.milestones.questions;
     if (!sections.fetching && sections.fetched) {
       if (!_.isEmpty(sections.data)) {
@@ -185,14 +191,14 @@ class MilestoneQuestionsScreen extends Component {
       <Video
         source={{uri: url}}
         resizeMode={Video.RESIZE_MODE_COVER}
-        shouldPlay={true}
-        isLooping={true}
+        shouldPlay={false}
+        isLooping={false}
+        useNativeControls={true}
         ref={ref => this.videoPlayer = ref}
         style={styles.video}
       />
     );
   }
-
 
   renderAttachment(attachment_url){
     const fileExtension = attachment_url.split('.').pop();
@@ -419,6 +425,12 @@ class MilestoneQuestionsScreen extends Component {
           innerRef={ref => {this.scroll = ref}}
         >
           <View style={styles.listContainer}>
+            <Text style={styles.taskHeader}>{this.state.task_name}</Text>
+            {this.state.section && this.state.section.body && (
+            <Text style={styles.instructions}>
+              <Text style={styles.instructionsLabel}>Instructions:</Text> {this.state.section.body}
+            </Text>
+            )}
             <FlatList
               renderItem={this.renderItem}
               data={data}
@@ -453,10 +465,28 @@ class MilestoneQuestionsScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.background,
+    paddingBottom: 300,
   },
   listContainer: {
     flex: 1,
+    backgroundColor: Colors.background,
+  },
+  taskHeader: {
+    alignSelf: 'center',
+    fontSize: 18,
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    color: Colors.white,
+    width,
+    backgroundColor: '#c0c0c0',
+  },
+  instructions: {
+    flex: 1,
+    fontSize: 14,
+    margin: 10,
+  },
+  instructionsLabel: {
+    fontWeight: 'bold',
   },
   questionContainer: {
     flexDirection: 'column',

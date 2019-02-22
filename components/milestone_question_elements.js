@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
   questionBody: {
     marginLeft: 20,
     marginRight: 20,
-    marginBottom: 20,
+    marginBottom: 0,
   },
   buttonTitleStyle: {
     fontWeight: '900',
