@@ -472,13 +472,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   taskHeader: {
-    alignSelf: 'center',
     fontSize: 18,
     paddingHorizontal: 10,
     paddingVertical: 20,
     color: Colors.white,
     width,
     backgroundColor: '#c0c0c0',
+    textAlign: 'center',
   },
   instructions: {
     flex: 1,
