@@ -385,6 +385,10 @@ export class RenderFile extends Component {
       let displayImage = false;
       let displayAudio = false;
 
+      const allowAttachFile = !['post_birth', 'during_pregnancy'].includes(
+        choice.overview_timeline,
+      );
+
       let uri = null;
       let uriParts = [];
       const image = {};
@@ -421,14 +425,16 @@ export class RenderFile extends Component {
           {(isImage || isVideo) && (
             <View>
               <Text style={styles.questionBody}>{question.body}</Text>
-              <Button
-                title={`Attach ${format}`}
-                buttonStyle={styles.libraryButton}
-                titleStyle={styles.buttonTitleStyle}
-                color={Colors.green}
-                onPress={() => this.pickImage(choice, 'library')}
-                disabled={!hasCameraRollPermission}
-              />
+              {allowAttachFile && (
+                <Button
+                  title={`Attach ${format}`}
+                  buttonStyle={styles.libraryButton}
+                  titleStyle={styles.buttonTitleStyle}
+                  color={Colors.green}
+                  onPress={() => this.pickImage(choice, 'library')}
+                  disabled={!hasCameraRollPermission}
+                />
+              )}
               <Button
                 title={`Take a ${format}`}
                 buttonStyle={styles.cameraButton}
@@ -474,9 +480,7 @@ export class RenderFile extends Component {
             {displayImage && (
               <AutoHeightImage source={{ uri }} style={styles.image} width={previewWidth} />
             )}
-            {displayAudio && (
-              <Text>Recording Attached</Text>
-            )}
+            {displayAudio && (<Text>Recording Attached</Text>)}
             <Text style={styles.textError}>{this.state.imageError}</Text>
           </View>
         </View>

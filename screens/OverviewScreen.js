@@ -99,7 +99,7 @@ class OverviewScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.timline_container}>
+        <View style={styles.timeline_container}>
           <OverviewTimeline navigation={this.props.navigation} />
         </View>
 
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  timline_container: {
+  timeline_container: {
     height: timelineHeight,
     borderTopWidth: 2,
     borderTopColor: Colors.lightGrey,

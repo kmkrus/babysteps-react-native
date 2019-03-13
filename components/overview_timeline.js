@@ -54,6 +54,7 @@ class OverviewTimeline extends React.Component {
     let baseDate = '';
     let postBirth = false;
     const subject = nextProps.registration.subject;
+    if (!subject.data) {return null};
     if (!subject.fetching && subject.fetched) {
       if (subject.data.date_of_birth) {
         baseDate = subject.data.date_of_birth;

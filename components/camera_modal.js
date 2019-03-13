@@ -246,9 +246,7 @@ class CameraModal extends Component {
                   marginRight: 72,
                   fontSize: 15,
                   color:
-                    activeOption === 'photo'
-                      ? Colors.magenta
-                      : Colors.white,
+                    activeOption === 'photo' ? Colors.magenta : Colors.white,
                 }}
               >
                 Photo

@@ -40,6 +40,9 @@ const createAPIKeys = answer => {
 };
 
 export default store => next => action => {
+  if (!action || !action.type) {
+    return null;
+  }
   if (action.type !== API_UPDATE_MILESTONE_ANSWERS_FULFILLED) {
     return next(action);
   }

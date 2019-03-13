@@ -580,7 +580,10 @@ class ConsentDisclosureForm extends Component {
             Will My Health Information be Used During this Study?
           </Text>
           <Text style={styles.text}>
-            The Federal Health Insurance Portability and Accountability Act (HIPAA) requires your healthcare provider to obtain your permission for the research team to access or create “protected health information” about you for purposes of this research study.
+            The Federal Health Insurance Portability and Accountability Act
+            (HIPAA) requires your healthcare provider to obtain your permission
+            for the research team to access or create “protected health
+            information” about you for purposes of this research study.
           </Text>
           <TouchableOpacity onPress={() => this.setShowItem('item_05')}>
             <View style={styles.toggleContainer}>
@@ -736,10 +739,10 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   underline: {
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
   },
   bold: {
-    fontWeight: '600'
+    fontWeight: '600',
   },
   textError: {
     textAlign: 'center',

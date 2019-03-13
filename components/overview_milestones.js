@@ -54,6 +54,7 @@ class OverviewScreen extends React.Component {
     const subject = nextProps.registration.subject;
     let baseDate = '';
     if (!subject.fetching && subject.fetched) {
+      if (!subject.data) {return null};
       if (subject.data.date_of_birth) {
         baseDate = subject.data.date_of_birth;
       } else {

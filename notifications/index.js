@@ -71,8 +71,12 @@ function getRandomInt(min, max) {
 }
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
+  // notifications require title and body
+  if (!entry.title || !entry.body) return null;
   let cycleDate = moment(entry.notify_at).startOf('day');
-  if (entry.notify_at === null || moment().isAfter(entry.notify_at)) cycleDate = moment().startOf('day');
+  if (entry.notify_at === null || moment().isAfter(entry.notify_at)) {
+    cycleDate = moment().startOf('day');
+  }
   // only construct 14 days of momentary assessments
   // in order to stay under the 64 local notifications
   // limit of IOS.
@@ -101,10 +105,13 @@ export const setMomentaryAssessments = (entries, studyEndDate) => {
 
 export const setNotifications = entries => {
   forEach(entries, entry => {
-    const localNotification = localNotificationMessage(entry);
-    const scheduleTime = moment(entry.notify_at);
-    if (scheduleTime.isValid()) {
-      scheduleNotificaton(localNotification, scheduleTime);
+    // notifications requires title and body
+    if (entry.title || entry.body) {
+      const localNotification = localNotificationMessage(entry);
+      const scheduleTime = moment(entry.notify_at);
+      if (scheduleTime.isValid()) {
+        scheduleNotificaton(localNotification, scheduleTime);
+      }
     }
   });
 };

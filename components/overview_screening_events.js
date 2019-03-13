@@ -52,6 +52,7 @@ class OverviewScreen extends React.Component {
   componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     if (!subject.fetching && subject.fetched) {
+      if (!subject.data) {return null};
       let fetchCalendarParams = {};
       if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
         fetchCalendarParams = { subject_id: subject.data.api_id };
