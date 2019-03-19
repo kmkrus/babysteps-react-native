@@ -7,6 +7,7 @@ const lightGreen = '#e6fcf7';
 const grey = '#666';
 const darkGrey = '#333';
 const lightGrey = '#ddd';
+const mediumGrey = '#c0c0c0';
 const pink = '#e85acc';
 const lightPink = '#fdf3fb';
 const white = '#fff';
@@ -35,6 +36,7 @@ export default {
   background: white,
   grey,
   darkGrey,
+  mediumGrey,
   lightGrey,
   magenta: '#E046BD',
   pink,

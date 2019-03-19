@@ -11,8 +11,8 @@ import {
   RenderExternalLink,
 } from './milestone_question_elements';
 
+// eslint-disable-next-line import/prefer-default-export
 export class RenderChoices extends PureComponent {
-
   render() {
     const {
       question,
@@ -20,8 +20,8 @@ export class RenderChoices extends PureComponent {
       attachments,
       errorMessage,
       saveResponse,
-      pregnancy=0,
-    } = this.props
+      pregnancy = 0,
+    } = this.props;
 
     switch (question.rn_input_type) {
       case 'check_box_multiple': {
@@ -104,8 +104,8 @@ export class RenderChoices extends PureComponent {
             question={question}
             choices={question.choices}
             answers={answers}
-            pregnancy={pregnancy}
             attachments={attachments}
+            pregnancy={pregnancy}
             saveResponse={saveResponse}
             errorMessage={errorMessage}
           />
@@ -126,4 +126,5 @@ export class RenderChoices extends PureComponent {
     }
   }
 };
+
 

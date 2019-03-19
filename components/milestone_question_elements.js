@@ -363,10 +363,8 @@ export class RenderFile extends Component {
   };
 
   render() {
-    const question = this.props.question;
+    const { question, answers, attachments, errorMessage } = this.props;
     const format = formats[question.rn_input_type];
-    const answers = this.props.answers;
-    const attachments = this.props.attachments;
     let loadCameraModal = false;
     let loadAudioModal = false;
 
@@ -374,7 +372,6 @@ export class RenderFile extends Component {
     const hasCameraPermission = this.state.hasCameraPermission;
     const hasAudioPermission = this.state.hasAudioPermission;
     const permissionMessage = this.state.permissionMessage;
-    const errorMessage = this.props.errorMessage;
 
     const collection = _.map(this.props.choices, choice => {
       let isVideo = false;
@@ -391,17 +388,16 @@ export class RenderFile extends Component {
 
       let uri = null;
       let uriParts = [];
-      const image = {};
       let fileType = null;
       // will not support pregnancy history if attachment is added to questionaire
       const answer = _.find(answers, ['choice_id', choice.id]);
       const attachment = _.find(attachments, ['choice_id', choice.id]);
-
       if (attachment && attachment.uri) {
         uri = attachment.uri;
         uriParts = uri.split('.');
         fileType = uriParts[uriParts.length - 1];
       }
+
       switch (question.rn_input_type) {
         case 'file_image':
           isImage = true;

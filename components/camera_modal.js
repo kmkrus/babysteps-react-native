@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import { Camera, Video } from 'expo';
+
 import * as moment from 'moment';
 import padStart from 'lodash/padStart';
 import Colors from '../constants/Colors';
@@ -63,6 +64,16 @@ class CameraModal extends Component {
     this.setState({ isLandscape: false });
   };
 
+  onReceiveVideo = (cancelRecording, image) => {
+    if (!cancelRecording) {
+      this.image = image;
+      this.setState({ confirmingImage: true, recording: false });
+      Vibration.vibrate();
+    } else {
+      this.setState({ recording: false });
+    }
+  };
+
   startVideo = async () => {
     const recordingConfig = {
       quality: String(Camera.Constants.VideoQuality['720p']),
@@ -75,14 +86,9 @@ class CameraModal extends Component {
       this.setState({ videoTimer: this.state.videoTimer.add(1, 's') });
     }, 1000);
 
-    this.image = await this.camera.recordAsync(recordingConfig);
-
-    if (!this.cancelRecording) {
-      this.setState({ confirmingImage: true, recording: false });
-      Vibration.vibrate();
-    } else {
-      this.setState({ recording: false });
-    }
+    this.camera.recordAsync(recordingConfig).then(image => {
+      this.onReceiveVideo(this.cancelRecording, image);
+    });
   };
 
   stopVideo = () => {
@@ -96,14 +102,23 @@ class CameraModal extends Component {
     this.stopVideo();
   };
 
-  handlePressVideoOption = async () => {
+  handlePressVideoOption = () => {
     this.setState({ activeOption: 'video', videoTimer: moment.duration(0) });
+  };
+
+  handleCloseModal = () => {
+    this.props.closeCameraModal(null);
+  };
+
+  onReceiveImage = image => {
+
+    this.image = image;
+    this.setState({ confirmingImage: true });
   };
 
   handleTakePicture = async () => {
     this.image = null;
     const { activeOption } = this.state;
-
     if (activeOption === 'video') {
       if (this.state.recording) {
         this.stopVideo();
@@ -113,9 +128,9 @@ class CameraModal extends Component {
       return;
     }
 
-    this.image = await this.camera.takePictureAsync();
-    this.camera.pausePreview();
-    this.setState({ confirmingImage: true });
+    this.camera.takePictureAsync().then(image => {
+      this.onReceiveImage(image);
+    });
   };
 
   handleChangeFlashMode = () => {
@@ -140,21 +155,32 @@ class CameraModal extends Component {
   handleCancelImage = () => {
     if (this.videoTimeInterval) clearInterval(this.videoTimeInterval);
     this.videoTimer = moment.duration(0);
+    //this.camera.resumePreview();
     this.image = null;
-    this.camera.resumePreview();
     this.setState({ confirmingImage: false, videoTimer: moment.duration(0) });
   };
 
   handleConfirmImage = () => {
     if (this.videoTimeInterval) clearInterval(this.videoTimeInterval);
     this.videoTimer = moment.duration(0);
-    this.props.closeCameraModal(this.image);
-    this.image = null;
     this.setState({ confirmingImage: false, videoTimer: moment.duration(0) });
+    if (this.image) {
+      this.props.closeCameraModal(this.image);
+      this.image = null;
+    }
+  };
+
+  handleOnShow = () => {
+    //if (this.camera) this.camera.resumePreview();
+  };
+
+  handleOnDismiss = () => {
+    //if (this.camera) this.camera.pausePreview();
   };
 
   renderBottomBar = () => {
     const { videoTimer, limitOption, activeOption, isLandscape } = this.state;
+    const rotateX = isLandscape ? '90deg' : '0deg';
     let takePictureButtonColor = { backgroundColor: Colors.magenta };
     if (videoTimer) {
       const minutes = videoTimer.minutes();
@@ -172,15 +198,9 @@ class CameraModal extends Component {
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
           <View style={styles.bottomBarAction}>
-            <TouchableOpacity onPress={() => this.props.closeCameraModal(null)}>
+            <TouchableOpacity onPress={() => this.handleCloseModal() }>
               <Image
-                style={{
-                  width: 22,
-                  height: 22,
-                  transform: [
-                    { rotateX: isLandscape ? '90deg' : '0deg' },
-                  ],
-                }}
+                style={{ width: 22, height: 22, transform: [{ rotateX }] }}
                 source={require('../assets/images/camera_cancel_camera_icon.png')}
               />
             </TouchableOpacity>
@@ -196,27 +216,14 @@ class CameraModal extends Component {
           <View style={styles.bottomBarAction}>
             <TouchableOpacity onPress={this.handleChangeCameraType}>
               <Image
-                style={{
-                  width: 27,
-                  height: 27,
-                  marginRight: 26,
-                  transform: [
-                    { rotateX: isLandscape ? '90deg' : '0deg' },
-                  ],
-                }}
+                style={{ width: 27, height: 27, marginRight: 26, transform: [{ rotateX }] }}
                 source={require('../assets/images/camera_flip_direction_icon.png')}
               />
             </TouchableOpacity>
             {activeOption === 'photo' && (
               <TouchableOpacity onPress={this.handleChangeFlashMode}>
                 <Image
-                  style={{
-                    width: 28,
-                    height: 27,
-                    transform: [
-                      { rotateX: isLandscape ? '90deg' : '0deg' },
-                    ],
-                  }}
+                  style={{ width: 28, height: 27, transform: [{ rotateX }] }}
                   source={
                     this.state.flashMode === Camera.Constants.FlashMode.off
                       ? require('../assets/images/camera_toggle_flash_icon.png')
@@ -274,31 +281,19 @@ class CameraModal extends Component {
   };
 
   renderConfirmImage = () => {
+    const rotateX = this.state.isLandscape ? '90deg' : '0deg';
     return (
-      <View style={[styles.bottomBar,styles.bottomBarConfirm]}>
+      <View style={[styles.bottomBar, styles.bottomBarConfirm]}>
         <View style={styles.bottomBarConfirmActions}>
           <TouchableOpacity onPress={() => this.handleCancelImage()}>
             <Image
-              style={{
-                width: 27,
-                height: 27,
-                transform: [
-                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
-                ],
-              }}
+              style={[styles.bottomBarButtonImage, {transform: [{ rotateX }] }]}
               source={require('../assets/images/camera_delete_media_save_video.png')}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this.handleConfirmImage()}>
             <Image
-              style={{
-                width: 27,
-                height: 27,
-                transform: [
-                  { rotateX: this.state.isLandscape ? '90deg' : '0deg' },
-                ],
-                marginBottom: 4,
-              }}
+              style={[styles.bottomBarButtonImage, {transform: [{ rotateX }], marginBottom: 4 }]}
               source={require('../assets/images/camera_accept_media_icon.png')}
             />
           </TouchableOpacity>
@@ -309,6 +304,7 @@ class CameraModal extends Component {
 
   renderImagePreview = () => {
     const { activeOption } = this.state;
+    //this.camera.pausePreview;
     return (
       <View style={styles.imagePreview}>
         {activeOption === 'photo' && (
@@ -333,6 +329,7 @@ class CameraModal extends Component {
   };
 
   renderCameraPosition = choice => {
+    //if (this.camera) this.camera.resumePreview();
     if (choice !== undefined && choice) {
       let cameraPositionTemplate = '';
       if (choice.overview_timeline === 'post_birth') {
@@ -346,7 +343,7 @@ class CameraModal extends Component {
           <Image
             source={cameraPositionTemplate}
             style={styles.cameraPosition}
-            resizeMode="stretch"
+            resizeMode="cover"
           />
         );
       }
@@ -354,52 +351,40 @@ class CameraModal extends Component {
     return null;
   };
 
-  handleOnShow = () => {
-    const camera = this.camera;
-    if (camera) {
-      camera.resumePreview();
-    }
-  };
-
-  handleOnDismiss = () => {
-    const camera = this.camera;
-    if (camera) {
-      camera.pausePreview();
-    }
-  };
-
-  renderCameraContents = (confirmingImage, choice) => {
-    if (confirmingImage && this.image) {
-      return this.renderImagePreview();
-    }
-    return this.renderBottomBar();
+  renderCamera = () => {
+    const { flashMode, type } = this.state;
+    const choice = this.props.choice;
+    return (
+      <Camera
+        ref={ref => (this.camera = ref)}
+        style={styles.camera}
+        type={type}
+        flashMode={flashMode}
+      >
+        {this.renderBottomBar()}
+        {this.renderCameraPosition(choice)}
+      </Camera>
+    );
   };
 
   render() {
-    const { confirmingImage, flashMode, type } = this.state;
-    const choice = this.props.choice;
+    const confirmingImage = this.state.confirmingImage;
     return (
       <Modal
         animationType="slide"
         transparent={false}
         visible={this.props.modalVisible}
-        onShow={() => this.handleOnShow()}
-        onDismiss={() => this.handleOnDismiss()}
+        onShow={this.handleOnShow()}
+        onDismiss={this.handleOnDismiss()}
         onRequestClose={() => {}}
       >
-        <View
-          style={styles.camera}
-          ref={ref => (this.container = ref)}
-        >
-          <Camera
-            ref={ref => (this.camera = ref)}
-            style={styles.camera}
-            type={type}
-            flashMode={flashMode}
-          >
-            {this.renderCameraContents(confirmingImage, choice)}
-          </Camera>
-          {!confirmingImage && this.renderCameraPosition(choice)}
+        <View style={styles.camera} ref={ref => (this.container = ref)}>
+          {!confirmingImage && (
+            this.renderCamera()
+          )}
+          {confirmingImage && this.image && (
+            this.renderImagePreview()
+          )}
         </View>
       </Modal>
     );
@@ -447,6 +432,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'flex-start',
+  },
+  bottomBarButtonImage: {
+    width: 27,
+    height: 27,
   },
   camera: {
     flex: 1,

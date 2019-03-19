@@ -41,7 +41,6 @@ const tlCardWidth = tlPhotoSize;
 const tlCardMargin = (width - (tlCardWidth * 4)) / 8;
 
 class OverviewTimeline extends React.Component {
-
   state = {
     currentIndexTimeline: 0,
     sliderLoading: true,
@@ -184,19 +183,16 @@ class OverviewTimeline extends React.Component {
     const currentStyle = currentTimeline ? styles.timelineCurrentItem : {};
     const available = moment().isAfter(item.available_start_at) && moment().isBefore(item.available_end_at);
     const task = find(this.props.milestones.tasks.data, ['id', item.task_id]);
-
     if (item.uri) {
       return (
         <TouchableOpacity onPress={() => this.handleOnPress(item, task)}>
-          <View style={[
-          styles.timelineImage, currentStyle
-        ]}>
-          <AutoHeightImage
-            source={{ uri: item.uri }}
-            width={tlPhotoSize}
-            style={styles.croppedImage}
-            resizeMode="cover"
-          />
+          <View style={[styles.timelineImage, currentStyle]}>
+            <AutoHeightImage
+              source={{ uri: item.uri }}
+              width={tlPhotoSize}
+              style={styles.croppedImage}
+              resizeMode="cover"
+            />
           </View>
         </TouchableOpacity>
       );
@@ -269,6 +265,7 @@ class OverviewTimeline extends React.Component {
   };
 
   render() {
+    const data = this.state.overviewTimelines;
     return (
       <View style={styles.timeline}>
         {this.state.sliderLoading && (
@@ -277,7 +274,7 @@ class OverviewTimeline extends React.Component {
         <Text style={styles.timelineHeader}>My Baby's Progress</Text>
         <SideSwipe
           //index={this.state.currentIndexTimeline}
-          data={this.state.overviewTimelines}
+          data={data}
           renderItem={item => this.renderOverviewTimeline(item)}
           itemWidth={tlCardWidth + tlCardMargin}
           //contentOffset={tlCardMargin}\

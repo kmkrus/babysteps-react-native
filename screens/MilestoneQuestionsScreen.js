@@ -47,12 +47,10 @@ import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
 import AudioFormats from '../constants/AudioFormats';
 
-const { width , height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 const twoButtonWidth = (width / 2) - 30;
-
-if (Platform.OS == 'android') {}
 
 class MilestoneQuestionsScreen extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -106,9 +104,6 @@ class MilestoneQuestionsScreen extends Component {
     }
     const sections = nextProps.milestones.sections;
 
-
-    console.log('Sections',sections);
-
     const questions = nextProps.milestones.questions;
     if (!sections.fetching && sections.fetched) {
       if (!_.isEmpty(sections.data)) {
@@ -157,12 +152,10 @@ class MilestoneQuestionsScreen extends Component {
 
     const attachments = nextProps.milestones.attachments;
     if (!attachments.fetching && attachments.fetched) {
-      if (_.isEmpty(this.state.attachments) && !this.state.attachmentsFetched) {
-        this.setState({
-          attachments: this.props.milestones.attachments.data,
-          attachmentsFetched: true,
-        });
-      }
+      this.setState({
+        attachments: this.props.milestones.attachments.data,
+        attachmentsFetched: true,
+      });
     }
   }
 
@@ -176,66 +169,33 @@ class MilestoneQuestionsScreen extends Component {
     return true;
   }
 
-  renderImageAttachement(url) {
-      return (<Image
-        style={styles.image}
-        source={{uri: url}}
-        resizeMethod="scale"
-        resizeMode="contain"
-      />
-    );
-  }
-
-  renderVideoAttachment(url) {
-    return (
-      <Video
-        source={{uri: url}}
-        resizeMode={Video.RESIZE_MODE_COVER}
-        shouldPlay={false}
-        isLooping={false}
-        useNativeControls={true}
-        ref={ref => this.videoPlayer = ref}
-        style={styles.video}
-      />
-    );
-  }
-
-  renderAttachment(attachment_url){
-    const fileExtension = attachment_url.split('.').pop();
-    if(_.has(VideoFormats,fileExtension)){
-      return this.renderVideoAttachment(attachment_url);
-    } else {
-      return this.renderImageAttachement(attachment_url);
-    }
-  }
-
   renderItem = item => {
     const question = item.item;
     const question_number = _.isEmpty(question.question_number)
       ? String(question.position)
       : question.question_number;
     const title = `${question_number}. ${question.title}`;
+    const { answers, attachments, errorMessage } = this.state;
     return (
-      <View style={styles.questionContainer}>
+      <View key={question.id} style={styles.questionContainer}>
         {question.attachment_url && this.renderAttachment(question.attachment_url)}
         <View style={styles.questionLeft}>
           <Text style={styles.question}>{title}</Text>
         </View>
         <RenderChoices
           question={question}
-          answers={this.state.answers}
-          attachments={this.state.attachments}
+          answers={answers}
+          attachments={attachments}
           saveResponse={this.saveResponse}
-          errorMessage={this.state.errorMessage}
+          errorMessage={errorMessage}
         />
       </View>
     );
   };
 
-  saveResponse = (choice, response, options = {}) => {
+  saveResponse = async (choice, response, options = {}) => {
     let answer = {};
     const answers = [...this.state.answers];
-    const attachments = [...this.state.attachments];
     const format = options.format;
     const preserve = options.preserve;
 
@@ -255,9 +215,7 @@ class MilestoneQuestionsScreen extends Component {
 
     const user = this.props.registration.user;
     const subject = this.props.registration.subject;
-    const apiSubject = this.props.registration.apiSubject;
     const respondent = this.props.registration.respondent;
-
     const index = _.findIndex(answers, { choice_id: choice.id });
 
     if (index === -1) {
@@ -293,73 +251,85 @@ class MilestoneQuestionsScreen extends Component {
     _.assign(answer, response);
 
     if (response.attachments) {
-      const attachmentDir =
-        FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
-      answer.attachments = [];
-      _.map(response.attachments, async att => {
-        const attachment = {};
-        if (response.id) {
-          attachment.answer_id = response.id;
-        }
-
-        attachment.filename = att.uri.substring(
-          att.uri.lastIndexOf('/') + 1,
-          att.uri.length,
-        );
-
-        attachment.uri = attachmentDir + '/' + attachment.filename;
-
-        const fileType = att.uri.substring(
-          att.uri.lastIndexOf('.') + 1,
-          att.uri.length,
-        );
-
-        switch (att.file_type) {
-          case 'file_image':
-            attachment.content_type = ImageFormats[fileType];
-            break;
-          case 'file_video':
-            attachment.content_type = VideoFormats[fileType];
-            break;
-          case 'file_audio':
-            attachment.content_type = AudioFormats[fileType];
-            break;
-          default:
-            attachment.content_type = '';
-        }
-
-        await FileSystem.deleteAsync(attachment.uri, { idempotent: true });
-        await FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
-
-        const resultFile = await FileSystem.getInfoAsync(attachment.uri);
-        if (!resultFile.exists) {
-          console.log('Error: attachment not saved: ', choice.id, attachment.filename);
-          this.setState({errorMessage: 'Error: Attachment Not Saved'});
-        }
-
-        answer.answer_boolean = true;
-
-        _.assign(attachment, {
-          title: att.title,
-          section_id: this.state.section.id,
-          choice_id: choice.id,
-          width: att.width,
-          height: att.height,
-        });
-
-        _.remove(attachments, ['choice_id', choice.id]);
-        attachments.push(attachment);
-        this.setState({ attachments });
-        answer.attachments.push(attachment);
-      });
+      answer.answer_boolean = true;
+      answer.attachments = await this.mapAttachmentsAsync(choice, response);
     } // response.attachments
+
     answers.push(answer);
+    this.updateAnswersState(answers);
+  };
+
+  updateAnswersState = answers => {
+    console.log('Answers', answers);
     this.setState({ answers });
   };
 
+  mapAttachmentsAsync = async (choice, response) => {
+    const new_attachments = [...this.state.attachments];
+    _.remove(new_attachments, ['choice_id', choice.id]);
+    const attachmentDir = FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+    await _.map(response.attachments, async att => {
+      const attachment = {};
+      if (response.id) {
+        attachment.answer_id = response.id;
+      }
+
+      attachment.filename = att.uri.substring(
+        att.uri.lastIndexOf('/') + 1,
+        att.uri.length,
+      );
+
+      attachment.uri = attachmentDir + '/' + attachment.filename;
+
+      const fileType = att.uri.substring(
+        att.uri.lastIndexOf('.') + 1,
+        att.uri.length,
+      );
+
+      switch (att.file_type) {
+        case 'file_image':
+          attachment.content_type = ImageFormats[fileType];
+          break;
+        case 'file_video':
+          attachment.content_type = VideoFormats[fileType];
+          break;
+        case 'file_audio':
+          attachment.content_type = AudioFormats[fileType];
+          break;
+        default:
+          attachment.content_type = '';
+      }
+
+      await FileSystem.deleteAsync(attachment.uri, { idempotent: true });
+      await FileSystem.copyAsync({ from: att.uri, to: attachment.uri });
+
+      const resultFile = await FileSystem.getInfoAsync(attachment.uri);
+
+      if (!resultFile.exists) {
+        console.log('Error: attachment not saved: ', choice.id, attachment.filename);
+        this.setState({errorMessage: 'Error: Attachment Not Saved'});
+      }
+
+      _.assign(attachment, {
+        title: att.title,
+        section_id: this.state.section.id,
+        choice_id: choice.id,
+        width: att.width,
+        height: att.height,
+      });
+      new_attachments.push(attachment);
+      this.updateAttachmentState(new_attachments);
+    }); // map attachments
+    return new_attachments;
+  };
+
+  updateAttachmentState = attachments => {
+    console.log('Attachments', attachments);
+    this.setState({ attachments });
+  };
+
   handleConfirm = () => {
-    const section = this.state.section;
-    const answers = this.state.answers;
+    const { section, answers } = this.state;
     const session = this.props.session;
     const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
     // TODO validation
@@ -406,16 +376,49 @@ class MilestoneQuestionsScreen extends Component {
     this.props.navigation.navigate('MilestoneQuestionConfirm');
   };
 
+  renderImageAttachement(url) {
+    return (
+      <Image
+        style={styles.image}
+        source={{ url }}
+        resizeMethod="scale"
+        resizeMode="contain"
+      />
+    );
+  }
+
+  renderVideoAttachment(url) {
+    return (
+      <Video
+        source={{ url }}
+        resizeMode={Video.RESIZE_MODE_COVER}
+        shouldPlay={false}
+        isLooping={false}
+        useNativeControls
+        ref={ref => (this.videoPlayer = ref)}
+        style={styles.video}
+      />
+    );
+  }
+
+  renderAttachment(attachment_url) {
+    const fileExtension = attachment_url.split('.').pop();
+    if (_.has(VideoFormats, fileExtension)) {
+      return this.renderVideoAttachment(attachment_url);
+    }
+    return this.renderImageAttachement(attachment_url);
+  }
+
   render() {
     const milestones = this.props.milestones;
+    const section = this.state.section;
     const data = _.map(milestones.questions.data, question => {
       return _.extend({}, question, {
         choices: _.filter(milestones.choices.data, ['question_id', question.id]),
       });
     });
-
     return (
-      <View style={{height: height}}>
+      <View style={{ height }}>
         <KeyboardAwareScrollView
           contentContainerStyle={styles.container}
           enableResetScrollToCoords={false}
@@ -426,37 +429,47 @@ class MilestoneQuestionsScreen extends Component {
         >
           <View style={styles.listContainer}>
             <Text style={styles.taskHeader}>{this.state.task_name}</Text>
-            {this.state.section && this.state.section.body && (
-            <Text style={styles.instructions}>
-              <Text style={styles.instructionsLabel}>Instructions:</Text> {this.state.section.body}
-            </Text>
-            )}
+            {section &&
+              section.body && (
+                <Text style={styles.instructions}>
+                  <Text style={styles.instructionsLabel}>Instructions:</Text>
+                  {section.body}
+                </Text>
+              )}
             <FlatList
               renderItem={this.renderItem}
               data={data}
               keyExtractor={item => String(item.id)}
+              extraData={this.state}
             />
           </View>
         </KeyboardAwareScrollView>
 
         {this.state.questionsFetched && (
-        <View style={[styles.buttonContainer, (Platform.OS == 'android' ? styles.buttonContainerAndroid : styles.buttonContainerIOS)] }>
-          <Button
-            color={Colors.grey}
-            buttonStyle={styles.buttonOneStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={() => this.props.navigation.navigate('Overview')}
-            title="Cancel"
-          />
-          <Button
-            color={Colors.pink}
-            buttonStyle={styles.buttonTwoStyle}
-            titleStyle={styles.buttonTitleStyle}
-            onPress={() => this.handleConfirm()}
-            title="Confirm"
-            disabled={this.state.confirmed}
-          />
-        </View>
+          <View
+            style={[
+              styles.buttonContainer,
+              Platform.OS === 'android' 
+                ? styles.buttonContainerAndroid
+                : styles.buttonContainerIOS,
+            ]}
+          >
+            <Button
+              color={Colors.grey}
+              buttonStyle={styles.buttonOneStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={() => this.props.navigation.navigate('Overview')}
+              title="Cancel"
+            />
+            <Button
+              color={Colors.pink}
+              buttonStyle={styles.buttonTwoStyle}
+              titleStyle={styles.buttonTitleStyle}
+              onPress={() => this.handleConfirm()}
+              title="Confirm"
+              disabled={this.state.confirmed}
+            />
+          </View>
         )}
       </View>
     );
@@ -477,7 +490,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     color: Colors.white,
     width,
-    backgroundColor: '#c0c0c0',
+    backgroundColor: Colors.mediumGrey,
     textAlign: 'center',
   },
   instructions: {
