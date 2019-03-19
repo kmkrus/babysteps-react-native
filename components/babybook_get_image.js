@@ -38,18 +38,22 @@ class BabyBookGetImage extends Component {
       return;
     }
     if (item.file_name && item.file_uri) {
-      Image.getSize(
-        item.file_uri.uri,
-        (width, height) => {
-          this.setState({ imageHeight: imageWidth * (height / width) });
-        },
-        error => {
-          // not fatal
-          console.log(error);
-        },
-      ); // Image.getSize
-    } // if item.file_uri
+      this.getImageSize(item.file_uri.uri);
+    }
   }
+
+  getImageSize = async uri => {
+    await Image.getSize(uri, (height, width) => {
+      this.updateDimensionState(width, height);
+    });
+  };
+
+  updateDimensionState = (xWidth, xHeight) => {
+    const aspectRatio = xHeight / xWidth;
+    //console.log(xWidth, xHeight);
+    const imageHeight = imageWidth * aspectRatio;
+    this.setState({ imageHeight });
+  };
 
   handleImageOnPress = () => {
     if (this.props.item.type === 'cover') {
