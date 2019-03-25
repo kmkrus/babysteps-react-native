@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { AppState, NetInfo } from 'react-native';
 
-import { updateSession, apiTokenRefresh, updatePendingActions } from '../actions/session_actions';
+import {
+  updateSession,
+  apiTokenRefresh,
+  updatePendingActions,
+} from '../actions/session_actions';
 import { getApiUrl } from './common';
 
 import {
