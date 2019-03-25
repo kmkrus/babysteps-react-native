@@ -38,11 +38,14 @@
       "package": "com.gofullstack.babysteps.dev",
       "permissions": [
         "AUDIO_RECORDING",
+        "RECORD_AUDIO",
         "CAMERA",
         "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE", 
+        "WRITE_EXTERNAL_STORAGE",
         "NOTIFICATIONS",
         "VIBRATE",
-        "ACCESS_NETWORK_STATE"
+        "ACCESS_NETWORK_STATE",
       ]
     },
     "hooks": {

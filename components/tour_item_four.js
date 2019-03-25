@@ -105,10 +105,11 @@ export class TourItemFour extends Component {
             <Text style={styles.nestedBody}>
               You will receive a video that shows your baby's face morphing over
               the first 2 years of life
-              <Text style={styles.nestedBody}
+              <Text
+                style={[styles.nestedBody, styles.nestedLink]}
                 onPress={this.handleLinkToFaceMorph}
               >
-                (see demonstration video).
+                (see demonstration video here).
               </Text>
             </Text>
           </View>
@@ -151,9 +152,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     fontSize: 12,
   },
-  buttonFaceMorph: {
-    flex: 1,
-    fontSize: 12,
+  nestedLink: {
+    fontWeight: '700',
   },
   container: {
     flex: 1,

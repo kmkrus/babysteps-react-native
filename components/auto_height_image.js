@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, Platform } from 'react-native';
 
 class AutoHeightImage extends Component {
   static defaultProps = {
@@ -32,8 +32,11 @@ class AutoHeightImage extends Component {
   };
 
   updateDimensionState = (xWidth, xHeight) => {
-    const aspectRatio = xHeight / xWidth;
-    //console.log(xWidth, xHeight);
+    let aspectRatio = xHeight / xWidth;
+    if (Platform.OS === 'ios') {
+      // android and ios are returning width & height in reverse
+      aspectRatio = xWidth / xHeight;
+    }
     const width = this.props.width;
     const height = width * aspectRatio;
     this.setState({ width, height });
@@ -41,13 +44,9 @@ class AutoHeightImage extends Component {
 
   render = () => {
     const { width, height } = this.state;
-    return (
-      <Image
-        source={this.props.source}
-        style={[this.props.style, {width, height}]}
-      />
-    );
+    const { source, style } = this.props;
+    return <Image source={source} style={[style, { width, height }]} />;
   };
-};
+}
 
 export default AutoHeightImage;

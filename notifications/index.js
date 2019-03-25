@@ -16,7 +16,7 @@ function scheduleNotificaton(localNotification, scheduleTime) {
   );
   const notify_at = scheduleTime.toISOString();
   const data = localNotification.data;
-  // console.log('****** Notfication Scheduled: ', notify_at, data.body);
+  console.log('****** Notfication Scheduled: ', notify_at, data.body);
   createNotifications([{ ...data, notify_at, channel_id: 'screeningEvents' }]);
 }
 
@@ -72,7 +72,7 @@ function getRandomInt(min, max) {
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
   // notifications require title and body
-  if (!entry.title || !entry.body) return null;
+  if (!entry.message || !entry.name) return null;
   let cycleDate = moment(entry.notify_at).startOf('day');
   if (entry.notify_at === null || moment().isAfter(entry.notify_at)) {
     cycleDate = moment().startOf('day');
@@ -137,7 +137,7 @@ export const createNotifications = entries => {
   });
   const sql =`INSERT INTO notifications ( ${notificationFields.join(', ')} ) VALUES ${values.join(', ')};`;
 
-  console.log("Creating Notification", entries, sql);
+  //console.log("Creating Notification", entries, sql);
 
   return db.transaction(tx => {
     tx.executeSql(

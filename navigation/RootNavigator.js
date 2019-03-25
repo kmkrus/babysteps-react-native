@@ -124,6 +124,7 @@ class RootNavigator extends Component {
     const calendar = nextProps.milestones.calendar;
     const session = nextProps.session;
     const subject = nextProps.registration.subject.data;
+
     if (!isEmpty(calendar.data) && !isEmpty(subject)) {
       const notifications_permission = nextProps.session.notifications_permission;
       if (!session.fetching && notifications_permission === 'granted') {
@@ -141,7 +142,6 @@ class RootNavigator extends Component {
           } else {
             studyEndDate = moment(subject.expected_date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
           }
-
           notifications_updated_at = today.toISOString();
           this.props.updateSession({ notifications_updated_at });
           this.props.deleteAllNotifications();

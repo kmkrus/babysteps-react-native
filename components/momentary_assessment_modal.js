@@ -3,8 +3,14 @@ import { Text, View, Image, Modal, Dimensions, StyleSheet } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 
 import { connect } from 'react-redux';
-import { createMilestoneAnswer, apiCreateMilestoneAnswer } from '../actions/milestone_actions';
-import { fetchMomentaryAssessment, hideMomentaryAssessment } from '../actions/notification_actions';
+import {
+  createMilestoneAnswer,
+  apiCreateMilestoneAnswer,
+} from '../actions/milestone_actions';
+import {
+  fetchMomentaryAssessment,
+  hideMomentaryAssessment,
+} from '../actions/notification_actions';
 
 import Colors from '../constants/Colors';
 
@@ -32,7 +38,7 @@ class MomentaryAssessment extends Component {
     }
   }
 
-  _handleOnPress = (selectedIndex) => {
+  _handleOnPress = selectedIndex => {
     this.setState({selectedIndex});
     const user = this.props.registration.user.data;
     const respondent = this.props.registration.respondent.data;
@@ -55,19 +61,16 @@ class MomentaryAssessment extends Component {
     //
     this.props.createMilestoneAnswer(answer);
     this.props.apiCreateMilestoneAnswer(session, answer);
-  }
+  };
 
-  getModalContent(task) {
-
+  getModalContent = task => {
     if(this.state.selectedIndex !== null){
       return this.getThankYouContent();
-    } else {
-      return this.getTaskContent(task);
     }
+    return this.getTaskContent(task);
+  };
 
-  }
-
-  getThankYouContent(){
+  getThankYouContent = () => {
     return (
       <View>
         <Image
@@ -77,10 +80,9 @@ class MomentaryAssessment extends Component {
         <Text>Thank you for your response!</Text>
       </View>
     );
-  }
+  };
 
-
-  getTaskContent(task){
+  getTaskContent = task => {
     return (
       <View>
         <Image
@@ -90,11 +92,9 @@ class MomentaryAssessment extends Component {
         <Text>{task && task.title}</Text>
       </View>
     );
-  }
+  };
 
   render() {
-
-
     const showModal = this.props.notifications.show_momentary_assessment;
     const task = this.props.notifications.momentary_assessment.data;
     let buttons = ['1', '2', '3', '4', '5'];
@@ -104,7 +104,6 @@ class MomentaryAssessment extends Component {
     const { selectedIndex } = this.state;
 
     return (
-
       <Modal
         animationType="slide"
         transparent={true}
