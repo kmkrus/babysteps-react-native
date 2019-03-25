@@ -58,6 +58,12 @@ class MilestoneQuestionsScreen extends Component {
     return { title: 'Screening Event' };
   };
 
+  // Note that this component stores the active answers and questions in the state of
+  // this component during the process of responding to the task.  Both are updated
+  // and the local database (and remote api) are updated when the user confirms the answers.
+  // That means any image or video attachments are kept in both the state of the answers
+  // and a full list of attachments.
+
   constructor(props) {
     super(props);
     this.state = {
@@ -84,6 +90,7 @@ class MilestoneQuestionsScreen extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     const task = nextProps.navigation.state.params.task;
+    // update the list of questions and choices on change of task.
     if (task.id !== this.state.task_id) {
       this.props.resetMilestoneQuestions();
       this.props.resetMilestoneChoices();
