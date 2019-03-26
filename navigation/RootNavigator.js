@@ -130,12 +130,13 @@ class RootNavigator extends Component {
       if (!session.fetching && notifications_permission === 'granted') {
         const today = moment();
         let notifications_updated_at = moment(session.notifications_updated_at);
-        // change this to 30 seconds to get more frequent updates
-        const next_notification_update_at = notifications_updated_at.add(7, 'days');
-        if (
-          !notifications_updated_at.isValid() ||
-          today.isAfter(next_notification_update_at)
-        ) {
+        // default next to update notifications
+        let next_notification_update_at = moment().subtract(1, 'days');
+        if (notifications_updated_at.isValid()) {
+          // change this to 30 seconds to get more frequent updates
+          next_notification_update_at = notifications_updated_at.add(7, 'days');
+        }
+        if (today.isAfter(next_notification_update_at)) {
           let studyEndDate = '';
           if (subject.date_of_birth) {
             studyEndDate = moment(subject.date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')

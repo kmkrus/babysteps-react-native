@@ -31,7 +31,11 @@ class SettingsScreen extends React.Component {
       return (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notifications:</Text>
-          <FlatList data={notifications} renderItem={this.renderItem} />
+          <FlatList
+            scrollEnabled
+            data={notifications}
+            renderItem={this.renderItem}
+          />
         </View>
       );
     }
@@ -62,7 +66,6 @@ class SettingsScreen extends React.Component {
   }
 
   _handleFeedbackPress = () => {
-
     const build = this.getAppVersion();
     const releaseChannel = this.getReleaseChannel(manifest);
 

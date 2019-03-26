@@ -109,7 +109,7 @@ export class TourItemFour extends Component {
                 style={[styles.nestedBody, styles.nestedLink]}
                 onPress={this.handleLinkToFaceMorph}
               >
-                (see demonstration video here).
+                {' '}(see demonstration video here).
               </Text>
             </Text>
           </View>
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   nestedLink: {
+    flex: 1,
     fontWeight: '700',
   },
   container: {

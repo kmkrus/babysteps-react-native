@@ -32,11 +32,7 @@ class AutoHeightImage extends Component {
   };
 
   updateDimensionState = (xWidth, xHeight) => {
-    let aspectRatio = xHeight / xWidth;
-    if (Platform.OS === 'ios') {
-      // android and ios are returning width & height in reverse
-      aspectRatio = xWidth / xHeight;
-    }
+    const aspectRatio = xWidth / xHeight;
     const width = this.props.width;
     const height = width * aspectRatio;
     this.setState({ width, height });

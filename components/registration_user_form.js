@@ -45,8 +45,6 @@ const validationSchema = Yup.object().shape({
   last_name: Yup.string().required('Last Name is Required'),
 });
 
-
-
 class RegistrationUserForm extends Component {
   state = {
     isSubmitting: false,
@@ -54,17 +52,6 @@ class RegistrationUserForm extends Component {
     apiErrorMessage: '',
     user_registration_complete: false,
   };
-
-  getInitialValues() {
-    //return {};
-    let initialValues = {};
-    if (__DEV__) {
-      initialValues = { first_name: 'Test', last_name: 'Tester', email: 'test+' + Date.now()+ "@gmail.com", password: 'test1234' };
-    } else {
-      initialValues = { first_name: '', last_name: '', email: '', password: '' };
-    }
-    return initialValues;
-  }
 
   componentWillMount() {
     this.props.apiFetchMilestones();
@@ -82,7 +69,11 @@ class RegistrationUserForm extends Component {
     const user = nextProps.registration.user;
     if (!apiUser.fetching) {
       if (apiUser.error) {
-        const apiErrorMessage = get(apiUser.error, 'response.data.errors.full_messages', []).join('\n')
+        const apiErrorMessage = get(
+          apiUser.error,
+          'response.data.errors.full_messages',
+          [],
+        ).join('\n');
         this.setState({ isSubmitting: false, apiErrorMessage });
       }
       if (apiUser.fetched) {
@@ -96,7 +87,11 @@ class RegistrationUserForm extends Component {
             password: registration.apiUser.data.password,
           });
         }
-        if (!user.fetching && !user.fetched && !this.state.createUserSubmitted) {
+        if (
+          !user.fetching &&
+          !user.fetched &&
+          !this.state.createUserSubmitted
+        ) {
           this.props.createUser({
             ...registration.apiUser.data,
             api_id: registration.auth.user_id,
@@ -133,6 +128,27 @@ class RegistrationUserForm extends Component {
     }
     return true;
   }
+
+  getInitialValues = () => {
+    //return {};
+    let initialValues = {};
+    if (__DEV__) {
+      initialValues = {
+        first_name: 'Test',
+        last_name: 'Tester',
+        email: 'test+' + Date.now() + '@gmail.com',
+        password: 'test1234',
+      };
+    } else {
+      initialValues = {
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+      };
+    }
+    return initialValues;
+  };
 
   _onSubmit = values => {
     this.props.apiCreateUser(values);
