@@ -111,7 +111,6 @@ class CameraModal extends Component {
   };
 
   onReceiveImage = image => {
-
     this.image = image;
     this.setState({ confirmingImage: true });
   };

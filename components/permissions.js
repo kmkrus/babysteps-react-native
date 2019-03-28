@@ -41,10 +41,10 @@ export const openSettingsDialog = message => {
     'Permissions',
     message.join(', '),
     [
-      {text: 'Cancel', onPress: () => console.log('Open Settings Cancelled'), style: 'cancel'},
+      {text: 'Cancel', onPress: () => {}, style: 'cancel'},
       {text: 'Settings', onPress: () => openSettings()},
     ],
-    { cancelable: false },
+    { cancelable: true },
   );
 };
 

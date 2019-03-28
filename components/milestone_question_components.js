@@ -9,6 +9,7 @@ import {
   RenderDate,
   RenderFile,
   RenderExternalLink,
+  RenderInternalLink,
 } from './milestone_question_elements';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -118,6 +119,17 @@ export class RenderChoices extends PureComponent {
             choices={question.choices}
             answers={answers}
             pregnancy={pregnancy}
+            saveResponse={saveResponse}
+            errorMessage={errorMessage}
+          />
+        );
+      }
+      case 'internal_link': {
+        return (
+          <RenderInternalLink
+            question={question}
+            choices={question.choices}
+            navigation={this.props.navigation}
             saveResponse={saveResponse}
             errorMessage={errorMessage}
           />

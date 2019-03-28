@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
 
 import { Notifications, Permissions } from 'expo';
 
@@ -28,6 +28,8 @@ import ConsentScreen from '../screens/ConsentScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
 import RegistrationNoStudyScreen from '../screens/RegistrationNoStudyScreen';
+
+import { openSettings } from '../components/permissions';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
@@ -193,7 +195,7 @@ class RootNavigator extends Component {
     }
   };
 
-  async registerForNotifications() {
+  registerForNotifications = async () => {
     // android permissions are given on install
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS,
@@ -218,10 +220,20 @@ class RootNavigator extends Component {
       console.log('Notifications Permission Denied');
       return null;
     }
-
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        'Permissions',
+        "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Go to Settings > Notifications > BabySteps and set 'Banner Style' to 'Persistent'.",
+        [
+          {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+          {text: 'Settings', onPress: () => openSettings()},
+        ],
+        { cancelable: true },
+      );
+    }
     // Watch for incoming notifications
     Notifications.addListener(this._handleNotification);
-  }
+  };
 
   render() {
     const registration_state = this.props.session.registration_state;

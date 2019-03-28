@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
-import { View, Image, StyleSheet, FlatList, Dimensions, Platform } from 'react-native';
-import { FileSystem } from 'expo';
+import {
+  View,
+  Image,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Platform,
+} from 'react-native';
+import { FileSystem, Video } from 'expo';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Video } from 'expo';
+
+import { StackActions } from 'react-navigation';
 
 import _ from 'lodash';
 
@@ -193,6 +201,7 @@ class MilestoneQuestionsScreen extends Component {
           question={question}
           answers={answers}
           attachments={attachments}
+          navigation={this.props.navigation}
           saveResponse={this.saveResponse}
           errorMessage={errorMessage}
         />
@@ -465,7 +474,7 @@ class MilestoneQuestionsScreen extends Component {
               color={Colors.grey}
               buttonStyle={styles.buttonOneStyle}
               titleStyle={styles.buttonTitleStyle}
-              onPress={() => this.props.navigation.navigate('Overview')}
+              onPress={() => this.props.navigation.dispatch(StackActions.popToTop())}
               title="Cancel"
             />
             <Button

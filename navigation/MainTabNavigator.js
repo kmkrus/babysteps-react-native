@@ -37,6 +37,7 @@ const MilestonesStack = createStackNavigator(
     MilestoneQuestions: MilestoneQuestionsScreen,
     MilestonePregnancyHistory: MilestonePregnancyHistoryScreen,
     MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
+    OverviewBirthForm: OverviewBirthFormScreen,
   },
   {
     navigationOptions: headerOptions,

@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { StackActions } from 'react-navigation';

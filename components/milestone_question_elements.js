@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import {
   View,
-  Image,
   StyleSheet,
   Dimensions,
   Platform,
   TouchableOpacity,
 } from 'react-native';
+import { StackActions, NavigationActions } from 'react-navigation';
 import {
   Text,
   Button,
@@ -18,10 +18,9 @@ import {
 import { ImagePicker, Video, WebBrowser, Permissions } from 'expo';
 import DatePicker from 'react-native-datepicker';
 
-import AutoHeightImage from './auto_height_image'
-
 import _ from 'lodash';
 
+import AutoHeightImage from './auto_height_image';
 import registerForPermission, {
   renderNoPermissionsMessage,
   openSettingsDialog,
@@ -33,6 +32,7 @@ import Colors from '../constants/Colors';
 import VideoFormats from '../constants/VideoFormats';
 import ImageFormats from '../constants/ImageFormats';
 import AudioFormats from '../constants/AudioFormats';
+import Constants from '../constants';
 
 const { width } = Dimensions.get('window');
 
@@ -515,14 +515,43 @@ export class RenderExternalLink extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       const completed = answer && answer.answer_boolean;
-
-      //
       return (
         <View key={choice.id}>
           <TouchableOpacity onPress={() => this.handleLinkPress(choice)}>
             <Text style={styles.externalLink}>{choice.body}</Text>
           </TouchableOpacity>
-          <Text style={styles.externalLinkHelper}>Press Confirm when completed.</Text>
+          <Text style={styles.externalLinkHelper}>
+            Press Confirm when completed.
+          </Text>
+        </View>
+      );
+    });
+    return <View>{collection}</View>;
+  } // render
+}
+
+export class RenderInternalLink extends React.PureComponent {
+  handleLinkPress = choice => {
+    this.props.saveResponse(choice, { answer_boolean: true });
+    const actionToDispatch = StackActions.reset({
+      index: 0,
+      key: null,
+      actions: [
+        NavigationActions.navigate({
+          routeName: choice.body,
+        }),
+      ],
+    });
+    this.props.navigation.dispatch(actionToDispatch);
+  };
+
+  render() {
+    const collection = _.map(this.props.choices, choice => {
+      return (
+        <View key={choice.id}>
+          <TouchableOpacity onPress={() => this.handleLinkPress(choice)}>
+            <Text style={styles.externalLink}>{choice.body}</Text>
+          </TouchableOpacity>
         </View>
       );
     });

@@ -72,6 +72,10 @@ class MilestonesScreen extends Component {
         if (findIndex(groups, ['id', task.milestone_group_id]) === -1) {
           return false;
         }
+        // don't show task, linked by notification
+        if (task.milestone_always_visible !== 1) {
+          return false;
+        }
         return true;
       });
 
@@ -91,7 +95,7 @@ class MilestonesScreen extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (!nextState.scrollToComplete &&  nextState.tasksForList.length !== 0) {
+    if (!nextState.scrollToComplete && nextState.tasksForList.length !== 0) {
       const milestone = this.props.navigation.getParam('milestone', null);
       if (milestone) {
         const sectionIndex = findIndex(this.state.tasksForList, ['id', milestone.id])
