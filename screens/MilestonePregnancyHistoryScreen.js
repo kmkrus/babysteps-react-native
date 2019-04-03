@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Image, StyleSheet, FlatList, Dimensions } from 'react-native';
-import { FileSystem } from 'expo';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -27,7 +26,6 @@ import {
   apiUpdateMilestoneCalendar,
   fetchMilestoneCalendar,
 } from '../actions/milestone_actions';
-import { createBabyBookEntry } from '../actions/babybook_actions';
 import {
   fetchUser,
   fetchRespondent,
@@ -176,7 +174,7 @@ class MilestonePregnancyHistoryScreen extends Component {
         {question.attachment_url && (
           <Image
             style={styles.image}
-            source={{uri: question.attachment_url}}
+            source={{ uri: question.attachment_url }}
             resizeMethod="scale"
             resizeMode="contain"
           />
@@ -262,7 +260,7 @@ class MilestonePregnancyHistoryScreen extends Component {
       const currentPregnancy = 1;
       let showConfirm = false;
       let showNextPregnancy = true;
-      if (numberOfPregnancies === 1 ) {
+      if (numberOfPregnancies === 1) {
         showConfirm = true;
         showNextPregnancy = false;
       };
@@ -315,7 +313,7 @@ class MilestonePregnancyHistoryScreen extends Component {
       showNextPregnancy = false;
     };
     this.setState({ currentPregnancy, showConfirm, showNextPregnancy });
-    this.scroll.scrollTo(0, 0, true);
+    this.scroll.scrollTo({ x: 0, y: 0, animated: true });
   };
 
   render() {
@@ -490,7 +488,6 @@ const mapDispatchToProps = {
   apiUpdateMilestoneAnswers,
   fetchMilestoneAttachments,
   updateMilestoneAttachment,
-  createBabyBookEntry,
   fetchOverViewTimeline,
   updateMilestoneCalendar,
   apiUpdateMilestoneCalendar,

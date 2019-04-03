@@ -208,6 +208,7 @@ class AudioModal extends Component {
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: true,
     });
     if (this.recording !== null) {
       this.recording.setOnRecordingStatusUpdate(null);
@@ -242,8 +243,9 @@ class AudioModal extends Component {
       playsInSilentLockedModeIOS: true,
       shouldDuckAndroid: true,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: true,
     });
-    const { sound, status } = await this.recording.createNewLoadedSound(
+    const { sound, status } = await this.recording.createNewLoadedSoundAsync(
       {
         isLooping: true,
         isMuted: this.state.muted,
@@ -332,7 +334,6 @@ class AudioModal extends Component {
         visible={this.props.modalVisible}
         onRequestClose={() => {}}
       >
-
         {!haveRecordingPermission && (
           <View style={styles.container}>
             <Text style={styles.noPermissionsText}>
@@ -424,7 +425,7 @@ class AudioModal extends Component {
               <View style={[styles.buttonsContainerBase, styles.buttonsContainerTopRow]}>
                 <View style={styles.volumeContainer}>
                   <TouchableHighlight
-                    underlayColor={Colors.background}
+                    underlayColor={Colors.black}
                     style={styles.wrapper}
                     onPress={this._onMutePressed}
                     disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
@@ -446,7 +447,7 @@ class AudioModal extends Component {
 
                 <View style={styles.playStopContainer}>
                   <TouchableHighlight
-                    underlayColor={Colors.background}
+                    underlayColor={Colors.black}
                     style={styles.wrapper}
                     onPress={this._onPlayPausePressed}
                     disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
@@ -460,7 +461,7 @@ class AudioModal extends Component {
                   </TouchableHighlight>
                   {this.state.isPlaying && (
                     <TouchableHighlight
-                      underlayColor={Colors.background}
+                      underlayColor={Colors.black}
                       style={styles.wrapper}
                       onPress={this._onStopPressed}
                       disabled={!this.state.isPlaybackAllowed || this.state.isLoading}
@@ -480,27 +481,19 @@ class AudioModal extends Component {
                 <View style={styles.bottomBarConfirmActions}>
                   <TouchableOpacity onPressIn={() => this._handleCancelRecording()}>
                     <Image
-                      style={{
-                        width: 27,
-                        height: 27,
-                      }}
+                      style={{ width: 27, height: 27 }}
                       source={require('../assets/images/camera_delete_media_save_video.png')}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity onPressIn={() => this._handleConfirmRecording()}>
                     <Image
-                      style={{
-                        width: 27,
-                        height: 27,
-                        marginBottom: 4,
-                      }}
+                      style={{ width: 27, height: 27, marginBottom: 4 }}
                       source={require('../assets/images/camera_accept_media_icon.png')}
                     />
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
-
           </View>
         )}
 
@@ -526,12 +519,13 @@ const styles = StyleSheet.create({
   },
   wrapper: {},
   halfScreenContainer: {
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
-    minHeight: modalHeight / 2.0 - 20,
-    maxHeight: modalWidth / 2.0,
+    //minHeight: modalHeight / 2.0 - 20,
+    //maxHeight: modalWidth / 2.0,
     borderWidth: 1,
     borderColor: Colors.lightGrey,
     borderRadius: 5,
@@ -540,10 +534,9 @@ const styles = StyleSheet.create({
   recordingContainer: {
     flex: 1,
     flexDirection: 'column',
-    //justifyContent: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
-    height: iconRecordButtonContnainer,
     marginTop: 20,
   },
   recordingDataContainer: {
@@ -558,6 +551,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    alignSelf: 'stretch',
     height: iconRecordDataRowContainer,
   },
   title: {
@@ -581,12 +575,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
-    height: 100,
     borderBottomWidth: 1,
     borderBottomColor: Colors.lightGrey,
   },
   playbackSlider: {
     alignSelf: 'stretch',
+    marginBottom: 5,
   },
   playbackTimestamp: {
     color: Colors.white,
@@ -604,7 +598,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   buttonsContainerTopRow: {
-    height: 40,
+    minHeight: 40,
     alignSelf: 'stretch',
     paddingRight: 20,
   },
@@ -616,6 +610,7 @@ const styles = StyleSheet.create({
     width: modalWidth / 2.0,
   },
   volumeSlider: {
+    flex: 1,
     width: modalWidth / 2.0 - iconVolumeSize,
   },
   playStopContainer: {
@@ -628,7 +623,7 @@ const styles = StyleSheet.create({
   bottomBar: {
     backgroundColor: Colors.black,
     justifyContent: 'space-between',
-    height: 165,
+    height: 80,
     width: '100%',
     flexDirection: 'column',
     alignSelf: 'flex-end',
@@ -636,7 +631,7 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.lightGrey,
   },
   bottomBarConfirmActions: {
-    height: 110,
+    height: 60,
     flex: 1,
     justifyContent: 'space-evenly',
     flexDirection: 'row',

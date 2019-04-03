@@ -211,6 +211,17 @@ class RootNavigator extends Component {
       // install, so this will only ask on iOS
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       finalStatus = status;
+      if (Platform.OS === 'ios') {
+        Alert.alert(
+          'Permissions',
+          "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Go to Settings > Notifications > BabySteps and set 'Banner Style' to 'Persistent'.",
+          [
+            {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+            {text: 'Settings', onPress: () => openSettings('NOTIFICATIONS')},
+          ],
+          { cancelable: true },
+        );
+      }
     }
 
     this.props.updateSession({ notifications_permission: finalStatus });
@@ -219,17 +230,6 @@ class RootNavigator extends Component {
     if (finalStatus !== 'granted') {
       console.log('Notifications Permission Denied');
       return null;
-    }
-    if (Platform.OS === 'ios') {
-      Alert.alert(
-        'Permissions',
-        "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Go to Settings > Notifications > BabySteps and set 'Banner Style' to 'Persistent'.",
-        [
-          {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-          {text: 'Settings', onPress: () => openSettings()},
-        ],
-        { cancelable: true },
-      );
     }
     // Watch for incoming notifications
     Notifications.addListener(this._handleNotification);

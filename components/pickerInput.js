@@ -16,9 +16,10 @@ const Picker = compose(makeInput, withPickerValues)(FormInput);
 
 export default class PickerInput extends PureComponent {
 
-  focus() {
-
-  }
+  handleOnChangeText = value => {
+    KeyboardModal.dismiss();
+    this.props.onChangeText(value);
+  };
 
   render() {
     const { error, helper, touched, label, name, values, ...props } = this.props;
@@ -45,9 +46,7 @@ export default class PickerInput extends PureComponent {
             autoCorrect={false}
             values={values}
             {...this.props}
-            onChangeText={(value) => {
-              KeyboardModal.dismiss();
-            }}
+            onChangeText={value => this.handleOnChangeText(value)}
           />
         </View>
         <InputHelper

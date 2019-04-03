@@ -18,6 +18,7 @@ import indexOf from 'lodash/indexOf';
 import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import sortBy from 'lodash/sortBy';
+import find from 'lodash/find';
 
 import { connect } from 'react-redux';
 
@@ -41,6 +42,17 @@ const imageWidth = BabyBookGetImage.IMAGE_WIDTH;
 
 const babybookDir = `${FileSystem.documentDirectory +
   CONSTANTS.BABYBOOK_DIRECTORY}/`;
+
+const coverLogo = {
+  id: '0',
+  title: null,
+  detail: null,
+  created_at: null,
+  file_name: null,
+  file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
+  cover: 1,
+  placeholder: true,
+};
 
 class BabyBookScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -89,16 +101,6 @@ class BabyBookScreen extends Component {
 
   state = {
     currentIndex: 0,
-    data2: [
-      {
-        id: '0',
-        file_name: null,
-        file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
-        type: 'cover',
-        imageHeight: imageWidth,
-        placeholder: true,
-      },
-    ],
     data: [],
     shareAttributes: {
       content: {
@@ -150,11 +152,6 @@ class BabyBookScreen extends Component {
     );
   }
 
-  componentWillUnmount() {
-    // Remove nav focus listener
-    this.willFocusBabyBook.remove();
-  }
-
   componentWillReceiveProps(nextProps) {
     if (
       !nextProps.babybook.entries.fetching &&
@@ -170,22 +167,17 @@ class BabyBookScreen extends Component {
           }
         });
         data = sortBy(data, i => i.created_at);
+
         // add entry for cover
-        data = [{ ...data[0], id: '0' }].concat(data);
+        let cover = find(data, ['cover', 1]);
+        if (!cover) cover = coverLogo;
+        data = [{ ...cover, id: '0' }].concat(data);
+
         this.setState({ data });
         // update share
         this.setShareAttributes(this.state.currentIndex);
       } else {
-        this.setState({data: [
-          {
-            id: '0',
-            file_name: null,
-            file_uri: require('../assets/images/baby_book_timeline_incomplete_baby_profile_placeholder.png'),
-            type: 'cover',
-            imageHeight: imageWidth,
-            placeholder: true,
-          }
-        ]});
+        this.setState({ data: [coverLogo] });
       }
     }
   }
@@ -197,12 +189,17 @@ class BabyBookScreen extends Component {
     );
   }
 
-  handleIndexChange(index) {
-    this.setState({ currentIndex: index });
-    this.setShareAttributes(index);
+  componentWillUnmount() {
+    // Remove nav focus listener
+    this.willFocusBabyBook.remove();
   }
 
-  setShareAttributes(index) {
+  handleIndexChange = index => {
+    this.setState({ currentIndex: index });
+    this.setShareAttributes(index);
+  };
+
+  setShareAttributes = index => {
     // for share
     if(this.state.data.length > index){
       const item = this.state.data[index];
@@ -222,23 +219,23 @@ class BabyBookScreen extends Component {
         },
       });
     }
-  }
+  };
 
-  shareOpen() {
+  shareOpen = () => {
     const shareAttributes = this.state.shareAttributes;
     if (shareAttributes.content) {
       Share.share(shareAttributes.content, shareAttributes.options);
     }
-  }
+  };
 
-  renderItem({ item, itemIndex }) {
+  renderItem = ({ item, itemIndex }) => {
     if (itemIndex === 0) {
       return (
         <BabyBookCoverItem item={item} navigation={this.props.navigation} />
       );
     }
     return <BabyBookItem item={item} navigation={this.props.navigation} />;
-  }
+  };
 
   render() {
     return (

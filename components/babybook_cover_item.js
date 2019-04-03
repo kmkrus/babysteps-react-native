@@ -25,7 +25,7 @@ const imageSize = width - widthOffset - 60;
 const backgroundImage = require('../assets/images/baby_book_cover_background.png');
 
 class BabyBookCoverItem extends Component {
-  subtitleContent() {
+  subtitleContent = () => {
     const subject = this.props.registration.subject.data;
     if (!_.isEmpty(subject)) {
       let name = null;
@@ -48,7 +48,7 @@ class BabyBookCoverItem extends Component {
         </View>
       );
     }
-  }
+  };
 
   render() {
     return (

@@ -57,7 +57,7 @@ import AudioFormats from '../constants/AudioFormats';
 
 const { width, height } = Dimensions.get('window');
 
-const itemWidth = width - 40;
+const itemWidth = width - 30;
 const twoButtonWidth = (width / 2) - 30;
 
 class MilestoneQuestionsScreen extends Component {
@@ -196,6 +196,9 @@ class MilestoneQuestionsScreen extends Component {
         {question.attachment_url && this.renderAttachment(question.attachment_url)}
         <View style={styles.questionLeft}>
           <Text style={styles.question}>{title}</Text>
+          {!!question.body && (
+            <Text style={styles.questionBody}>{question.body}</Text>
+          )}
         </View>
         <RenderChoices
           question={question}
@@ -347,7 +350,9 @@ class MilestoneQuestionsScreen extends Component {
   handleConfirm = () => {
     const { section, answers } = this.state;
     const session = this.props.session;
+    const choices = this.props.milestones.choices.data;
     const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
+
     // TODO validation
     // TODO move to next section if more than one section in this task
     // TOTO don't mark task complete if any sections are incomplete
@@ -360,12 +365,21 @@ class MilestoneQuestionsScreen extends Component {
     // save attachments
     if (_.find(answers, a => {return !!a.attachments })) {
       _.map(answers, answer => {
+        const choice = _.find(choices, ['id', answer.choice_id]);
+
+        // cover of babybook will only be baby's face from overview timeline
+        let cover = 0;
+        if (choice && choice.overview_timeline === 'post_birth') {
+          cover = 1;
+        }
+
         _.map(answer.attachments, attachment => {
           if (
-            attachment.content_type.includes('video') ||
-            attachment.content_type.includes('image')
+            attachment.content_type &&
+            (attachment.content_type.includes('video') ||
+              attachment.content_type.includes('image'))
           ) {
-            this.props.createBabyBookEntry({title: null, detail: null}, attachment);
+            this.props.createBabyBookEntry({title: null, detail: null, cover: cover}, attachment);
           }
           delete attachment.title;
           this.props.updateMilestoneAttachment(attachment);
@@ -389,10 +403,20 @@ class MilestoneQuestionsScreen extends Component {
     }
     this.props.fetchMilestoneCalendar();
     this.props.fetchBabyBookEntries();
-    this.props.navigation.navigate('MilestoneQuestionConfirm');
+
+    // add condolences message to confirmation screen
+    let condolencesMessage = '';
+    if (section.task_id === CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID) {
+      const answer = _.find(answers, ['choice_id', CONSTANTS.CHOICE_BABY_ALIVE_ID]);
+      if (answer && answer.answer_boolean) {
+        condolencesMessage =
+          "We're so sorry to hear of your loss. We appreciate the contribution you have made to BabySteps.";
+      }
+    }
+    this.props.navigation.navigate('MilestoneQuestionConfirm', {message: condolencesMessage});
   };
 
-  renderImageAttachement(url) {
+  renderImageAttachement = url => {
     return (
       <Image
         style={styles.image}
@@ -403,7 +427,7 @@ class MilestoneQuestionsScreen extends Component {
     );
   }
 
-  renderVideoAttachment(url) {
+  renderVideoAttachment = url => {
     return (
       <Video
         source={{ url }}
@@ -417,7 +441,7 @@ class MilestoneQuestionsScreen extends Component {
     );
   }
 
-  renderAttachment(attachment_url) {
+  renderAttachment = attachment_url => {
     const fileExtension = attachment_url.split('.').pop();
     if (_.has(VideoFormats, fileExtension)) {
       return this.renderVideoAttachment(attachment_url);
@@ -448,7 +472,7 @@ class MilestoneQuestionsScreen extends Component {
             {section &&
               section.body && (
                 <Text style={styles.instructions}>
-                  <Text style={styles.instructionsLabel}>Instructions:</Text>
+                  <Text style={styles.instructionsLabel}>Instructions: &nbsp;</Text>
                   {section.body}
                 </Text>
               )}
@@ -525,7 +549,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.lightGrey,
   },
   questionLeft: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'flex-start',
     width: itemWidth,
   },
@@ -533,6 +557,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 2,
     paddingLeft: 5,
+    color: Colors.tint,
+    width: itemWidth,
+  },
+  questionBody: {
+    fontSize: 12,
+    paddingVertical: 2,
+    paddingLeft: 20,
     color: Colors.tint,
   },
   image: {

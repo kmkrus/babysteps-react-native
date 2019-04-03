@@ -33,6 +33,7 @@ class BabyBookItem extends Component {
 
   render() {
     const item = this.props.item;
+    const longDate = moment(item.created_at).format('dddd, MMMM D, YYYY' );
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -43,9 +44,7 @@ class BabyBookItem extends Component {
           <BabyBookGetImage navigation={this.props.navigation} item={item} />
           <View style={styles.subtitle}>
             <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.date}>
-              {moment(item.created_at).toISOString()}
-            </Text>
+            <Text style={styles.date}>{longDate}</Text>
             <Text style={styles.detail}>{item.detail}</Text>
           </View>
         </ImageBackground>

@@ -21,7 +21,7 @@ const widthOffset = 40;
 const imageOffset = 60;
 
 const imageWidth = width - (widthOffset + imageOffset);
-const imageMaxHeight =  height * 0.4;
+const imageMaxHeight = height * 0.4;
 const videoWidth = imageWidth;
 const videoHeight = imageWidth;
 
@@ -32,9 +32,9 @@ class BabyBookGetImage extends Component {
     imageHeight: imageWidth,
   };
 
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     const item = nextProps.item;
-    if (!!VideoFormats[item.file_type]) {
+    if (VideoFormats[item.file_type]) {
       return;
     }
     if (item.file_name && item.file_uri) {
@@ -64,7 +64,7 @@ class BabyBookGetImage extends Component {
   handleVideoOnPress = () => {
     this.videoPlayer.presentFullscreenPlayer();
     this.videoPlayer.replayAsync();
-  }
+  };
 
   render() {
     const imageContainerHeight = this.state.imageHeight + 2;
@@ -79,19 +79,15 @@ class BabyBookGetImage extends Component {
     const imageHeight = this.state.imageHeight;
 
     let containerStyle = styles.imageContainer;
-    if(isVideo){
-      containerStyle = styles.videoContainer;
-    }
+    if (isVideo) containerStyle = styles.videoContainer;
 
     return (
       <View style={[containerStyle, { height: imageContainerHeight }]}>
-          {isPlaceholder && (
-            <Image
-              source={uri}
-              style={[styles.image, { height: imageHeight }]}
-            />
-          )}
-          {isVideo && !isPlaceholder && (
+        {isPlaceholder && (
+          <Image source={uri} style={[styles.image, { height: imageHeight }]} />
+        )}
+        {isVideo &&
+          !isPlaceholder && (
             <View>
               <Video
                 source={uri}
@@ -102,17 +98,29 @@ class BabyBookGetImage extends Component {
                 ref={ref => this.videoPlayer = ref}
                 style={{ flex: 1, width: videoWidth, height: videoHeight }}
               />
-              <TouchableOpacity onPress={this.handleVideoOnPress} style={[styles.videoOverlay,{width: videoWidth, height: videoHeight }]}>
-                <MaterialIcons name="play-arrow" size={80} color="#fff" style={styles.videPlayIcon} />
+              <TouchableOpacity
+                onPress={this.handleVideoOnPress}
+                style={[
+                  styles.videoOverlay,
+                  { width: videoWidth, height: videoHeight },
+                ]}
+              >
+                <MaterialIcons
+                  name="play-arrow"
+                  size={80}
+                  color="#fff"
+                  style={styles.videPlayIcon}
+                />
               </TouchableOpacity>
             </View>
           )}
-          {!isVideo && !isPlaceholder && (
-            <AutoHeightImage
+        {!isVideo &&
+          !isPlaceholder && (
+            <Image
               source={uri}
               width={imageWidth}
-              style={styles.croppedImage}
-              resizeMode="cover"
+              style={[styles.image, { height: imageHeight }]}
+              resizeMode='cover'
             />
           )}
 
@@ -165,26 +173,26 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   videoOverlay: {
-     flex: 1,
-     position: 'absolute',
-     top: 0,
-     left: 0,
-     justifyContent: 'center',
-     alignItems: 'center',
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: imageWidth,
     maxHeight: imageMaxHeight,
   },
-  imageCornerTopLeft: {
-    ...imageCorner,
-    top: -2,
-    left: -2,
-  },
   croppedImage: {
     position: 'absolute',
     left: 0,
     top: -60,
+  },
+  imageCornerTopLeft: {
+    ...imageCorner,
+    top: -2,
+    left: -2,
   },
   imageCornerTopRight: {
     ...imageCorner,

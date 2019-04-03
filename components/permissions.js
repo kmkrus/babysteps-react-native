@@ -42,15 +42,16 @@ export const openSettingsDialog = message => {
     message.join(', '),
     [
       {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-      {text: 'Settings', onPress: () => openSettings()},
+      {text: 'Settings', onPress: () => openSettings('PERMISSIONS')},
     ],
     { cancelable: true },
   );
 };
 
-const openSettings = () => {
+export const openSettings = async root => {
   if (Platform.OS === 'ios') {
-    Linking.openURL('app-settings:');
+    //await Linking.openURL('app-settings:');
+    await Linking.openURL("App-Prefs:root=`${root}`");
   }
   // currently only need to open IOS manually
   //if (Platform.OS === 'android') {

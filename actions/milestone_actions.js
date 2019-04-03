@@ -572,7 +572,8 @@ export const updateMilestoneAnswers = (section, answers) => {
         (_, error) => console.log('*** Error in clearing answers table for section ' + section.title )
       );
       tx.executeSql(
-        sql, [],
+        sql,
+        [],
         (_, response) => dispatch( Response(UPDATE_MILESTONE_ANSWERS_FULFILLED, response, answers)),
         (_, error) => dispatch( Response(UPDATE_MILESTONE_ANSWERS_REJECTED, error))
       );

@@ -14,13 +14,14 @@ class MilestoneQuestionConfirmScreen extends Component {
     title: 'Milestones',
   };
 
-  returnToOverview = () => {
+  handleReturnToOverview = () => {
     //const { navigate } = this.props.navigation;
     this.props.navigation.dispatch(StackActions.popToTop());
     this.props.navigation.navigate('Overview');
   };
 
   render() {
+    const message = this.props.navigation.getParam('message');
     return (
       <View style={styles.container}>
         <View style={styles.textBlock}>
@@ -28,14 +29,19 @@ class MilestoneQuestionConfirmScreen extends Component {
             style={styles.image}
             source={require('../assets/images/thank_you_balloons.png')}
           />
-          <Text style={styles.header}>You've completed this task!</Text>
+          {message && (
+            <Text style={styles.message}>{message}</Text>
+          )}
+          {!message && (
+            <Text style={styles.header}>You&apos;ve completed this task!</Text>
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <Button
             color={Colors.pink}
             buttonStyle={styles.buttonStyle}
             titleStyle={styles.buttonTitleStyle}
-            onPress={this.returnToOverview}
+            onPress={this.handleReturnToOverview}
             title="Go to Overview"
           />
         </View>
@@ -67,8 +73,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.green,
   },
-  text: {
-    textAlign: 'center',
+  message: {
+    marginBottom: 10,
+    fontSize: 20,
+    color: Colors.grey,
   },
   buttonContainer: {
     alignItems: 'center',

@@ -711,8 +711,9 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case FETCH_MILESTONE_ANSWERS_FULFILLED: {
       let data = action.payload.rows['_array'];
-      _.map(data, (answer) => {
-        answer.answer_boolean = (answer.answer_boolean === 1);
+      _.map(data, answer => {
+        answer.answer_boolean =
+          answer.answer_boolean === 1 || answer.answer_boolean === 'true';
       });
       return {
         ...state,

@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "0.9.5",
+    "version": "0.9.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -24,7 +24,7 @@
       "./assets/**/*"
     ],
     "ios": {
-      "buildNumber": "24",
+      "buildNumber": "26",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
@@ -34,18 +34,18 @@
       }
     },
     "android": {
-      "versionCode": 24,
+      "versionCode": 26,
       "package": "com.gofullstack.babysteps.dev",
       "permissions": [
         "AUDIO_RECORDING",
         "RECORD_AUDIO",
         "CAMERA",
         "CAMERA_ROLL",
-        "READ_EXTERNAL_STORAGE", 
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "NOTIFICATIONS",
         "VIBRATE",
-        "ACCESS_NETWORK_STATE",
+        "ACCESS_NETWORK_STATE"
       ]
     },
     "hooks": {

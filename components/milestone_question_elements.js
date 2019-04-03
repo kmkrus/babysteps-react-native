@@ -54,6 +54,7 @@ const mediaTypes = {
 };
 
 export class RenderCheckBox extends React.PureComponent {
+
   render() {
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
@@ -66,7 +67,7 @@ export class RenderCheckBox extends React.PureComponent {
       }
       const requireExplanation = (choice.require_explanation === 'if_true' && checked);
       let option_group = 'text_short';
-      if (choice.rn_input_type) { option_group = choice.rn_input_type }
+      if (choice.rn_input_type) option_group = choice.rn_input_type;
 
       return (
         <View key={choice.id} style={styles.checkBoxExplanationContainer}>
@@ -133,9 +134,8 @@ export class RenderCheckYesNo extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
-      if (answer) {
-        checked = answer.answer_boolean;
-      }
+      if (answer) checked = answer.answer_boolean;
+
       return (
         <CheckBox
           key={choice.id}
@@ -155,7 +155,7 @@ export class RenderCheckYesNo extends React.PureComponent {
     });
     return <View style={{ flexDirection: 'row' }}>{collection}</View>;
   } // render
-}
+};
 
 
 export class RenderTextShort extends React.PureComponent {
@@ -163,9 +163,8 @@ export class RenderTextShort extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
-      if (answer) {
-        text = answer.answer_text;
-      }
+      if (answer) text = answer.answer_text;
+
       return (
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
@@ -191,9 +190,8 @@ export class RenderTextLong extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
-      if (answer) {
-        text = answer.answer_text;
-      }
+      if (answer) text = answer.answer_text;
+
       return (
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
@@ -221,9 +219,8 @@ export class RenderTextNumeric extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let text = '';
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
-      if (answer) {
-        text = answer.answer_text;
-      }
+      if (answer) text = answer.answer_text;
+
       return (
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>

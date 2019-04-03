@@ -239,11 +239,11 @@ class OverviewBirthFormScreen extends Component {
   _onSubmit = values => {
     if (values.outcome === 'live_birth') {
       if (!values.date_of_birth) {
-        this.setState({ dateError: 'You must provide the Date of Birth' });
+        this.setState({ dateError: 'Please provide the Date of Birth' });
         return null;
       }
     } else if (!values.date_of_loss) {
-      this.setState({ dateError: 'You must provide the Date of Loss' });
+      this.setState({ dateError: 'Please provide the Date of Loss' });
       return null;
     }
     this.setState({ values, submittedSave: true });

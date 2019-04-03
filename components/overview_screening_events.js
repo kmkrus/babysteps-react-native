@@ -113,7 +113,7 @@ class OverviewScreen extends React.Component {
     task.trigger_id = task.id;
     task.id = task.task_id;
 
-    const longDate = moment(task.available_end_at).format('dddd, MMMM D, YYYY' );
+    const longDate = moment(task.available_end_at).format('dddd, MMMM D, YYYY');
     return (
       <View key={data.itemIndex} style={styles.screening_slide_container}>
         <TouchableOpacity onPress={() => this.handleOnPress(task)}>

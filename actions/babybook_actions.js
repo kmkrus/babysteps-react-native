@@ -1,4 +1,4 @@
-import { SQLite } from 'expo';
+import { SQLite, FileSystem } from 'expo';
 
 import { _ } from 'lodash';
 
@@ -61,7 +61,7 @@ export const fetchBabyBookEntries = () => {
 export const createBabyBookEntry = (data, image) => {
   return function(dispatch) {
     dispatch(Pending(CREATE_BABYBOOK_ENTRY_PENDING));
-    const newDir = Expo.FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
+    const newDir = FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
 
     data.file_name = image.filename ? image.filename : image.uri.split('/').pop();
 
@@ -88,14 +88,15 @@ export const createBabyBookEntry = (data, image) => {
     }
 
     return (
-      Expo.FileSystem.copyAsync({from: image.uri, to: data.uri})
+      FileSystem.copyAsync({from: image.uri, to: data.uri})
       .then(() => {
         db.transaction(tx => {
           tx.executeSql(
-            'INSERT INTO babybook_entries (title, detail, file_name, file_type, uri, created_at) VALUES (?, ?, ?, ?, ?, ?);',
+            'INSERT INTO babybook_entries (title, detail, cover, file_name, file_type, uri, created_at) VALUES (?, ?, ?, ?, ?, ?, ?);',
             [
               data.title,
               data.detail,
+              data.cover,
               data.file_name,
               data.file_type,
               data.uri,

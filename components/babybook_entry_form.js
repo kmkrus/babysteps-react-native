@@ -154,6 +154,7 @@ class BabyBookEntryForm extends Component {
         }}
         validationSchema={validationSchema}
         initialValues={{
+          cover: 0,
           created_at: new Date().toISOString(),
         }}
         render={props => {

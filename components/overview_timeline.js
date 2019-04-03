@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  Platform,
 } from 'react-native';
 
 import SideSwipe from 'react-native-sideswipe';
@@ -35,7 +36,7 @@ const wp = (percentage, direction) => {
   return Math.round(value);
 };
 
-const tlPhotoSize = 65;
+const tlPhotoSize = 60;
 const tlCardHeight = tlPhotoSize + 30;
 const tlCardWidth = tlPhotoSize;
 const tlCardMargin = (width - (tlCardWidth * 4)) / 8;

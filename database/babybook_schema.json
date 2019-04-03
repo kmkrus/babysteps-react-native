@@ -4,6 +4,7 @@
       "id": "INTEGER PRIMARY KEY",
       "title": "TEXT", 
       "detail": "TEXT",
+      "cover": "INTEGER",
       "file_name": "TEXT",
       "file_type": "TEXT",
       "uri": "TEXT",
@@ -11,6 +12,7 @@
     },
     "indexes": [
        "bb_entries_title ON babybook_entries (title);",
+       "bb_entries_cover ON babybook_entries (cover);",
        "bb_entries_created_at ON babybook_entries (created_at);"
     ],
   }
