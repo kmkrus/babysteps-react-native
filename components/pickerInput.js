@@ -4,7 +4,10 @@ import { View } from 'react-native';
 import { FormLabel, FormInput } from 'react-native-elements';
 
 import { compose } from 'recompose';
-import makeInput, { withPickerValues, KeyboardModal } from 'react-native-formik';
+import makeInput, {
+  withPickerValues,
+  KeyboardModal,
+} from 'react-native-formik';
 
 import find from 'lodash/find';
 

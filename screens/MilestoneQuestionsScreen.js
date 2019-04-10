@@ -370,7 +370,7 @@ class MilestoneQuestionsScreen extends Component {
         // cover of babybook will only be baby's face from overview timeline
         let cover = 0;
         if (choice && choice.overview_timeline === 'post_birth') {
-          cover = 1;
+          cover = true;
         }
 
         _.map(answer.attachments, attachment => {
@@ -379,7 +379,7 @@ class MilestoneQuestionsScreen extends Component {
             (attachment.content_type.includes('video') ||
               attachment.content_type.includes('image'))
           ) {
-            this.props.createBabyBookEntry({title: null, detail: null, cover: cover}, attachment);
+            this.props.createBabyBookEntry({title: null, detail: null, cover}, attachment);
           }
           delete attachment.title;
           this.props.updateMilestoneAttachment(attachment);

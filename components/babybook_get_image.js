@@ -32,29 +32,6 @@ class BabyBookGetImage extends Component {
     imageHeight: imageWidth,
   };
 
-  componentWillReceiveProps(nextProps) {
-    const item = nextProps.item;
-    if (VideoFormats[item.file_type]) {
-      return;
-    }
-    if (item.file_name && item.file_uri) {
-      this.getImageSize(item.file_uri.uri);
-    }
-  }
-
-  getImageSize = async uri => {
-    await Image.getSize(uri, (height, width) => {
-      this.updateDimensionState(width, height);
-    });
-  };
-
-  updateDimensionState = (xWidth, xHeight) => {
-    const aspectRatio = xHeight / xWidth;
-    //console.log(xWidth, xHeight);
-    const imageHeight = imageWidth * aspectRatio;
-    this.setState({ imageHeight });
-  };
-
   handleImageOnPress = () => {
     if (this.props.item.type === 'cover') {
       this.props.navigation.navigate('BabyBookEntry');
@@ -67,7 +44,7 @@ class BabyBookGetImage extends Component {
   };
 
   render() {
-    const imageContainerHeight = this.state.imageHeight + 2;
+    const imageContainerHeight = this.state.imageHeight;
     const item = this.props.item;
     const uri = item.file_uri;
     const isPlaceholder = item.placeholder;
@@ -153,12 +130,12 @@ const imageCorner = {
 
 const styles = StyleSheet.create({
   imageContainer: {
-    width: imageWidth + 2,
+    width: imageWidth,
     maxHeight: imageMaxHeight,
     backgroundColor: Colors.white,
     borderColor: Colors.lightGrey,
-    borderWidth: 2,
-    padding: 5,
+    borderWidth: 1,
+    padding: 2,
     overflow: 'hidden',
   },
   videoContainer: {
