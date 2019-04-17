@@ -51,7 +51,7 @@ export const openSettingsDialog = message => {
 export const openSettings = async root => {
   if (Platform.OS === 'ios') {
     //await Linking.openURL('app-settings:');
-    await Linking.openURL("App-Prefs:root=`${root}`");
+    await Linking.openURL(`app-settings://${root}`);
   }
   // currently only need to open IOS manually
   //if (Platform.OS === 'android') {

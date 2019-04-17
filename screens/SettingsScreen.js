@@ -9,8 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { Constants } from 'expo';
+import { Constants, Permissions } from 'expo';
 import { MaterialIcons } from '@expo/vector-icons';
+
+
+import isEmpty from 'lodash/isEmpty';
 
 import moment from 'moment';
 
@@ -28,8 +31,14 @@ class SettingsScreen extends React.Component {
     title: 'Settings',
   };
 
+  state = {
+    notificationPermissions: '',
+  };
+
+
   componentWillMount() {
     this.props.fetchNotifications();
+    this.getNotificationPermissions();
   }
 
   renderNotificationList = releaseChannel => {
@@ -51,7 +60,7 @@ class SettingsScreen extends React.Component {
 
   renderItem = item => {
     const notification = item.item;
-    const notify_at = moment(notification.notify_at).format('YYYY-MM-DD HH:mm');
+    const notify_at = moment(notification.notify_at).format('YYYY-MM-DD h:mm a Z');
     return (
       <ListItem
         key={item.index}
@@ -77,7 +86,7 @@ class SettingsScreen extends React.Component {
     const releaseChannel = this.getReleaseChannel(manifest);
 
     let version = `${manifest.version}:${build}`;
-    let body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}`;
+    let body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}`;
 
     Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body}`);
   };
@@ -90,9 +99,39 @@ class SettingsScreen extends React.Component {
     return build;
   };
 
+  getNotificationPermissions = async () => {
+    const { status } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS,
+    );
+
+    console.log("Notification Settings: ",status);
+
+    this.setState({notificationPermissions: status});
+  };
+
+  renderDevDebugItems = releaseChannel => {
+    if (releaseChannel !== 'Production') {
+      return (
+      <View>
+        <Text>
+          Notification Permissions: {this.state.notificationPermissions}
+        </Text>
+        <Text>
+          Notifications Updated: {moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a z')}
+        </Text>
+      </View>
+    );
+    }
+    return null;
+  };
+
+
   render() {
     const build = this.getAppVersion();
     const releaseChannel = this.getReleaseChannel(manifest);
+    const calendar = this.props.milestones.calendar;
+    const session = this.props.session;
+    const subject = this.props.registration.subject.data;
 
     return (
       <View>
@@ -101,6 +140,7 @@ class SettingsScreen extends React.Component {
           <Text>
             Version: {manifest.version}:{build}
           </Text>
+          {this.renderDevDebugItems(releaseChannel)}
           <Text>Release: {releaseChannel}</Text>
           <TouchableOpacity
             style={styles.feedbackContainer}
@@ -156,7 +196,7 @@ const styles = StyleSheet.create({
 
 });
 
-const mapStateToProps = ({ session, notifications }) => ({ session, notifications });
+const mapStateToProps = ({ session, notifications, milestones, registration }) => ({ session, notifications, milestones, registration, });
 
 const mapDispatchToProps = { fetchNotifications };
 
