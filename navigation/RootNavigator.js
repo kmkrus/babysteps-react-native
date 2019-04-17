@@ -110,18 +110,6 @@ class RootNavigator extends Component {
       });
     }
     this._notificationSubscription = this.registerForNotifications();
-
-
-    Alert.alert(
-      'Permissions',
-      "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Go to //Settings > Notifications > BabySteps and set 'Banner Style' to 'Persistent'.",
-      [
-        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
-       {text: 'Settings', onPress: () => openSettings('NOTIFICATIONS')},
-      ],
-      { cancelable: true },
-    );
-
   }
 
   shouldComponentUpdate(nextProps) {
