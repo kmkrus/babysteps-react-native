@@ -1,9 +1,16 @@
 import React from 'react';
-import { Linking, Text, View, FlatList, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import {
+  Linking,
+  Text,
+  View,
+  FlatList,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { Constants } from 'expo';
 import { MaterialIcons } from '@expo/vector-icons';
-
 
 import moment from 'moment';
 
@@ -25,8 +32,8 @@ class SettingsScreen extends React.Component {
     this.props.fetchNotifications();
   }
 
-  renderNotificationList(releaseChannel) {
-    if (releaseChannel != 'Production') {
+  renderNotificationList = releaseChannel => {
+    if (releaseChannel !== 'Production') {
       const notifications = this.props.notifications.notifications.data;
       return (
         <View style={styles.section}>
@@ -40,7 +47,7 @@ class SettingsScreen extends React.Component {
       );
     }
     return null;
-  }
+  };
 
   renderItem = item => {
     const notification = item.item;
@@ -54,7 +61,7 @@ class SettingsScreen extends React.Component {
     );
   };
 
-  getReleaseChannel(manifest) {
+  getReleaseChannel = manifest => {
     const releaseChannel = manifest.releaseChannel; // returns undefined in DEV
     if (__DEV__ || releaseChannel === undefined) {
       return 'Development';
@@ -63,7 +70,7 @@ class SettingsScreen extends React.Component {
       return 'Staging';
     }
     return 'Production';
-  }
+  };
 
   _handleFeedbackPress = () => {
     const build = this.getAppVersion();
@@ -81,8 +88,7 @@ class SettingsScreen extends React.Component {
         ? manifest.android.versionCode
         : manifest.ios.buildNumber;
     return build;
-  }
-
+  };
 
   render() {
     const build = this.getAppVersion();
@@ -95,14 +101,18 @@ class SettingsScreen extends React.Component {
           <Text>
             Version: {manifest.version}:{build}
           </Text>
-          <Text>
-            Release: {releaseChannel}
-          </Text>
-          <TouchableOpacity style={styles.feedbackContainer} onPress={this._handleFeedbackPress}>
-            <Text style={styles.feedbackText}>
-              Provide Feedback
-            </Text>
-            <MaterialIcons name="keyboard-arrow-right" size={28} color="#bdc6cf" style={styles.feedbackIcon} />
+          <Text>Release: {releaseChannel}</Text>
+          <TouchableOpacity
+            style={styles.feedbackContainer}
+            onPress={this._handleFeedbackPress}
+          >
+            <Text style={styles.feedbackText}>Provide Feedback</Text>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={28}
+              color="#bdc6cf"
+              style={styles.feedbackIcon}
+            />
           </TouchableOpacity>
         </View>
         {this.renderNotificationList(releaseChannel)}
