@@ -150,9 +150,14 @@ class RegistrationUserForm extends Component {
     return initialValues;
   };
 
+  handlePress = (props) => {
+    this.setState({ isSubmitting: true, apiErrorMessage: '' });
+    props.submitForm();
+  }
+
+
   _onSubmit = values => {
     this.props.apiCreateUser(values);
-    this.setState({ isSubmitting: true, apiErrorMessage: '' });
   };
 
   render() {
@@ -209,7 +214,7 @@ class RegistrationUserForm extends Component {
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="NEXT"
-                  onPress={props.submitForm}
+                  onPress={() => {this.handlePress(props)}}
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
