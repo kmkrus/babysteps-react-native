@@ -151,8 +151,11 @@ class RegistrationUserForm extends Component {
   };
 
   handlePress = (props) => {
-    this.setState({ isSubmitting: true, apiErrorMessage: '' });
-    props.submitForm();
+    console.log("Props",props);
+    if (props.isValid) {
+      this.setState({ isSubmitting: true, apiErrorMessage: '' });
+      props.submitForm();
+    }
   }
 
 
