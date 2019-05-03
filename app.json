@@ -24,7 +24,7 @@
       "./assets/**/*"
     ],
     "ios": {
-      "buildNumber": "33",
+      "buildNumber": "35",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
@@ -34,8 +34,8 @@
       }
     },
     "android": {
-      "versionCode": 33,
-      "package": "com.gofullstack.babysteps.dev",
+      "versionCode": 35,
+      "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",
         "RECORD_AUDIO",
