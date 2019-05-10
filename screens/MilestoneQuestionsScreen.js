@@ -427,10 +427,10 @@ class MilestoneQuestionsScreen extends Component {
     );
   }
 
-  renderVideoAttachment = url => {
+  renderVideoAttachment = uri => {
     return (
       <Video
-        source={{ url }}
+        source={{ uri }}
         resizeMode={Video.RESIZE_MODE_COVER}
         shouldPlay={false}
         isLooping={false}
@@ -489,7 +489,7 @@ class MilestoneQuestionsScreen extends Component {
           <View
             style={[
               styles.buttonContainer,
-              Platform.OS === 'android' 
+              Platform.OS === 'android'
                 ? styles.buttonContainerAndroid
                 : styles.buttonContainerIOS,
             ]}
