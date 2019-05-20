@@ -15,7 +15,6 @@ class MilestoneQuestionConfirmScreen extends Component {
   };
 
   handleReturnToOverview = () => {
-    //const { navigate } = this.props.navigation;
     this.props.navigation.dispatch(StackActions.popToTop());
     this.props.navigation.navigate('Overview');
   };

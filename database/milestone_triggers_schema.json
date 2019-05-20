@@ -13,10 +13,12 @@
       "pregnancy_period": "TEXT",
       "frequency": "TEXT",
       "response_scale": "TEXT",
+      "study_only": "INTEGER",
       "notify_at": "TEXT",
       "notify_count": "INTEGER",
       "available_start_at": "TEXT",
       "available_end_at": "TEXT",
+      "questions_remaining": "INTEGER",
       "completed_at": "TEXT"
     },
     "indexes": [

@@ -289,7 +289,8 @@ class MilestonePregnancyHistoryScreen extends Component {
     this.setState({ confirmed: true });
 
     this.props.updateMilestoneAnswers(section, answers);
-    this.props.updateMilestoneCalendar(section.task_id);
+    const completed_at = new Date().toISOString();
+    this.props.updateMilestoneCalendar(section.task_id, { completed_at });
 
     if (inStudy) {
       this.props.apiUpdateMilestoneAnswers(session, section.id, answers);

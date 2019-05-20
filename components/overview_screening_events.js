@@ -82,6 +82,9 @@ class OverviewScreen extends React.Component {
             if (s.momentary_assessment) {
               return false;
             }
+            if (!s.study_only) {
+              return false;
+            }
             if (s.completed_at) {
               return false;
             }
@@ -138,7 +141,7 @@ class OverviewScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.slider_header}>
           <View style={styles.slider_title}>
-            <Text style={styles.slider_title_text}>Screening Events</Text>
+            <Text style={styles.slider_title_text}>Research Activities</Text>
           </View>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Milestones')}
@@ -165,9 +168,9 @@ class OverviewScreen extends React.Component {
               index={this.state.currentIndexScreening}
               data={this.state.screeningEvents}
               renderItem={item => this.renderScreeningItem(item)}
-              itemWidth={scCardWidth + scCardMargin}
+              itemWidth={width - scCardMargin}
               contentOffset={scCardMargin - 2}
-              useVelocityForIndex={false}
+              useVelocityForIndex
               onIndexChange={index =>
                 this.setState(() => ({ currentIndexScreening: index }))
               }

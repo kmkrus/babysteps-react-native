@@ -5,6 +5,7 @@ import promise from 'redux-promise-middleware';
 
 import api from '../database/api';
 import apiAnswersFulfilled from '../database/api_answers_fulfilled';
+import apiMilestoneTasksFulfilled from '../database/api_milestone_tasks_fulfilled';
 
 import reducers from '../reducers';
 
@@ -18,6 +19,15 @@ const logger = createLogger();
 
 const store = createStore(
   reducers,
-  compose(applyMiddleware(promise(), thunk, logger, api, apiAnswersFulfilled)),
+  compose(
+    applyMiddleware(
+      promise(),
+      thunk,
+      logger,
+      api,
+      apiAnswersFulfilled,
+      apiMilestoneTasksFulfilled,
+    ),
+  ),
 );
 export default store;

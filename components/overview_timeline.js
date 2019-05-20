@@ -54,7 +54,9 @@ class OverviewTimeline extends React.Component {
     let baseDate = '';
     let postBirth = false;
     const subject = nextProps.registration.subject;
-    if (!subject.data) {return null};
+    if (!subject.data) {
+      return null;
+    }
     if (!subject.fetching && subject.fetched) {
       if (subject.data.date_of_birth) {
         baseDate = subject.data.date_of_birth;
@@ -98,7 +100,8 @@ class OverviewTimeline extends React.Component {
             // calculate weeks
             forEach(overviewTimelines, item => {
               if (item.overview_timeline === 'during_pregnancy') {
-                item.weeks = 40 - moment(baseDate).diff(item.notify_at, 'weeks');
+                item.weeks =
+                  40 - moment(baseDate).diff(item.notify_at, 'weeks');
               }
               if (item.overview_timeline === 'birth') {
                 item.weeks = 40;
@@ -191,6 +194,7 @@ class OverviewTimeline extends React.Component {
             <AutoHeightImage
               source={{ uri: item.uri }}
               width={tlPhotoSize}
+              fixedSize={60}
               style={styles.croppedImage}
               resizeMode="cover"
             />
@@ -326,7 +330,7 @@ const styles = StyleSheet.create({
   croppedImage: {
     position: 'absolute',
     left: 0,
-    top: -14,
+    top: 0,
   },
   timelineCircleItem: {
     width: tlPhotoSize,

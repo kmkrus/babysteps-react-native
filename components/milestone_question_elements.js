@@ -54,7 +54,6 @@ const mediaTypes = {
 };
 
 export class RenderCheckBox extends React.PureComponent {
-
   render() {
     const collection = _.map(this.props.choices, choice => {
       let checked = false;
@@ -244,7 +243,7 @@ export class RenderTextNumeric extends React.PureComponent {
 export class RenderDate extends React.PureComponent {
   render() {
     const collection = _.map(this.props.choices, choice => {
-      let text = new Date().toISOString().slice(0, 10);
+      let text = ''; // new Date().toISOString().slice(0, 10);
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) {
         text = answer.answer_text;
@@ -295,14 +294,23 @@ export class RenderFile extends Component {
   }
 
   async componentDidMount() {
+    const question = this.props.question;
     this._isMounted = true;
     let message = [];
-    const hasCameraRollPermission = await registerForPermission(Permissions.CAMERA_ROLL);
-    const hasCameraPermission = await registerForPermission(Permissions.CAMERA);
-    const hasAudioPermission = await registerForPermission(Permissions.AUDIO_RECORDING);
-    if (!hasCameraRollPermission) message = renderNoPermissionsMessage('library', message);
-    if (!hasCameraPermission) message = renderNoPermissionsMessage('camera', message);
-    if (!hasAudioPermission) message = renderNoPermissionsMessage('audio', message);
+    let hasCameraPermission = false;
+    let hasCameraRollPermission = false;
+    let hasAudioPermission = false;
+    if (['file_image', 'file_video'].includes(question.rn_input_type)) {
+      hasCameraRollPermission = await registerForPermission(Permissions.CAMERA_ROLL);
+      hasCameraPermission = await registerForPermission(Permissions.CAMERA);
+      if (!hasCameraRollPermission) message = renderNoPermissionsMessage('library', message);
+      if (!hasCameraPermission) message = renderNoPermissionsMessage('camera', message);
+    }
+    if (['file_video', 'file_audio'].includes(question.rn_input_type) ) {
+      hasAudioPermission = await registerForPermission(Permissions.AUDIO_RECORDING);
+      if (!hasAudioPermission) message = renderNoPermissionsMessage('audio', message);
+    }
+
     // disable setState to avoid memory leaks if closing before async finished
     if (this._isMounted) {
       this.setState({

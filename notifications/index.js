@@ -1,4 +1,5 @@
 import { Notifications, SQLite } from 'expo';
+import Sentry from 'sentry-expo';
 
 import moment from 'moment';
 import forEach from 'lodash/forEach';
@@ -105,13 +106,15 @@ export const setMomentaryAssessments = (entries, studyEndDate) => {
 
 export const setNotifications = entries => {
   forEach(entries, entry => {
-    // notifications requires title and body
-    if (entry.title || entry.body) {
+    // notifications requires a task id and title or body
+    if (entry.task_id && (entry.title || entry.body)) {
       const localNotification = localNotificationMessage(entry);
       const scheduleTime = moment(entry.notify_at);
       if (scheduleTime.isValid()) {
         scheduleNotificaton(localNotification, scheduleTime);
       }
+    } else {
+      Sentry.captureMessage(`Notification for ${entry.title} lacks correct data`);
     }
   });
 };

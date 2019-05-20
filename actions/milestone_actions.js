@@ -6,6 +6,7 @@ import map from 'lodash/map';
 import forEach from 'lodash/forEach';
 import omit from 'lodash/omit';
 import keys from 'lodash/keys';
+import isInteger from 'lodash/isInteger';
 
 import { insertRows, getApiUrl } from '../database/common';
 import schema from '../database/milestones_schema.json';
@@ -237,14 +238,29 @@ export const fetchMilestoneCalendar = (pregnancy_period = null) => {
   };
 };
 
-export const updateMilestoneCalendar = task_id => {
+export const updateMilestoneCalendar = (task_id, data) => {
   return dispatch => {
     dispatch(Pending(UPDATE_MILESTONE_CALENDAR_PENDING));
-    const completed_at = new Date().toISOString();
-    const sql = 'UPDATE milestone_triggers SET completed_at = ? WHERE task_id = ?;';
+
+    delete data.id;
+
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    let updateSQL = [];
+
+    forEach( keys, key => {
+      if (isInteger(data[key])) {
+        updateSQL.push(`${key} = ${data[key]}`);
+      } else {
+        updateSQL.push(`${key} = '${data[key]}'`);
+      }
+    });
+    const sql = `UPDATE milestone_triggers SET ${updateSQL.join(', ')} WHERE task_id = ${task_id};`;
+
     return db.transaction(tx => {
       tx.executeSql(
-        sql, [completed_at, task_id],
+        sql,
+        [],
         (_, response) => {
           dispatch(Response(UPDATE_MILESTONE_CALENDAR_FULFILLED, response));
         },

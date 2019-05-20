@@ -32,10 +32,15 @@ class AutoHeightImage extends Component {
   };
 
   updateDimensionState = (xWidth, xHeight) => {
+    const fixedSize = this.props.fixedSize;
+    if (fixedSize) {
+      xHeight = fixedSize;
+      xWidth = fixedSize;
+    }
     let aspectRatio = xHeight / xWidth;
     //if (Platform.OS === 'ios') {
-      // android and ios are returning width & height in reverse
-      aspectRatio = xWidth / xHeight;
+    // android and ios are returning width & height in reverse
+    aspectRatio = xWidth / xHeight;
     //} //I commented out the above block as my tests on android (Samsung Galaxy S7 return in the same order as iOS.)
     const width = this.props.width;
     const height = width * aspectRatio;
@@ -45,7 +50,7 @@ class AutoHeightImage extends Component {
   render = () => {
     const { width, height } = this.state;
     const { source, style } = this.props;
-    console.log("Autoheight Image", width, height)
+    //console.log("Autoheight Image", width, height)
     return (
       <Image
         source={source}

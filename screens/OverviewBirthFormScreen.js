@@ -30,7 +30,6 @@ import {
 import {
   resetMilestoneCalendar,
   fetchMilestoneCalendar,
-  updateMilestoneCalendar,
   apiFetchMilestoneCalendar,
 } from '../actions/milestone_actions';
 import { deleteAllNotifications } from '../actions/notification_actions';
@@ -477,7 +476,6 @@ const mapDispatchToProps = {
   apiUpdateSubject,
   resetMilestoneCalendar,
   fetchMilestoneCalendar,
-  updateMilestoneCalendar,
   apiFetchMilestoneCalendar,
   deleteAllNotifications,
   updateSession,

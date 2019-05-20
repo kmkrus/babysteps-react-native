@@ -193,7 +193,8 @@ class MilestoneQuestionsScreen extends Component {
     const { answers, attachments, errorMessage } = this.state;
     return (
       <View key={question.id} style={styles.questionContainer}>
-        {question.attachment_url && this.renderAttachment(question.attachment_url)}
+        {question.attachment_url &&
+          this.renderAttachment(question.attachment_url)}
         <View style={styles.questionLeft}>
           <Text style={styles.question}>{title}</Text>
           {!!question.body && (
@@ -350,6 +351,7 @@ class MilestoneQuestionsScreen extends Component {
   handleConfirm = () => {
     const { section, answers } = this.state;
     const session = this.props.session;
+    const questions = this.props.milestones.questions.data;
     const choices = this.props.milestones.choices.data;
     const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
 
@@ -360,7 +362,8 @@ class MilestoneQuestionsScreen extends Component {
     this.setState({ confirmed: true });
 
     this.props.updateMilestoneAnswers(section, answers);
-    this.props.updateMilestoneCalendar(section.task_id);
+    const completed_at = new Date().toISOString();
+    this.props.updateMilestoneCalendar(section.task_id, { completed_at });
 
     // save attachments
     if (_.find(answers, a => {return !!a.attachments })) {
@@ -401,19 +404,32 @@ class MilestoneQuestionsScreen extends Component {
         this.props.apiUpdateMilestoneCalendar(calendar.id, {milestone_trigger: {completed_at: date}});
       }
     }
-    this.props.fetchMilestoneCalendar();
-    this.props.fetchBabyBookEntries();
 
+    let message = '';
+
+    const unansweredQuestions = _.filter(questions, question => {
+      return _.find(answers, { question_id: question.id }) === undefined;
+    });
+    this.props.updateMilestoneCalendar(section.task_id, {
+      questions_remaining: unansweredQuestions.length,
+    });
+
+    if (unansweredQuestions.length > 0) {
+      message = 'Please note that not all questions were completed.';
+    }
     // add condolences message to confirmation screen
-    let condolencesMessage = '';
     if (section.task_id === CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID) {
       const answer = _.find(answers, ['choice_id', CONSTANTS.CHOICE_BABY_ALIVE_ID]);
       if (answer && answer.answer_boolean) {
-        condolencesMessage =
+        message =
           "We're so sorry to hear of your loss. We appreciate the contribution you have made to BabySteps.";
       }
     }
-    this.props.navigation.navigate('MilestoneQuestionConfirm', {message: condolencesMessage});
+
+    this.props.fetchMilestoneCalendar();
+    this.props.fetchBabyBookEntries();
+
+    this.props.navigation.navigate('MilestoneQuestionConfirm', {message});
   };
 
   renderImageAttachement = url => {
@@ -425,7 +441,7 @@ class MilestoneQuestionsScreen extends Component {
         resizeMode="contain"
       />
     );
-  }
+  };
 
   renderVideoAttachment = uri => {
     return (
@@ -439,7 +455,7 @@ class MilestoneQuestionsScreen extends Component {
         style={styles.video}
       />
     );
-  }
+  };
 
   renderAttachment = attachment_url => {
     const fileExtension = attachment_url.split('.').pop();
@@ -447,7 +463,7 @@ class MilestoneQuestionsScreen extends Component {
       return this.renderVideoAttachment(attachment_url);
     }
     return this.renderImageAttachement(attachment_url);
-  }
+  };
 
   render() {
     const milestones = this.props.milestones;
@@ -572,8 +588,8 @@ const styles = StyleSheet.create({
     height: itemWidth * 0.66,
     alignSelf: 'center',
     borderWidth: 1,
-    borderColor: Colors.black,
-    borderRadius: 5,
+    borderColor: Colors.lightGrey,
+    borderRadius: 10,
     marginBottom: 10,
   },
   video: {
@@ -582,10 +598,9 @@ const styles = StyleSheet.create({
     height: itemWidth * 0.66,
     alignSelf: 'center',
     borderWidth: 1,
-    borderColor: Colors.black,
-    borderRadius: 5,
+    borderColor: Colors.lightGrey,
+    borderRadius: 10,
     marginBottom: 10,
-
   },
   buttonContainer: {
     flex: 1,

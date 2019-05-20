@@ -50,6 +50,10 @@ class OverviewScreen extends React.Component {
     milestoneGroups: [],
   };
 
+  //componentDidMount() {
+  //  this.props.apiFetchMilestones();
+  //}
+
   componentWillReceiveProps(nextProps) {
     const subject = nextProps.registration.subject;
     let baseDate = '';
@@ -124,7 +128,7 @@ class OverviewScreen extends React.Component {
           renderItem={this.renderMilestoneItem}
           itemWidth={width}
           //threshold={mgImageWidth / 4}
-          useVelocityForIndex={false}
+          useVelocityForIndex
           style={styles.mgSlider}
           onIndexChange={currentIndexMilestones =>
             this.setState({ currentIndexMilestones })

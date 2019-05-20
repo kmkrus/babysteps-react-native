@@ -157,7 +157,9 @@ class MilestonesScreen extends Component {
     let color = Colors.grey;
     const calendar = find(this.props.milestones.calendar.data, ['task_id', task.id]);
     if (calendar) {
-      if (calendar.completed_at) {
+      if (calendar.questions_remaining > 0) {
+        checkboxSource = require('../assets/images/milestones_checkbox_skipped.png');
+      } else if (calendar.completed_at) {
         checkboxSource = require('../assets/images/milestones_checkbox_complete.png');
       }
       if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {

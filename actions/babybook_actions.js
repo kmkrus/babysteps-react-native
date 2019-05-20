@@ -126,7 +126,7 @@ export const updateBabyBookEntry = (id, data, image = null) => {
 
     const keys = _.keys(data);
     const values = _.values(data);
-    var updateSQL = [];
+    let updateSQL = [];
 
     _.forEach( keys, key => {
       updateSQL.push(key + " = '" + data[key] + "'");

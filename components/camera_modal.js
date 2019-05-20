@@ -40,6 +40,7 @@ class CameraModal extends Component {
     flashMode: Camera.Constants.FlashMode.off,
     isLandscape: false,
     recording: false,
+    isTakingImage: false,
     confirmingImage: false,
     videoTimer: null,
   };
@@ -67,7 +68,10 @@ class CameraModal extends Component {
   onReceiveVideo = (cancelRecording, image) => {
     if (!cancelRecording) {
       this.image = image;
-      this.setState({ confirmingImage: true, recording: false });
+      // do not use confirm view for video
+      // this.setState({ confirmingImage: true, recording: false });
+      this.props.closeCameraModal(this.image);
+      this.image = null;
       Vibration.vibrate();
     } else {
       this.setState({ recording: false });
@@ -127,9 +131,10 @@ class CameraModal extends Component {
       return;
     }
 
-    this.camera.takePictureAsync().then(image => {
-      this.onReceiveImage(image);
-    });
+    setTimeout(() => this.setState({ isTakingImage: true }), 1);
+    const image = await this.camera.takePictureAsync();
+    this.onReceiveImage(image);
+    this.setState({ isTakingImage: false });
   };
 
   handleChangeFlashMode = () => {
