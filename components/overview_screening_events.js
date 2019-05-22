@@ -82,7 +82,7 @@ class OverviewScreen extends React.Component {
             if (s.momentary_assessment) {
               return false;
             }
-            if (!s.study_only) {
+            if (s.study_only !== 1 ) {
               return false;
             }
             if (s.completed_at) {
@@ -158,8 +158,8 @@ class OverviewScreen extends React.Component {
             isEmpty(this.state.screeningEvents) && (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
-                  You've completed all the tasks for this stage. We'll notify
-                  you when there are new tasks to complete.
+                  You do not currently have any research activities due. We&#39;ll
+                  notify you when there are new tasks for you to complete.
                 </Text>
               </View>
             )}
