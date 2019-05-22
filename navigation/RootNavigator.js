@@ -214,7 +214,7 @@ class RootNavigator extends Component {
       if (Platform.OS === 'ios') {
         Alert.alert(
           'Permissions',
-          "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Go to //Settings > Notifications > BabySteps and set 'Banner Style' to 'Persistent'.",
+          "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Click Settings below, open 'Notifications' and set 'Banner Style' to 'Persistent'.",
           [
             { text: 'Cancel', onPress: () => {}, style: 'cancel' },
             { text: 'Settings', onPress: () => openSettings('NOTIFICATIONS') },
