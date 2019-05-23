@@ -82,7 +82,7 @@ class OverviewScreen extends React.Component {
             if (s.momentary_assessment) {
               return false;
             }
-            if (s.study_only !== 1 ) {
+            if (s.study_only !== 1) {
               return false;
             }
             if (s.completed_at) {

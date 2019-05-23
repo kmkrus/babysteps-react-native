@@ -83,12 +83,10 @@ class OverviewScreen extends React.Component {
           // locate index of current milestone group
           let currentIndexMilestones = findIndex(milestoneGroups, group => {
             return (
-              currentWeek >= group.week_start_at &&
+              group.week_start_at <= currentWeek &&
               currentWeek <= group.week_end_at
             );
           });
-          currentIndexMilestones =
-            currentIndexMilestones >= 0 ? currentIndexMilestones + 1 : 0;
 
           this.setState({
             currentIndexMilestones,
