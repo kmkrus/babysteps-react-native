@@ -69,7 +69,7 @@ class ConsentSignatureForm extends Component {
           <Text style={styles.header}>Your Signature</Text>
           <Text style={styles.text}>
             Do not sign this form if today’s date is on or after
-            EXPIRATION DATE: 01/29/19.
+            EXPIRATION DATE: 01/14/2020.
           </Text>
         </View>
 
