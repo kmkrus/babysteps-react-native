@@ -73,7 +73,7 @@ function getRandomInt(min, max) {
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
   // notifications require title and body
-  if (!entry.message || !entry.name) return null;
+  if (!entry.message || !entry.name || !entry.frequency) return null;
   let cycleDate = moment(entry.notify_at).startOf('day');
   if (entry.notify_at === null || moment().isAfter(entry.notify_at)) {
     cycleDate = moment().startOf('day');

@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "0.9.9",
+    "version": "0.9.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -24,7 +24,7 @@
       "./assets/**/*"
     ],
     "ios": {
-      "buildNumber": "39",
+      "buildNumber": "12",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
