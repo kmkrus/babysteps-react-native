@@ -7,20 +7,18 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { Constants, Permissions } from 'expo';
 import { MaterialIcons } from '@expo/vector-icons';
-
-
-import isEmpty from 'lodash/isEmpty';
 
 import moment from 'moment';
 
 import { connect } from 'react-redux';
 import { fetchNotifications } from '../actions/notification_actions';
 
-import { getApiUrl } from '../database/common';
+import ConsentDisclosureContent from '../components/consent_disclosure_content';
 
 import Colors from '../constants/Colors';
 
@@ -33,8 +31,8 @@ class SettingsScreen extends React.Component {
 
   state = {
     notificationPermissions: '',
+    consentModalVisible: false,
   };
-
 
   componentWillMount() {
     this.props.fetchNotifications();
@@ -63,7 +61,7 @@ class SettingsScreen extends React.Component {
     const notify_at = moment(notification.notify_at).format('YYYY-MM-DD h:mm a Z');
     return (
       <ListItem
-        key={item.index}
+        key={notification.id}
         title={notify_at}
         subtitle={notification.body}
       />
@@ -85,10 +83,37 @@ class SettingsScreen extends React.Component {
     const build = this.getAppVersion();
     const releaseChannel = this.getReleaseChannel(manifest);
 
-    let version = `${manifest.version}:${build}`;
-    let body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}`;
+    const version = `${manifest.version}:${build}`;
+    const body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}\n________________________\n\n`;
 
     Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body}`);
+  };
+
+  _handleConsentAgreementPress = () => {
+    this.setState({ consentModalVisible: true });
+  };
+
+  renderConsentModal = () => {
+    return (
+      <View style={{marginTop: 22}}>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.consentModalVisible}
+          onRequestClose={() => {}}
+        >
+          <ConsentDisclosureContent
+            formState="view"
+            screeningBlood={this.state.screeningBlood}
+            setModalVisible={this.setModalVisible}
+          />
+        </Modal>
+      </View>
+    );
+  };
+
+  setModalVisible = (visible) => {
+    this.setState({consentModalVisible: visible});
   };
 
   getAppVersion = () => {
@@ -100,31 +125,31 @@ class SettingsScreen extends React.Component {
   };
 
   getNotificationPermissions = async () => {
-    const { status } = await Permissions.getAsync(
-      Permissions.NOTIFICATIONS,
-    );
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
 
-    console.log("Notification Settings: ",status);
+    // console.log("Notification Settings: ", status);
 
-    this.setState({notificationPermissions: status});
+    this.setState({ notificationPermissions: status });
   };
 
   renderDevDebugItems = releaseChannel => {
     if (releaseChannel !== 'Production') {
       return (
-      <View>
-        <Text>
-          Notification Permissions: {this.state.notificationPermissions}
-        </Text>
-        <Text>
-          Notifications Updated: {moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a z')}
-        </Text>
-      </View>
-    );
+        <View>
+          <Text>
+            Notification Permissions: {this.state.notificationPermissions}
+          </Text>
+          <Text>
+            Notifications Updated:
+            {moment(this.props.session.notifications_updated_at).format(
+              'MMMM Do YYYY, h:mm a z',
+            )}
+          </Text>
+        </View>
+      );
     }
     return null;
   };
-
 
   render() {
     const build = this.getAppVersion();
@@ -142,20 +167,37 @@ class SettingsScreen extends React.Component {
           </Text>
           {this.renderDevDebugItems(releaseChannel)}
           <Text>Release: {releaseChannel}</Text>
+
           <TouchableOpacity
-            style={styles.feedbackContainer}
+            style={styles.linkContainer}
             onPress={this._handleFeedbackPress}
           >
-            <Text style={styles.feedbackText}>Provide Feedback</Text>
+            <Text style={styles.linkText}>Provide Feedback</Text>
             <MaterialIcons
               name="keyboard-arrow-right"
               size={28}
               color="#bdc6cf"
-              style={styles.feedbackIcon}
+              style={styles.linkIcon}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkContainer}
+            onPress={this._handleConsentAgreementPress}
+          >
+            <Text style={styles.linkText}>Review Consent Agreement</Text>
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={28}
+              color="#bdc6cf"
+              style={styles.linkIcon}
             />
           </TouchableOpacity>
         </View>
+
         {this.renderNotificationList(releaseChannel)}
+
+        {this.renderConsentModal()}
       </View>
     );
   }
@@ -171,32 +213,41 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  feedbackContainer: {
+  linkContainer: {
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderTopColor: '#bbb',
-    borderBottomColor: '#bbb',
+    borderTopColor: Colors.mediumGrey,
+    borderBottomColor: Colors.mediumGrey,
     marginTop: 20,
     paddingTop: 15,
     paddingBottom: 15,
     paddingLeft: 10,
     position: 'relative',
   },
-  feedbackText: {
+  linkText: {
     fontSize: 16,
-    color: '#43484d',
+    color: Colors.darkGreen,
     marginLeft: 10,
   },
-  feedbackIcon: {
+  linkIcon: {
+    color: Colors.darkGreen,
     right: 9,
     position: 'absolute',
     top: 12,
-  }
-
-
+  },
 });
 
-const mapStateToProps = ({ session, notifications, milestones, registration }) => ({ session, notifications, milestones, registration, });
+const mapStateToProps = ({
+  session,
+  notifications,
+  milestones,
+  registration,
+}) => ({
+  session,
+  notifications,
+  milestones,
+  registration,
+});
 
 const mapDispatchToProps = { fetchNotifications };
 

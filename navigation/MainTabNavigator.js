@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import {
   createStackNavigator,
-  createBottomTabNavigator
+  createBottomTabNavigator,
 } from 'react-navigation';
 
 import TabBarIcon from '../components/tab_bar_icon';
@@ -78,7 +78,7 @@ OverviewStack.navigationOptions = {
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}` 
+          ? `ios-information-circle${focused ? '' : '-outline'}`
           : 'md-information-circle'
       }
     />
@@ -102,7 +102,7 @@ BabyBookStack.navigationOptions = {
       focused={focused}
       name={
         Platform.OS === 'ios'
-          ? `ios-book${focused ? '' : '-outline'}` 
+          ? `ios-book${focused ? '' : '-outline'}`
           : 'md-book'
       }
     />
@@ -112,7 +112,8 @@ BabyBookStack.navigationOptions = {
 const SettingsStack = createStackNavigator(
   {
     Settings: SettingsScreen,
-  }, {
+  },
+  {
     navigationOptions: headerOptions,
   },
 );

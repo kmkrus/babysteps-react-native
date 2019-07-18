@@ -23,6 +23,7 @@ import checkAnswersSchema from './database/check_answers_schema';
 import checkNotificationsSchema from './database/check_notifications_schema';
 import checkBabyBookSchema from './database/check_babybook_schema';
 import checkCustomDirectories from './components/check_custom_directories';
+import moveDataToMainDirectory from './components/move_data_to_main_directory';
 
 import MomentaryAssessment from './components/momentary_assessment_modal';
 
@@ -112,6 +113,7 @@ export default class App extends Component {
     await checkNotificationsSchema();
     await checkBabyBookSchema();
     await checkCustomDirectories();
+    //await moveDataToMainDirectory();
   };
 
   render() {
