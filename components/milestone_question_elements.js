@@ -15,7 +15,10 @@ import {
   FormInput,
   Slider,
 } from 'react-native-elements';
-import { ImagePicker, Video, WebBrowser, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as WebBrowser from 'expo-web-browser';
+import { Video } from 'expo-av';
+import * as ImagePicker from 'expo-image-picker';
 import DatePicker from 'react-native-datepicker';
 
 import _ from 'lodash';
@@ -154,7 +157,7 @@ export class RenderCheckYesNo extends React.PureComponent {
     });
     return <View style={{ flexDirection: 'row' }}>{collection}</View>;
   } // render
-};
+}
 
 
 export class RenderTextShort extends React.PureComponent {

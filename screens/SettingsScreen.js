@@ -10,8 +10,10 @@ import {
   Modal,
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { Constants, Permissions } from 'expo';
-import { MaterialIcons } from '@expo/vector-icons';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 import moment from 'moment';
 
@@ -95,18 +97,28 @@ class SettingsScreen extends React.Component {
 
   renderConsentModal = () => {
     return (
-      <View style={{marginTop: 22}}>
+      <View style={{ marginTop: 22 }}>
         <Modal
           animationType="slide"
           transparent={false}
           visible={this.state.consentModalVisible}
           onRequestClose={() => {}}
         >
-          <ConsentDisclosureContent
-            formState="view"
-            screeningBlood={this.state.screeningBlood}
-            setModalVisible={this.setModalVisible}
-          />
+          <View>
+            <TouchableOpacity
+              style={{alignSelf: 'flex-end', marginRight: 20}}
+              onPress={() => {
+                this.setModalVisible(!this.state.consentModalVisible);
+              }}
+            >
+              <Ionicons name = "md-close" size = {28} />
+            </TouchableOpacity>
+            <ConsentDisclosureContent
+              formState="view"
+              screeningBlood={this.state.screeningBlood}
+              setModalVisible={this.setModalVisible}
+            />
+          </View>
         </Modal>
       </View>
     );
@@ -173,8 +185,8 @@ class SettingsScreen extends React.Component {
             onPress={this._handleFeedbackPress}
           >
             <Text style={styles.linkText}>Provide Feedback</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
+            <Ionicons
+              name="ios-arrow-forward"
               size={28}
               color="#bdc6cf"
               style={styles.linkIcon}
@@ -186,8 +198,8 @@ class SettingsScreen extends React.Component {
             onPress={this._handleConsentAgreementPress}
           >
             <Text style={styles.linkText}>Review Consent Agreement</Text>
-            <MaterialIcons
-              name="keyboard-arrow-right"
+            <Ionicons
+              name="ios-arrow-forward"
               size={28}
               color="#bdc6cf"
               style={styles.linkIcon}

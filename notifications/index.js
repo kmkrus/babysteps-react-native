@@ -1,4 +1,5 @@
-import { Notifications, SQLite } from 'expo';
+import { Notifications } from 'expo';
+import { SQLite } from 'expo-sqlite';
 import Sentry from 'sentry-expo';
 
 import moment from 'moment';

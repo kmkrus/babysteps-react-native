@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { AppState, NetInfo } from 'react-native';
-
+import { AppState } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import {
   updateSession,
   apiTokenRefresh,

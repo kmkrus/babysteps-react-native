@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  ImageBackground,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, ImageBackground, Dimensions } from 'react-native';
 
 import SideSwipe from 'react-native-sideswipe';
 

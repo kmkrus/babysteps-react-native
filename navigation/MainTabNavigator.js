@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import {
+  createAppContainer, 
   createStackNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
@@ -40,9 +41,11 @@ const MilestonesStack = createStackNavigator(
     OverviewBirthForm: OverviewBirthFormScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
+
+const MilestonesStackContainer = createAppContainer(MilestonesStack);
 
 MilestonesStack.navigationOptions = {
   tabBarLabel: 'Milestones',
@@ -67,9 +70,11 @@ const OverviewStack = createStackNavigator(
     // MilestoneQuestionConfirm: MilestoneQuestionConfirmScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
+
+const OverviewStackContainer = createAppContainer(OverviewStack);
 
 OverviewStack.navigationOptions = {
   tabBarLabel: 'Overview',
@@ -91,7 +96,7 @@ const BabyBookStack = createStackNavigator(
     BabyBookEntry: BabyBookEntryScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
 
@@ -109,12 +114,14 @@ BabyBookStack.navigationOptions = {
   ),
 };
 
+const BabyBookStackContainer = createAppContainer(BabyBookStack);
+
 const SettingsStack = createStackNavigator(
   {
     Settings: SettingsScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
 
@@ -128,9 +135,11 @@ SettingsStack.navigationOptions = {
   ),
 };
 
+const SettingsStackContainer = createAppContainer(SettingsStack);
+
 export default createBottomTabNavigator({
-  Overview: OverviewStack,
-  Milestones: MilestonesStack,
-  BabyBook: BabyBookStack,
-  Settings: SettingsStack,
+  Overview: OverviewStackContainer,
+  Milestones: MilestonesStackContainer,
+  BabyBook: BabyBookStackContainer,
+  Settings: SettingsStackContainer,
 });

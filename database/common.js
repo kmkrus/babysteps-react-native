@@ -1,4 +1,5 @@
-import { Constants, SQLite } from 'expo';
+import { SQLite } from 'expo-sqlite';
+import Constants from 'expo-constants';
 import CONSTANTS from '../constants';
 
 const db = SQLite.openDatabase('babysteps.db');

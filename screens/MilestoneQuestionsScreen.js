@@ -7,7 +7,8 @@ import {
   Dimensions,
   Platform,
 } from 'react-native';
-import { FileSystem, Video } from 'expo';
+import { Video } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { Text, Button } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 

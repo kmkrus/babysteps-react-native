@@ -2,20 +2,28 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
+  Image,
   ScrollView,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { Button, CheckBox } from 'react-native-elements';
+import * as FileSystem from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';
+import CONSTANTS from '../constants';
 
 const { width } = Dimensions.get('window');
-const oneButtonWidth = width - 60;
+const oneButtonWidth = width - 100;
+
+const widthOffset = 60;
+
+const signatureWidth = width - (widthOffset * 2);
+const signatureHeight = signatureWidth * 0.4;
 
 class ConsentDisclosureContent extends Component {
   state = {
@@ -23,6 +31,12 @@ class ConsentDisclosureContent extends Component {
     showItem: '',
     scrollOffset: 800,
   };
+
+  componentDidUpdate() {
+    if (this.props.errorMessage) {
+      this._scrollView.scrollTo({ y: this.state.errorMessageLocation + this.state.scrollOffset });
+    }
+  }
 
   setShowItem = item => {
     if (this.state.showItem === item) {
@@ -32,13 +46,9 @@ class ConsentDisclosureContent extends Component {
     }
   };
 
-  componentDidUpdate() {
-    if (this.props.errorMessage) {
-      this._scrollView.scrollTo({ y: this.state.errorMessageLocation + this.state.scrollOffset });
-    }
-  }
-
   renderScreeningBlood = () => {
+    const error = !!this.props.errorMessage;
+    const screeningBlood = this.props.screeningBlood;
     if (this.props.formState === 'edit') {
       return (
         <View
@@ -49,30 +59,34 @@ class ConsentDisclosureContent extends Component {
           }}
         >
           <Text style={styles.header}>
-            Please indicate below if you agree to the use of your baby’s
-            newborn screening blood spots for genetic testing:
+            Please indicate below if you agree to the use of your baby’s newborn 
+            screening blood spots for genetic testing:
           </Text>
 
           <CheckBox
             title="Yes, I will allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
             textStyle={styles.checkboxText}
-            checked={this.state.screeningBlood === true}
-            containerStyle={!!this.state.errorMessage ? {borderColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({screeningBlood: true, errorMessage: ''})}
+            checked={screeningBlood === true}
+            containerStyle={
+              error ? {borderColor: Colors.errorBackground} : {}
+            }
+            onPress={() => this.props.handleScreeningBlood(true, '')}
           />
 
           <CheckBox
             title="No, I will not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
             textStyle={styles.checkboxText}
-            checked={this.state.screeningBlood === false}
-            containerStyle={!!this.state.errorMessage ? {borderColor: Colors.errorBackground} : {}}
-            onPress={() => this.setState({screeningBlood: false, errorMessage: ''})}
+            checked={screeningBlood === false}
+            containerStyle={
+              error ? {borderColor: Colors.errorBackground} : {}
+            }
+            onPress={() => this.props.handleScreeningBlood(false, '')}
           />
         </View>
       );
     }
-    const screeningBlood = this.props.registration.subject.data.screeningBlood;
-    if (screeningBlood) {
+    const subjectScreeningBlood = this.props.registration.subject.data.screeningBlood;
+    if (subjectScreeningBlood) {
       return (
         <View>
           <Text style={styles.header}>
@@ -107,7 +121,7 @@ class ConsentDisclosureContent extends Component {
       );
     }
     return (
-      <View style={styles.buttonContainer}>
+      <View style={[styles.buttonContainer, {marginLeft: 15, marginBottom: 40}]}>
         <Button
           title="RETURN"
           onPress={() => this.props.setModalVisible(false)}
@@ -117,7 +131,26 @@ class ConsentDisclosureContent extends Component {
         />
       </View>
     );
-  }
+  };
+
+  renderSignature = () => {
+    if (this.props.formState === 'view') {
+      const signatureDir = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
+      const fileName = signatureDir + '/signature.png';
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', marginLeft: widthOffset, marginBottom: 20}}>
+          <Text>Signature</Text>
+          <Image
+            source={{ uri: fileName }}
+            width={signatureWidth}
+            style={{ height: signatureHeight }}
+            resizeMode="cover"
+          />
+        </View>
+      );
+    }
+    return null;
+  };
 
   render() {
     const showItem = this.state.showItem;
@@ -349,7 +382,7 @@ class ConsentDisclosureContent extends Component {
             ref={ref => (this._checkboxError = ref)}
             style={styles.textError}
           >
-            {this.state.errorMessage}
+            {this.props.errorMessage}
           </Text>
 
           <TouchableOpacity onPress={() => this.setShowItem('item_01')}>
@@ -747,6 +780,7 @@ class ConsentDisclosureContent extends Component {
             will receive a copy of this form.
           </Text>
         </View>
+        {this.renderSignature()}
         {this.renderButton()}
       </ScrollView>
     );

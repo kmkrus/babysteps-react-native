@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
-import { FileSystem } from 'expo';
+import * as FileSystem from 'expo-file-system';
 import ExpoPixi from 'expo-pixi';
 
 import { connect } from 'react-redux';

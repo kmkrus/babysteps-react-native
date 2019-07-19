@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-  AppState,
-  NetInfo,
-} from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AppState } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import { Provider } from 'react-redux';
-import { AppLoading, Asset, Font } from 'expo';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
 import FlashMessage from 'react-native-flash-message';
 import Sentry from 'sentry-expo';
 
@@ -94,16 +90,11 @@ export default class App extends Component {
     await Font.loadAsync({
       // This is the font that we are using for our tab bar
       ...Ionicons.font,
-      MaterialIcons: require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
-      'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf'),
-      'roboto-bold': require('./assets/fonts/Roboto-Bold.ttf'),
-      'roboto-italic': require('./assets/fonts/Roboto-Italic.ttf'),
       FontAwesome: require('./assets/fonts/FontAwesome.ttf'),
+      // Need two forms of material icons; one for each OS
+      MaterialIcons: require('./assets/fonts/MaterialIcons.ttf'),
+      'Material Icons': require('./assets/fonts/MaterialIcons.ttf'),
     });
-
-    //Fix on iOS for missing font error
-    //https://github.com/react-native-training/react-native-elements/issues/1005#issuecomment-405408180
-    await Font.loadAsync("Material Icons", require("@expo/vector-icons/fonts/MaterialIcons.ttf"));
 
     // async check of schemas
     await checkRegistrationSchema();

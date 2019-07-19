@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Text, Button, CheckBox } from 'react-native-elements';
+import * as FileSystem from 'expo-file-system';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -196,8 +197,8 @@ class RegistrationRespondentForm extends Component {
   }
 
   saveSignature = async (api_id) => {
-    const uri = Expo.FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
-    const signatureFile = await Expo.FileSystem.getInfoAsync(uri, {size: true});
+    const uri = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
+    const signatureFile = await FileSystem.getInfoAsync(uri, {size: true});
     if (signatureFile.exists) {
       this.props.apiSaveSignature(this.props.session, api_id, uri);
     } else {

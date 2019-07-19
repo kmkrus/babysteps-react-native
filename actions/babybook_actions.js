@@ -1,4 +1,5 @@
-import { SQLite, FileSystem } from 'expo';
+import * as FileSystem from 'expo-file-system';
+import { SQLite } from 'expo-sqlite';
 
 import { _ } from 'lodash';
 

@@ -1,5 +1,5 @@
 import { Alert,  Linking, Platform, } from 'react-native';
-import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 import pullAllWith from 'lodash/pullAllWith';
 import isEqual from 'lodash/isEqual';

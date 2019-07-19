@@ -1,5 +1,7 @@
 import React from 'react';
-import { KeepAwake, registerRootComponent, Logs } from 'expo';
+import { registerRootComponent, Logs } from 'expo';
+
+import useKeepAwake from 'expo-keep-awake';
 
 if (__DEV__) {
   //https://github.com/expo/expo/issues/2623
@@ -9,7 +11,7 @@ if (__DEV__) {
   } else {
     Logs.enableExpoCliLogging();
   }
-  KeepAwake.activate();
+  useKeepAwake();
   const AppEntry = () => {
     const App = require('./App').default;
     return <App />;
@@ -19,4 +21,4 @@ if (__DEV__) {
 } else {
   const App = require('./App').default;
   registerRootComponent(App);
-};
+}

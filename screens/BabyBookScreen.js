@@ -11,7 +11,7 @@ import {
 import SideSwipe from 'react-native-sideswipe';
 import PageControl from 'react-native-page-control';
 import { Ionicons } from '@expo/vector-icons';
-import { FileSystem } from 'expo';
+import * as FileSystem from 'expo-file-system';
 
 import isEmpty from 'lodash/isEmpty';
 import indexOf from 'lodash/indexOf';

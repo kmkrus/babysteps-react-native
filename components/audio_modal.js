@@ -12,7 +12,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { Audio, FileSystem, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-file-system';
+import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 

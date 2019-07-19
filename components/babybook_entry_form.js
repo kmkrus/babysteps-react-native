@@ -9,7 +9,9 @@ import {
   Platform,
 } from 'react-native';
 import { Button } from 'react-native-elements';
-import { ImagePicker, Permissions, Video } from 'expo';
+import { Video } from 'expo-av';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';

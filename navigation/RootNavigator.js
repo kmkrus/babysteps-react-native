@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Platform, Alert } from 'react-native';
 
-import { Notifications, Permissions } from 'expo';
+import { Notifications } from 'expo';
 
-import { createStackNavigator } from 'react-navigation';
+import * as Permissions from 'expo-permissions';
+
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
@@ -50,18 +52,22 @@ const ConsentNavigator = createStackNavigator(
     screen: ConsentScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
+
+const ConsentNavigationContainer = createAppContainer(ConsentNavigator);
 
 const RegistrationNavigator = createStackNavigator(
   {
     screen: RegistrationScreen,
   },
   {
-    navigationOptions: headerOptions,
+    defaultNavigationOptions: headerOptions,
   },
 );
+
+const RegistrationNavigationContainer = createAppContainer(RegistrationNavigator);
 
 const TourNavigator = createStackNavigator(
   {
@@ -73,11 +79,13 @@ const TourNavigator = createStackNavigator(
     },
   },
   {
-    navigationOptions: () => ({
+    defaultNavigationOptions: () => ({
       header: null,
     }),
   },
 );
+
+const TourNavigationContainer = createAppContainer(TourNavigator);
 
 const TourNoStudyNavigator = createStackNavigator(
   {
@@ -89,11 +97,13 @@ const TourNoStudyNavigator = createStackNavigator(
     },
   },
   {
-    navigationOptions: () => ({
+    defaultNavigationOptions: () => ({
       header: null,
     }),
   },
 );
+
+const TourNoStudyNavigationContainer = createAppContainer(TourNoStudyNavigator);
 
 class RootNavigator extends Component {
   componentWillMount() {
@@ -247,16 +257,16 @@ class RootNavigator extends Component {
       );
     }
     if (States.REGISTERING_NO_STUDY.includes(registration_state)) {
-      return <TourNoStudyNavigator />;
+      return <TourNoStudyNavigationContainer />;
     }
     if (States.REGISTERING_CONSENT.includes(registration_state)) {
-      return <ConsentNavigator />;
+      return <ConsentNavigationContainer />;
     }
     if (States.REGISTERING_REGISTRATION.includes(registration_state)) {
-      return <RegistrationNavigator />;
+      return <RegistrationNavigationContainer />;
     }
     if (registration_state === 'none') {
-      return <TourNavigator />;
+      return <TourNavigationContainer />;
     }
   }
 }

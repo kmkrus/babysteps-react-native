@@ -9,7 +9,7 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import { WebBrowser } from 'expo';
+import * as WebBrowser from 'expo-web-browser';
 import Colors from '../constants/Colors';
 
 const { width, height } = Dimensions.get('window');

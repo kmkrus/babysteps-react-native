@@ -1,4 +1,5 @@
-import { FileSystem, MediaLibrary } from 'expo';
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
 
 import CONSTANTS from '../constants';
 

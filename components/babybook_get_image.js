@@ -6,8 +6,8 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import { Video } from 'expo';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Video } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 
 import { values } from 'lodash';
 
@@ -63,43 +63,41 @@ class BabyBookGetImage extends Component {
         {isPlaceholder && (
           <Image source={uri} style={[styles.image, { height: imageHeight }]} />
         )}
-        {isVideo &&
-          !isPlaceholder && (
-            <View>
-              <Video
-                source={uri}
-                resizeMode={Video.RESIZE_MODE_COVER}
-                shouldPlay={false}
-                useNativeControls={false}
-                onPress={this.handleVideoOnPress}
-                ref={ref => this.videoPlayer = ref}
-                style={{ flex: 1, width: videoWidth, height: videoHeight }}
-              />
-              <TouchableOpacity
-                onPress={this.handleVideoOnPress}
-                style={[
-                  styles.videoOverlay,
-                  { width: videoWidth, height: videoHeight },
-                ]}
-              >
-                <MaterialIcons
-                  name="play-arrow"
-                  size={80}
-                  color="#fff"
-                  style={styles.videPlayIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        {!isVideo &&
-          !isPlaceholder && (
-            <Image
+        {isVideo && !isPlaceholder && (
+          <View>
+            <Video
               source={uri}
-              width={imageWidth}
-              style={[styles.image, { height: imageHeight }]}
-              resizeMode='cover'
+              resizeMode={Video.RESIZE_MODE_COVER}
+              shouldPlay={false}
+              useNativeControls={false}
+              onPress={this.handleVideoOnPress}
+              ref={ref => this.videoPlayer = ref}
+              style={{ flex: 1, width: videoWidth, height: videoHeight }}
             />
-          )}
+            <TouchableOpacity
+              onPress={this.handleVideoOnPress}
+              style={[
+                styles.videoOverlay,
+                { width: videoWidth, height: videoHeight },
+              ]}
+            >
+              <Ionicons
+                name="md-play"
+                size={80}
+                color="#fff"
+                style={styles.videPlayIcon}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+        {!isVideo && !isPlaceholder && (
+          <Image
+            source={uri}
+            width={imageWidth}
+            style={[styles.image, { height: imageHeight }]}
+            resizeMode="cover"
+          />
+        )}
 
         <Image
           style={styles.imageCornerTopLeft}

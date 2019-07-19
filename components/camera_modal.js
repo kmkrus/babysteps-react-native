@@ -10,7 +10,8 @@ import {
   Image,
 } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import { Camera, Video } from 'expo';
+import { Video } from 'expo-av';
+import { Camera } from 'expo-camera';
 
 import * as moment from 'moment';
 import padStart from 'lodash/padStart';

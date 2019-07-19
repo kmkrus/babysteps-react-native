@@ -25,21 +25,19 @@ class RegistrationScreen extends Component {
 
   selectForm = () => {
     const registration_state = this.props.session.registration_state;
-    if (registration_state === States.REGISTERING_USER) {
-      return <RegistrationUserForm />;
-    }
-    if (registration_state === States.REGISTERING_RESPONDENT) {
-      return <RegistrationRespondentForm />;
-    }
-    if (registration_state === States.REGISTERING_EXPECTED_DOB) {
-      return <RegistrationExpectedDOB />;
-    }
-    if (registration_state === States.REGISTERING_SUBJECT) {
-      return <RegistrationSubjectForm />;
+    switch (registration_state) {
+      case States.REGISTERING_USER:
+        return <RegistrationUserForm />;
+      case States.REGISTERING_RESPONDENT:
+        return <RegistrationRespondentForm />;
+      case States.REGISTERING_EXPECTED_DOB:
+        return <RegistrationExpectedDOB />;
+      case States.REGISTERING_SUBJECT:
+        return <RegistrationSubjectForm />;
     }
   };
 
-  _scrollToInput = (reactNode: any) => {
+  _scrollToInput = reactNode => {
     // Add a 'scroll' ref to your ScrollView
     this.scroll.scrollToFocusedInput(reactNode);
   };

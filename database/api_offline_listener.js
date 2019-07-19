@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
-import { AppState, NetInfo } from 'react-native';
+import { AppState } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 
 import isEmpty from 'lodash/isEmpty';
 

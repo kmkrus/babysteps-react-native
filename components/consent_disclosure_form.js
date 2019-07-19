@@ -16,9 +16,9 @@ class ConsentDisclosureForm extends Component {
 
   handleSubmit = () => {
     const screeningBlood = this.state.screeningBlood;
-    const errorMessage =
-      "You must select whether or not you will allow collection of your baby's bloodspot.";
     if (screeningBlood === null) {
+      const errorMessage =
+        "You must select whether or not you will allow collection of your baby's bloodspot.";
       this.setState({ errorMessage });
     } else {
       this.props.saveScreenBlood({ screeningBlood });
@@ -37,7 +37,9 @@ class ConsentDisclosureForm extends Component {
       <ConsentDisclosureContent
         formState="edit"
         handleSubmit={this.handleSubmit}
-        handleScreeningBlood={this.handleScreeningBlood}
+        handleScreeningBlood={(screeningBlood, errorMessage) =>
+          this.handleScreeningBlood(screeningBlood, errorMessage)
+        }
         errorMessage={this.state.errorMessage}
         screeningBlood={this.state.screeningBlood}
       />
