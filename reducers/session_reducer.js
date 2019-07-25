@@ -4,6 +4,7 @@ import {
   UPDATE_ACCESS_TOKEN,
   SET_FETCHING_TOKEN,
   UPDATE_CONNECTION_TYPE,
+  RESET_SESSION,
 
   API_TOKEN_REFRESH_PENDING,
   API_TOKEN_REFRESH_FULFILLED,
@@ -25,6 +26,10 @@ import {
   DISPATCH_SESSION_PENDING_ACTIONS_PENDING,
   DISPATCH_SESSION_PENDING_ACTIONS_FULFILLED,
   DISPATCH_SESSION_PENDING_ACTIONS_REJECTED,
+
+  API_FETCH_SIGNIN_PENDING,
+  API_FETCH_SIGNIN_FULFILLED,
+  API_FETCH_SIGNIN_REJECTED,
 
 } from '../actions/types';
 
@@ -48,10 +53,20 @@ const initialState = {
   action: null,
   pending_actions: [],
   dispatching_pending_actions: false,
+
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+
+    case RESET_SESSION: {
+      return {
+        ...state,
+        fetching: false,
+        fetched: false,
+        error: null,
+      };
+    }
 
     case UPDATE_SESSION_ACTION: {
       const thisAction = (action && action.payload) ? action.payload : null;
@@ -208,6 +223,36 @@ const reducer = (state = initialState, action) => {
         ...state,
         fetching: false,
         error: action.payload,
+      };
+    }
+
+    case API_FETCH_SIGNIN_PENDING: {
+      return {
+        ...state,
+        fetching: true,
+        fetched: false,
+        error: null,
+      };
+    }
+    case API_FETCH_SIGNIN_FULFILLED: {
+      const data = action.payload.data.data;
+      return {
+        ...state,
+        fetching: false,
+        fetched: true,
+        user_id: data.id,
+        email: data.email,
+        password: data.password,
+        uid: data.uid,
+      };
+    }
+    case API_FETCH_SIGNIN_REJECTED: {
+      const data = action.payload;
+      return {
+        ...state,
+        fetching: false,
+        error: data,
+        errorMessages: data.response.data.errors,
       };
     }
 

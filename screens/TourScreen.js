@@ -46,6 +46,7 @@ export default class TourScreen extends Component {
           index={page.itemIndex}
           currentIndex={page.currentIndex}
           animatedValue={page.animatedValue}
+          navigation={this.props.navigation}
         />
       );
     }

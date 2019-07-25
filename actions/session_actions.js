@@ -1,11 +1,16 @@
 import { SQLite } from 'expo-sqlite';
+import axios from 'axios';
 import { _ } from 'lodash';
+
+import { getApiUrl } from '../database/common';
 
 import {
   API_TOKEN_REFRESH_PENDING,
   API_TOKEN_REFRESH_FULFILLED,
   API_TOKEN_REFRESH_REJECTED,
   API_TOKEN_REFRESH_FAILED,
+
+  RESET_SESSION,
 
   FETCH_SESSION_PENDING,
   FETCH_SESSION_FULFILLED,
@@ -24,6 +29,11 @@ import {
   DISPATCH_SESSION_PENDING_ACTIONS_PENDING,
   DISPATCH_SESSION_PENDING_ACTIONS_FULFILLED,
   DISPATCH_SESSION_PENDING_ACTIONS_REJECTED,
+
+  API_FETCH_SIGNIN_PENDING,
+  API_FETCH_SIGNIN_FULFILLED,
+  API_FETCH_SIGNIN_REJECTED,
+
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -34,6 +44,12 @@ const Pending = type => {
 
 const Response = (type, payload, session = {}) => {
   return { type, payload, session };
+};
+
+export const resetSession = () => {
+  return function(dispatch) {
+    dispatch(Pending(RESET_SESSION));
+  };
 };
 
 export const fetchSession = () => {
@@ -146,7 +162,7 @@ export const dispatchPendingActions = pending_actions => {
 export const decodePendingAction = action => {
   switch (action.type) {
     case 'api_create_milestone_answer_pending': {
-      if(action.payload.data && action.payload.data._parts){
+      if (action.payload.data && action.payload.data._parts) {
         const formData = new FormData();
         action.payload.data._parts.forEach(part => {
           formData.append(...part);
@@ -156,10 +172,38 @@ export const decodePendingAction = action => {
     }
   }
   return action;
-}
+};
 
 export const updateConnectionType = type => {
   return function(dispatch) {
     dispatch(Response(UPDATE_CONNECTION_TYPE, type));
   };
+};
+
+// this fetches acknowledgement of user from api
+export const apiFetchSignin = (email, password) => {
+
+  return dispatch => {
+    dispatch(Pending(API_FETCH_SIGNIN_PENDING));
+    const baseURL = getApiUrl();
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        responseType: 'json',
+        baseURL,
+        url: '/user_session',
+        data: {
+          email,
+          password,
+        },
+      })
+        .then(response => {
+          dispatch(Response(API_FETCH_SIGNIN_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_FETCH_SIGNIN_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
 };

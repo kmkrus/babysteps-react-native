@@ -26,6 +26,7 @@ import AppNavigator from './AppNavigator';
 import NavigationService from './NavigationService';
 
 import TourScreen from '../screens/TourScreen';
+import SignInScreen from '../screens/SignInScreen';
 import ConsentScreen from '../screens/ConsentScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import TourNoStudyConfirmScreen from '../screens/TourNoStudyConfirmScreen';
@@ -76,6 +77,9 @@ const TourNavigator = createStackNavigator(
     },
     Registration: {
       screen: RegistrationNavigator,
+    },
+    SignIn: {
+      screen: SignInScreen,
     },
   },
   {

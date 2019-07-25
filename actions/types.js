@@ -96,6 +96,8 @@ export const FETCH_OVERVIEW_TIMELINE_FULFILLED = 'fetch_overview_timeline_fulfil
 export const FETCH_OVERVIEW_TIMELINE_REJECTED = 'fetch_overview_timeline_rejected';
 
 // Session actions
+export const RESET_SESSION = 'reset_session';
+
 export const UPDATE_SESSION_ACTION = 'update_session_action';
 
 export const UPDATE_SESSION_PENDING_ACTIONS_PENDING = 'update_session_pending_actions_pending';
@@ -117,6 +119,10 @@ export const UPDATE_SESSION_FULFILLED = 'update_session_fulfilled';
 export const UPDATE_SESSION_REJECTED = 'update_session_rejected';
 
 export const UPDATE_CONNECTION_TYPE = 'update_connection_type';
+
+export const API_FETCH_SIGNIN_PENDING = 'api_fetch_signin_pending';
+export const API_FETCH_SIGNIN_FULFILLED = 'api_fetch_signin_fulfilled';
+export const API_FETCH_SIGNIN_REJECTED = 'api_fetch_signin_rejected';
 
 // Notification actions
 
