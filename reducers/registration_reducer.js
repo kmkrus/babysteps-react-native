@@ -64,6 +64,14 @@ import {
   API_UPDATE_SUBJECT_FULFILLED,
   API_UPDATE_SUBJECT_REJECTED,
 
+  API_SYNC_REGISTRATION_PENDING,
+  API_SYNC_REGISTRATION_FULFILLED,
+  API_SYNC_REGISTRATION_REJECTED,
+
+  API_SYNC_SIGNATURE_PENDING,
+  API_SYNC_SIGNATURE_FULFILLED,
+  API_SYNC_SIGNATURE_REJECTED,
+
 } from '../actions/types';
 
 const initialState = {
@@ -109,7 +117,7 @@ const initialState = {
   },
 };
 
-const reducer = (state=initialState, action, formData={}) => {
+const reducer = (state = initialState, action, formData = {}) => {
   switch (action.type) {
     // FETCH USER
     case FETCH_USER_PENDING: {
@@ -647,6 +655,74 @@ const reducer = (state=initialState, action, formData={}) => {
         ...state,
         apiSubject: {
           ...state.apiSubject,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case API_SYNC_REGISTRATION_PENDING: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_SYNC_REGISTRATION_FULFILLED: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case API_SYNC_REGISTRATION_REJECTED: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case API_SYNC_SIGNATURE_PENDING: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_SYNC_SIGNATURE_FULFILLED: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case API_SYNC_SIGNATURE_REJECTED: {
+      return {
+        ...state,
+        apiSync: {
+          ...state.apiSync,
           fetching: false,
           fetched: false,
           error: action.payload,

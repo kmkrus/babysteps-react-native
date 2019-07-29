@@ -1,9 +1,13 @@
+import * as FileSystem from 'expo-file-system';
 import { SQLite } from 'expo-sqlite';
 import axios from "axios";
 
 import { _ } from 'lodash';
 
-import { getApiUrl } from '../database/common';
+import { insertRows, getApiUrl } from '../database/common';
+import schema from '../database/registration_schema.json';
+
+import CONSTANTS from '../constants';
 
 import {
 
@@ -66,6 +70,14 @@ import {
   API_UPDATE_SUBJECT_PENDING,
   API_UPDATE_SUBJECT_FULFILLED,
   API_UPDATE_SUBJECT_REJECTED,
+
+  API_SYNC_REGISTRATION_PENDING,
+  API_SYNC_REGISTRATION_FULFILLED,
+  API_SYNC_REGISTRATION_REJECTED,
+
+  API_SYNC_SIGNATURE_PENDING,
+  API_SYNC_SIGNATURE_FULFILLED,
+  API_SYNC_SIGNATURE_REJECTED,
 
 } from './types';
 
@@ -530,4 +542,79 @@ export const apiUpdateSubject = (session, data) => {
       },
     });
   };
+};
+
+// this fetches respondent and subject from api based on user id
+export const apiSyncRegistration = user_id => {
+
+  return dispatch => {
+    dispatch(Pending(API_SYNC_REGISTRATION_PENDING));
+    const baseURL = getApiUrl();
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        responseType: 'json',
+        baseURL,
+        url: '/sync_registration',
+        data: {
+          user_id,
+        },
+        headers: {
+          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+        },
+      })
+        .then(response => {
+          const respondents = response.data.respondents;
+          respondents[0].api_id = respondents[0].id;
+          delete respondents[0].id;
+          const subjects = response.data.subjects;
+          subjects[0].api_id = subjects[0].id;
+          delete subjects[0].id;
+
+          insertRows('respondents', schema['respondents'], respondents);
+          insertRows('subjects', schema['subjects'], subjects);
+          dispatch(Response(API_SYNC_REGISTRATION_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_SYNC_REGISTRATION_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
+};
+
+export const apiSyncSignature = user_id => {
+  return function(dispatch) {
+    dispatch(Pending(API_SYNC_SIGNATURE_PENDING));
+    const baseURL = getApiUrl();
+    const fileUri = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        responseType: 'json',
+        baseURL,
+        url: '/sync_signature',
+        data: {
+          user_id,
+        },
+        headers: {
+          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+        },
+      })
+        .then(response => {
+          debugger
+          const imageUrl = response.data.url;
+          FileSystem.downloadAsync(imageUrl, fileUri)
+            .then(response => {
+              dispatch(Response(API_SYNC_SIGNATURE_FULFILLED, response));
+            })
+            .catch(error => {
+              dispatch(Response(API_SYNC_SIGNATURE_REJECTED, error));
+            });
+        })
+        .catch(error => {
+          dispatch(Response(API_SYNC_SIGNATURE_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
 };

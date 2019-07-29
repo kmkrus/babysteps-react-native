@@ -44,7 +44,8 @@ export function insertRows(name, schema, data) {
   db.transaction(tx => {
     // Clear table
     tx.executeSql(
-      'DELETE FROM ' + name, [],
+      `DELETE FROM ${name}`,
+      [],
       (_, rows) => console.log('** Delete rows from table ' + name),
       (_, error) => console.log('*** Error in deleting rows from table ' + name),
     );
@@ -55,14 +56,13 @@ export function insertRows(name, schema, data) {
       prefix += `${column}, `;
     });
     prefix = `${prefix.slice(0, -2)} ) VALUES `;
-
     data.forEach(row => {
-      let values = [];
+      const values = [];
       let sql = `${prefix} (`;
       Object.keys(schema.columns).forEach(column => {
         sql += ' ?,';
         // need to trap booleans
-        if (typeof(row[column]) === typeof(true)) {
+        if (typeof row[column] === typeof true) {
           values.push(row[column] ? 1 : 0);
         } else {
           values.push(row[column]);
@@ -71,7 +71,8 @@ export function insertRows(name, schema, data) {
       sql = sql.slice(0, -1);
       sql += ' )';
       tx.executeSql(
-        sql, values,
+        sql,
+        values,
         (_, rows) => console.log('** Execute ' + sql),
         (_, error) => console.log('*** Error in executing ' + error),
       );

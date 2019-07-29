@@ -200,6 +200,14 @@ export const API_UPDATE_SUBJECT_PENDING = 'api_update_subject_pending';
 export const API_UPDATE_SUBJECT_FULFILLED = 'api_update_subject_fulfilled';
 export const API_UPDATE_SUBJECT_REJECTED = 'api_update_subject_rejected';
 
+export const API_SYNC_REGISTRATION_PENDING = 'api_sync_registration_pending';
+export const API_SYNC_REGISTRATION_FULFILLED = 'api_sync_registration_fulfilled';
+export const API_SYNC_REGISTRATION_REJECTED = 'api_sync_registration_rejected';
+
+export const API_SYNC_SIGNATURE_PENDING = 'api_sync_signature_pending';
+export const API_SYNC_SIGNATURE_FULFILLED = 'api_sync_signature_fulfilled';
+export const API_SYNC_SIGNATURE_REJECTED = 'api_sync_signature_rejected';
+
 // Babybook actions
 
 export const RESET_BABYBOOK_ENTRIES = 'reset_babybook_entries';

@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
-import { Text, View, Button, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  Button,
+  TextInput,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 
 import { connect } from 'react-redux';
 import { resetSession, apiFetchSignin } from '../actions/session_actions';
+
+import { apiFetchMilestones } from '../actions/milestone_actions';
+import { apiSyncRegistration, apiSyncSignature } from '../actions/registration_actions';
+
 
 import States from '../actions/states';
 import Colors from '../constants/Colors';
@@ -18,6 +29,8 @@ class SignInScreen extends Component {
     password: '',
     isSubmitting: false,
     errorMessages: [],
+    shouldComponentUpdate: true,
+    dataLoading: false,
   };
 
   componentWillMount() {
@@ -28,12 +41,21 @@ class SignInScreen extends Component {
     const session = nextProps.session;
     if (!session.fetching) {
       if (session.fetched) {
+        this.setState({ shouldComponentUpdate: false, dataLoading: true });
+        this.props.apiFetchMilestones();
+        this.props.apiSyncRegistration(session.api_id);
+        this.props.apiSyncSignature(session.api_id);
+
         console.log('fetched');
       }
       if (session.errorMessages) {
         this.setState({ isSubmitting: false, errorMessages: session.errorMessages });
       }
     }
+  }
+
+  shouldComponentUpdate() {
+    return this.state.shouldComponentUpdate;
   }
 
   handlePress = () => {
@@ -43,7 +65,7 @@ class SignInScreen extends Component {
   };
 
   render() {
-    const { email, password, errorMessages } = this.state;
+    const { email, password, errorMessages, dataLoading } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.titleText}>Sign In</Text>
@@ -75,6 +97,9 @@ class SignInScreen extends Component {
         </View>
         <View styles={styles.errorContainer}>
           <Text style={styles.errorMessage}>{errorMessages.join('\r\n')}</Text>
+          {dataLoading && (
+            <ActivityIndicator size="large" color={Colors.tint} />
+          )}
         </View>
       </View>
     );
@@ -127,7 +152,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = ({ session }) => ({ session });
 
-const mapDispatchToProps = { resetSession, apiFetchSignin };
+const mapDispatchToProps = {
+  resetSession,
+  apiFetchSignin,
+  apiFetchMilestones,
+  apiSyncRegistration,
+  apiSyncSignature,
+};
 
 export default connect(
   mapStateToProps,

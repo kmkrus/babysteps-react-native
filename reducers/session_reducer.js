@@ -56,7 +56,7 @@ const initialState = {
 
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action, formData = {}) => {
   switch (action.type) {
 
     case RESET_SESSION: {
@@ -236,13 +236,15 @@ const reducer = (state = initialState, action) => {
     }
     case API_FETCH_SIGNIN_FULFILLED: {
       const data = action.payload.data.data;
+      const { email, password } = action.session;
+
       return {
         ...state,
         fetching: false,
         fetched: true,
-        user_id: data.id,
-        email: data.email,
-        password: data.password,
+        api_id: data.api_id,
+        email,
+        password,
         uid: data.uid,
       };
     }

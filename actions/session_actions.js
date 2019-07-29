@@ -2,7 +2,9 @@ import { SQLite } from 'expo-sqlite';
 import axios from 'axios';
 import { _ } from 'lodash';
 
-import { getApiUrl } from '../database/common';
+import { insertRows, getApiUrl } from '../database/common';
+
+import schema from '../database/registration_schema.json';
 
 import {
   API_TOKEN_REFRESH_PENDING,
@@ -199,7 +201,14 @@ export const apiFetchSignin = (email, password) => {
         },
       })
         .then(response => {
-          dispatch(Response(API_FETCH_SIGNIN_FULFILLED, response));
+          let data = response.data.data;
+          data.api_id = data.id;
+          delete data.id;
+
+          insertRows('users', schema['users'], [data]);
+          dispatch(
+            Response(API_FETCH_SIGNIN_FULFILLED, response, { email, password }),
+          );
         })
         .catch(error => {
           dispatch(Response(API_FETCH_SIGNIN_REJECTED, error));
