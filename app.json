@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "0.9.0",
+    "version": "0.9.9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -34,7 +34,7 @@
       }
     },
     "android": {
-      "versionCode": 39,
+      "versionCode": 40,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",
