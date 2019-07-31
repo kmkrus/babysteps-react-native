@@ -74,7 +74,6 @@ class AudioModal extends Component {
     if (response.status === 'granted') {
       this.setState({ recordingPermission: true });
     } else {
-      this.renderNoPermissions('audio');
       this.closeAudioModal();
     }
   }

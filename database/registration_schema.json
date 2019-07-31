@@ -13,6 +13,7 @@
       "notification_period": "TEXT",
       "notifications_updated_at": "TEXT",
       "pending_actions": "TEXT",
+      "screening_blood": "INTEGER",
     },
     "indexes": [],
   },

@@ -37,7 +37,7 @@ export const renderNoPermissionsMessage = (source, message = []) => {
 };
 
 export const openSettingsDialog = message => {
-  if (!message) return null;
+  if (!message || !Array.isArray(message)) return null;
   Alert.alert(
     'Permissions',
     message.join(', '),

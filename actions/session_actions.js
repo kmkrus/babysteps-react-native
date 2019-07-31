@@ -55,9 +55,13 @@ const sendSessionUpdate = (dispatch, data) => {
 
   const keys = _.keys(data);
   const updateSQL = [];
-
   _.forEach(keys, key => {
-    updateSQL.push(`${key} = '${data[key]}'`);
+    if (typeof data[key] === 'boolean') {
+      const boolean = data[key] ? 1 : 0;
+      updateSQL.push(`${key} = ${boolean}`);
+    } else {
+      updateSQL.push(`${key} = '${data[key]}'`);
+    }
   });
 
   return db.transaction(tx => {

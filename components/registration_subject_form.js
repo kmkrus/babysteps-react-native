@@ -82,6 +82,7 @@ class RegistrationSubjectForm extends Component {
   };
 
   getInitialValues() {
+    const screening_blood = this.props.session.screening_blood;
     let initialValues = {};
     if (__DEV__) {
       initialValues = {
@@ -89,7 +90,7 @@ class RegistrationSubjectForm extends Component {
         gender: 'female',
         date_of_birth: moment().subtract(1, 'years').format("YYYY/MM/DD"),
         conception_method: 'natural',
-        screening_blood: null,
+        screening_blood: screening_blood,
         outcome: 'live_birth',
         first_name: 'Test',
         middle_name: 'Tester',
@@ -101,7 +102,7 @@ class RegistrationSubjectForm extends Component {
         gender: 'female',
         date_of_birth: null,
         conception_method: 'natural',
-        screening_blood: null,
+        screening_blood: screening_blood,
         outcome: 'live_birth',
         first_name: '',
         last_name: '',
@@ -172,7 +173,7 @@ class RegistrationSubjectForm extends Component {
 
   render() {
     const respondent = this.props.registration.respondent;
-    const subject = this.props.registration.subject;
+    const screening_blood = this.props.session.screening_blood;
     const dobError = this.state.dobError;
 
     return (
@@ -182,7 +183,7 @@ class RegistrationSubjectForm extends Component {
             const newSubject = {
               ...values,
               respondent_ids: [respondent.data.api_id],
-              screening_blood: subject.data.screening_blood,
+              screening_blood,
             };
             this.setState({ isSubmitting: true });
             this.props.createSubject(newSubject);

@@ -384,13 +384,6 @@ export const apiSaveSignature = (session, api_id, uri) => {
   }; // return dispatch
 };
 
-export const saveScreenBlood = screeningBlood => {
-  return function(dispatch) {
-    dispatch(Pending(UPDATE_SUBJECT_PENDING));
-    dispatch(Response(UPDATE_SUBJECT_FULFILLED, screeningBlood));
-  };
-};
-
 export const resetSubject = () => {
   return function(dispatch) {
     dispatch(Pending(RESET_SUBJECT));
@@ -425,8 +418,9 @@ export const createSubject = subject => {
         conception_method, \
         expected_date_of_birth, \
         date_of_birth, \
-        days_premature \
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+        days_premature, \
+        screening_blood \
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
     const values = [
       subject.first_name,
@@ -437,6 +431,7 @@ export const createSubject = subject => {
       subject.expected_date_of_birth,
       subject.date_of_birth,
       subject.days_premature,
+      subject.screening_blood,
     ];
 
     return db.transaction(tx => {

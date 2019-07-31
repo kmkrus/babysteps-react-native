@@ -109,12 +109,12 @@ class RegistrationExpectedDOB extends Component {
 
   _handleOnSubmit = values => {
     const respondent = this.props.registration.respondent;
-    const subject = this.props.registration.subject;
+    const screening_blood = this.props.session.screening_blood;
     if (values.expected_date_of_birth) {
       const newSubject = {
         ...values,
         respondent_ids: [respondent.data.api_id],
-        screening_blood: subject.data.screening_blood,
+        screening_blood,
       };
       this.setState({ isSubmitting: true });
       this.props.createSubject(newSubject);
@@ -125,6 +125,7 @@ class RegistrationExpectedDOB extends Component {
 
   render() {
     const dobError = this.state.dobError;
+    const screening_blood = this.props.session.screening_blood;
     return (
       <Formik
         onSubmit={this._handleOnSubmit}
@@ -134,7 +135,7 @@ class RegistrationExpectedDOB extends Component {
           gender: 'unknown',
           expected_date_of_birth: null,
           conception_method: 'natural',
-          screening_blood: null,
+          screening_blood: screening_blood,
         }}
         render={props => {
           return (

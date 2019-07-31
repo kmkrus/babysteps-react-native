@@ -62,6 +62,8 @@ function milestoneFrequency(frequency) {
       return [365, 2];
     case 'annually':
       return [365, 1];
+    default:
+      return [7, 2];
   }
 }
 

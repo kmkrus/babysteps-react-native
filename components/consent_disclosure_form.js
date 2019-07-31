@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
-import { saveScreenBlood } from '../actions/registration_actions';
 
 import ConsentDisclosureContent from './consent_disclosure_content';
 
@@ -15,14 +14,14 @@ class ConsentDisclosureForm extends Component {
   };
 
   handleSubmit = () => {
-    const screeningBlood = this.state.screeningBlood;
-    if (screeningBlood === null) {
+    const screening_blood = this.state.screeningBlood;
+    if (screening_blood === null) {
       const errorMessage =
         "You must select whether or not you will allow collection of your baby's bloodspot.";
       this.setState({ errorMessage });
     } else {
-      this.props.saveScreenBlood({ screeningBlood });
       this.props.updateSession({
+        screening_blood,
         registration_state: States.REGISTERING_SIGNATURE,
       });
     }
@@ -48,7 +47,7 @@ class ConsentDisclosureForm extends Component {
 }
 
 const mapStateToProps = ({ session }) => ({ session });
-const mapDispatchToProps = { updateSession, saveScreenBlood };
+const mapDispatchToProps = { updateSession };
 
 export default connect(
   mapStateToProps,

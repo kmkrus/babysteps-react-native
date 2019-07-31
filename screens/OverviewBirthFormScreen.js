@@ -94,7 +94,7 @@ const outcomes = [
 ];
 
 const genders = [
-  { label: 'Unkown', value: 'unknown' },
+  { label: 'Unknown', value: 'unknown' },
   { label: 'Female', value: 'female' },
   { label: 'Male', value: 'male' },
 ];
@@ -246,6 +246,7 @@ class OverviewBirthFormScreen extends Component {
       return null;
     }
     this.setState({ values, submittedSave: true });
+    debugger
     this.props.updateSubject(values);
   };
 
