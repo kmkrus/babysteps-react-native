@@ -25,9 +25,10 @@ class RegistrationScreen extends Component {
 
   selectForm = () => {
     const registration_state = this.props.session.registration_state;
+    const navigation = this.props.navigation;
     switch (registration_state) {
       case States.REGISTERING_USER:
-        return <RegistrationUserForm />;
+        return <RegistrationUserForm navigation={navigation} />;
       case States.REGISTERING_RESPONDENT:
         return <RegistrationRespondentForm />;
       case States.REGISTERING_EXPECTED_DOB:

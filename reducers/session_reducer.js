@@ -1,5 +1,7 @@
 import {
 
+  SESSION_SYNC_MESSAGE,
+
   UPDATE_SESSION_ACTION,
   UPDATE_ACCESS_TOKEN,
   SET_FETCHING_TOKEN,
@@ -53,6 +55,7 @@ const initialState = {
   action: null,
   pending_actions: [],
   dispatching_pending_actions: false,
+  syncMessages: {},
 
 };
 
@@ -73,6 +76,15 @@ const reducer = (state = initialState, action, formData = {}) => {
       return {
         ...state,
         action: thisAction,
+      };
+    }
+
+    case SESSION_SYNC_MESSAGE: {
+      const messages = JSON.parse(action.payload);
+      const syncMessages = {...state.syncMessages, ...messages};
+      return {
+        ...state,
+        syncMessages,
       };
     }
 

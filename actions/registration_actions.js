@@ -565,11 +565,11 @@ export const apiSyncRegistration = user_id => {
       })
         .then(response => {
           const respondents = response.data.respondents;
+          // respondent id becomes api id in sqlite
           respondents[0].api_id = respondents[0].id;
-          delete respondents[0].id;
           const subjects = response.data.subjects;
+          // subject id becomes api id in sqlite
           subjects[0].api_id = subjects[0].id;
-          delete subjects[0].id;
 
           insertRows('respondents', schema['respondents'], respondents);
           insertRows('subjects', schema['subjects'], subjects);
@@ -602,9 +602,8 @@ export const apiSyncSignature = user_id => {
         },
       })
         .then(response => {
-          debugger
-          const imageUrl = response.data.url;
-          FileSystem.downloadAsync(imageUrl, fileUri)
+          const imageUrls = response.data;
+          FileSystem.downloadAsync(imageUrls[0], fileUri)
             .then(response => {
               dispatch(Response(API_SYNC_SIGNATURE_FULFILLED, response));
             })

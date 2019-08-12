@@ -91,9 +91,9 @@ export default class TourScreen extends Component {
           hidesForSinglePage
           pageIndicatorTintColor={Colors.lightGrey}
           currentPageIndicatorTintColor={Colors.grey}
-          indicatorStyle={{borderRadius: 5}}
-          currentIndicatorStyle={{borderRadius: 5}}
-          indicatorSize={{width:8, height:8}}
+          indicatorStyle={{ borderRadius: 5 }}
+          currentIndicatorStyle={{ borderRadius: 5 }}
+          indicatorSize={{ width: 8, height: 8 }}
           onPageIndicatorPress={this.onItemTap}
         />
 

@@ -61,7 +61,12 @@ const ConsentNavigationContainer = createAppContainer(ConsentNavigator);
 
 const RegistrationNavigator = createStackNavigator(
   {
-    screen: RegistrationScreen,
+    Registration: {
+      screen: RegistrationScreen,
+    },
+    SignIn: {
+      screen: SignInScreen,
+    },
   },
   {
     defaultNavigationOptions: headerOptions,

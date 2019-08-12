@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system';
 import { SQLite } from 'expo-sqlite';
 import axios from 'axios';
 import url from 'url';
@@ -9,12 +10,11 @@ import keys from 'lodash/keys';
 import isInteger from 'lodash/isInteger';
 
 import { insertRows, getApiUrl } from '../database/common';
-import schema from '../database/milestones_schema.json';
-import trigger_schema from '../database/milestone_triggers_schema.json';
 
 import CONSTANTS from '../constants';
 
 import {
+  SESSION_SYNC_MESSAGE,
 
   FETCH_MILESTONES_PENDING,
   FETCH_MILESTONES_FULFILLED,
@@ -96,6 +96,10 @@ import {
   API_UPDATE_MILESTONE_ANSWERS_FULFILLED,
   API_UPDATE_MILESTONE_ANSWERS_REJECTED,
 
+  API_SYNC_MILESTONE_ANSWERS_PENDING,
+  API_SYNC_MILESTONE_ANSWERS_FULFILLED,
+  API_SYNC_MILESTONE_ANSWERS_REJECTED,
+
   FETCH_MILESTONE_ATTACHMENTS_PENDING,
   FETCH_MILESTONE_ATTACHMENTS_FULFILLED,
   FETCH_MILESTONE_ATTACHMENTS_REJECTED,
@@ -115,6 +119,9 @@ import {
 } from './types';
 
 const db = SQLite.openDatabase('babysteps.db');
+const schema = require('../database/milestones_schema.json');
+const trigger_schema = require('../database/milestone_triggers_schema.json');
+const answers_schema = require('../database/answers_schema.json');
 
 const Pending = type => {
   return { type };
@@ -141,6 +148,7 @@ const getUpdateSQL = data => {
 export const fetchMilestones = () => {
   return dispatch => {
     dispatch(Pending(FETCH_MILESTONES_PENDING));
+    
     return (
       db.transaction(tx => {
         tx.executeSql(
@@ -165,6 +173,8 @@ export const apiFetchMilestones = () => {
 
   return dispatch => {
     dispatch(Pending(API_FETCH_MILESTONES_PENDING));
+    //const message = JSON.stringify({milestones: 'Milestones: Syncing'});
+    //dispatch(Response(SESSION_SYNC_MESSAGE, message));
     const baseURL = getApiUrl();
 
     return new Promise((resolve, reject) => {
@@ -182,9 +192,13 @@ export const apiFetchMilestones = () => {
             insertRows(name, schema[name], response.data[name]);
           });
           dispatch(Response(API_FETCH_MILESTONES_FULFILLED, response));
+          //const message = JSON.stringify({milestones: 'Milestones: Complete'});
+          //dispatch(Response(SESSION_SYNC_MESSAGE, message));
         })
         .catch(error => {
           dispatch(Response(API_FETCH_MILESTONES_REJECTED, error));
+          //const message = JSON.stringify({milestones: 'Milestones: Error'});
+          //dispatch(Response(SESSION_SYNC_MESSAGE, message));
         });
     }); // return Promise
   }; // return dispatch
@@ -692,6 +706,73 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
         },
       },
     });
+  }; // return dispatch
+};
+
+export const apiSyncMilestoneAnswers = api_user_id => {
+  return dispatch => {
+    dispatch(Pending(API_SYNC_MILESTONE_ANSWERS_PENDING));
+    const baseURL = getApiUrl();
+    const fileUri = FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        responseType: 'json',
+        baseURL,
+        url: '/sync_answers',
+        headers: {
+          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+        },
+        data: {
+          user_id: api_user_id,
+        },
+      })
+        .then(response => {
+          const answers = response.data.answers;
+          answers.forEach(answer => {
+            answer.api_id = answer.id;
+            answer.respondent_api_id = answer.respondent_id;
+            answer.subject_api_id = answer.subject_id;
+            answer.user_api_id = answer.user_id;
+          });
+          // primary key on sqlite becomes id from api
+          insertRows('answers', answers_schema.answers, answers);
+
+          const attachments = response.data.attachments;
+          db.transaction(tx => {
+            tx.executeSql( 'DELETE FROM attachments', [],
+              (_, response) => console.log('*** Clear Answer Attachments table'),
+              (_, error) => console.log('*** Error in clearing Answer Attachments table'),
+            );
+          });
+
+          attachments.forEach(attachment => {
+            attachment.api_id = attachment.id;
+            attachment.uri = `${fileUri}/${attachment.filename}`;
+            FileSystem.downloadAsync(attachment.url, attachment.uri)
+              .then(response => {
+                const values = this.parseFields(attachment, attachmentFields);
+                const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
+                db.transaction(tx => {
+                  tx.executeSql(
+                    sql,
+                    [],
+                    (_, response) => console.log(`*** Answer Attachment sync'd ${attachment.filename}`),
+                    (_, error) => console.log(`*** Error: Answer Attachment sync ${attachment.filename}`),
+                  );
+                });
+              })
+              .catch(error => {
+                dispatch(Response(API_SYNC_MILESTONE_ANSWERS_REJECTED, error));
+              });
+          });
+          dispatch(Response(API_SYNC_MILESTONE_ANSWERS_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_SYNC_MILESTONE_ANSWERS_REJECTED, error));
+        });
+    }); // return Promise
   }; // return dispatch
 };
 

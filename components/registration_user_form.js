@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Text } from 'react-native-elements';
 
-import isEmpty from 'lodash/isEmpty';
 import get from 'lodash/get';
 
 import { compose } from 'recompose';
@@ -59,7 +58,10 @@ class RegistrationUserForm extends Component {
 
   componentDidMount() {
     if (['none', 'unknown'].includes(this.props.session.connectionType)) {
-      this.setState({isSubmitting: true, apiErrorMessage: 'The internet is not currently available'});
+      this.setState({
+        isSubmitting: true,
+        apiErrorMessage: 'The internet is not currently available',
+      });
     }
   }
 
@@ -155,6 +157,11 @@ class RegistrationUserForm extends Component {
     props.submitForm();
   };
 
+  handleSignInOnPress = () => {
+    const { navigate } = this.props.navigation;
+    navigate('SignIn');
+  };
+
   _onSubmit = values => {
     this.props.apiCreateUser(values);
   };
@@ -174,6 +181,13 @@ class RegistrationUserForm extends Component {
               <Text style={AppStyles.registrationHeader}>
                 Step 1: Create an Account
               </Text>
+              <Button
+                title="Already created an account? Sign In"
+                onPress={() => this.handleSignInOnPress()}
+                buttonStyle={styles.signInButton}
+                titleStyle={{ fontWeight: 900 }}
+                color={Colors.red}
+              />
               <TextField
                 autoCapitalize="words"
                 label="First Name"
@@ -213,7 +227,7 @@ class RegistrationUserForm extends Component {
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
                   title="NEXT"
-                  onPress={() => {this.handlePress(props)}}
+                  onPress={() => this.handlePress(props)}
                   buttonStyle={AppStyles.buttonSubmit}
                   titleStyle={{ fontWeight: 900 }}
                   color={Colors.darkGreen}
@@ -235,6 +249,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height: 24,
     color: Colors.errorColor,
+  },
+  signInButton: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
 

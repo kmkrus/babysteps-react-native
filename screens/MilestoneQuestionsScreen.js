@@ -486,13 +486,12 @@ class MilestoneQuestionsScreen extends Component {
         >
           <View style={styles.listContainer}>
             <Text style={styles.taskHeader}>{this.state.task_name}</Text>
-            {section &&
-              section.body && (
-                <Text style={styles.instructions}>
-                  <Text style={styles.instructionsLabel}>Instructions: &nbsp;</Text>
-                  {section.body}
-                </Text>
-              )}
+            {!!section && !!section.body && (
+              <View style={styles.instructions}>
+                <Text style={styles.instructionsLabel}>Instructions: &nbsp;</Text>
+                <Text>{section.body}</Text>
+              </View>
+            )}
             <FlatList
               renderItem={this.renderItem}
               data={data}

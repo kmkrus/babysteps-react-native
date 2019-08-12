@@ -3806,13 +3806,6 @@ expo-gl-cpp@~5.0.1:
   resolved "https://registry.yarnpkg.com/expo-gl-cpp/-/expo-gl-cpp-5.0.1.tgz#cc83b18c4ab0e3e125cb95cf501975455a2c5bbe"
   integrity sha512-4RMylFwAyakmi5Dp8Vqomq6N+Ywx81ehM3UqhFLuaEkS7dmKd8UQBKwiTiaFcDLsNkvLbTnyllAx7/qctJLQvQ==
 
-expo-gl@~4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/expo-gl/-/expo-gl-4.0.0.tgz#a24d4b5daa91835ff7c68f5eff0eb4bf7a6cc87d"
-  integrity sha512-44tqRSjPXnrZpZi+najAEjb5pIRxaxyho//8h5b6Jdua3BYRsIpccsWJwagwq9K1ne/dah3edwD5naKYUUbosQ==
-  dependencies:
-    prop-types "^15.6.2"
-
 expo-gl@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/expo-gl/-/expo-gl-5.0.1.tgz#52cb200a76744131284622622cde16032b176397"

@@ -9,15 +9,26 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
-import { resetSession, apiFetchSignin } from '../actions/session_actions';
+import {
+  resetSession,
+  apiFetchSignin,
+  updateSession,
+} from '../actions/session_actions';
 
-import { apiFetchMilestones } from '../actions/milestone_actions';
-import { apiSyncRegistration, apiSyncSignature } from '../actions/registration_actions';
+import {
+  apiFetchMilestones,
+  apiFetchMilestoneCalendar,
+  apiSyncMilestoneAnswers,
+} from '../actions/milestone_actions';
+import {
+  apiSyncRegistration,
+  apiSyncSignature,
+} from '../actions/registration_actions';
 
+import isEmpty from 'lodash/isEmpty';
 
 import States from '../actions/states';
 import Colors from '../constants/Colors';
-import AppStyles from '../constants/Styles';
 
 class SignInScreen extends Component {
   static navigationOptions = {
@@ -29,24 +40,68 @@ class SignInScreen extends Component {
     password: '',
     isSubmitting: false,
     errorMessages: [],
-    shouldComponentUpdate: true,
-    dataLoading: false,
+    shouldUpdate: true,
+    syncMilestones: false,
+    syncRegistration: false,
+    syncCalendar: false,
+    syncAnswers: false,
   };
 
   componentWillMount() {
     this.props.resetSession();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextState) {
+    const {
+      syncMilestones,
+      syncRegistration,
+      syncCalendar,
+      syncAnswers,
+    } = this.state;
     const session = nextProps.session;
+    const milestones = nextProps.milestones;
+    const registration = nextProps.registration;
+
     if (!session.fetching) {
       if (session.fetched) {
-        this.setState({ shouldComponentUpdate: false, dataLoading: true });
-        this.props.apiFetchMilestones();
-        this.props.apiSyncRegistration(session.api_id);
-        this.props.apiSyncSignature(session.api_id);
-
-        console.log('fetched');
+        this.setState({ shouldUpdate: false });
+        if (!syncMilestones) {
+          this.setState({ syncMilestones: true });
+          this.props.apiFetchMilestones();
+        }
+        if (!syncRegistration) {
+          this.setState({ syncRegistration: true });
+          this.props.apiSyncRegistration(session.api_id);
+          this.props.apiSyncSignature(session.api_id);
+        }
+        if (!syncCalendar && !isEmpty(registration.subject.data)) {
+          this.setState({ syncCalendar: true });
+          this.props.apiFetchMilestoneCalendar({ subject_id: registration.subject.data.api_id });
+        }
+        if (
+          !syncAnswers &&
+          !milestones.apiAnswers.fetched &&
+          !isEmpty(registration.respondent.data) &&
+          !isEmpty(registration.subject.data)
+        ) {
+          this.setState({ syncAnswers: true });
+          this.props.apiSyncMilestoneAnswers(session.api_id);
+        }
+        if (
+          syncMilestones &&
+          milestones.api_milestones.fetched &&
+          syncRegistration &&
+          registration.apiRespondent.fetched &&
+          registration.apiSignature.fetched &&
+          syncCalendar &&
+          milestones.api_calendar.fetched &&
+          syncAnswers &&
+          milestones.apiAnswers.fetched
+        ) {
+          this.props.updateSession({
+            registration_state: States.REGISTERED_AS_IN_STUDY,
+          });
+        }
       }
       if (session.errorMessages) {
         this.setState({ isSubmitting: false, errorMessages: session.errorMessages });
@@ -54,8 +109,8 @@ class SignInScreen extends Component {
     }
   }
 
-  shouldComponentUpdate() {
-    return this.state.shouldComponentUpdate;
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.shouldUpdate;
   }
 
   handlePress = () => {
@@ -65,7 +120,8 @@ class SignInScreen extends Component {
   };
 
   render() {
-    const { email, password, errorMessages, dataLoading } = this.state;
+    const { email, password, errorMessages } = this.state;
+
     return (
       <View style={styles.container}>
         <Text style={styles.titleText}>Sign In</Text>
@@ -97,10 +153,12 @@ class SignInScreen extends Component {
         </View>
         <View styles={styles.errorContainer}>
           <Text style={styles.errorMessage}>{errorMessages.join('\r\n')}</Text>
-          {dataLoading && (
-            <ActivityIndicator size="large" color={Colors.tint} />
-          )}
         </View>
+        {this.state.isSubmitting && (
+          <View>
+            <ActivityIndicator size="large" color={Colors.tint} />
+          </View>
+        )}
       </View>
     );
   }
@@ -150,12 +208,23 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ session }) => ({ session });
+const mapStateToProps = ({
+  session,
+  registration,
+  milestones,
+}) => ({
+  session,
+  registration,
+  milestones,
+});
 
 const mapDispatchToProps = {
   resetSession,
+  updateSession,
   apiFetchSignin,
   apiFetchMilestones,
+  apiFetchMilestoneCalendar,
+  apiSyncMilestoneAnswers,
   apiSyncRegistration,
   apiSyncSignature,
 };

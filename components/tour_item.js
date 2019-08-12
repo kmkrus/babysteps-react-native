@@ -5,8 +5,9 @@ import {
   Animated,
   Dimensions,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
+import { Button } from 'react-native-elements';
+
 import tour_images from './tour_images';
 import tour_text from './tour_text';
 
@@ -57,12 +58,15 @@ export class TourItem extends Component {
           <Text style={styles.title}>{tour_text[index].title}</Text>
           <Text style={styles.body}>{tour_text[index].body}</Text>
           {index === 0 && (
-            <TouchableOpacity
-              style={styles.signInLink}
-              onPress={this.handleSignInOnPress}
-            >
-              <Text style={styles.signInText}>Already Signed Up? Sign In</Text>
-            </TouchableOpacity>
+            <View style={styles.signInContainer}>
+              <Button
+                title="Already created an account? Sign In"
+                onPress={() => this.handleSignInOnPress()}
+                buttonStyle={styles.signInButton}
+                titleStyle={{ fontWeight: 900 }}
+                color={Colors.red}
+              />
+            </View>
           )}
         </View>
       </Animated.View>
@@ -99,12 +103,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
-  signInLink: {
-    alignSelf: 'center',
-    marginTop: 20,
+  signInContainer: {
+    marginTop: 10,
   },
-  signInText: {
-    fontSize: 10,
-    color: Colors.red,
+  signInButton: {
+    backgroundColor: Colors.lightGreen,
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });

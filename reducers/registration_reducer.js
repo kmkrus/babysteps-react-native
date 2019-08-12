@@ -590,7 +590,6 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
 
-   // API_CREATE_SUBJECT
     case API_CREATE_SUBJECT_PENDING: {
       return {
         ...state,
@@ -665,8 +664,8 @@ const reducer = (state = initialState, action, formData = {}) => {
     case API_SYNC_REGISTRATION_PENDING: {
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiRespondent: {
+          ...state.apiRespondent,
           fetching: true,
           fetched: false,
           error: null,
@@ -674,21 +673,32 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
     case API_SYNC_REGISTRATION_FULFILLED: {
+      const data = action.payload.data;
+      const respondent = data.respondents[0];
+      const subject = data.subjects[0];
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiRespondent: {
+          ...state.apiRespondent,
           fetching: false,
           fetched: true,
           error: null,
+        },
+        respondent: {
+          ...respondent,
+          data: respondent,
+        },
+        subject: {
+          ...subject,
+          data: subject,
         },
       };
     }
     case API_SYNC_REGISTRATION_REJECTED: {
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiRespondent: {
+          ...state.apiRespondent,
           fetching: false,
           fetched: false,
           error: action.payload,
@@ -699,8 +709,8 @@ const reducer = (state = initialState, action, formData = {}) => {
     case API_SYNC_SIGNATURE_PENDING: {
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiSignature: {
+          ...state.apiSignature,
           fetching: true,
           fetched: false,
           error: null,
@@ -710,8 +720,8 @@ const reducer = (state = initialState, action, formData = {}) => {
     case API_SYNC_SIGNATURE_FULFILLED: {
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiSignature: {
+          ...state.apiSignature,
           fetching: false,
           fetched: true,
           error: null,
@@ -721,8 +731,8 @@ const reducer = (state = initialState, action, formData = {}) => {
     case API_SYNC_SIGNATURE_REJECTED: {
       return {
         ...state,
-        apiSync: {
-          ...state.apiSync,
+        apiSignature: {
+          ...state.apiSignature,
           fetching: false,
           fetched: false,
           error: action.payload,
