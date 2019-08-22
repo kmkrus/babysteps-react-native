@@ -60,7 +60,7 @@ export class TourItem extends Component {
           {index === 0 && (
             <View style={styles.signInContainer}>
               <Button
-                title="Already created an account? Sign In"
+                title="Already Created an Account? Sign In"
                 onPress={() => this.handleSignInOnPress()}
                 buttonStyle={styles.signInButton}
                 titleStyle={{ fontWeight: 900 }}
@@ -104,12 +104,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signInContainer: {
+    flex: 1,
     marginTop: 10,
   },
   signInButton: {
+    flex: 1,
     backgroundColor: Colors.lightGreen,
-    borderColor: Colors.grey,
-    borderWidth: 1,
-    borderRadius: 5,
+    //borderColor: Colors.grey,
+    //borderWidth: 1,
+    //borderRadius: 5,
   },
 });

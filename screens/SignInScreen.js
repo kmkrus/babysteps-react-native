@@ -8,6 +8,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { WebBrowser } from 'expo';
+
+import isEmpty from 'lodash/isEmpty';
+
 import { connect } from 'react-redux';
 import {
   resetSession,
@@ -20,12 +24,11 @@ import {
   apiFetchMilestoneCalendar,
   apiSyncMilestoneAnswers,
 } from '../actions/milestone_actions';
+
 import {
   apiSyncRegistration,
   apiSyncSignature,
 } from '../actions/registration_actions';
-
-import isEmpty from 'lodash/isEmpty';
 
 import States from '../actions/states';
 import Colors from '../constants/Colors';
@@ -119,8 +122,12 @@ class SignInScreen extends Component {
     this.props.apiFetchSignin(email, password);
   };
 
+  handlePasswordLink = () => {
+    WebBrowser.openBrowserAsync('http://api.babystepsapp.net/admin/password/new');
+  };
+
   render() {
-    const { email, password, errorMessages } = this.state;
+    const { email, password, isSubmitting, errorMessages } = this.state;
 
     return (
       <View style={styles.container}>
@@ -148,13 +155,20 @@ class SignInScreen extends Component {
             buttonStyle={styles.button}
             titleStyle={{ fontWeight: 900 }}
             color={Colors.darkGreen}
-            disabled={this.state.isSubmitting}
+            disabled={isSubmitting}
           />
         </View>
+        {!isSubmitting && (
+          <View styles={styles.passwordContainer}>
+            <Text style={styles.passwordLink} onPress={this.handlePasswordLink}>
+              Reset My Password
+            </Text>
+          </View>
+        )}
         <View styles={styles.errorContainer}>
           <Text style={styles.errorMessage}>{errorMessages.join('\r\n')}</Text>
         </View>
-        {this.state.isSubmitting && (
+        {isSubmitting && (
           <View>
             <ActivityIndicator size="large" color={Colors.tint} />
           </View>
@@ -191,7 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   input: {
-    width: 200,
+    width: 300,
     fontSize: 18,
     height: 40,
     padding: 10,
@@ -199,6 +213,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.darkGrey,
     borderRadius: 5,
     marginVertical: 10,
+  },
+  passwordContainer: {
+    justifyContent: 'center',
+  },
+  passwordLink: {
+    color: Colors.darkGreen,
   },
   errorContainer: {
     justifyContent: 'center',

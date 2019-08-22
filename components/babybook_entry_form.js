@@ -25,6 +25,7 @@ import { connect } from 'react-redux';
 import {
   resetBabyBookEntries,
   createBabyBookEntry,
+  apiCreateBabyBookEntry,
 } from '../actions/babybook_actions';
 
 import registerForPermission, {
@@ -83,8 +84,12 @@ class BabyBookEntryForm extends Component {
     let message = [];
     const hasCameraRollPermission = await registerForPermission(Permissions.CAMERA_ROLL);
     const hasCameraPermission = await registerForPermission(Permissions.CAMERA);
-    if (!hasCameraRollPermission) message = renderNoPermissionsMessage('library', message);
-    if (!hasCameraPermission) message = renderNoPermissionsMessage('camera', message);
+    if (!hasCameraRollPermission) {
+      message = renderNoPermissionsMessage('library', message);
+    }
+    if (!hasCameraPermission) {
+      message = renderNoPermissionsMessage('camera', message);
+    }
     // disable setState to avoid memory leaks if closing before async finished
     if (this._isMounted) {
       this.setState({
@@ -99,7 +104,7 @@ class BabyBookEntryForm extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return !nextProps.babybook.entries.fetching;
+    return !nextProps.babybook.entry.fetching;
   }
 
   componentWillUnmount() {
@@ -136,6 +141,8 @@ class BabyBookEntryForm extends Component {
     const hasCameraPermission  = this.state.hasCameraPermission;
     const hasCameraRollPermission = this.state.hasCameraRollPermission;
     const permissionMessage = this.state.permissionMessage;
+    const user = this.props.registration.user.data;
+    const session = this.props.session;
     let hasUri = false;
     let isVideo = false;
     let uri = null;
@@ -152,7 +159,17 @@ class BabyBookEntryForm extends Component {
     return (
       <Formik
         onSubmit={values => {
-          this.props.createBabyBookEntry(values, this.state.image);
+          const user = this.props.registration.user.data;
+          const data = {
+            ...values,
+            user_id: user.id,
+          };
+          const apiData = {
+            ...values,
+            user_id: user.api_id,
+          };
+          this.props.createBabyBookEntry(data, this.state.image);
+          this.props.apiCreateBabyBookEntry(session, apiData, this.state.image);
         }}
         validationSchema={validationSchema}
         initialValues={{
@@ -205,22 +222,22 @@ class BabyBookEntryForm extends Component {
               )}
 
               <View style={styles.pickImageContainer}>
-                {hasUri &&
-                  isVideo && (
-                    <Video
-                      source={{ uri }}
-                      rate={1.0}
-                      volume={1.0}
-                      isMuted={false}
-                      resizeMode={Video.RESIZE_MODE_COVER}
-                      shouldPlay={false}
-                      isLooping
-                      useNativeControls
-                      style={styles.video}
-                    />
-                  )}
-                {hasUri &&
-                  !isVideo && <Image source={{ uri }} style={styles.image} />}
+                {hasUri && isVideo && (
+                  <Video
+                    source={{ uri }}
+                    rate={1.0}
+                    volume={1.0}
+                    isMuted={false}
+                    resizeMode={Video.RESIZE_MODE_COVER}
+                    shouldPlay={false}
+                    isLooping
+                    useNativeControls
+                    style={styles.video}
+                  />
+                )}
+                {hasUri && !isVideo && (
+                  <Image source={{ uri }} style={styles.image} />
+                )}
 
                 <Text style={styles.textError}>{this.state.imageError}</Text>
               </View>
@@ -320,8 +337,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = ({ babybook }) => ({ babybook });
-const mapDispatchToProps = { resetBabyBookEntries, createBabyBookEntry };
+const mapStateToProps = ({
+  session,
+  babybook,
+  registration,
+}) => ({
+  session,
+  babybook,
+  registration,
+});
+const mapDispatchToProps = {
+  resetBabyBookEntries,
+  createBabyBookEntry,
+  apiCreateBabyBookEntry,
+};
 
 export default connect(
   mapStateToProps,

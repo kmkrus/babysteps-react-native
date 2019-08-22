@@ -176,10 +176,6 @@ class RootNavigator extends Component {
     } // calendar.data
   }
 
-  componentWillUnmount() {
-    this._notificationSubscription && this._notificationSubscription.remove();
-  }
-
   _handleNotificationOnPress = data => {
     const task = find(this.props.milestones.tasks.data, ['id', data.task_id]);
     NavigationService.navigate('MilestoneQuestions', { task });

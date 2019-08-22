@@ -8,6 +8,7 @@ import {
   resetBabyBookEntries,
   fetchBabyBookEntries,
 } from '../actions/babybook_actions';
+import { fetchUser } from '../actions/registration_actions';
 
 import Colors from '../constants/Colors';
 
@@ -46,23 +47,23 @@ class BabyBookEntryScreen extends Component {
 
   componentWillMount() {
     this.props.resetBabyBookEntries();
+    this.props.fetchUser();
   }
 
   componentWillReceiveProps(nextProps, nextState) {
     if (
-      !nextProps.babybook.entries.fetching &&
-      nextProps.babybook.entries.fetched
+      !this.state.submitted &&
+      !nextProps.babybook.entry.fetching &&
+      nextProps.babybook.entry.fetched
     ) {
-      if (!this.state.submitted) {
-        this.setState({ submitted: true });
-        this.props.fetchBabyBookEntries();
-        this.props.navigation.navigate('BabyBook', { babybookEntries: true });
-      }
+      this.setState({ submitted: true });
+      this.props.fetchBabyBookEntries();
+      this.props.navigation.navigate('BabyBook', { babybookEntries: true });
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !nextProps.babybook.entries.fetching;
+    return !nextProps.babybook.entry.fetching;
   }
 
   render() {
@@ -94,7 +95,11 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ({ babybook }) => ({ babybook });
-const mapDispatchToProps = { resetBabyBookEntries, fetchBabyBookEntries };
+const mapDispatchToProps = {
+  resetBabyBookEntries,
+  fetchBabyBookEntries,
+  fetchUser,
+};
 
 export default connect(
   mapStateToProps,

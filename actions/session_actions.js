@@ -206,6 +206,15 @@ export const apiFetchSignin = (email, password) => {
           data.api_id = data.id;
           delete data.id;
 
+          db.transaction(tx => {
+            tx.executeSql(
+              'UPDATE sessions SET email = ?, password = ?;',
+              [email, password],
+              (_, response) => console.log('*** Fetch Sign In: save session successful'),
+              (_, error) => dispatch(Response(API_FETCH_SIGNIN_REJECTED, error)),
+            );
+          });
+
           insertRows('users', schema['users'], [data]);
           dispatch(
             Response(API_FETCH_SIGNIN_FULFILLED, response, { email, password }),

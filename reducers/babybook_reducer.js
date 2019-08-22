@@ -22,10 +22,22 @@ const initialState = {
     fetched: false,
     error: null,
     data: [],
-  }
+  },
+  entry: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
+  },
+  api_entry: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
+  },
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action, data=[]) => {
   switch (action.type) {
 
     case RESET_BABYBOOK_ENTRIES: {
@@ -36,6 +48,21 @@ const reducer = (state = initialState, action) => {
           fetching: false,
           fetched: false,
           error: null,
+          data: [],
+        },
+        entry: {
+          ...state.entry,
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+        api_entry: {
+          ...state.api_entry,
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
         },
       };
     }
@@ -81,30 +108,34 @@ const reducer = (state = initialState, action) => {
     case CREATE_BABYBOOK_ENTRY_PENDING: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: true,
           fetched: false,
           error: null,
+          data: [],
         },
       };
     }
     case CREATE_BABYBOOK_ENTRY_FULFILLED: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: false,
           fetched: true,
+          error: null,
+          data,
         },
       };
     }
     case CREATE_BABYBOOK_ENTRY_REJECTED: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: false,
+          fetched: false,
           error: action.payload,
         },
       };
@@ -113,8 +144,8 @@ const reducer = (state = initialState, action) => {
     case UPDATE_BABYBOOK_ENTRY_PENDING: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: true,
           fetched: false,
           error: null,
@@ -124,19 +155,22 @@ const reducer = (state = initialState, action) => {
     case UPDATE_BABYBOOK_ENTRY_FULFILLED: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: false,
           fetched: true,
+          error: null,
+          data,
         },
       };
     }
     case UPDATE_BABYBOOK_ENTRY_REJECTED: {
       return {
         ...state,
-        entries: {
-          ...state.entries,
+        entry: {
+          ...state.entry,
           fetching: false,
+          fetched: false,
           error: action.payload,
         },
       };
