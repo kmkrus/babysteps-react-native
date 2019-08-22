@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import {
-  createAppContainer, 
+  createAppContainer,
   createStackNavigator,
   createBottomTabNavigator,
 } from 'react-navigation';
@@ -45,17 +45,13 @@ const MilestonesStack = createStackNavigator(
   },
 );
 
-const MilestonesStackContainer = createAppContainer(MilestonesStack);
-
 MilestonesStack.navigationOptions = {
   tabBarLabel: 'Milestones',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios'
-          ? `ios-list${focused ? '' : '-outline'}`
-          : 'md-list'
+        Platform.OS === 'ios' ? 'ios-list' : 'md-list'
       }
     />
   ),
@@ -74,17 +70,13 @@ const OverviewStack = createStackNavigator(
   },
 );
 
-const OverviewStackContainer = createAppContainer(OverviewStack);
-
 OverviewStack.navigationOptions = {
   tabBarLabel: 'Overview',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+        Platform.OS === 'ios' ? 'ios-information-circle' : 'md-information-circle'
       }
     />
   ),
@@ -106,15 +98,11 @@ BabyBookStack.navigationOptions = {
     <TabBarIcon
       focused={focused}
       name={
-        Platform.OS === 'ios'
-          ? `ios-book${focused ? '' : '-outline'}`
-          : 'md-book'
+        Platform.OS === 'ios' ? 'ios-book' : 'md-book'
       }
     />
   ),
 };
-
-const BabyBookStackContainer = createAppContainer(BabyBookStack);
 
 const SettingsStack = createStackNavigator(
   {
@@ -135,11 +123,11 @@ SettingsStack.navigationOptions = {
   ),
 };
 
-const SettingsStackContainer = createAppContainer(SettingsStack);
-
-export default createBottomTabNavigator({
-  Overview: OverviewStackContainer,
-  Milestones: MilestonesStackContainer,
-  BabyBook: BabyBookStackContainer,
-  Settings: SettingsStackContainer,
-});
+export default createAppContainer(
+  createBottomTabNavigator({
+    Overview: OverviewStack,
+    Milestones: MilestonesStack,
+    BabyBook: BabyBookStack,
+    Settings: SettingsStack,
+  }),
+);

@@ -27,7 +27,7 @@ export class TourItem extends Component {
   };
 
   render = () => {
-    const { animatedValue, index } = this.props;
+    const { animatedValue, index, currentIndex } = this.props;
     return (
       <Animated.View style={styles.container}>
         <Animated.Image
@@ -57,7 +57,7 @@ export class TourItem extends Component {
         <View style={styles.textBlock}>
           <Text style={styles.title}>{tour_text[index].title}</Text>
           <Text style={styles.body}>{tour_text[index].body}</Text>
-          {index === 0 && (
+          {currentIndex === 0 && (
             <View style={styles.signInContainer}>
               <Button
                 title="Already Created an Account? Sign In"
@@ -86,12 +86,14 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   image: {
-    flex: 1,
+    //flex: 1,
     resizeMode: 'contain',
     height: imageHeight,
+    marginTop: 50,
     marginBottom: 10,
   },
   textBlock: {
+    flex: 1,
     width: width - 40,
   },
   title: {
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   signInButton: {
-    flex: 1,
+    //flex: 1,
     backgroundColor: Colors.lightGreen,
     //borderColor: Colors.grey,
     //borderWidth: 1,

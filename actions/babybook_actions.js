@@ -206,6 +206,9 @@ export const apiCreateBabyBookEntry = (session, data, image = null) => {
 export const apiSyncBabybookEntries = (api_user_id) => {
   return dispatch => {
     dispatch(Pending(API_SYNC_BABYBOOK_ENTRIES_PENDING));
+
+    // stub out pending completion
+    return true;
     const baseURL = getApiUrl();
     const fileUri = FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
 
