@@ -12,6 +12,15 @@ import {
   UPDATE_BABYBOOK_ENTRY_PENDING,
   UPDATE_BABYBOOK_ENTRY_FULFILLED,
   UPDATE_BABYBOOK_ENTRY_REJECTED,
+
+  API_CREATE_BABYBOOK_ENTRY_PENDING,
+  API_CREATE_BABYBOOK_ENTRY_FULFILLED,
+  API_CREATE_BABYBOOK_ENTRY_REJECTED,
+
+  API_SYNC_BABYBOOK_ENTRIES_PENDING,
+  API_SYNC_BABYBOOK_ENTRIES_FULFILLED,
+  API_SYNC_BABYBOOK_ENTRIES_REJECTED,
+
 } from '../actions/types';
 
 import { _ } from 'lodash';
@@ -30,6 +39,12 @@ const initialState = {
     data: [],
   },
   api_entry: {
+    fetching: false,
+    fetched: false,
+    error: null,
+    data: [],
+  },
+  api_entries: {
     fetching: false,
     fetched: false,
     error: null,
@@ -59,6 +74,13 @@ const reducer = (state = initialState, action, data=[]) => {
         },
         api_entry: {
           ...state.api_entry,
+          fetching: false,
+          fetched: false,
+          error: null,
+          data: [],
+        },
+        api_entries: {
+          ...state.api_entries,
           fetching: false,
           fetched: false,
           error: null,
@@ -169,6 +191,75 @@ const reducer = (state = initialState, action, data=[]) => {
         ...state,
         entry: {
           ...state.entry,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case API_CREATE_BABYBOOK_ENTRY_PENDING: {
+      return {
+        ...state,
+        api_entry: {
+          ...state.api_entry,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_CREATE_BABYBOOK_ENTRY_FULFILLED: {
+      return {
+        ...state,
+        api_entry: {
+          ...state.api_entry,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case API_CREATE_BABYBOOK_ENTRY_REJECTED: {
+      return {
+        ...state,
+        api_entry: {
+          ...state.api_entry,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case API_SYNC_BABYBOOK_ENTRIES_PENDING: {
+      return {
+        ...state,
+        api_entries: {
+          ...state.api_entries,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_SYNC_BABYBOOK_ENTRIES_FULFILLED: {
+      return {
+        ...state,
+        api_entries: {
+          ...state.api_entries,
+          fetching: false,
+          fetched: true,
+          error: null,
+          data: action.payload,
+        },
+      };
+    }
+    case API_SYNC_BABYBOOK_ENTRIES_REJECTED: {
+      return {
+        ...state,
+        api_entries: {
+          ...state.api_entries,
           fetching: false,
           fetched: false,
           error: action.payload,

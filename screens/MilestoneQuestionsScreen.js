@@ -383,7 +383,9 @@ class MilestoneQuestionsScreen extends Component {
             (attachment.content_type.includes('video') ||
               attachment.content_type.includes('image'))
           ) {
-            this.props.createBabyBookEntry({title: null, detail: null, cover}, attachment);
+            const data = {title: null, detail: null, cover};
+            this.props.createBabyBookEntry(data, attachment);
+            this.props.apiCreateBabyBookEntry(session, data, attachment);
           }
           delete attachment.title;
           this.props.updateMilestoneAttachment(attachment);

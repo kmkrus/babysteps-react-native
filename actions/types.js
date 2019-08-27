@@ -235,6 +235,10 @@ export const API_CREATE_BABYBOOK_ENTRY_PENDING = 'api_create_babybook_entry_pend
 export const API_CREATE_BABYBOOK_ENTRY_FULFILLED = 'api_create_babybook_entry_fulfilled';
 export const API_CREATE_BABYBOOK_ENTRY_REJECTED = 'api_create_babybook_entry_rejected';
 
+export const API_SYNC_BABYBOOK_ENTRIES_PENDING = 'api_create_babybook_entry_pending';
+export const API_SYNC_BABYBOOK_ENTRIES_FULFILLED = 'api_create_babybook_entry_fulfilled';
+export const API_SYNC_BABYBOOK_ENTRIES_REJECTED = 'api_create_babybook_entry_rejected';
+
 // Notifications
 
 export const SHOW_MOMENTARY_ASSESSMENT = 'show_momentary_assessment';

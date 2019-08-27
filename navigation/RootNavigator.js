@@ -211,6 +211,7 @@ class RootNavigator extends Component {
   };
 
   registerForNotifications = async () => {
+    const notifications_permission = this.props.session.notifications_permission;
     // android permissions are given on install
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS,
@@ -226,7 +227,11 @@ class RootNavigator extends Component {
       // install, so this will only ask on iOS
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       finalStatus = status;
-      if (Platform.OS === 'ios') {
+      if (
+        Platform.OS === 'ios' &&
+        finalStatus === 'granted' &&
+        notifications_permission !== 'granted'
+      ) {
         Alert.alert(
           'Permissions',
           "To make sure you don't miss any notifications, please enable 'Persistent' notifications for BabySteps. Click Settings below, open 'Notifications' and set 'Banner Style' to 'Persistent'.",

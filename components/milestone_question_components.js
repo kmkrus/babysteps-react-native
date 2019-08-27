@@ -137,6 +137,6 @@ export class RenderChoices extends PureComponent {
       }
     }
   }
-};
+}
 
 

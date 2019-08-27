@@ -64,19 +64,22 @@ class MomentaryAssessment extends Component {
   };
 
   getModalContent = task => {
-    if(this.state.selectedIndex !== null){
-      return this.getThankYouContent();
+    const selectedIndex = this.state.selectedIndex;
+    if(selectedIndex !== null){
+      return this.getThankYouContent(selectedIndex);
     }
     return this.getTaskContent(task);
   };
 
-  getThankYouContent = () => {
+  getThankYouContent = selectedIndex => {
     return (
       <View>
-        <Image
-          style={styles.image}
-          source={require('../assets/images/thank_you_balloons.png')}
-        />
+        {Math.trunc(selectedIndex) < 3 && (
+          <Image
+            style={styles.image}
+            source={require('../assets/images/thank_you_balloons.png')}
+          />
+        )}
         <Text>Thank you for your response!</Text>
       </View>
     );

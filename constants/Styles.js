@@ -29,6 +29,15 @@ export default StyleSheet.create({
     height: 36,
   },
 
+  registrationTextHelper: {
+    fontSize: 12,
+    fontWeight: '400',
+    marginLeft: 20,
+    marginRight: 20,
+    color: Colors.grey,
+    height: 44,
+  },
+
   registrationDateTextInput: {
     fontSize: 18,
     fontWeight: 'bold',

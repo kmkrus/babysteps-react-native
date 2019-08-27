@@ -2,6 +2,7 @@ import * as FileSystem from 'expo-file-system';
 import { SQLite } from 'expo-sqlite';
 
 import { insertRows, getApiUrl } from '../database/common';
+import schema from '../database/babybook_schema.json';
 
 import forEach from 'lodash/forEach';
 import omit from 'lodash/omit';
@@ -28,6 +29,10 @@ import {
   API_CREATE_BABYBOOK_ENTRY_PENDING,
   API_CREATE_BABYBOOK_ENTRY_FULFILLED,
   API_CREATE_BABYBOOK_ENTRY_REJECTED,
+
+  API_SYNC_BABYBOOK_ENTRIES_PENDING,
+  API_SYNC_BABYBOOK_ENTRIES_FULFILLED,
+  API_SYNC_BABYBOOK_ENTRIES_REJECTED,
 
 } from './types';
 
@@ -202,13 +207,9 @@ export const apiCreateBabyBookEntry = (session, data, image = null) => {
   }; // return dispatch
 };
 
-
 export const apiSyncBabybookEntries = (api_user_id) => {
   return dispatch => {
     dispatch(Pending(API_SYNC_BABYBOOK_ENTRIES_PENDING));
-
-    // stub out pending completion
-    return true;
     const baseURL = getApiUrl();
     const fileUri = FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
 
@@ -230,42 +231,33 @@ export const apiSyncBabybookEntries = (api_user_id) => {
           entries.forEach(entry => {
             entry.api_id = entry.id;
             entry.user_api_id = entry.user_id;
-          });
-          // primary key on sqlite becomes id from api
-          insertRows('babybook_entries', babybook_schema.babybook_entries, entries);
+            entry.file_name = entry.filename;
+            entry.file_type = entry.content_type;
+            entry.uri = `${fileUri}/${entry.filename}`;
 
-          const attachments = response.data.attachments;
-          db.transaction(tx => {
-            tx.executeSql( 'DELETE FROM attachments', [],
-              (_, response) => console.log('*** Clear Answer Attachments table'),
-              (_, error) => console.log('*** Error in clearing Answer Attachments table'),
-            );
-          });
-
-          attachments.forEach(attachment => {
-            attachment.api_id = attachment.id;
-            attachment.uri = `${fileUri}/${attachment.filename}`;
-            FileSystem.downloadAsync(attachment.url, attachment.uri)
+            FileSystem.downloadAsync(entry.url, entry.uri)
               .then(response => {
-                const values = this.parseFields(attachment, attachmentFields);
-                const sql =`INSERT INTO attachments ( ${attachmentFields.join(', ')} ) VALUES (${values});`;
-                db.transaction(tx => {
-                  tx.executeSql(
-                    sql,
-                    [],
-                    (_, response) => console.log(`*** Answer Attachment sync'd ${attachment.filename}`),
-                    (_, error) => console.log(`*** Error: Answer Attachment sync ${attachment.filename}`),
-                  );
-                });
+                console.log(`*** Babybook Attachment sync'd ${entry.filename}`);
               })
               .catch(error => {
-                dispatch(Response(API_SYNC_MILESTONE_ANSWERS_REJECTED, error));
+                dispatch(Response(API_SYNC_BABYBOOK_ENTRIES_REJECTED, error));
               });
-          });
-          dispatch(Response(API_SYNC_MILESTONE_ANSWERS_FULFILLED, response));
+
+            delete entry.filename;
+            delete entry.content_type;
+            delete entry.key;
+            delete entry.metadata;
+            delete entry.updated_at;
+            delete entry.byte_size;
+            delete entry.checksum;
+            delete entry.url;
+          }); // forEach
+          // primary key on sqlite becomes id from api
+          insertRows('babybook_entries', schema.babybook_entries, entries);
+          dispatch(Response(API_SYNC_BABYBOOK_ENTRIES_FULFILLED, entries));
         })
         .catch(error => {
-          dispatch(Response(API_SYNC_MILESTONE_ANSWERS_REJECTED, error));
+          dispatch(Response(API_SYNC_BABYBOOK_ENTRIES_REJECTED, error));
         });
     }); // return Promise
   }; // return dispatch

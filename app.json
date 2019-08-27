@@ -9,7 +9,7 @@
       "ios",
       "android"
     ],
-    "version": "0.9.0",
+    "version": "0.10.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -24,7 +24,7 @@
       "./assets/**/*"
     ],
     "ios": {
-      "buildNumber": "21",
+      "buildNumber": "40",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "infoPlist": {
@@ -34,7 +34,7 @@
       }
     },
     "android": {
-      "versionCode": 43,
+      "versionCode": 44,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",

@@ -72,8 +72,8 @@ const validationSchema = Yup.object().shape({
   date_of_birth: Yup.date()
     .typeError('Date of birth must be a valid date')
     .required('Date of birth is required'),
-  drivers_license_number: Yup.string()
-    .required("Driver's license number is required"),
+  //drivers_license_number: Yup.string()
+    //.required("Driver's license number is required"),
   marital_status: Yup.string()
     .required('Marital status is required'),
   weight: Yup.number('Weight must be a number')
@@ -323,6 +323,13 @@ class RegistrationRespondentForm extends Component {
                   label="Driver's License Number"
                   name="drivers_license_number"
                 />
+
+                <Text style={AppStyles.registrationTextHelper}>
+                  We are asking for your driver's license number to help us
+                  recontact you in the future in the event that your usual
+                  contact information changes. This field is encouraged but
+                  optional.
+                </Text>
 
                 <PickerInput
                   label="Marital Status"

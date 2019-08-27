@@ -80,6 +80,7 @@ class MilestonePregnancyHistoryScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+    let firstQuestion = {};
     const task = nextProps.navigation.state.params.task;
     if (task.id !== this.state.task_id) {
       this.props.resetMilestoneQuestions();
@@ -128,6 +129,7 @@ class MilestonePregnancyHistoryScreen extends Component {
             }
           }
           if (!questions.fetching && questions.fetched) {
+            firstQuestion = this.props.milestones.questions.data[0];
             if (!nextProps.milestones.choices.fetching) {
               if (_.isEmpty(nextProps.milestones.choices.data)) {
                 // question IDs for repeat questions
@@ -145,9 +147,24 @@ class MilestonePregnancyHistoryScreen extends Component {
     const answers = nextProps.milestones.answers;
     if (!answers.fetching && answers.fetched) {
       if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
+        let numberOfPregnancies = this.state.numberOfPregnancies;
+        let currentPregnancy = this.state.currentPregnancy;
+        let showNextPregnancy = this.state.showNextPregnancy;
+        if (!_.isEmpty(firstQuestion)) {
+          const answer = _.find(answers.data, ['question_id', firstQuestion.id]);
+          numberOfPregnancies = Math.trunc(answer.answer_text);
+          if (!_.isEmpty(answer)) {
+            currentPregnancy = 1;
+            showNextPregnancy = true;
+          }
+        }
+
         this.setState({
           answers: answers.data,
           answersFetched: true,
+          numberOfPregnancies,
+          currentPregnancy,
+          showNextPregnancy,
         });
       }
     }
@@ -272,7 +289,6 @@ class MilestonePregnancyHistoryScreen extends Component {
         answers,
       });
     } else {
-      const answerQuestionIDs = _.map(answers, 'question_id');
       this.setState({ answers });
     }
   };
@@ -305,6 +321,10 @@ class MilestonePregnancyHistoryScreen extends Component {
   };
 
   handleNextPregnancy = () => {
+    const section = this.state.section;
+    const answers = this.state.answers;
+    const session = this.props.session;
+    const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
     const currentPregnancy = this.state.currentPregnancy + 1;
     const numberOfPregnancies = this.state.numberOfPregnancies;
     let showConfirm = false;
@@ -312,7 +332,12 @@ class MilestonePregnancyHistoryScreen extends Component {
     if (currentPregnancy === numberOfPregnancies) {
       showConfirm = true;
       showNextPregnancy = false;
-    };
+    }
+    // save answers when finished with pregnancy
+    this.props.updateMilestoneAnswers(section, answers);
+    if (inStudy) {
+      this.props.apiUpdateMilestoneAnswers(session, section.id, answers);
+    }
     this.setState({ currentPregnancy, showConfirm, showNextPregnancy });
     this.scroll.scrollTo({ x: 0, y: 0, animated: true });
   };
@@ -371,7 +396,7 @@ class MilestonePregnancyHistoryScreen extends Component {
                 color={Colors.pink}
                 buttonStyle={styles.buttonTwoStyle}
                 titleStyle={styles.buttonTitleStyle}
-                onPress={() => this.handleNextPregnancy()}
+                onPress={this.handleNextPregnancy}
                 title="Next Pregnancy"
               />
             )}
@@ -380,7 +405,7 @@ class MilestonePregnancyHistoryScreen extends Component {
                 color={Colors.pink}
                 buttonStyle={styles.buttonTwoStyle}
                 titleStyle={styles.buttonTitleStyle}
-                onPress={() => this.handleConfirm()}
+                onPress={this.handleConfirm}
                 title="Confirm"
                 disabled={this.state.confirmed}
               />

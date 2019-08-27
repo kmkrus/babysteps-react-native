@@ -86,44 +86,42 @@ export class RenderCheckBox extends React.PureComponent {
               )
             }
           />
-          {requireExplanation &&
-            option_group === 'text_short' && (
-              <FormInput
-                autoCapitalize="words"
-                inputStyle={styles.textInput}
-                defaultValue={text}
-                onChangeText={value =>
+          {requireExplanation && option_group === 'text_short' && (
+            <FormInput
+              autoCapitalize="words"
+              inputStyle={styles.textInput}
+              defaultValue={text}
+              onChangeText={value =>
+                this.props.saveResponse(
+                  choice,
+                  { answer_text: value },
+                  { preserve: true },
+                )
+              }
+              containerStyle={{ borderBottomColor: Colors.lightGrey }}
+              underlineColorAndroid={Colors.lightGrey}
+            />
+          )}
+          {requireExplanation && option_group === 'number_scale' && (
+            <View style={styles.sliderContainer}>
+              <Text>Years: {text}</Text>
+              <Slider
+                style={styles.slider}
+                trackStyle={styles.sliderTrack}
+                thumbStyle={styles.sliderThumb}
+                minimumValue={0}
+                maximumValue={30}
+                step={1}
+                onSlidingComplete={value =>
                   this.props.saveResponse(
                     choice,
                     { answer_text: value },
                     { preserve: true },
                   )
                 }
-                containerStyle={{ borderBottomColor: Colors.lightGrey }}
-                underlineColorAndroid={Colors.lightGrey}
               />
-            )}
-          {requireExplanation &&
-            option_group === 'number_scale' && (
-              <View style={styles.sliderContainer}>
-                <Text>Years: {text}</Text>
-                <Slider
-                  style={styles.slider}
-                  trackStyle={styles.sliderTrack}
-                  thumbStyle={styles.sliderThumb}
-                  minimumValue={0}
-                  maximumValue={30}
-                  step={1}
-                  onSlidingComplete={value =>
-                    this.props.saveResponse(
-                      choice,
-                      { answer_text: value },
-                      { preserve: true },
-                    )
-                  }
-                />
-              </View>
-            )}
+            </View>
+          )}
         </View>
       );
     });
@@ -174,7 +172,7 @@ export class RenderTextShort extends React.PureComponent {
             autoCapitalize="words"
             inputStyle={styles.textInput}
             defaultValue={text}
-            onChangeText={value =>
+            onEndEditing={value =>
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -203,7 +201,7 @@ export class RenderTextLong extends React.PureComponent {
             defaultValue={text}
             multiline={true}
             numberOfLines={4}
-            onChangeText={value =>
+            onEndEditing={value =>
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -222,7 +220,6 @@ export class RenderTextNumeric extends React.PureComponent {
       let text = '';
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
       if (answer) text = answer.answer_text;
-
       return (
         <View key={choice.id}>
           <FormLabel labelStyle={styles.textLabel}>{choice.body}</FormLabel>
@@ -230,7 +227,7 @@ export class RenderTextNumeric extends React.PureComponent {
             inputStyle={styles.textInput}
             defaultValue={text}
             keyboardType="numeric"
-            onChangeText={value =>
+            onEndEditing={value =>
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -447,6 +444,10 @@ export class RenderFile extends Component {
                 onPress={() => this.pickImage(choice, 'new')}
                 disabled={!hasCameraPermission}
               />
+              <Text style={styles.textHelper}>
+                Your photos and videos are stored on our secure servers and
+                never shared with anyone outside of the study team.
+              </Text>
             </View>
           )}
           {isAudio && (
@@ -460,6 +461,10 @@ export class RenderFile extends Component {
                 onPress={() => this.recordAudio(choice)}
                 disabled={!hasAudioPermission}
               />
+              <Text style={styles.textHelper}>
+                Your personal information is stored on our secure servers and
+                never shared with anyone outside of the study team.
+              </Text>
             </View>
           )}
           {!!permissionMessage && (
@@ -594,6 +599,13 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: Colors.red,
     alignSelf: 'center',
+  },
+  textHelper: {
+    fontSize: 12,
+    fontWeight: '400',
+    marginLeft: 20,
+    color: Colors.grey,
+    height: 44,
   },
   dateInput: {
     width: 200,
