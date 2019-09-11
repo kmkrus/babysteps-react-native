@@ -348,7 +348,7 @@ class CameraModal extends Component {
           <Image
             source={cameraPositionTemplate}
             style={styles.cameraPosition}
-            resizeMode="cover"
+            resizeMode="contain"
           />
         );
       }
