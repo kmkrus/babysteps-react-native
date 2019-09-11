@@ -35,7 +35,7 @@ export default StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     color: Colors.grey,
-    height: 44,
+    paddingTop: 10,
   },
 
   registrationDateTextInput: {

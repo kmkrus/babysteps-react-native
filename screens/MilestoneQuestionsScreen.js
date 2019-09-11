@@ -40,6 +40,7 @@ import {
 import {
   createBabyBookEntry,
   fetchBabyBookEntries,
+  apiCreateBabyBookEntry,
 } from '../actions/babybook_actions';
 import {
   fetchUser,
@@ -670,6 +671,7 @@ const mapDispatchToProps = {
   updateMilestoneCalendar,
   apiUpdateMilestoneCalendar,
   fetchMilestoneCalendar,
+  apiCreateBabyBookEntry,
 };
 
 export default connect(
