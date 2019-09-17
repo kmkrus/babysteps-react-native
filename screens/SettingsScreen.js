@@ -106,7 +106,7 @@ class SettingsScreen extends React.Component {
         >
           <View>
             <TouchableOpacity
-              style={{alignSelf: 'flex-end', marginRight: 20}}
+              style={{alignSelf: 'flex-end', marginTop: 24, marginRight: 20}}
               onPress={() => {
                 this.setModalVisible(!this.state.consentModalVisible);
               }}
