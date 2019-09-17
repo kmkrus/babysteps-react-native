@@ -55,12 +55,12 @@ export const hideMomentaryAssessment = (data, formData) => {
 export const fetchMomentaryAssessment = params => {
   return dispatch => {
     dispatch(Pending(FETCH_MOMENTARY_ASSESSMENT_PENDING));
-    let sql = `SELECT 
-        ts.*, 
-        sc.id AS section_id, 
-        qn.id AS question_id, 
-        qn.title AS title, 
-        ch.id AS choice_id 
+    let sql = `SELECT
+        ts.*,
+        sc.id AS section_id,
+        qn.id AS question_id,
+        qn.title AS title,
+        ch.id AS choice_id
       FROM tasks AS ts`;
     sql += ' INNER JOIN sections AS sc ON sc.task_id = ts.id';
     sql += ' INNER JOIN questions AS qn ON qn.section_id = sc.id';
@@ -136,6 +136,7 @@ export const updateMomentaryAssessments = studyEndDate => {
         [],
         (_, response) => {
           const entries = response.rows['_array'];
+          console.log('Entries',entries)
           setMomentaryAssessments(entries, studyEndDate);
           dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED, entries));
         },

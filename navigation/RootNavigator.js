@@ -37,6 +37,7 @@ import { openSettings } from '../components/permissions';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import CONSTANTS from '../constants';
+import Sentry from 'sentry-expo';
 
 const headerOptions = {
   headerStyle: {
@@ -157,6 +158,9 @@ class RootNavigator extends Component {
           // change this to 30 seconds to get more frequent updates
           next_notification_update_at = notifications_updated_at.add(7, 'days');
         }
+
+        Sentry.setExtraContext({notifications_updated_at: JSON.stringify(notifications_updated_at)});
+
         if (today.isAfter(next_notification_update_at)) {
           let studyEndDate = '';
           if (subject.date_of_birth) {

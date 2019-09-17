@@ -13,7 +13,7 @@ import { ListItem } from 'react-native-elements';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 
 import moment from 'moment';
 
@@ -145,22 +145,19 @@ class SettingsScreen extends React.Component {
   };
 
   renderDevDebugItems = releaseChannel => {
-    if (releaseChannel !== 'Production') {
-      return (
-        <View>
-          <Text>
-            Notification Permissions: {this.state.notificationPermissions}
-          </Text>
-          <Text>
-            Notifications Updated:
-            {moment(this.props.session.notifications_updated_at).format(
-              'MMMM Do YYYY, h:mm a z',
-            )}
-          </Text>
-        </View>
-      );
-    }
-    return null;
+    return (
+      <View>
+        <Text>
+          Notification Permissions: {this.state.notificationPermissions}
+        </Text>
+        <Text>
+          Notifications Updated:
+          {moment(this.props.session.notifications_updated_at).format(
+            'MMMM Do YYYY, h:mm a z',
+          )}
+        </Text>
+      </View>
+    );
   };
 
   render() {

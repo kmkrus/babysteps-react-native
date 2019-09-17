@@ -4,6 +4,7 @@ import Sentry from 'sentry-expo';
 
 import moment from 'moment';
 import forEach from 'lodash/forEach';
+import isObject from 'lodash/isObject';
 import map from 'lodash/map';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -75,6 +76,11 @@ function getRandomInt(min, max) {
 }
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
+
+  if(!isObject(entry)){
+    Sentry.setExtraContext({ema_entry_non_object: JSON.stringify(entry)});
+  }
+
   // notifications require title and body
   if (!entry.message || !entry.name || !entry.frequency) return null;
   let cycleDate = moment(entry.notify_at).startOf('day');
@@ -102,6 +108,7 @@ async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
 }
 
 export const setMomentaryAssessments = (entries, studyEndDate) => {
+  Sentry.setExtraContext({ema_entries: JSON.stringify(entries)});
   forEach(entries, entry => {
     buildMomentaryAssessmentEntries(entry, studyEndDate);
   });
