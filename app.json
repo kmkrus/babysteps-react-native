@@ -34,7 +34,7 @@
       }
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 45,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",
