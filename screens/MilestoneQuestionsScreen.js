@@ -463,6 +463,7 @@ class MilestoneQuestionsScreen extends Component {
 
   renderAttachment = attachment_url => {
     const fileExtension = attachment_url.split('.').pop();
+    debugger
     if (_.has(VideoFormats, fileExtension)) {
       return this.renderVideoAttachment(attachment_url);
     }

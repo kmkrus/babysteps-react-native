@@ -104,7 +104,6 @@ export default class App extends Component {
     await checkNotificationsSchema();
     await checkBabyBookSchema();
     await checkCustomDirectories();
-    //await moveDataToMainDirectory();
   };
 
   render() {

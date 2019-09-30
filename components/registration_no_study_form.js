@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Text, View, Button, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Button } from 'react-native-elements';
 
 import { compose } from 'recompose';
 import { Formik } from 'formik';
@@ -45,6 +46,9 @@ const validationSchema = Yup.object().shape({
   last_name: Yup.string()
     .required('Your Last Name is Required'),
 });
+
+const { width } = Dimensions.get('window');
+const twoButtonWidth = (width / 2) - 30;
 
 class RegistrationNoStudyForm extends Component {
   state = {
@@ -104,7 +108,7 @@ class RegistrationNoStudyForm extends Component {
           return (
             <Form>
               <Text style={AppStyles.registrationHeader}>
-                Update Your Profile
+                Create Your Profile
               </Text>
 
               <TextField
@@ -160,12 +164,25 @@ class RegistrationNoStudyForm extends Component {
 
               <View style={AppStyles.registrationButtonContainer}>
                 <Button
-                  title="DONE"
-                  onPress={props.submitForm}
-                  buttonStyle={AppStyles.buttonSubmit}
-                  titleStyle={{ fontWeight: 900 }}
+                  color={Colors.grey}
+                  buttonStyle={styles.buttonOneStyle}
+                  titleStyle={styles.buttonTitleStyle}
+                  disabled={props.isSubmitting}
+                  onPress={() => {
+                    this.props.updateSession({
+                      registration_state: 'none',
+                    });
+                  }}
+                  title="Go Back"
+                />
+                <Button
+                  buttonStyle={styles.buttonTwoStyle}
+                  titleStyle={styles.buttonTitleStyle}
+                  titleStyle={styles.buttonTitleStyle}
                   color={Colors.darkGreen}
                   disabled={props.isSubmitting}
+                  onPress={props.submitForm}
+                  title="Submit"
                 />
               </View>
             </Form>
@@ -177,6 +194,26 @@ class RegistrationNoStudyForm extends Component {
 }
 
 const styles = StyleSheet.create({
+
+  buttonTitleStyle: {
+    fontWeight: '900',
+  },
+  buttonOneStyle: {
+    flex: 1,
+    width: twoButtonWidth,
+    backgroundColor: Colors.lightGrey,
+    borderColor: Colors.grey,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  buttonTwoStyle: {
+    flex: 1,
+    width: twoButtonWidth,
+    backgroundColor: Colors.lightGreen,
+    borderColor: Colors.green,
+    borderWidth: 2,
+    borderRadius: 5,
+  },
   errorText: {
     fontSize: 12,
     marginTop: -20,
