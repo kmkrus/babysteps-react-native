@@ -27,13 +27,17 @@ import {
 
   RESET_API_MILESTONE_CALENDAR,
 
-  API_CREATE_MILESTONE_CALENDAR_PENDING,
-  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
-  API_CREATE_MILESTONE_CALENDAR_REJECTED,
+  API_NEW_MILESTONE_CALENDAR_PENDING,
+  API_NEW_MILESTONE_CALENDAR_FULFILLED,
+  API_NEW_MILESTONE_CALENDAR_REJECTED,
 
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
   API_FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  API_CREATE_MILESTONE_CALENDAR_PENDING,
+  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
+  API_CREATE_MILESTONE_CALENDAR_REJECTED,
 
   API_UPDATE_MILESTONE_CALENDAR_PENDING,
   API_UPDATE_MILESTONE_CALENDAR_FULFILLED,
@@ -401,7 +405,7 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
 
-    case API_CREATE_MILESTONE_CALENDAR_PENDING: {
+    case API_NEW_MILESTONE_CALENDAR_PENDING: {
       return {
         ...state,
         api_calendar: {
@@ -412,7 +416,7 @@ const reducer = (state = initialState, action, formData = []) => {
         },
       };
     }
-    case API_CREATE_MILESTONE_CALENDAR_FULFILLED: {
+    case API_NEW_MILESTONE_CALENDAR_FULFILLED: {
       return {
         ...state,
         api_calendar: {
@@ -430,7 +434,7 @@ const reducer = (state = initialState, action, formData = []) => {
         },
       };
     }
-    case API_CREATE_MILESTONE_CALENDAR_REJECTED: {
+    case API_NEW_MILESTONE_CALENDAR_REJECTED: {
       return {
         ...state,
         api_calendar: {
@@ -472,6 +476,40 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_FETCH_MILESTONE_CALENDAR_REJECTED: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: false,
+          error: action.payload,
+        },
+      };
+    }
+
+    case API_CREATE_MILESTONE_CALENDAR_PENDING: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: true,
+          fetched: false,
+          error: null,
+        },
+      };
+    }
+    case API_CREATE_MILESTONE_CALENDAR_FULFILLED: {
+      return {
+        ...state,
+        api_calendar: {
+          ...state.api_calendar,
+          fetching: false,
+          fetched: true,
+          error: null,
+        },
+      };
+    }
+    case API_CREATE_MILESTONE_CALENDAR_REJECTED: {
       return {
         ...state,
         api_calendar: {

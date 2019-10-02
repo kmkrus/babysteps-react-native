@@ -19,7 +19,7 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 
-import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
+import { apiNewMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
 import Colors from '../constants/Colors';
@@ -72,7 +72,7 @@ class OverviewScreen extends React.Component {
           ) {
             // creates calendar on server, but only returns visible tasks
             // no notifications generated
-            this.props.apiCreateMilestoneCalendar(fetchCalendarParams);
+            this.props.apiNewMilestoneCalendar(fetchCalendarParams);
             this.setState({ apiCreateCalendarSubmitted: true });
             // reset last updated date to rebuild notifications
             this.props.updateSession({ notifications_updated_at: null });
@@ -289,7 +289,7 @@ const mapStateToProps = ({ session, milestones, registration }) => ({
 
 const mapDispatchToProps = {
   updateSession,
-  apiCreateMilestoneCalendar,
+  apiNewMilestoneCalendar,
 };
 
 export default connect(

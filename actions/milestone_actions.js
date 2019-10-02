@@ -42,13 +42,17 @@ import {
 
   RESET_API_MILESTONE_CALENDAR,
 
-  API_CREATE_MILESTONE_CALENDAR_PENDING,
-  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
-  API_CREATE_MILESTONE_CALENDAR_REJECTED,
+  API_NEW_MILESTONE_CALENDAR_PENDING,
+  API_NEW_MILESTONE_CALENDAR_FULFILLED,
+  API_NEW_MILESTONE_CALENDAR_REJECTED,
 
   API_FETCH_MILESTONE_CALENDAR_PENDING,
   API_FETCH_MILESTONE_CALENDAR_FULFILLED,
   API_FETCH_MILESTONE_CALENDAR_REJECTED,
+
+  API_CREATE_MILESTONE_CALENDAR_PENDING,
+  API_CREATE_MILESTONE_CALENDAR_FULFILLED,
+  API_CREATE_MILESTONE_CALENDAR_REJECTED,
 
   API_UPDATE_MILESTONE_CALENDAR_PENDING,
   API_UPDATE_MILESTONE_CALENDAR_FULFILLED,
@@ -292,9 +296,9 @@ export const resetApiMilestoneCalendar = () => {
   };
 };
 
-export const apiCreateMilestoneCalendar = params => {
+export const apiNewMilestoneCalendar = params => {
   return dispatch => {
-    dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
+    dispatch(Pending(API_NEW_MILESTONE_CALENDAR_PENDING));
 
     if (CONSTANTS.COMPRESS_MILESTONE_CALENDAR) {
       params.testing = 'true';
@@ -313,10 +317,10 @@ export const apiCreateMilestoneCalendar = params => {
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
-          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
+          dispatch(Response(API_NEW_MILESTONE_CALENDAR_FULFILLED, response));
         })
         .catch(error => {
-          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_REJECTED, error));
+          dispatch(Response(API_NEW_MILESTONE_CALENDAR_REJECTED, error));
         });
     }); // return Promise
   }; // return dispatch
@@ -347,6 +351,31 @@ export const apiFetchMilestoneCalendar = params => {
         })
         .catch(error => {
           dispatch(Response(API_FETCH_MILESTONE_CALENDAR_REJECTED, error));
+        });
+    }); // return Promise
+  }; // return dispatch
+};
+
+export const apiCreateMilestoneCalendar = (subject_id, milestone_trigger) => {
+  return dispatch => {
+    dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
+    const baseURL = getApiUrl();
+    const data = { subject_id, ...milestone_trigger };
+
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        responseType: 'json',
+        baseURL,
+        url: '/milestone_calendars',
+        data,
+        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+      })
+        .then(response => {
+          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
+        })
+        .catch(error => {
+          dispatch(Response(API_CREATE_MILESTONE_CALENDAR_REJECTED, error));
         });
     }); // return Promise
   }; // return dispatch
@@ -527,6 +556,7 @@ const answerFields = [
   'answer_boolean',
   'answer_text',
   'score',
+  'notified_at',
 ];
 
 const attachmentFields = [

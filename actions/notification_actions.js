@@ -128,15 +128,16 @@ export const updateNotifications = () => {
 export const updateMomentaryAssessments = studyEndDate => {
   return dispatch => {
     dispatch(Pending(UPDATE_MOMENTARY_ASSESSMENTS_PENDING));
+    // momentary_assessment attribute is deprecated. Use task_type.
     const sql =
-      'SELECT * FROM milestone_triggers AS mt WHERE mt.momentary_assessment = 1';
+      "SELECT * FROM milestone_triggers AS mt WHERE (mt.momentary_assessment = 1 OR mt.task_type = 'momentary_assessment') AND mt.task_type != 'momentary_assessment_notice';";
     return db.transaction(tx => {
       tx.executeSql(
         sql,
         [],
         (_, response) => {
           const entries = response.rows['_array'];
-          console.log('Entries',entries)
+          console.log('Entries', entries)
           setMomentaryAssessments(entries, studyEndDate);
           dispatch(Response(UPDATE_MOMENTARY_ASSESSMENTS_FULFILLED, entries));
         },

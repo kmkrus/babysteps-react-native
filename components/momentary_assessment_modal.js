@@ -54,6 +54,7 @@ class MomentaryAssessment extends Component {
       subject_api_id: subject.api_id,
       choice_id: momentary_assessment.choice_id,
       answer_numeric: selectedIndex + 1,
+      notified_at: momentary_assessment.notify_at,
     };
     setTimeout(() => {
       this.props.hideMomentaryAssessment(momentary_assessment, answer);

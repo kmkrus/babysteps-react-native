@@ -156,6 +156,7 @@ class RootNavigator extends Component {
         let next_notification_update_at = moment().subtract(1, 'days');
         if (notifications_updated_at.isValid()) {
           // change this to 30 seconds to get more frequent updates
+          //next_notification_update_at = notifications_updated_at.add(30, 'seconds');
           next_notification_update_at = notifications_updated_at.add(7, 'days');
         }
 

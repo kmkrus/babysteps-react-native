@@ -17,7 +17,7 @@ import {
 } from '../actions/registration_actions';
 import {
   apiFetchMilestones,
-  apiCreateMilestoneCalendar,
+  apiNewMilestoneCalendar,
 } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
@@ -53,7 +53,7 @@ const twoButtonWidth = (width / 2) - 30;
 class RegistrationNoStudyForm extends Component {
   state = {
     dobError: null,
-    apiCreateMilestoneCalendarSubmitted: false,
+    apiNewMilestoneCalendarSubmitted: false,
   };
 
   componentWillMount() {
@@ -65,11 +65,11 @@ class RegistrationNoStudyForm extends Component {
     const subject = nextProps.registration.subject;
     if (!respondent.fetching && !subject.fetching) {
       if (subject.fetched && subject.fetched) {
-        if (!this.state.apiCreateMilestoneCalendarSubmitted) {
-          this.props.apiCreateMilestoneCalendar({
+        if (!this.state.apiNewMilestoneCalendarSubmitted) {
+          this.props.apiNewMilestoneCalendar({
             base_date: subject.data.expected_date_of_birth,
           });
-          this.setState({ apiCreateMilestoneCalendarSubmitted: true });
+          this.setState({ apiNewMilestoneCalendarSubmitted: true });
         }
         this.props.updateSession({
           registration_state: States.REGISTERED_AS_NO_STUDY,
@@ -227,7 +227,7 @@ const mapDispatchToProps = {
   createRespondent,
   createSubject,
   apiFetchMilestones,
-  apiCreateMilestoneCalendar,
+  apiNewMilestoneCalendar,
   updateSession,
 };
 

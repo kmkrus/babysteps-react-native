@@ -26,13 +26,17 @@ export const UPDATE_MILESTONE_CALENDAR_REJECTED = 'update_milestone_calendar_rej
 
 export const RESET_API_MILESTONE_CALENDAR = 'reset_api_milestone_calendar';
 
-export const API_CREATE_MILESTONE_CALENDAR_PENDING = 'api_create_milestone_calendar_pending';
-export const API_CREATE_MILESTONE_CALENDAR_FULFILLED = 'api_create_milestone_calendar_fulfilled';
-export const API_CREATE_MILESTONE_CALENDAR_REJECTED = 'api_create_milestone_calendar_rejected';
+export const API_NEW_MILESTONE_CALENDAR_PENDING = 'api_new_milestone_calendar_pending';
+export const API_NEW_MILESTONE_CALENDAR_FULFILLED = 'api_new_milestone_calendar_fulfilled';
+export const API_NEW_MILESTONE_CALENDAR_REJECTED = 'api_new_milestone_calendar_rejected';
 
 export const API_FETCH_MILESTONE_CALENDAR_PENDING = 'api_fetch_milestone_calendar_pending';
 export const API_FETCH_MILESTONE_CALENDAR_FULFILLED = 'api_fetch_milestone_calendar_fulfilled';
 export const API_FETCH_MILESTONE_CALENDAR_REJECTED = 'api_fetch_milestone_calendar_rejected';
+
+export const API_CREATE_MILESTONE_CALENDAR_PENDING = 'api_create_milestone_calendar_pending';
+export const API_CREATE_MILESTONE_CALENDAR_FULFILLED = 'api_create_milestone_calendar_fulfilled';
+export const API_CREATE_MILESTONE_CALENDAR_REJECTED = 'api_create_milestone_calendar_rejected';
 
 export const API_UPDATE_MILESTONE_CALENDAR_PENDING = 'api_update_milestone_calendar_pending';
 export const API_UPDATE_MILESTONE_CALENDAR_FULFILLED = 'api_update_milestone_calendar_fulfilled';

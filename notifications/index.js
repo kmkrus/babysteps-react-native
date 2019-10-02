@@ -1,11 +1,15 @@
 import { Notifications } from 'expo';
 import { SQLite } from 'expo-sqlite';
+
 import Sentry from 'sentry-expo';
 
 import moment from 'moment';
 import forEach from 'lodash/forEach';
 import isObject from 'lodash/isObject';
 import map from 'lodash/map';
+
+import store from '../store';
+import { apiCreateMilestoneCalendar } from '../actions/milestone_actions';
 
 const db = SQLite.openDatabase('babysteps.db');
 
@@ -76,7 +80,6 @@ function getRandomInt(min, max) {
 }
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
-
   if(!isObject(entry)){
     Sentry.setExtraContext({ema_entry_non_object: JSON.stringify(entry)});
   }
@@ -102,10 +105,30 @@ async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
         .add(getRandomInt(0, 59), 'minutes');
       const localNotification = localNotificationMessage(entry);
       scheduleNotificaton(localNotification, scheduleTime);
+      apiCreateCalendarEntry(entry, scheduleTime);
       cycleDate = scheduleTime.startOf('day');
     }
   }
 }
+
+export const apiCreateCalendarEntry = (entry, scheduleTime) => {
+  const notify_at = scheduleTime.toISOString();
+  const data = {
+    milestone_trigger: {
+      subject_id: entry.subject_id,
+      milestone_id: entry.milestone_id,
+      task_id: entry.task_id,
+      task_type: 'momentary_assessment_notice',
+      available_start_at: entry.available_start_at,
+      available_end_at: entry.available_end_at,
+      study_only: entry.study_only,
+      pregnancy_period: entry.pregnancy_period,
+      momentary_assessment: entry.momentary_assessment,
+      notify_at,
+    },
+  };
+  store.dispatch(apiCreateMilestoneCalendar(entry.subject_id, data));
+};
 
 export const setMomentaryAssessments = (entries, studyEndDate) => {
   Sentry.setExtraContext({ema_entries: JSON.stringify(entries)});
@@ -146,7 +169,7 @@ export const createNotifications = entries => {
     'channel_id',
   ];
   const values = map(entries, entry => {
-    return `(${entry.task_id}, "${entry.notify_at}", ${entry.momentary_assessment}, "${entry.response_scale}", "${entry.title}", "${entry.body}", "info", "screeningEvents")`
+    return `(${entry.task_id}, "${entry.notify_at}", ${entry.momentary_assessment}, "${entry.response_scale}", "${entry.title}", "${entry.body}", "info", "screeningEvents")`;
   });
   const sql =`INSERT INTO notifications ( ${notificationFields.join(', ')} ) VALUES ${values.join(', ')};`;
 
