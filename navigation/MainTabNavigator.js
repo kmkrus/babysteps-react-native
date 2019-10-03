@@ -1,10 +1,9 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import {
-  createAppContainer,
-  createStackNavigator,
-  createBottomTabNavigator,
-} from 'react-navigation';
+
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import TabBarIcon from '../components/tab_bar_icon';
 import OverviewScreen from '../screens/OverviewScreen';

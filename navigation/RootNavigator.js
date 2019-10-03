@@ -5,7 +5,8 @@ import { Notifications } from 'expo';
 
 import * as Permissions from 'expo-permissions';
 
-import { createAppContainer, createStackNavigator } from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
