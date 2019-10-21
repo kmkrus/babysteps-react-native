@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.2.0",
+    "@expo/browser-polyfill": "^0.1.0",
     "@expo/vector-icons": "^10.0.0",
     "@expo/videoplayer": "^0.4.0",
     "@react-native-community/netinfo": "~3.2.1",
@@ -25,7 +26,7 @@
     "expo-keep-awake": "~7.0.0",
     "expo-media-library": "~7.0.0",
     "expo-permissions": "~7.0.0",
-    "expo-pixi": "^1.1.0",
+    "expo-pixi": "^1.2.0",
     "expo-react-native-adapter": "^3.0.1",
     "expo-sqlite": "~7.0.0",
     "expo-web-browser": "~7.0.0",
@@ -62,7 +63,7 @@
     "redux-promise-middleware": "^5.1.1",
     "redux-thunk": "^2.2.0",
     "redux-token-auth": "^0.19.0",
-    "sentry-expo": "~2.0.0",
+    "sentry-expo": "^2.0.1",
     "url": "^0.11.0",
     "yup": "0.26.2"
   },

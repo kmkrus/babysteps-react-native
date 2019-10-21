@@ -57,7 +57,7 @@ class ApiOfflineListener extends PureComponent {
   };
 
   _addListeners = () => {
-    NetInfo.addEventListener('connectionChange', connectionInfo => {
+    NetInfo.addEventListener(connectionInfo => {
       this._updateSession(connectionInfo.type);
     });
     // check after application opens or wakes from background

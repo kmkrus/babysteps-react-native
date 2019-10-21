@@ -1,7 +1,7 @@
 import { Notifications } from 'expo';
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 
-import Sentry from 'sentry-expo';
+import * as Sentry from 'sentry-expo';
 
 import moment from 'moment';
 import forEach from 'lodash/forEach';
@@ -80,9 +80,9 @@ function getRandomInt(min, max) {
 }
 
 async function buildMomentaryAssessmentEntries(entry, studyEndDate) {
-  if(!isObject(entry)){
-    Sentry.setExtraContext({ema_entry_non_object: JSON.stringify(entry)});
-  }
+  //if (!isObject(entry)) {
+    //Sentry.setExtraContext({ ema_entry_non_object: JSON.stringify(entry) });
+  //}
 
   // notifications require title and body
   if (!entry.message || !entry.name || !entry.frequency) return null;
@@ -131,7 +131,7 @@ export const apiCreateCalendarEntry = (entry, scheduleTime) => {
 };
 
 export const setMomentaryAssessments = (entries, studyEndDate) => {
-  Sentry.setExtraContext({ema_entries: JSON.stringify(entries)});
+  //Sentry.setExtraContext({ ema_entries: JSON.stringify(entries) });
   forEach(entries, entry => {
     buildMomentaryAssessmentEntries(entry, studyEndDate);
   });

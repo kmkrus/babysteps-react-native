@@ -1,4 +1,4 @@
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 import { _ } from 'lodash';
 
 import { API_UPDATE_MILESTONE_ANSWERS_FULFILLED } from '../actions/types';

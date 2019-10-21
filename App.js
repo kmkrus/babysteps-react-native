@@ -6,7 +6,7 @@ import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import FlashMessage from 'react-native-flash-message';
-import Sentry from 'sentry-expo';
+import * as Sentry from 'sentry-expo';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -30,7 +30,11 @@ import store from './store';
 import CONSTANTS from './constants';
 import Colors from './constants/Colors';
 
-Sentry.config(CONSTANTS.SENTRY_URL).install();
+Sentry.init({
+  dsn: CONSTANTS.SENTRY_DSN,
+  enableInExpoDevelopment: false,
+  debug: true,
+});
 
 export default class App extends Component {
   state = {
@@ -38,7 +42,7 @@ export default class App extends Component {
   };
 
   componentWillUnmount() {
-    NetInfo.removeEventListener('connectionChange', () => {});
+    NetInfo.removeEventListener(() => {});
     AppState.removeEventListener('change', () => {});
   }
 

@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 
 import { insertRows, getApiUrl } from '../database/common';
 import schema from '../database/babybook_schema.json';

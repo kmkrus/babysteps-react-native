@@ -1,4 +1,4 @@
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 import axios from 'axios';
 import { _ } from 'lodash';
 

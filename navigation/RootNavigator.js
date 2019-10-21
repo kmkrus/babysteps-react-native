@@ -16,6 +16,9 @@ import { showMessage } from 'react-native-flash-message';
 
 import { connect } from 'react-redux';
 import { updateSession, fetchSession } from '../actions/session_actions';
+
+import * as Sentry from 'sentry-expo';
+
 import {
   showMomentaryAssessment,
   updateNotifications,
@@ -38,7 +41,6 @@ import { openSettings } from '../components/permissions';
 import Colors from '../constants/Colors';
 import States from '../actions/states';
 import CONSTANTS from '../constants';
-import Sentry from 'sentry-expo';
 
 const headerOptions = {
   headerStyle: {
@@ -161,7 +163,12 @@ class RootNavigator extends Component {
           next_notification_update_at = notifications_updated_at.add(7, 'days');
         }
 
-        Sentry.setExtraContext({notifications_updated_at: JSON.stringify(notifications_updated_at)});
+        Sentry.configureScope(scope => {
+          scope.setExtra(
+            'notifications_updated_at',
+            JSON.stringify(notifications_updated_at),
+          );
+        });
 
         if (today.isAfter(next_notification_update_at)) {
           let studyEndDate = '';

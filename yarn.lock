@@ -939,10 +939,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@expo/browser-polyfill@^0.0.1-alpha.4":
-  version "0.0.1-alpha.6"
-  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-0.0.1-alpha.6.tgz#9e550a6e240836d0ead1b7982613525c238dbc88"
-  integrity sha512-gB/tmuc80Dgtmmm4bOJoKD/Y1IdJJE4GmbtONp/irVumYMW6UTGfX2Qny+Fi4Su1NRYuF3/452KnkTftVR3rzQ==
+"@expo/browser-polyfill@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-0.1.0.tgz#225dc667b22f8b247fa11aa961537f3a43c4fe48"
+  integrity sha512-L1Bc7R8F/Q+aiuA2z3s7QKqu5rxxY0ZlDVmB3pxAbB7CqTW3WX5e1e1Qg0Pxm1ZCjNhqgBQhTz9I0Tfaqc4d2g==
   dependencies:
     expo-2d-context "^0.0.2"
     fbemitter "^2.1.1"
@@ -4241,12 +4241,12 @@ expo-permissions@~7.0.0:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-7.0.0.tgz#f4135c3cf8e49c673a9a714459a1eb2b40fe2092"
   integrity sha512-C+qyVz+pdZO4YpVR2HSC3gsBZg0Qb8brCFgzmDmWcAtgrOiHClaLPdhI2XtQuGh8ubXcKPUGZp++UCEGiG0Jxg==
 
-expo-pixi@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/expo-pixi/-/expo-pixi-1.1.0.tgz#367f98a2723d914183c059c2768d575046de2827"
-  integrity sha512-E0wFctHXrVyvwS/+J7CcRM0kaXwR5DZj8x4G6o1cE9/7PDOPWPvaP4xfnrnMHKzRkvXSMYlKbvSldPrrEGMkoA==
+expo-pixi@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/expo-pixi/-/expo-pixi-1.2.0.tgz#c92e11c49c0fab0136aec6bc1e4fb76b21b388ec"
+  integrity sha512-xt1VoF/Jl9P+uPaH5wdCc4OLgK+ZdXlxZIMqEaPn8717bFyH4I79RNVv7cH7GAlMt/U951FlQqFqgKELCOVNOA==
   dependencies:
-    "@expo/browser-polyfill" "^0.0.1-alpha.4"
+    "@expo/browser-polyfill" "^0.1.0"
     expo-asset-utils "^1.1.0"
     fbemitter "2.1.1"
     path "^0.12.7"
@@ -9134,7 +9134,7 @@ send@0.17.1:
     range-parser "~1.2.1"
     statuses "~1.5.0"
 
-sentry-expo@~2.0.0:
+sentry-expo@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/sentry-expo/-/sentry-expo-2.0.1.tgz#11e3e8c14f4c17e356f01f4c1b84474e3c880508"
   integrity sha512-kfVBm1ezUROfHdqJyCi8cLNTvF2smcXE5fv+If68mgtRcH822qeyE6ACXbxOR+UT2FZFlPwXJATCr/vBMVujeg==
