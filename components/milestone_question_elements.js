@@ -172,7 +172,7 @@ export class RenderTextShort extends React.PureComponent {
             autoCapitalize="words"
             inputStyle={styles.textInput}
             defaultValue={text}
-            onEndEditing={value =>
+            onChangeText={value =>
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -201,7 +201,7 @@ export class RenderTextLong extends React.PureComponent {
             defaultValue={text}
             multiline={true}
             numberOfLines={4}
-            onEndEditing={value =>
+            onChangeText={value =>
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -227,7 +227,7 @@ export class RenderTextNumeric extends React.PureComponent {
             inputStyle={styles.textInput}
             defaultValue={text}
             keyboardType="numeric"
-            onEndEditing={value =>
+            onChangeText={ value => 
               this.props.saveResponse(choice, { answer_text: value })
             }
             containerStyle={{ borderBottomColor: Colors.lightGrey }}
@@ -569,6 +569,20 @@ export class RenderInternalLink extends React.PureComponent {
       );
     });
     return <View>{collection}</View>;
+  } // render
+}
+
+export class RenderGroupOptionError extends React.PureComponent {
+  render() {
+    const question = this.props.question;
+    return (
+      <View>
+        <Text>
+          Error: Group Option {question.rn_input_type} not found for Question
+          ID: {question.id}
+        </Text>
+      </View>
+    );
   } // render
 }
 

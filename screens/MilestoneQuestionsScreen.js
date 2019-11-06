@@ -187,6 +187,7 @@ class MilestoneQuestionsScreen extends Component {
   }
 
   renderItem = item => {
+
     const question = item.item;
     const question_number = _.isEmpty(question.question_number)
       ? String(question.position)
@@ -463,7 +464,6 @@ class MilestoneQuestionsScreen extends Component {
 
   renderAttachment = attachment_url => {
     const fileExtension = attachment_url.split('.').pop();
-    debugger
     if (_.has(VideoFormats, fileExtension)) {
       return this.renderVideoAttachment(attachment_url);
     }

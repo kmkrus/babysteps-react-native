@@ -10,6 +10,7 @@ import {
   RenderFile,
   RenderExternalLink,
   RenderInternalLink,
+  RenderGroupOptionError,
 } from './milestone_question_elements';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -132,6 +133,13 @@ export class RenderChoices extends PureComponent {
             navigation={this.props.navigation}
             saveResponse={saveResponse}
             errorMessage={errorMessage}
+          />
+        );
+      }
+      default: {
+        return (
+          <RenderGroupOptionError
+            question={question}
           />
         );
       }
