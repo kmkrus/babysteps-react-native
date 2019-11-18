@@ -152,8 +152,8 @@ class MilestonePregnancyHistoryScreen extends Component {
         let showNextPregnancy = this.state.showNextPregnancy;
         if (!_.isEmpty(firstQuestion)) {
           const answer = _.find(answers.data, ['question_id', firstQuestion.id]);
-          numberOfPregnancies = Math.trunc(answer.answer_text);
           if (!_.isEmpty(answer)) {
+            numberOfPregnancies = Math.trunc(answer.answer_text);
             currentPregnancy = 1;
             showNextPregnancy = true;
           }

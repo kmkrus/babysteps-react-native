@@ -11,6 +11,8 @@ import isInteger from 'lodash/isInteger';
 
 import { insertRows, getApiUrl } from '../database/common';
 
+import { AnalyticsAPIEvent } from '../components/analytics';
+
 import CONSTANTS from '../constants';
 
 import {
@@ -602,7 +604,7 @@ export const createMilestoneAnswer = answer => {
     dispatch(Pending(CREATE_MILESTONE_ANSWER_PENDING));
     const values = this.parseFields(answer, answerFields);
     const sql =`INSERT INTO answers ( ${answerFields.join(', ')} ) VALUES (${values});`;
-
+    
     return db.transaction(tx => {
       tx.executeSql(
         sql, [],
@@ -672,6 +674,8 @@ export const apiCreateMilestoneAnswer = (session, data) => {
       });
     });
   }
+  const respondent_id = answers[0].respondent_id;
+  AnalyticsAPIEvent('Answer', 'update', `Respondent ID: ${respondent_id}`);
 
   return dispatch => {
     dispatch({
@@ -717,6 +721,8 @@ export const apiUpdateMilestoneAnswers = (session, section_id, data) => {
       subject_id: row.subject_api_id,
     });
   });
+  const respondent_id = answers[0].respondent_id;
+  AnalyticsAPIEvent('Answer', 'update', `Respondent ID: ${respondent_id}`);
 
   return dispatch => {
     dispatch({
@@ -744,6 +750,7 @@ export const apiSyncMilestoneAnswers = api_user_id => {
     dispatch(Pending(API_SYNC_MILESTONE_ANSWERS_PENDING));
     const baseURL = getApiUrl();
     const fileUri = FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
+    AnalyticsAPIEvent('Answer', 'sync', `User ID: ${api_user_id}`);
 
     return new Promise((resolve, reject) => {
       axios({
