@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
+import { Appearance } from 'react-native-appearance';
 import DatePicker from 'react-native-datepicker';
 import { FormLabel } from 'react-native-elements';
 
@@ -26,6 +27,12 @@ export default class DatePickerInput extends PureComponent {
       labelStyle: { color: labelColor, marginLeft: 0 },
     };
 
+    let colorScheme = Appearance.getColorScheme();
+    let darkMode = false;
+    if (colorScheme === 'dark') {
+      darkMode = true;
+    }
+
     return (
       <View {...containerProps}>
         <FormLabel {...labelProps}>{this.props.label}</FormLabel>
@@ -34,6 +41,7 @@ export default class DatePickerInput extends PureComponent {
           style={styles}
           mode="date"
           androidMode="spinner"
+          isDarkModeEnabled={darkMode}
           format="YYYY-MM-DD"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"

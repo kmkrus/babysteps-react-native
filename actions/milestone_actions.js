@@ -674,7 +674,7 @@ export const apiCreateMilestoneAnswer = (session, data) => {
       });
     });
   }
-  const respondent_id = answers[0].respondent_id;
+  const respondent_id = answer.respondent_id;
   AnalyticsAPIEvent('Answer', 'update', `Respondent ID: ${respondent_id}`);
 
   return dispatch => {
