@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 import { _ } from 'lodash';
-import { AnalyticsAPIEvent } from '../components/analytics';
 
 import { API_UPDATE_MILESTONE_ANSWERS_FULFILLED } from '../actions/types';
 
@@ -49,8 +48,6 @@ export default store => next => action => {
   }
   const data = action.payload.data;
   const respondent_id = data[0].respondent.id;
-
-  AnalyticsAPIEvent('Answer', 'update_fulfilled', `Respondent ID: ${ respondent_id }`);
 
   return _.map(data, answer => {
     answer = createAPIKeys(answer);

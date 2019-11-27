@@ -157,7 +157,7 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
     case API_TOKEN_REFRESH_FULFILLED: {
-      const header = action.payload.headers;
+      const header = (action && action.payload) ? action.payload.headers : null;
       return {
         ...state,
         fetching_token: false,
@@ -168,10 +168,11 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
     case API_TOKEN_REFRESH_REJECTED: {
+      const error = (action && action.payload) ? action.payload : null;
       return {
         ...state,
         fetching_token: false,
-        error: action.payload,
+        error,
       };
     }
     case API_TOKEN_REFRESH_FAILED: {

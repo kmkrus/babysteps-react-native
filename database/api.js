@@ -1,10 +1,14 @@
 import axios from 'axios';
+
+import pick from 'lodash/pick';
+
 import {
   updateSession,
   apiTokenRefresh,
   updatePendingActions,
 } from '../actions/session_actions';
 import { getApiUrl } from './common';
+import { AnalyticsEvent } from '../components/analytics';
 
 import {
   API_TOKEN_REFRESH_PENDING,
@@ -92,6 +96,17 @@ export default store => next => action => {
 
   const baseURL = getApiUrl();
 
+  AnalyticsEvent(
+    'API',
+    action.type,
+    'headers',
+    JSON.stringify({
+      access_token: session.access_token,
+      uid: session.uid,
+      event_at: Date(),
+    }),
+  );
+
   return axios({
     method: effect.method,
     responseType: 'json',
@@ -102,10 +117,12 @@ export default store => next => action => {
   })
     .then(response => {
       store.dispatch(Response(effect.fulfilled, response));
-      // retry if this was a token refresh
+      // retry next action if this was a token refresh
       if (action.type === API_TOKEN_REFRESH_PENDING) {
         const nextAction = store.getState().session.action;
-        store.dispatch(nextAction);
+        if (nextAction) {
+          store.dispatch(nextAction);
+        }
       }
       // remove action from store
       store.dispatch(Response(UPDATE_SESSION_ACTION, null));
@@ -122,15 +139,48 @@ export default store => next => action => {
         };
         updateSession(data);
       }
+      AnalyticsEvent(
+        'API',
+        effect.fulfilled,
+        'headers',
+        JSON.stringify({
+          access_token: headers['access-token'],
+          uid: headers.uid,
+          user_id: headers.user_id,
+          event_at: Date(),
+        }),
+      );
     })
     .catch(error => {
       const { request, response } = error;
+      const session = store.getState().session;
       if (!request) throw error; // There was an error creating the request
       if (!response) return false; // There was no response
+     //debugger
+      AnalyticsEvent(
+        'API',
+        effect.rejected,
+        'error',
+        JSON.stringify({
+          access_token: request._headers['access-token'],
+          uid: request._headers['uid'],
+          message: error.message,
+          event_at: Date(),
+        }),
+      );
       // Not signed in
       if (response.status === 401) {
         // not already getting fresh token
-        if (!store.getState().session.fetching_token) {
+        if (!session.fetching_token) {
+          AnalyticsEvent(
+            'API',
+            API_TOKEN_REFRESH_PENDING,
+            'session',
+            JSON.stringify({
+              uid: session.uid,
+              event_at: Date(),
+            }),
+          );
           apiTokenRefresh(store.dispatch, session);
           return false;
         }

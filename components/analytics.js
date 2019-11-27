@@ -14,25 +14,25 @@ export const AnalyticsPageHit = page => {
   const analytics = new Analytics(CONSTANTS.ANALYTICS_ID);
  // }
   analytics.hit(new PageHit(page))
-    //.then(() => console.log("Analytics Success"))
-    .catch(e => console.log("**** Analytics Error: ", JSON.stringify(e.message)) );
+    //.then(() => console.log("Analytics (success)"))
+    .catch(e => console.log("**** Analytics (error) ", JSON.stringify(e.message)) );
 };
 
-export const AnalyticsAPIEvent = (category, action, label=null, value=null) => {
+export const AnalyticsEvent = (category, action, label=null, value=null) => {
   // disable analytics for dev
   if (__DEV__) {
     //return null;
   }
 
   const analytics = new Analytics(CONSTANTS.ANALYTICS_ID);
-  analytics.addCustomDimension(0, 'API');
+
   analytics.event(new Event(category, action, label, value))
     .then(() => {
       if (__DEV__) {
-        console.log(`**** Analytics Success ${category} ${action} ****`);
+        console.log(`**** Analytics (success) - Category: ${category}, Action: ${action}, Label: ${label}, Value: ${value} - ****`);
       }
     })
     .catch(e => {
-      console.log("**** Analytics Error: ${category} ${action} - ", JSON.stringify(e.message));
+      console.log(`**** Analytics (error) - Category: ${category}, Action: ${action}, Label: ${label}, Value: ${value} - `, JSON.stringify(e.message));
     });
 };

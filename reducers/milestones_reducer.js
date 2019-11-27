@@ -1,5 +1,4 @@
 import { _ } from 'lodash';
-import { AnalyticsAPIEvent } from '../components/analytics';
 
 import {
   FETCH_MILESTONES_PENDING,
@@ -862,7 +861,6 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_CREATE_MILESTONE_ANSWER_FULFILLED: {
       const data = action.payload.data;
-      AnalyticsAPIEvent('Answer', 'create_fulfilled');
       return {
         ...state,
         apiAnswer: {
@@ -876,7 +874,6 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_CREATE_MILESTONE_ANSWER_REJECTED: {
       const error = action.payload;
-      AnalyticsAPIEvent('Answer', 'create_rejected');
       return {
         ...state,
         apiAnswer: {
@@ -901,7 +898,6 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_UPDATE_MILESTONE_ANSWERS_FULFILLED: {
       const data = action.payload.data;
-      AnalyticsAPIEvent('Answer', 'update_fulfilled');
       return {
         ...state,
         apiAnswers: {
@@ -914,7 +910,6 @@ const reducer = (state = initialState, action, formData = []) => {
     }
     case API_UPDATE_MILESTONE_ANSWERS_REJECTED: {
       const error = action.payload;
-      AnalyticsAPIEvent('Answer', 'update_rejected');
       return {
         ...state,
         apiAnswers: {
@@ -938,7 +933,6 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_SYNC_MILESTONE_ANSWERS_FULFILLED: {
-      AnalyticsAPIEvent('Answer', 'sync_fulfilled');
       return {
         ...state,
         apiAnswers: {
@@ -950,7 +944,6 @@ const reducer = (state = initialState, action, formData = []) => {
       };
     }
     case API_SYNC_MILESTONE_ANSWERS_REJECTED: {
-      AnalyticsAPIEvent('Answer', 'sync_rejected');
       return {
         ...state,
         apiAnswers: {

@@ -132,7 +132,7 @@ class CameraModal extends Component {
       return;
     }
 
-    setTimeout(() => this.setState({ isTakingImage: true }), 1);
+    setTimeout(() => this.setState({ isTakingImage: true }), 10);
     const image = await this.camera.takePictureAsync();
     this.onReceiveImage(image);
     this.setState({ isTakingImage: false });
@@ -203,7 +203,7 @@ class CameraModal extends Component {
       <View style={styles.bottomBar}>
         <View style={styles.bottomBarActions}>
           <View style={styles.bottomBarAction}>
-            <TouchableOpacity onPress={() => this.handleCloseModal() }>
+            <TouchableOpacity onPress={() => this.handleCloseModal()}>
               <Image
                 style={{ width: 22, height: 22, transform: [{ rotateX }] }}
                 source={require('../assets/images/camera_cancel_camera_icon.png')}

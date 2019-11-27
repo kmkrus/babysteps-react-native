@@ -165,7 +165,7 @@ export const dispatchPendingActions = pending_actions => {
 export const decodePendingAction = action => {
   switch (action.type) {
     case 'api_create_milestone_answer_pending': {
-      if (action.payload.data && action.payload.data._parts) {
+      if (action.payload && action.payload.data && action.payload.data._parts) {
         const formData = new FormData();
         action.payload.data._parts.forEach(part => {
           formData.append(...part);

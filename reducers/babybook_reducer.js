@@ -221,13 +221,14 @@ const reducer = (state = initialState, action, data=[]) => {
       };
     }
     case API_CREATE_BABYBOOK_ENTRY_REJECTED: {
+      const error = (action && action.payload) ? action.payload : null;
       return {
         ...state,
         api_entry: {
           ...state.api_entry,
           fetching: false,
           fetched: false,
-          error: action.payload,
+          error,
         },
       };
     }
