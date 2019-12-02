@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import {
   updateConnectionType,
   dispatchPendingActions,
+  apiDisptachTokenRefresh,
 } from '../actions/session_actions';
 
 import CONSTANTS from '../constants';
@@ -56,13 +57,21 @@ class ApiOfflineListener extends PureComponent {
     }
   };
 
+  _updateUserSession = nextAppState => {
+    const session = this.props.session;
+    if (nextAppState === 'active' && session.email) {
+      this.props.apiDisptachTokenRefresh(session);
+    }
+  };
+
   _addListeners = () => {
     NetInfo.addEventListener(connectionInfo => {
       this._updateSession(connectionInfo.type);
     });
     // check after application opens or wakes from background
-    AppState.addEventListener('change', () => {
+    AppState.addEventListener('change', nextAppState => {
       this._getConnectionStatus();
+      this._updateUserSession(nextAppState);
     });
   };
 
@@ -72,7 +81,11 @@ class ApiOfflineListener extends PureComponent {
 }
 
 const mapStateToProps = ({ session }) => ({ session });
-const mapDispatchToProps = { updateConnectionType, dispatchPendingActions };
+const mapDispatchToProps = {
+  updateConnectionType,
+  dispatchPendingActions,
+  apiDisptachTokenRefresh,
+};
 
 export default connect(
   mapStateToProps,

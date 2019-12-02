@@ -123,10 +123,7 @@ export default class App extends Component {
 
     return (
       <Provider store={store}>
-        <View
-          style={styles.container}
-          onLayout={() => console.log('*** layout changed')}
-        >
+        <View style={styles.container}>
           {Platform.OS === 'android' && <StatusBar barStyle="default" />}
           <RootNavigator />
           <FlashMessage position="top" />

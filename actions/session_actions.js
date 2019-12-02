@@ -126,6 +126,12 @@ export const apiTokenRefresh = (dispatch, session) => {
   });
 };
 
+export const apiDisptachTokenRefresh = session => {
+  return function(dispatch) {
+    apiTokenRefresh(dispatch, session);
+  };
+};
+
 export const apiTokenRefreshFailed = () => {
   return function(dispatch) {
     dispatch(Pending(API_TOKEN_REFRESH_FAILED));

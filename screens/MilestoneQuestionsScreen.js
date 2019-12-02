@@ -19,6 +19,8 @@ import _ from 'lodash';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { connect } from 'react-redux';
+
+import { apiDisptachTokenRefresh } from '../actions/session_actions';
 import {
   fetchMilestoneSections,
   resetMilestoneQuestions,
@@ -96,6 +98,14 @@ class MilestoneQuestionsScreen extends Component {
     this.props.fetchUser();
     this.props.fetchRespondent();
     this.props.fetchSubject();
+  }
+
+  componentDidMount() {
+    const session = this.props.session;
+    if (session.email) {
+      debugger
+      this.props.apiDisptachTokenRefresh(session);
+    }
   }
 
   componentWillReceiveProps(nextProps, nextState) {
@@ -673,6 +683,7 @@ const mapDispatchToProps = {
   apiUpdateMilestoneCalendar,
   fetchMilestoneCalendar,
   apiCreateBabyBookEntry,
+  apiDisptachTokenRefresh,
 };
 
 export default connect(
