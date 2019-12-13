@@ -23,7 +23,7 @@ const imageWidth = width;
 const imageHeight = height;
 const imageButtonsHeight = height * 0.3;
 const cameraPositionMargin = 35;
-const cameraPositionMarginTop = 70;
+const cameraPositionMarginTop = 90;
 const cameraPositionWidth = width - (cameraPositionMargin * 2);
 const cameraPositionHeight = (height * 0.6) - cameraPositionMargin;
 

@@ -13,7 +13,7 @@ export default class DatePickerInput extends PureComponent {
   }
 
   render() {
-    const { error, helper, touched, ...props } = this.props;
+    const { error, helper, touched } = this.props;
     const displayError = !!error && touched;
     const styles = {...this.props.style};
 
@@ -23,37 +23,38 @@ export default class DatePickerInput extends PureComponent {
       style: this.props.containerStyle,
     };
 
-    const labelProps = {
-      labelStyle: { color: labelColor, marginLeft: 0 },
-    };
-
     let colorScheme = Appearance.getColorScheme();
-    let darkMode = false;
+
+    let customStyles = this.props.customStyles;
     if (colorScheme === 'dark') {
-      darkMode = true;
+      customStyles = {
+        ...customStyles,
+        datePicker: {
+          backgroundColor: Colors.grey,
+        },
+        datePickerCon: {
+          backgroundColor: Colors.darkGrey,
+        },
+      };
     }
 
     return (
       <View {...containerProps}>
-        <FormLabel {...labelProps}>{this.props.label}</FormLabel>
+        <FormLabel style={this.props.labelStyle}>{this.props.label}</FormLabel>
         <DatePicker
           ref={input => (this.input = input)}
+          name={this.props.name}
+          date={this.props.date}
           style={styles}
+          customStyles={customStyles}
           mode="date"
           androidMode="spinner"
-          isDarkModeEnabled={darkMode}
           format="YYYY-MM-DD"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
-          customStyles={{
-            dateInput: {
-              borderWidth: 0,
-              width: '100%',
-            },
-          }}
+          showIcon={this.props.showIcon}
           placeholder={" "}
           onDateChange={ (value) => { this.props.handleChange(value) } }
-          {...this.props}
         />
         <InputHelper
           displayError={displayError}

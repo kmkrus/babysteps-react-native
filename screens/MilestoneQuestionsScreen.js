@@ -103,7 +103,6 @@ class MilestoneQuestionsScreen extends Component {
   componentDidMount() {
     const session = this.props.session;
     if (session.email) {
-      debugger
       this.props.apiDisptachTokenRefresh(session);
     }
   }
