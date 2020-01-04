@@ -26,6 +26,7 @@ export default class DatePickerInput extends PureComponent {
     let colorScheme = Appearance.getColorScheme();
 
     let customStyles = this.props.customStyles;
+
     if (colorScheme === 'dark') {
       customStyles = {
         ...customStyles,

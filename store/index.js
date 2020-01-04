@@ -6,6 +6,7 @@ import promise from 'redux-promise-middleware';
 import api from '../database/api';
 import apiAnswersFulfilled from '../database/api_answers_fulfilled';
 import apiMilestoneTasksFulfilled from '../database/api_milestone_tasks_fulfilled';
+import notificationsRejected from '../database/notifications_rejected';
 
 import reducers from '../reducers';
 
@@ -27,6 +28,7 @@ const store = createStore(
       api,
       apiAnswersFulfilled,
       apiMilestoneTasksFulfilled,
+      notificationsRejected,
     ),
   ),
 );

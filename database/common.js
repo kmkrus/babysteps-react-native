@@ -103,10 +103,9 @@ export function createSessionRecord() {
 
 export function getApiUrl() {
   // https://docs.expo.io/versions/latest/distribution/release-channels
-  const releaseChannel = Constants.manifest.releaseChannel; //does NOT exist in dev mode
-  if (__DEV__ || releaseChannel === undefined)
+  if (__DEV__ || Constants.manifest === undefined) {
     return CONSTANTS.BASE_DEVELOPMENT_URL;
-  if (releaseChannel.indexOf('staging') !== -1)
-    return CONSTANTS.BASE_STAGING_URL; // this will pick up staging-v1
-  return CONSTANTS.BASE_PRODUCTION_URL; // default to production - don't need a release channel
+  }
+  const baseAPIUrl = Constants.manifest.extra.baseAPIUrl;
+  return baseAPIUrl;
 }

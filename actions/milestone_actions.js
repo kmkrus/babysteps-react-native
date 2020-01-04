@@ -11,6 +11,7 @@ import isInteger from 'lodash/isInteger';
 
 import { insertRows, getApiUrl } from '../database/common';
 
+import Constants from 'expo-constants';
 import CONSTANTS from '../constants';
 
 import {
@@ -180,6 +181,7 @@ export const apiFetchMilestones = () => {
     //const message = JSON.stringify({milestones: 'Milestones: Syncing'});
     //dispatch(Response(SESSION_SYNC_MESSAGE, message));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
 
     return new Promise((resolve, reject) => {
       axios({
@@ -188,7 +190,7 @@ export const apiFetchMilestones = () => {
         baseURL,
         url: '/milestones',
         headers: {
-          "milestone_token": CONSTANTS.MILESTONE_TOKEN,
+          "milestone_token": apiToken,
         },
       })
         .then(response => {
@@ -305,6 +307,7 @@ export const apiNewMilestoneCalendar = params => {
     }
 
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
 
     return new Promise((resolve, reject) => {
       axios({
@@ -313,7 +316,7 @@ export const apiNewMilestoneCalendar = params => {
         baseURL,
         url: '/milestone_calendars/new',
         params,
-        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+        headers: { milestone_token: apiToken },
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
@@ -335,6 +338,7 @@ export const apiFetchMilestoneCalendar = params => {
     }
 
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
 
     return new Promise((resolve, reject) => {
       axios({
@@ -343,7 +347,7 @@ export const apiFetchMilestoneCalendar = params => {
         baseURL,
         url: '/milestone_calendars',
         params,
-        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+        headers: { milestone_token: apiToken },
       })
         .then(response => {
           insertRows('milestone_triggers', trigger_schema.milestone_triggers, response.data);
@@ -360,6 +364,7 @@ export const apiCreateMilestoneCalendar = (subject_id, milestone_trigger) => {
   return dispatch => {
     dispatch(Pending(API_CREATE_MILESTONE_CALENDAR_PENDING));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
     const data = { subject_id, ...milestone_trigger };
 
     return new Promise((resolve, reject) => {
@@ -369,7 +374,7 @@ export const apiCreateMilestoneCalendar = (subject_id, milestone_trigger) => {
         baseURL,
         url: '/milestone_calendars',
         data,
-        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+        headers: { milestone_token: apiToken },
       })
         .then(response => {
           dispatch(Response(API_CREATE_MILESTONE_CALENDAR_FULFILLED, response));
@@ -385,6 +390,7 @@ export const apiUpdateMilestoneCalendar = (id, data) => {
   return dispatch => {
     dispatch(Pending(API_UPDATE_MILESTONE_CALENDAR_PENDING));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
 
     return new Promise((resolve, reject) => {
       axios({
@@ -393,7 +399,7 @@ export const apiUpdateMilestoneCalendar = (id, data) => {
         baseURL,
         url: `/milestone_calendars/${id}`,
         data,
-        headers: { milestone_token: CONSTANTS.MILESTONE_TOKEN },
+        headers: { milestone_token: apiToken },
       })
         .then(response => {
           dispatch(Response(API_UPDATE_MILESTONE_CALENDAR_FULFILLED, response));
@@ -743,6 +749,7 @@ export const apiSyncMilestoneAnswers = api_user_id => {
   return dispatch => {
     dispatch(Pending(API_SYNC_MILESTONE_ANSWERS_PENDING));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
     const fileUri = FileSystem.documentDirectory + CONSTANTS.ATTACHMENTS_DIRECTORY;
 
     return new Promise((resolve, reject) => {
@@ -752,7 +759,7 @@ export const apiSyncMilestoneAnswers = api_user_id => {
         baseURL,
         url: '/sync_answers',
         headers: {
-          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+          milestone_token: apiToken,
         },
         data: {
           user_id: api_user_id,

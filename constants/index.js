@@ -24,15 +24,7 @@ export default {
   REMOVE_ATTACHMENTS_DIRECTORY: false, // will delete all answer attachments
 
   // API
-  BASE_PRODUCTION_URL: 'https://api.babystepsapp.net/api',
-  BASE_STAGING_URL: 'https://staging-api.babystepsapp.net/api',
   BASE_DEVELOPMENT_URL: 'https://staging-api.babystepsapp.net/api',
   //BASE_DEVELOPMENT_URL: 'http://192.168.137.230:3000/api',
   //BASE_DEVELOPMENT_URL: 'https://api.babystepsapp.net/api',
-
-  MILESTONE_TOKEN: '816fb58eb3ef6dc4dcf85a230b2049da33bac3b7a744d26f33ca3b89ae136d41',
-
-  SENTRY_DSN: 'https://193d4a8c3e6b4b3d974a3f4d1d6f598c@sentry.io/1204085',
-
-  ANALYTICS_ID: 'UA-152636953-1',
 };

@@ -9,6 +9,7 @@ import omit from 'lodash/omit';
 import keys from 'lodash/keys';
 import values from 'lodash/values';
 
+import Constants from 'expo-constants';
 import CONSTANTS from '../constants';
 
 import {
@@ -212,6 +213,7 @@ export const apiSyncBabybookEntries = (api_user_id) => {
     dispatch(Pending(API_SYNC_BABYBOOK_ENTRIES_PENDING));
     const baseURL = getApiUrl();
     const fileUri = FileSystem.documentDirectory + CONSTANTS.BABYBOOK_DIRECTORY;
+    const apiToken = Constants.manifest.extra.apiToken;
 
     return new Promise((resolve, reject) => {
       axios({
@@ -220,7 +222,7 @@ export const apiSyncBabybookEntries = (api_user_id) => {
         baseURL,
         url: '/sync_babybook_entries',
         headers: {
-          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+          milestone_token: apiToken,
         },
         data: {
           user_id: api_user_id,

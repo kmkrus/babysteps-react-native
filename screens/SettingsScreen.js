@@ -12,8 +12,8 @@ import {
 import { ListItem } from 'react-native-elements';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import moment from 'moment';
 
@@ -23,8 +23,6 @@ import { fetchNotifications } from '../actions/notification_actions';
 import ConsentDisclosureContent from '../components/consent_disclosure_content';
 
 import Colors from '../constants/Colors';
-
-const { manifest } = Constants;
 
 class SettingsScreen extends React.Component {
   static navigationOptions = {
@@ -70,23 +68,19 @@ class SettingsScreen extends React.Component {
     );
   };
 
-  getReleaseChannel = manifest => {
-    const releaseChannel = manifest.releaseChannel; // returns undefined in DEV
-    if (__DEV__ || releaseChannel === undefined) {
+  getRelease = () => {
+    if (__DEV__) {
       return 'Development';
     }
-    if (releaseChannel.indexOf('staging') !== -1) {
-      return 'Staging';
-    }
-    return 'Production';
+    return Constants.manifest.extra.release;
   };
 
   _handleFeedbackPress = () => {
     const build = this.getAppVersion();
-    const releaseChannel = this.getReleaseChannel(manifest);
+    const release = this.getRelease();
 
-    const version = `${manifest.version}:${build}`;
-    const body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${releaseChannel}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}\n________________________\n\n`;
+    const version = `${Constants.manifest.version}:${build}`;
+    const body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${release}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}\n________________________\n\n`;
 
     Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body}`);
   };
@@ -129,6 +123,7 @@ class SettingsScreen extends React.Component {
   };
 
   getAppVersion = () => {
+    const manifest = Constants.manifest;
     const build =
       Platform.OS === 'android'
         ? manifest.android.versionCode
@@ -151,7 +146,7 @@ class SettingsScreen extends React.Component {
           Notification Permissions: {this.state.notificationPermissions}
         </Text>
         <Text>
-          Notifications Updated:
+          Notifications Updated:{' '}
           {moment(this.props.session.notifications_updated_at).format(
             'MMMM Do YYYY, h:mm a z',
           )}
@@ -161,8 +156,9 @@ class SettingsScreen extends React.Component {
   };
 
   render() {
+    const manifest = Constants.manifest;
     const build = this.getAppVersion();
-    const releaseChannel = this.getReleaseChannel(manifest);
+    const release = this.getRelease();
     const calendar = this.props.milestones.calendar;
     const session = this.props.session;
     const subject = this.props.registration.subject.data;
@@ -174,8 +170,8 @@ class SettingsScreen extends React.Component {
           <Text>
             Version: {manifest.version}:{build}
           </Text>
-          {this.renderDevDebugItems(releaseChannel)}
-          <Text>Release: {releaseChannel}</Text>
+          {this.renderDevDebugItems(release)}
+          <Text>Release: {release}</Text>
 
           <TouchableOpacity
             style={styles.linkContainer}
@@ -204,7 +200,7 @@ class SettingsScreen extends React.Component {
           </TouchableOpacity>
         </View>
 
-        {this.renderNotificationList(releaseChannel)}
+        {this.renderNotificationList(release)}
 
         {this.renderConsentModal()}
       </View>

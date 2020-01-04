@@ -1,4 +1,5 @@
 import { Analytics, Event } from 'expo-analytics';
+import Constants from 'expo-constants';
 import CONSTANTS from '../constants';
 
 export const AnalyticsPageHit = page => {
@@ -11,7 +12,8 @@ export const AnalyticsPageHit = page => {
   // for testing on dev
   //if (__DEV__) {
   //const analytics = new Analytics('UA-55206086-1', null, { debug: true });
-  const analytics = new Analytics(CONSTANTS.ANALYTICS_ID);
+  const analyticsID = Constants.manifest.extra.analyticsID;
+  const analytics = new Analytics(analyticsID);
  // }
   analytics.hit(new PageHit(page))
     //.then(() => console.log("Analytics (success)"))
@@ -24,7 +26,8 @@ export const AnalyticsEvent = (category, action, label=null, value=null) => {
     //return null;
   }
 
-  const analytics = new Analytics(CONSTANTS.ANALYTICS_ID);
+  const analyticsID = Constants.manifest.extra.analyticsID;
+  const analytics = new Analytics(analyticsID);
 
   analytics.event(new Event(category, action, label, value))
     .then(() => {

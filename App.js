@@ -10,6 +10,7 @@ import * as Sentry from 'sentry-expo';
 
 import { Ionicons } from '@expo/vector-icons';
 
+import Constants from 'expo-constants';
 import RootNavigator from './navigation/RootNavigator';
 
 import checkMilestonesSchema from './database/check_milestones_schema';
@@ -27,11 +28,10 @@ import ApiOfflineListener from './database/api_offline_listener';
 
 import store from './store';
 
-import CONSTANTS from './constants';
 import Colors from './constants/Colors';
 
 Sentry.init({
-  dsn: CONSTANTS.SENTRY_DSN,
+  dsn: Constants.manifest.extra.sentryDSN,
   enableInExpoDevelopment: false,
   debug: true,
 });

@@ -7,6 +7,7 @@ import { _ } from 'lodash';
 import { insertRows, getApiUrl } from '../database/common';
 import schema from '../database/registration_schema.json';
 
+import Constants from 'expo-constants';
 import CONSTANTS from '../constants';
 
 import {
@@ -550,6 +551,8 @@ export const apiSyncRegistration = user_id => {
   return dispatch => {
     dispatch(Pending(API_SYNC_REGISTRATION_PENDING));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
+
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
@@ -560,7 +563,7 @@ export const apiSyncRegistration = user_id => {
           user_id,
         },
         headers: {
-          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+          milestone_token: apiToken,
         },
       })
         .then(response => {
@@ -586,6 +589,7 @@ export const apiSyncSignature = user_id => {
   return function(dispatch) {
     dispatch(Pending(API_SYNC_SIGNATURE_PENDING));
     const baseURL = getApiUrl();
+    const apiToken = Constants.manifest.extra.apiToken;
     const fileUri = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
 
     return new Promise((resolve, reject) => {
@@ -598,7 +602,7 @@ export const apiSyncSignature = user_id => {
           user_id,
         },
         headers: {
-          milestone_token: CONSTANTS.MILESTONE_TOKEN,
+          milestone_token: apiToken,
         },
       })
         .then(response => {
