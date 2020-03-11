@@ -4,6 +4,7 @@ import {
   Text,
   View,
   FlatList,
+  ScrollView,
   StyleSheet,
   Platform,
   TouchableOpacity,
@@ -21,6 +22,7 @@ import { connect } from 'react-redux';
 import { fetchNotifications } from '../actions/notification_actions';
 
 import ConsentDisclosureContent from '../components/consent_disclosure_content';
+import IRBInformation from '../constants/IRB.js';
 
 import Colors from '../constants/Colors';
 
@@ -155,6 +157,31 @@ class SettingsScreen extends React.Component {
     );
   };
 
+  renderIRBinformation = () => {
+    return (
+      <View>
+        <Text style={styles.sectionTitle}>IRB Information:</Text>
+        <Text>Approved By: {IRBInformation.IRB_APPROVED_BY}</Text>
+        <Text>ID Number: {IRBInformation.IRB_ID}</Text>
+        <Text>Approval Date: {IRBInformation.IRB_APPROVAL_DATE}</Text>
+        <Text>Expiration Date: {IRBInformation.IRB_EXPIRATION_DATE}</Text>
+
+        <TouchableOpacity
+          style={styles.linkContainer}
+          onPress={this._handleConsentAgreementPress}
+        >
+          <Text style={styles.linkText}>Review Consent Agreement</Text>
+          <Ionicons
+            name="ios-arrow-forward"
+            size={28}
+            color="#bdc6cf"
+            style={styles.linkIcon}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   render() {
     const manifest = Constants.manifest;
     const build = this.getAppVersion();
@@ -164,7 +191,7 @@ class SettingsScreen extends React.Component {
     const subject = this.props.registration.subject.data;
 
     return (
-      <View>
+      <ScrollView>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>BabySteps App Information:</Text>
           <Text>
@@ -186,24 +213,14 @@ class SettingsScreen extends React.Component {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.linkContainer}
-            onPress={this._handleConsentAgreementPress}
-          >
-            <Text style={styles.linkText}>Review Consent Agreement</Text>
-            <Ionicons
-              name="ios-arrow-forward"
-              size={28}
-              color="#bdc6cf"
-              style={styles.linkIcon}
-            />
-          </TouchableOpacity>
+          {this.renderIRBinformation()}
+
         </View>
 
         {this.renderNotificationList(release)}
 
         {this.renderConsentModal()}
-      </View>
+      </ScrollView >
     );
   }
 }

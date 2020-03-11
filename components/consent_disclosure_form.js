@@ -13,18 +13,22 @@ class ConsentDisclosureForm extends Component {
     errorMessage: '',
   };
 
-  handleSubmit = () => {
+  handleSubmit = action => {
     const screening_blood = this.state.screeningBlood;
-    if (screening_blood === null) {
+    if (screening_blood === null && action === 'agree') {
       const errorMessage =
         "You must select whether or not you will allow collection of your baby's bloodspot.";
       this.setState({ errorMessage });
-    } else {
-      this.props.updateSession({
-        screening_blood,
-        registration_state: States.REGISTERING_SIGNATURE,
-      });
+      return;
     }
+    const registration_state =
+      action === 'agree'
+        ? States.REGISTERING_SIGNATURE
+        : States.REGISTERING_AS_NO_STUDY;
+    this.props.updateSession({
+      screening_blood,
+      registration_state,
+    });
   };
 
   handleScreeningBlood = (screeningBlood, errorMessage) => {

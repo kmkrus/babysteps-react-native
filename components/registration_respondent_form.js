@@ -32,6 +32,7 @@ import TextFieldWithLabel from './textFieldWithLabel';
 import States from '../constants/States';
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
+import IRBInformation from '../constants/IRB.js';
 import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
@@ -213,6 +214,8 @@ class RegistrationRespondentForm extends Component {
       email: user.data.email,
       first_name: user.data.first_name,
       last_name: user.data.last_name,
+      tos_id: IRBInformation.IRB_ID,
+      tos_approval_on: IRBInformation.IRB_APPROVAL_DATE,
       accepted_tos_at: new Date().toISOString(),
     };
     this.props.createRespondent(respondent);

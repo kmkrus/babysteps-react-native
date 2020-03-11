@@ -14,7 +14,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
 
+import moment from 'moment';
+
 import Colors from '../constants/Colors';
+import IRBInformation from '../constants/IRB.js';
 import CONSTANTS from '../constants';
 
 const { width } = Dimensions.get('window');
@@ -108,11 +111,35 @@ class ConsentDisclosureContent extends Component {
 
   renderButton = () => {
     if (this.props.formState === 'edit') {
+      const irbExpired = moment() > moment(IRBInformation.IRB_EXPIRATION_DATE, "MM/DD/YYYY");
+      if (irbExpired) {
+        return (
+          <View style={styles.buttonContainer}>
+            <Text style={styles.expired}>
+              This Disclosure has EXPIRED as of: {IRBInformation.IRB_EXPIRATION_DATE}.
+            </Text>
+            <Button
+              title="REGISTER WITH NO STUDY"
+              onPress={() => this.props.handleSubmit('no_study')}
+              color={Colors.pink}
+              buttonStyle={styles.buttonNext}
+              titleStyle={styles.buttonNextTitle}
+            />
+            <Button
+            title="REGISTER ANYWAY"
+            onPress={() => this.props.handleSubmit('agree')}
+            color={Colors.pink}
+            buttonStyle={styles.buttonNext}
+            titleStyle={styles.buttonNextTitle}
+          />
+          </View>
+        );
+      }
       return (
         <View style={styles.buttonContainer}>
           <Button
             title="AGREE"
-            onPress={this.props.handleSubmit}
+            onPress={() => this.props.handleSubmit('agree')}
             color={Colors.pink}
             buttonStyle={styles.buttonNext}
             titleStyle={styles.buttonNextTitle}
@@ -810,6 +837,11 @@ const styles = StyleSheet.create({
     //textAlign: 'center',
     fontSize: 12,
     padding: 5,
+  },
+  expired: {
+    fontSize: 14,
+    padding: 10,
+    color: Colors.errorColor,
   },
   underline: {
     textDecorationLine: 'underline',

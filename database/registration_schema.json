@@ -71,6 +71,8 @@
       "marital_status": "TEXT",
       "weight": "INTEGER",
       "height": "INTEGER",
+      "tos_id": "TEXT",
+      "tos_approval_on": "TEXT",
       "accepted_tos_at": "TEXT",
       "pregnant": "INTEGER",
     },

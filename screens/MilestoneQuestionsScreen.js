@@ -109,6 +109,11 @@ class MilestoneQuestionsScreen extends Component {
 
   componentWillReceiveProps(nextProps, nextState) {
     const task = nextProps.navigation.state.params.task;
+    // capture notification links with incorrect task
+    if (typeof(task) !== 'object' || task === null) {
+      this.props.navigation.navigate('Milestones');
+      return;
+    }
     // update the list of questions and choices on change of task.
     if (task.id !== this.state.task_id) {
       this.props.resetMilestoneQuestions();

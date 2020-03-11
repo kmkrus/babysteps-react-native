@@ -1,0 +1,6 @@
+export default {
+  IRB_APPROVED_BY: 'IRB-01',
+  IRB_ID: '201711779',
+  IRB_APPROVAL_DATE: '02/04/19',
+  IRB_EXPIRATION_DATE: '01/14/20',
+};

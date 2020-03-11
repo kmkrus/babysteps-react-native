@@ -24,7 +24,9 @@ export default {
   REMOVE_ATTACHMENTS_DIRECTORY: false, // will delete all answer attachments
 
   // API
-  BASE_DEVELOPMENT_URL: 'https://staging-api.babystepsapp.net/api',
+  //BASE_DEVELOPMENT_URL: 'https://staging-api.babystepsapp.net/api',
+  BASE_DEVELOPMENT_URL: 'https://babysteps-staging.icts.uiowa.edu/api',
+  //BASE_DEVELOPMENT_URL: 'https://babysteps.icts.uiowa.edu/api',
   //BASE_DEVELOPMENT_URL: 'http://192.168.137.230:3000/api',
   //BASE_DEVELOPMENT_URL: 'https://api.babystepsapp.net/api',
 };

@@ -45,7 +45,7 @@ class ApiOfflineListener extends PureComponent {
   }
 
   _getConnectionStatus = async () => {
-    const connectionInfo = await NetInfo.getConnectionInfo();
+    const connectionInfo = await NetInfo.fetch();
     this._updateSession(connectionInfo.type);
   };
 
