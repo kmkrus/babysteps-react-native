@@ -1,6 +1,15 @@
+// Latest version should be the first object in the collection
 export default {
-  IRB_APPROVED_BY: 'IRB-01',
-  IRB_ID: '201711779',
-  IRB_APPROVAL_DATE: '02/04/19',
-  IRB_EXPIRATION_DATE: '01/14/20',
+  '002': {
+    approved_by: 'IRB-01',
+    irb_id: '201711779',
+    approval_date: '02/06/20',
+    expiration_date: '02/05/21',
+  },
+  '001': {
+    approved_by: 'IRB-01',
+    irb_id: '201711779',
+    approval_date: '02/04/19',
+    expiration_date: '01/14/20',
+  },
 };

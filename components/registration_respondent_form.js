@@ -32,7 +32,7 @@ import TextFieldWithLabel from './textFieldWithLabel';
 import States from '../constants/States';
 import Colors from '../constants/Colors';
 import AppStyles from '../constants/Styles';
-import IRBInformation from '../constants/IRB.js';
+import IRBInformation from '../constants/IRB';
 import CONSTANTS from '../constants';
 
 import ActionStates from '../actions/states';
@@ -176,7 +176,7 @@ class RegistrationRespondentForm extends Component {
         weight: '200',
         height: '72',
         pregnant: true,
-      }
+      };
     } else {
       initialValues = {
         respondent_type: 'mother',
@@ -208,14 +208,17 @@ class RegistrationRespondentForm extends Component {
 
   _handleOnSubmit = values => {
     const user = this.props.registration.user;
+    const tos_id = Object.keys(IRBInformation)[0];
+    const irb = IRBInformation[tos_id];
     const respondent = {
       ...values,
       user_id: user.data.api_id,
       email: user.data.email,
       first_name: user.data.first_name,
       last_name: user.data.last_name,
-      tos_id: IRBInformation.IRB_ID,
-      tos_approval_on: IRBInformation.IRB_APPROVAL_DATE,
+      tos_id: tos_id,
+      irb_id: irb.irb_id,
+      tos_approval_on: irb.approval_date,
       accepted_tos_at: new Date().toISOString(),
     };
     this.props.createRespondent(respondent);

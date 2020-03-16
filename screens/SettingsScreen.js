@@ -22,7 +22,7 @@ import { connect } from 'react-redux';
 import { fetchNotifications } from '../actions/notification_actions';
 
 import ConsentDisclosureContent from '../components/consent_disclosure_content';
-import IRBInformation from '../constants/IRB.js';
+import IRBInformation from '../constants/IRB';
 
 import Colors from '../constants/Colors';
 
@@ -92,6 +92,7 @@ class SettingsScreen extends React.Component {
   };
 
   renderConsentModal = () => {
+    const respondent = this.props.registration.respondent.data;
     return (
       <View style={{ marginTop: 22 }}>
         <Modal
@@ -111,6 +112,7 @@ class SettingsScreen extends React.Component {
             </TouchableOpacity>
             <ConsentDisclosureContent
               formState="view"
+              tosID={respondent.tos_id}
               screeningBlood={this.state.screeningBlood}
               setModalVisible={this.setModalVisible}
             />
@@ -158,13 +160,15 @@ class SettingsScreen extends React.Component {
   };
 
   renderIRBinformation = () => {
+    const respondent = this.props.registration.respondent.data;
+    const irb = IRBInformation[respondent.tos_id];
     return (
       <View>
         <Text style={styles.sectionTitle}>IRB Information:</Text>
-        <Text>Approved By: {IRBInformation.IRB_APPROVED_BY}</Text>
-        <Text>ID Number: {IRBInformation.IRB_ID}</Text>
-        <Text>Approval Date: {IRBInformation.IRB_APPROVAL_DATE}</Text>
-        <Text>Expiration Date: {IRBInformation.IRB_EXPIRATION_DATE}</Text>
+        <Text>Approved By: {irb.approved_by}</Text>
+        <Text>ID Number: {irb.irb_id}</Text>
+        <Text>Approval Date: {irb.approval_date}</Text>
+        <Text>Expiration Date: {irb.expiration_dateTE}</Text>
 
         <TouchableOpacity
           style={styles.linkContainer}
