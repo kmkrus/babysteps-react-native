@@ -218,7 +218,6 @@ class RegistrationRespondentForm extends Component {
       last_name: user.data.last_name,
       tos_id: tos_id,
       irb_id: irb.irb_id,
-      tos_approval_on: irb.approval_date,
       accepted_tos_at: new Date().toISOString(),
     };
     this.props.createRespondent(respondent);

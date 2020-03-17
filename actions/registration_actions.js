@@ -237,8 +237,11 @@ export const createRespondent = respondent => {
       drivers_license_number, \
       marital_status, \
       weight, \
-      height \
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+      height, \
+      tos_id, \
+      irb_id, \
+      accepted_tos_at \
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
     const values = [
       respondent.user_id,
       respondent.respondent_type,
@@ -259,6 +262,9 @@ export const createRespondent = respondent => {
       respondent.marital_status,
       respondent.weight,
       respondent.height,
+      respondent.tos_id,
+      respondent.irb_id,
+      respondent.accepted_tos_at,
     ];
     return db.transaction(tx => {
       tx.executeSql(

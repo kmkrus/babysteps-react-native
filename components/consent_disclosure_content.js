@@ -115,7 +115,7 @@ class ConsentDisclosureContent extends Component {
       );
     }
     return (
-      <View style={[styles.buttonContainer, {marginLeft: 15, marginBottom: 40}]}>
+      <View style={[styles.buttonContainer, {marginLeft: 15, marginBottom: 60}]}>
         <Button
           title="RETURN"
           onPress={() => this.props.setModalVisible(false)}

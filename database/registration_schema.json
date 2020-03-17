@@ -73,7 +73,6 @@
       "height": "INTEGER",
       "tos_id": "TEXT",
       "irb_id": "TEXT",
-      "irb_approval_on": "TEXT",
       "accepted_tos_at": "TEXT",
       "pregnant": "INTEGER",
     },

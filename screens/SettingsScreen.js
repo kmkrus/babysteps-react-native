@@ -20,8 +20,10 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 import { fetchNotifications } from '../actions/notification_actions';
+import { fetchRespondent } from '../actions/registration_actions';
 
 import ConsentDisclosureContent from '../components/consent_disclosure_content';
+
 import IRBInformation from '../constants/IRB';
 
 import Colors from '../constants/Colors';
@@ -38,6 +40,7 @@ class SettingsScreen extends React.Component {
 
   componentWillMount() {
     this.props.fetchNotifications();
+    this.props.fetchRespondent();
     this.getNotificationPermissions();
   }
 
@@ -152,7 +155,7 @@ class SettingsScreen extends React.Component {
         <Text>
           Notifications Updated:{' '}
           {moment(this.props.session.notifications_updated_at).format(
-            'MMMM Do YYYY, h:mm a z',
+            'MM/DD/YY',
           )}
         </Text>
       </View>
@@ -168,7 +171,7 @@ class SettingsScreen extends React.Component {
         <Text>Approved By: {irb.approved_by}</Text>
         <Text>ID Number: {irb.irb_id}</Text>
         <Text>Approval Date: {irb.approval_date}</Text>
-        <Text>Expiration Date: {irb.expiration_dateTE}</Text>
+        <Text>Accepted On: {moment(respondent.accepted_tos_at).format('MM/DD/YY',)}</Text>
 
         <TouchableOpacity
           style={styles.linkContainer}
@@ -224,7 +227,7 @@ class SettingsScreen extends React.Component {
         {this.renderNotificationList(release)}
 
         {this.renderConsentModal()}
-      </ScrollView >
+      </ScrollView>
     );
   }
 }
@@ -275,7 +278,7 @@ const mapStateToProps = ({
   registration,
 });
 
-const mapDispatchToProps = { fetchNotifications };
+const mapDispatchToProps = { fetchNotifications, fetchRespondent };
 
 export default connect(
   mapStateToProps,
