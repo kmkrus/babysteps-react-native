@@ -26,7 +26,7 @@ class MilestoneQuestionConfirmScreen extends Component {
         <View style={styles.textBlock}>
           <Image
             style={styles.image}
-            source={require('../assets/images/thank_you_balloons.png')}
+            source={require('../assets/images/exclamation.png')}
           />
           {!message ? (
             <Text style={styles.header}>You&apos;ve completed this task!</Text>

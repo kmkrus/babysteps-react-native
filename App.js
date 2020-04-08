@@ -90,6 +90,7 @@ export default class App extends Component {
       require('./assets/images/tour_slide_three.png'),
       require('./assets/images/tour_slide_two.png'),
       require('./assets/images/uofi_logo.png'),
+      require('./assets/images/exclamation.png'),
     ]);
     await Font.loadAsync({
       // This is the font that we are using for our tab bar

@@ -160,7 +160,7 @@ class OverviewBirthFormScreen extends Component {
           this._handleUpdateNoStudyCalendar(outcomeIsLiveBirth);
         }
         this._handleUpdateNotification(outcomeIsLiveBirth);
-        props.navigation.navigate('Overview');
+        this.props.navigation.navigate('Overview');
       } // subject.fetching
     } // submittedSave
   }
@@ -254,7 +254,6 @@ class OverviewBirthFormScreen extends Component {
       return null;
     }
     this.setState({ values, submittedSave: true });
-    debugger
     this.props.updateSubject(values);
   };
 

@@ -43,8 +43,8 @@ class AutoHeightImage extends Component {
     aspectRatio = xWidth / xHeight;
     //} //I commented out the above block as my tests on android (Samsung Galaxy S7 return in the same order as iOS.)
     const width = this.props.width;
-    const height = width * aspectRatio;
-    this.setState({ width, height });
+    const height = (width * aspectRatio) + 10;
+    this.setState({ width, height });s
   };
 
   render = () => {
