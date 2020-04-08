@@ -51,38 +51,44 @@ const { width } = Dimensions.get('window');
 const twoButtonWidth = (width / 2) - 30;
 
 class RegistrationNoStudyForm extends Component {
-  state = {
-    dobError: null,
-    apiNewMilestoneCalendarSubmitted: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
-    this.props.apiFetchMilestones();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const respondent = nextProps.registration.respondent;
-    const subject = nextProps.registration.subject;
-    if (!respondent.fetching && !subject.fetching) {
-      if (subject.fetched && subject.fetched) {
-        if (!this.state.apiNewMilestoneCalendarSubmitted) {
-          this.props.apiNewMilestoneCalendar({
-            base_date: subject.data.expected_date_of_birth,
-          });
-          this.setState({ apiNewMilestoneCalendarSubmitted: true });
-        }
-        this.props.updateSession({
-          registration_state: States.REGISTERED_AS_NO_STUDY,
-        });
-      }
-    }
+    this.state = {
+      isSubmitting: false,
+      dobError: null,
+      apiMilestoneCalendarSubmitted: false,
+    };
   }
 
   shouldComponentUpdate(nextProps) {
     const respondent = nextProps.registration.respondent;
     const subject = nextProps.registration.subject;
-    return (!respondent.fetching && !subject.fetching)
+    return (!respondent.fetching && !subject.fetching);
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const respondent = this.props.registration.respondent;
+    const subject = this.props.registration.subject;
+    const isSubmitting = this.state.isSubmitting;
+    if (respondent.fetched && subject.fetched && isSubmitting) {
+      this._fetchAPIMilestoneCalendar(subject);
+    }
+  }
+
+  _fetchAPIMilestoneCalendar = subject => {
+    const apiMilestoneCalendarSubmitted = this.state.apiMilestoneCalendarSubmitted;
+    if (!apiMilestoneCalendarSubmitted) {
+      this.setState({ apiMilestoneCalendarSubmitted: true });
+      this.props.apiFetchMilestones();
+      this.props.apiNewMilestoneCalendar({
+        base_date: subject.data.expected_date_of_birth,
+      });
+    }
+    this.props.updateSession({
+      registration_state: States.REGISTERED_AS_NO_STUDY,
+    });
+  };
 
   render() {
     return (
@@ -96,8 +102,12 @@ class RegistrationNoStudyForm extends Component {
               expected_date_of_birth: '',
             });
             this.props.createSubject({ expected_date_of_birth: values.expected_date_of_birth });
+            this.setState({ isSubmitting: true });
           } else {
-            this.setState({ dobError: 'You must provide the Expected Date of Birth' })
+            this.setState({ 
+              isSubmitting: false,
+              dobError: 'You must provide the Expected Date of Birth',
+            });
           }
         }}
         validationSchema={validationSchema}
@@ -129,7 +139,7 @@ class RegistrationNoStudyForm extends Component {
 
               <DatePickerInput
                 label="Your Date of Birth"
-                labelStyle={AppStyles.registrationLabel}
+                labelStyle={AppStyles.registrationTextLabel}
                 name="date_of_birth"
                 containerStyle={AppStyles.registrationDateContainer}
                 date={props.values.date_of_birth}

@@ -42,65 +42,76 @@ class OverviewScreen extends React.Component {
     header: null,
   };
 
-  state = {
-    currentIndexScreening: 0,
-    sliderLoading: true,
-    screeningEvents: [],
-    apiCreateCalendarSubmitted: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillReceiveProps(nextProps) {
-    const subject = nextProps.registration.subject;
-    if (!subject.fetching && subject.fetched) {
-      if (!subject.data) {return null};
-      let fetchCalendarParams = {};
-      if (nextProps.session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-        fetchCalendarParams = { subject_id: subject.data.api_id };
-      } else {
-        fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
-        if (subject.data.date_of_birth) {
-          fetchCalendarParams = { base_date: subject.data.date_of_birth };
-        }
-      }
-      const calendar = nextProps.milestones.calendar;
-      if (!calendar.fetching && calendar.fetched) {
-        if (isEmpty(calendar.data)) {
-          if (
-            !nextProps.milestones.api_calendar.fetching &&
-            subject.data !== undefined &&
-            !this.state.apiCreateCalendarSubmitted
-          ) {
-            // creates calendar on server, but only returns visible tasks
-            // no notifications generated
-            this.props.apiNewMilestoneCalendar(fetchCalendarParams);
-            this.setState({ apiCreateCalendarSubmitted: true });
-            // reset last updated date to rebuild notifications
-            this.props.updateSession({ notifications_updated_at: null });
-          }
-        } else {
-          let screeningEvents = filter(calendar.data, s => {
-            if (s.momentary_assessment) {
-              return false;
-            }
-            if (s.study_only !== 1) {
-              return false;
-            }
-            if (s.completed_at) {
-              return false;
-            }
-            return moment().isAfter(s.available_start_at) && moment().isBefore(s.available_end_at);
-          });
-          screeningEvents = sortBy(screeningEvents, s => {
-            return moment(s.notify_at);
-          });
-          this.setState({
-            screeningEvents,
-            sliderLoading: false,
-          });
-        } // isEmpty calendar data
-      } // calendar fetcbhing
-    } // subject fetching
+    this.state = {
+      currentIndexScreening: 0,
+      sliderLoading: true,
+      screeningEvents: [],
+      screeningEventsLoaded: false,
+      apiCreateCalendarSubmitted: false,
+    };
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const subject = this.props.registration.subject;
+    const screeningEventsLoaded = this.state.screeningEventsLoaded;
+    if (subject.fetched && !isEmpty(subject.data) && !screeningEventsLoaded) {
+      this._fetchScreeningEvents(subject);
+    }
+  }
+
+  _fetchScreeningEvents = subject => {
+    let fetchCalendarParams = {};
+    const session = this.props.session;
+    if (session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+      fetchCalendarParams = { subject_id: subject.data.api_id };
+    } else {
+      fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
+      if (subject.data.date_of_birth) {
+        fetchCalendarParams = { base_date: subject.data.date_of_birth };
+      }
+    }
+    const calendar = this.props.milestones.calendar;
+    if (!calendar.fetching && calendar.fetched) {
+      if (isEmpty(calendar.data)) {
+        if (
+          !this.props.milestones.api_calendar.fetching &&
+          subject.data !== undefined &&
+          !this.state.apiCreateCalendarSubmitted
+        ) {
+          // creates calendar on server, but only returns visible tasks
+          // no notifications generated
+          this.props.apiNewMilestoneCalendar(fetchCalendarParams);
+          this.setState({ apiCreateCalendarSubmitted: true });
+          // reset last updated date to rebuild notifications
+          this.props.updateSession({ notifications_updated_at: null });
+        }
+      } else {
+        let screeningEvents = filter(calendar.data, s => {
+          if (s.momentary_assessment) {
+            return false;
+          }
+          if (s.study_only !== 1) {
+            return false;
+          }
+          if (s.completed_at) {
+            return false;
+          }
+          return moment().isAfter(s.available_start_at) && moment().isBefore(s.available_end_at);
+        });
+        screeningEvents = sortBy(screeningEvents, s => {
+          return moment(s.notify_at);
+        });
+        this.setState({
+          screeningEvents,
+          screeningEventsLoaded: true,
+          sliderLoading: false,
+        });
+      } // isEmpty calendar data
+    } // calendar fetcbhing
+  };
 
   handleOnPress = task => {
     const navigate = this.props.navigation.navigate;

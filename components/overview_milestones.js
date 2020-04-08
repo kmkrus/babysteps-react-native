@@ -44,59 +44,65 @@ class OverviewScreen extends React.Component {
     header: null,
   };
 
-  state = {
-    currentIndexMilestones: 0,
-    sliderLoading: true,
-    milestoneGroups: [],
-  };
+  constructor(props) {
+    super(props);
 
-  //componentDidMount() {
-  //  this.props.apiFetchMilestones();
-  //}
-
-  componentWillReceiveProps(nextProps) {
-    const subject = nextProps.registration.subject;
-    let baseDate = '';
-    if (!subject.fetching && subject.fetched) {
-      if (!subject.data) {return null};
-      if (subject.data.date_of_birth) {
-        baseDate = subject.data.date_of_birth;
-      } else {
-        baseDate = subject.data.expected_date_of_birth;
-      }
-
-      const currentWeek = moment().diff(baseDate, 'weeks');
-
-      const groups = nextProps.milestones.groups;
-      if (!groups.fetching && groups.fetched) {
-        if (isEmpty(groups.data)) {
-          const api_milestones = nextProps.milestones.api_milestones;
-          if (!api_milestones.fetching && !api_milestones.fetched) {
-            this.props.apiFetchMilestones();
-          }
-        } else {
-          let milestoneGroups = filter(groups.data, { visible: 1 });
-          milestoneGroups = sortBy(milestoneGroups, ['position']);
-          milestoneGroups.forEach((group, index) => {
-            group.uri = milestoneGroupImages[index];
-          });
-          // locate index of current milestone group
-          let currentIndexMilestones = findIndex(milestoneGroups, group => {
-            return (
-              group.week_start_at <= currentWeek &&
-              currentWeek <= group.week_end_at
-            );
-          });
-
-          this.setState({
-            currentIndexMilestones,
-            milestoneGroups,
-            sliderLoading: false,
-          });
-        } // isEmpty groups
-      } // if groups fetched
-    } // subject fetching
+    this.state = {
+      currentIndexMilestones: 0,
+      sliderLoading: true,
+      milestoneGroups: [],
+      milestoneGroupsLoaded: false,
+    };
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const subject = this.props.registration.subject;
+    const milestoneGroupsLoaded = this.state.milestoneGroupsLoaded;
+    if (subject.fetched && !isEmpty(subject.data) && !milestoneGroupsLoaded) {
+      this._fetchMilestones(subject);
+    }
+  }
+
+  _fetchMilestones = subject => {
+    let baseDate = '';
+    if (subject.data.date_of_birth) {
+      baseDate = subject.data.date_of_birth;
+    } else {
+      baseDate = subject.data.expected_date_of_birth;
+    }
+
+    const currentWeek = moment().diff(baseDate, 'weeks');
+
+    const groups = this.props.milestones.groups;
+    if (!groups.fetching && groups.fetched) {
+      if (isEmpty(groups.data)) {
+        const api_milestones = this.props.milestones.api_milestones;
+        if (!api_milestones.fetching && !api_milestones.fetched) {
+          this.props.apiFetchMilestones();
+        }
+      } else {
+        let milestoneGroups = filter(groups.data, { visible: 1 });
+        milestoneGroups = sortBy(milestoneGroups, ['position']);
+        milestoneGroups.forEach((group, index) => {
+          group.uri = milestoneGroupImages[index];
+        });
+        // locate index of current milestone group
+        let currentIndexMilestones = findIndex(milestoneGroups, group => {
+          return (
+            group.week_start_at <= currentWeek &&
+            currentWeek <= group.week_end_at
+          );
+        });
+
+        this.setState({
+          currentIndexMilestones,
+          milestoneGroups,
+          milestoneGroupsLoaded: true,
+          sliderLoading: false,
+        });
+      } // isEmpty groups
+    } // if groups fetched
+  };
 
   renderMilestoneItem = data => {
     const navigate = this.props.navigation.navigate;

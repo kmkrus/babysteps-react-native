@@ -33,12 +33,14 @@ class SettingsScreen extends React.Component {
     title: 'Settings',
   };
 
-  state = {
-    notificationPermissions: '',
-    consentModalVisible: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      notificationPermissions: '',
+      consentModalVisible: false,
+    };
+
     this.props.fetchNotifications();
     this.props.fetchRespondent();
     this.getNotificationPermissions();
@@ -165,28 +167,30 @@ class SettingsScreen extends React.Component {
   renderIRBinformation = () => {
     const respondent = this.props.registration.respondent.data;
     const irb = IRBInformation[respondent.tos_id];
-    return (
-      <View>
-        <Text style={styles.sectionTitle}>IRB Information:</Text>
-        <Text>Approved By: {irb.approved_by}</Text>
-        <Text>ID Number: {irb.irb_id}</Text>
-        <Text>Approval Date: {irb.approval_date}</Text>
-        <Text>Accepted On: {moment(respondent.accepted_tos_at).format('MM/DD/YY',)}</Text>
+    if (irb) {
+      return (
+        <View>
+          <Text style={styles.sectionTitle}>IRB Information:</Text>
+          <Text>Approved By: {irb.approved_by}</Text>
+          <Text>ID Number: {irb.irb_id}</Text>
+          <Text>Approval Date: {irb.approval_date}</Text>
+          <Text>Accepted On: {moment(respondent.accepted_tos_at).format('MM/DD/YY',)}</Text>
 
-        <TouchableOpacity
-          style={styles.linkContainer}
-          onPress={this._handleConsentAgreementPress}
-        >
-          <Text style={styles.linkText}>Review Consent Agreement</Text>
-          <Ionicons
-            name="ios-arrow-forward"
-            size={28}
-            color="#bdc6cf"
-            style={styles.linkIcon}
-          />
-        </TouchableOpacity>
-      </View>
-    );
+          <TouchableOpacity
+            style={styles.linkContainer}
+            onPress={this._handleConsentAgreementPress}
+          >
+            <Text style={styles.linkText}>Review Consent Agreement</Text>
+            <Ionicons
+              name="ios-arrow-forward"
+              size={28}
+              color="#bdc6cf"
+              style={styles.linkIcon}
+            />
+          </TouchableOpacity>
+        </View>
+      );
+    }
   };
 
   render() {

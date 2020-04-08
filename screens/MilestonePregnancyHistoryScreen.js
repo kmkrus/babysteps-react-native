@@ -36,12 +36,8 @@ import { RenderChoices } from '../components/milestone_question_components';
 
 import Colors from '../constants/Colors';
 import States from '../actions/states';
-import CONSTANTS from '../constants';
-import VideoFormats from '../constants/VideoFormats';
-import ImageFormats from '../constants/ImageFormats';
-import AudioFormats from '../constants/AudioFormats';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const itemWidth = width - 40;
 const twoButtonWidth = (width / 2) - 30;
@@ -59,6 +55,7 @@ class MilestonePregnancyHistoryScreen extends Component {
       section: {},
       questionsFetched: false,
       questionIDs: [],
+      firstQuestion: {},
       answersFetched: false,
       attachmentsFetched: false,
       numberOfPregnancies: 0,
@@ -70,115 +67,111 @@ class MilestonePregnancyHistoryScreen extends Component {
       confirmed: false,
     };
 
-    this.saveResponse = this.saveResponse.bind(this);
-  }
-
-  componentWillMount() {
     this.props.fetchUser();
     this.props.fetchRespondent();
     this.props.fetchSubject();
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
-    let firstQuestion = {};
-    const task = nextProps.navigation.state.params.task;
-    if (task.id !== this.state.task_id) {
-      this.props.resetMilestoneQuestions();
-      this.props.resetMilestoneChoices();
-      this.props.resetMilestoneAnswers();
-      this.props.fetchMilestoneSections({ task_id: task.id });
-      this.setState({
-        task_id: task.id,
-        section: [],
-        questionsFetched: false,
-        questionIDs: [],
-        answersFetched: false,
-        attachmentsFetched: false,
-        numberOfPregnancies: 0,
-        currentPregnancy: 0,
-        answers: [],
-        attachments: [],
-        showNextPregnancy: false,
-        showConfirm: false,
-        confirmed: false,
-      });
-      return;
-    }
-    const sections = nextProps.milestones.sections;
-    const questions = nextProps.milestones.questions;
-    if (!sections.fetching && sections.fetched) {
-      if (!_.isEmpty(sections.data)) {
-        if (_.isEmpty(this.state.section)) {
-          const section = sections.data[0];
-          this.setState({section: section});
-          this.props.navigation.setParams({ section });
-          this.props.fetchMilestoneQuestions({ section_id: section.id });
-          this.props.resetMilestoneChoices();
-          this.props.fetchMilestoneAnswers({ section_id: section.id });
-          //this.props.fetchMilestoneAttachments({ section_id: section.id });
-        } else {
-          if (!questions.fetching) {
-            if (
-              _.isEmpty(questions.data) ||
-              questions.data[0].section_id !== this.state.section.id
-            ) {
-              this.props.fetchMilestoneQuestions({
-                section_id: this.state.section.id,
-              });
-              this.props.resetMilestoneChoices();
-            }
-          }
-          if (!questions.fetching && questions.fetched) {
-            firstQuestion = this.props.milestones.questions.data[0];
-            if (!nextProps.milestones.choices.fetching) {
-              if (_.isEmpty(nextProps.milestones.choices.data)) {
-                // question IDs for repeat questions
-                const questionIDs = _.map(questions.data.slice(1), 'id');
-                this.setState({ questionsFetched: true, questionIDs });
-                const question_ids = _.map(questions.data, 'id');
-                this.props.fetchMilestoneChoices({ question_ids });
-              }
-            }
-          } // questions.fetching
-        } // isEmpty state.section
-      } // isEmpty sections.data
-    } // sections.fetching
-
-    const answers = nextProps.milestones.answers;
-    if (!answers.fetching && answers.fetched) {
-      if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
-        let numberOfPregnancies = this.state.numberOfPregnancies;
-        let currentPregnancy = this.state.currentPregnancy;
-        let showNextPregnancy = this.state.showNextPregnancy;
-        if (!_.isEmpty(firstQuestion)) {
-          const answer = _.find(answers.data, ['question_id', firstQuestion.id]);
-          if (!_.isEmpty(answer)) {
-            numberOfPregnancies = Math.trunc(answer.answer_text);
-            currentPregnancy = 1;
-            showNextPregnancy = true;
-          }
-        }
-
-        this.setState({
-          answers: answers.data,
-          answersFetched: true,
-          numberOfPregnancies,
-          currentPregnancy,
-          showNextPregnancy,
-        });
-      }
-    }
+    this.saveResponse = this.saveResponse.bind(this);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (
-      nextProps.milestones.questions.fetching ||
-      nextProps.milestones.choices.fetching
-    ) {
-      return false;
-    }
-    return true;
+    const sections = nextProps.milestones.sections;
+    const questions = nextProps.milestones.questions;
+    const choices = nextProps.milestones.choices;
+    return !sections.fetching && !questions.fetching && !choices.fetching;
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const task = this.props.navigation.state.params.task;
+    const sections = this.props.milestones.sections;
+    const questions = this.props.milestones.questions;
+    const answers = this.props.milestones.answers;
+    if (task.id !== prevState.task_id) {
+      this._resetDataForTask(task);
+      return; // need to update sections for the task for remaining functions
+    }
+    if (sections.fetched && !_.isEmpty(sections.data)) {
+      this._saveSectionsData(sections);
+    }
+    if (questions.fetched && !_.isEmpty(questions.data)) {
+      this._saveQuestionsData(questions);
+    }
+    if (answers.fetched) {
+      this._saveAnswersData(answers);
+    }
+  }
+
+  _resetDataForTask = task => {
+    this.setState({
+      task_id: task.id,
+      section: [],
+      questionsFetched: false,
+      questionIDs: [],
+      firstQuestion: {},
+      answersFetched: false,
+      attachmentsFetched: false,
+      numberOfPregnancies: 0,
+      currentPregnancy: 0,
+      answers: [],
+      attachments: [],
+      showNextPregnancy: false,
+      showConfirm: false,
+      confirmed: false,
+    });
+    this.props.fetchMilestoneSections({ task_id: task.id });
+  };
+
+  _saveSectionsData = sections => {
+    if (_.isEmpty(this.state.section)) {
+      // default to first section
+      // TODO extend UI to allow for multiple sections
+      const section = sections.data[0];
+      const section_id = section.id;
+      this.setState({ section });
+      this.props.navigation.setParams({ section });
+      this.props.fetchMilestoneQuestions({ section_id });
+      this.props.resetMilestoneChoices();
+      this.props.fetchMilestoneAnswers({ section_id });
+      //this.props.fetchMilestoneAttachments({ section_id: section.id });
+    }
+  };
+
+  _saveQuestionsData = questions => {
+    const { firstQuestion, questionsFetched } = this.state;
+    if (_.isEmpty(firstQuestion) || !questionsFetched) {
+      this.setState({ firstQuestion: questions.data[0] });
+      // question IDs for repeat questions
+      const questionIDs = _.map(questions.data.slice(1), 'id');
+      this.setState({ questionsFetched: true, questionIDs });
+      const question_ids = _.map(questions.data, 'id');
+      this.props.fetchMilestoneChoices({ question_ids });
+    }
+  };
+
+  _saveAnswersData = answers => {
+    const answersFetched = this.state.answersFetched; 
+    if (_.isEmpty(answers) || !answersFetched) {
+      let numberOfPregnancies = this.state.numberOfPregnancies;
+      let currentPregnancy = this.state.currentPregnancy;
+      let showNextPregnancy = this.state.showNextPregnancy;
+      const firstQuestion = this.state.firstQuestion;
+      if (!_.isEmpty(firstQuestion)) {
+        const answer = _.find(answers.data, ['question_id', firstQuestion.id]);
+        if (!_.isEmpty(answer)) {
+          numberOfPregnancies = Math.trunc(answer.answer_text);
+          currentPregnancy = 1;
+          showNextPregnancy = true;
+        }
+      }
+
+      this.setState({
+        answers: answers.data,
+        answersFetched: true,
+        numberOfPregnancies,
+        currentPregnancy,
+        showNextPregnancy,
+      });
+    }
+  };
 
   renderItem = item => {
     const question = item.item;

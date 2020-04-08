@@ -13,6 +13,8 @@ import withInputAutoFocus, {
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
+import isEmpty from 'lodash/isEmpty';
+
 import { connect } from 'react-redux';
 import {
   fetchUser,
@@ -102,13 +104,16 @@ const maritalStatuses = [
 ];
 
 class RegistrationRespondentForm extends Component {
-  state = {
-    signatureSubmitted: false,
-    respondentSubmitted: false,
-    apiErrorMessage: '',
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      isSubmitting: false,
+      signatureSubmitted: false,
+      respondentSubmitted: false,
+      apiErrorMessage: '',
+    };
+
     this.props.fetchUser();
     this.props.resetRespondent();
   }
@@ -120,45 +125,48 @@ class RegistrationRespondentForm extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const respondent = nextProps.registration.respondent;
-    const apiRespondent = nextProps.registration.apiRespondent;
-    const session = nextProps.session;
-    if (!respondent.fetching && respondent.fetched) {
-      if (!apiRespondent.fetching) {
-        if (!apiRespondent.fetched && !this.state.respondentSubmitted) {
-          this.props.apiCreateRespondent(session, respondent.data);
-          this.setState({ respondentSubmitted: true });
-        } else if (apiRespondent.data.id !== undefined) {
-          // Upload signature image if we have respondent id
-          const api_id = apiRespondent.data.id;
-          this.props.updateRespondent({api_id: api_id});
-          if (!this.state.signatureSubmitted) {
-            this.saveSignature(api_id);
-            this.setState({ signatureSubmitted: true });
-          }
-          const registrationState = respondent.data.pregnant
-            ? ActionStates.REGISTERING_EXPECTED_DOB
-            : ActionStates.REGISTERING_SUBJECT;
-          this.props.updateSession({
-            registration_state: registrationState,
-          });
-        } // apiRespondent.fetched
-      } // apiRespondent.fetching
-    } // respondent.fetching
-  }
 
   shouldComponentUpdate(nextProps) {
-    const registration = nextProps.registration;
-    if (
-      registration.user.fetching ||
-      registration.respondent.fetching ||
-      registration.apiRespondent.fetching
-    ) {
-      return false;
-    }
-    return true;
+    const user = nextProps.registration.user;
+    const respondent = nextProps.registration.respondent;
+    const apiRespondent = nextProps.registration.apiRespondent;
+    return !user.fetching && !respondent.fetching && !apiRespondent.fetching;
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const respondent = this.props.registration.respondent;
+    const isSubmitting = this.state.isSubmitting;
+    if (respondent.fetched && !isEmpty(respondent.data) && isSubmitting) {
+      this._saveAPIRespondent(respondent);
+    }
+  }
+
+  _saveAPIRespondent = respondent => {
+    const apiRespondent = this.props.registration.apiRespondent;
+    const session = this.props.session;
+    const { respondentSubmitted, signatureSubmitted } = this.state;
+
+    if (!apiRespondent.fetching) {
+      if (!apiRespondent.fetched && !respondentSubmitted) {
+        this.props.apiCreateRespondent(session, respondent.data);
+        this.setState({ respondentSubmitted: true });
+      } else if (apiRespondent.data.id !== undefined) {
+        // Upload signature image if we have respondent id
+        const api_id = apiRespondent.data.id;
+        this.props.updateRespondent({api_id: api_id});
+        if (!signatureSubmitted) {
+          this.saveSignature(api_id);
+          this.setState({ signatureSubmitted: true });
+        }
+        const registrationState = respondent.data.pregnant
+          ? ActionStates.REGISTERING_EXPECTED_DOB
+          : ActionStates.REGISTERING_SUBJECT;
+        this.props.updateSession({
+          registration_state: registrationState,
+        });
+      } // apiRespondent.fetched
+    } // apiRespondent.fetching
+  };
 
   getInitialValues = () => {
     let initialValues = {};
@@ -194,7 +202,7 @@ class RegistrationRespondentForm extends Component {
       };
     }
     return initialValues;
-  }
+  };
 
   saveSignature = async (api_id) => {
     const uri = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY + '/signature.png';
@@ -220,6 +228,7 @@ class RegistrationRespondentForm extends Component {
       irb_id: irb.irb_id,
       accepted_tos_at: new Date().toISOString(),
     };
+    this.setState({ isSubmitting: true });
     this.props.createRespondent(respondent);
   };
 

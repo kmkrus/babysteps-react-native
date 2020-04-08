@@ -41,29 +41,29 @@ class BabyBookEntryScreen extends Component {
     ),
   });
 
-  state = {
-    submitted: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      submitted: false,
+    };
+
     this.props.resetBabyBookEntries();
     this.props.fetchUser();
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if (
-      !this.state.submitted &&
-      !nextProps.babybook.entry.fetching &&
-      nextProps.babybook.entry.fetched
-    ) {
+  shouldComponentUpdate(nextProps, nextState) {
+    return !nextProps.babybook.entry.fetching;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const entry = this.props.babybook.entry;
+    const submitted = this.state.submitted;
+    if (!submitted && !entry.fetching && entry.fetched) {
       this.setState({ submitted: true });
       this.props.fetchBabyBookEntries();
       this.props.navigation.navigate('BabyBook', { babybookEntries: true });
     }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return !nextProps.babybook.entry.fetching;
   }
 
   render() {

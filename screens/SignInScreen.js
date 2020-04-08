@@ -38,83 +38,88 @@ class SignInScreen extends Component {
     title: 'Sign In',
   };
 
-  state = {
-    email: '',
-    password: '',
-    isSubmitting: false,
-    errorMessages: [],
-    shouldUpdate: true,
-    syncMilestones: false,
-    syncRegistration: false,
-    syncCalendar: false,
-    syncAnswers: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      email: '',
+      password: '',
+      isSubmitting: false,
+      errorMessages: [],
+      shouldUpdate: true,
+      syncMilestones: false,
+      syncRegistration: false,
+      syncCalendar: false,
+      syncAnswers: false,
+    };
+
     this.props.resetSession();
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
-    const {
-      syncMilestones,
-      syncRegistration,
-      syncCalendar,
-      syncAnswers,
-    } = this.state;
-    const session = nextProps.session;
-    const milestones = nextProps.milestones;
-    const registration = nextProps.registration;
-
-    if (!session.fetching) {
-      if (session.fetched) {
-        this.setState({ shouldUpdate: false });
-        if (!syncMilestones) {
-          this.setState({ syncMilestones: true });
-          this.props.apiFetchMilestones();
-        }
-        if (!syncRegistration) {
-          this.setState({ syncRegistration: true });
-          this.props.apiSyncRegistration(session.api_id);
-          this.props.apiSyncSignature(session.api_id);
-        }
-        if (!syncCalendar && !isEmpty(registration.subject.data)) {
-          this.setState({ syncCalendar: true });
-          this.props.apiFetchMilestoneCalendar({ subject_id: registration.subject.data.api_id });
-        }
-        if (
-          !syncAnswers &&
-          !milestones.apiAnswers.fetched &&
-          !isEmpty(registration.respondent.data) &&
-          !isEmpty(registration.subject.data)
-        ) {
-          this.setState({ syncAnswers: true });
-          this.props.apiSyncMilestoneAnswers(session.api_id);
-        }
-        if (
-          syncMilestones &&
-          milestones.api_milestones.fetched &&
-          syncRegistration &&
-          registration.apiRespondent.fetched &&
-          registration.apiSignature.fetched &&
-          syncCalendar &&
-          milestones.api_calendar.fetched &&
-          syncAnswers &&
-          milestones.apiAnswers.fetched
-        ) {
-          this.props.updateSession({
-            registration_state: States.REGISTERED_AS_IN_STUDY,
-          });
-        }
-      }
-      if (session.errorMessages) {
-        this.setState({ isSubmitting: false, errorMessages: session.errorMessages });
-      }
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return nextState.shouldUpdate;
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const session = this.props.session;
+    if (!session.fetching) {
+      this._saveSignInSession(session);
+    }
+  }
+
+  _saveSignInSession = session => {
+    const syncMilestones = this.state.syncMilestones;
+    const syncRegistration = this.state.syncRegistration;
+    const syncCalendar = this.state.syncCalendar;
+    const syncAnswers = this.state.syncAnswers;
+
+    const milestones = this.props.milestones;
+    const registration = this.props.registration;
+
+    if (session.fetched) {
+      this.setState({ shouldUpdate: false });
+      if (!syncMilestones) {
+        this.setState({ syncMilestones: true });
+        this.props.apiFetchMilestones();
+      }
+      if (!syncRegistration) {
+        this.setState({ syncRegistration: true });
+        this.props.apiSyncRegistration(session.api_id);
+        this.props.apiSyncSignature(session.api_id);
+      }
+      if (!syncCalendar && !isEmpty(registration.subject.data)) {
+        this.setState({ syncCalendar: true });
+        this.props.apiFetchMilestoneCalendar({ subject_id: registration.subject.data.api_id });
+      }
+      if (
+        !syncAnswers &&
+        !milestones.apiAnswers.fetched &&
+        !isEmpty(registration.respondent.data) &&
+        !isEmpty(registration.subject.data)
+      ) {
+        this.setState({ syncAnswers: true });
+        this.props.apiSyncMilestoneAnswers(session.api_id);
+      }
+      if (
+        syncMilestones &&
+        milestones.api_milestones.fetched &&
+        syncRegistration &&
+        registration.apiRespondent.fetched &&
+        registration.apiSignature.fetched &&
+        syncCalendar &&
+        milestones.api_calendar.fetched &&
+        syncAnswers &&
+        milestones.apiAnswers.fetched
+      ) {
+        this.props.updateSession({
+          registration_state: States.REGISTERED_AS_IN_STUDY,
+        });
+      }
+    }
+    if (session.errorMessages) {
+      this.setState({ isSubmitting: false, errorMessages: session.errorMessages });
+    }
+  };
 
   handlePress = () => {
     const { email, password } = this.state;

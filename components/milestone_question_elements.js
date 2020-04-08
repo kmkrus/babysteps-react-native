@@ -19,7 +19,7 @@ import * as Permissions from 'expo-permissions';
 import * as WebBrowser from 'expo-web-browser';
 import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
-import DatePicker from 'react-native-datepicker';
+import DatePicker from 'react-native-datepicker';;
 
 import _ from 'lodash';
 

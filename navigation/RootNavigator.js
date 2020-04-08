@@ -119,7 +119,11 @@ const TourNoStudyNavigator = createStackNavigator(
 const TourNoStudyNavigationContainer = createAppContainer(TourNoStudyNavigator);
 
 class RootNavigator extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
     this.props.fetchSession();
   }
 
@@ -143,51 +147,55 @@ class RootNavigator extends Component {
     return true;
   }
 
-  componentWillUpdate(nextProps) {
+  componentDidUpdate(prevProps, prevState) {
     // update local notifications every 7 days to stay under the
     // IOS limit of 64 notifications
-    const calendar = nextProps.milestones.calendar;
-    const session = nextProps.session;
-    const subject = nextProps.registration.subject.data;
+    const calendar = this.props.milestones.calendar;
+    const session = this.props.session;
+    const subject = this.props.registration.subject.data;
 
     if (!isEmpty(calendar.data) && !isEmpty(subject)) {
-      const notifications_permission = nextProps.session.notifications_permission;
-      if (!session.fetching && notifications_permission === 'granted') {
-        const today = moment();
-        let notifications_updated_at = moment(session.notifications_updated_at);
-        // default next to update notifications
-        let next_notification_update_at = moment().subtract(1, 'days');
-        if (notifications_updated_at.isValid()) {
-          // change this to 30 seconds to get more frequent updates
-          //next_notification_update_at = notifications_updated_at.add(30, 'seconds');
-          next_notification_update_at = notifications_updated_at.add(7, 'days');
-        }
+      if (!session.fetching && session.notifications_permission === 'granted') {
+        this._handleUpdateNotifications(session, subject);
+      }
+    }
+  };
 
-        Sentry.configureScope(scope => {
-          scope.setExtra(
-            'notifications_updated_at',
-            JSON.stringify(notifications_updated_at),
-          );
-        });
+  _handleUpdateNotifications = (session, subject) => {
+    const today = moment();
+    let notifications_updated_at = moment(session.notifications_updated_at);
+    // default next to update notifications
+    let next_notification_update_at = moment().subtract(1, 'days');
+    if (notifications_updated_at.isValid()) {
+      // change this to 30 seconds to get more frequent updates
+      //next_notification_update_at = notifications_updated_at.add(30, 'seconds');
+      next_notification_update_at = notifications_updated_at.add(7, 'days');
+    }
 
-        if (today.isAfter(next_notification_update_at)) {
-          let studyEndDate = '';
-          if (subject.date_of_birth) {
-            studyEndDate = moment(subject.date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
-          } else {
-            studyEndDate = moment(subject.expected_date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
-          }
-          notifications_updated_at = today.toISOString();
-          this.props.updateSession({ notifications_updated_at });
-          this.props.deleteAllNotifications();
-          this.props.updateNotifications();
-          this.props.updateMomentaryAssessments(studyEndDate);
-        } else {
-          // console.log('****** Next Notfication Update Scheduled: ', next_notification_update_at.toISOString());
-        } // notifications_updated_at
-      } // session.fetching
-    } // calendar.data
-  }
+    if (today.isAfter(next_notification_update_at)) {
+      let studyEndDate = '';
+      if (subject.date_of_birth) {
+        studyEndDate = moment(subject.date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
+      } else {
+        studyEndDate = moment(subject.expected_date_of_birth).add(CONSTANTS.POST_BIRTH_END_OF_STUDY, 'days')
+      }
+      notifications_updated_at = today.toISOString();
+      this.props.updateSession({ notifications_updated_at });
+      this.props.deleteAllNotifications();
+      this.props.updateNotifications();
+      this.props.updateMomentaryAssessments(studyEndDate);
+
+      Sentry.configureScope(scope => {
+        scope.setExtra(
+          'notifications_updated_at',
+          JSON.stringify(notifications_updated_at),
+        );
+      });
+
+    } else {
+      // console.log('****** Next Notfication Update Scheduled: ', next_notification_update_at.toISOString());
+    } // notifications_updated_at
+  };
 
   _handleNotificationOnPress = data => {
     const task = find(this.props.milestones.tasks.data, ['id', data.task_id]);

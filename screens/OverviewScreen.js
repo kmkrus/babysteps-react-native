@@ -41,11 +41,13 @@ class OverviewScreen extends React.Component {
     header: null,
   };
 
-  state = {
-    testNotificationCreated: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      testNotificationCreated: false,
+    };
+
     this.props.fetchSubject();
     //this.props.resetApiMilestoneCalendar(); // I am commenting this out because of the following:
     //  1. After the last registration form is finished and the subject is registered, apiNewMilestoneCalendar is called.

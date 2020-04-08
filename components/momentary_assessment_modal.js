@@ -20,23 +20,33 @@ const modalHeight = height * 0.6;
 const buttonWidth = modalWidth * 0.8;
 
 class MomentaryAssessment extends Component {
-  state = {
-    selectedIndex: null,
-    response_scale: 'one_to_five',
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillReceiveProps(nextProps, nextState) {
-    const notifications = nextProps.notifications;
+    this.state = {
+      selectedIndex: null,
+      response_scale: 'one_to_five',
+      momentaryAssessmentLoaded: false,
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const notifications = this.props.notifications;
     const momentary_assessment = notifications.momentary_assessment;
-    if (notifications.show_momentary_assessment) {
-      if (!momentary_assessment.fetching && !momentary_assessment.fetched) {
-        this.props.fetchMomentaryAssessment({ task_id: momentary_assessment.data.task_id });
-        if (momentary_assessment.data.response_scale) {
-          this.setState({ selectedIndex: null, response_scale: momentary_assessment.data.response_scale });
-        }
-      }
+    const momentaryAssessmentLoaded = this.state.momentaryAssessmentLoaded;
+    if (notifications.show_momentary_assessment && !momentaryAssessmentLoaded) {
+      this._handleShowMomentaryAssessment(momentary_assessment);
     }
   }
+
+  _handleShowMomentaryAssessment = momentary_assessment => {
+    if (!momentary_assessment.fetching && !momentary_assessment.fetched) {
+      this.props.fetchMomentaryAssessment({ task_id: momentary_assessment.data.task_id });
+      if (momentary_assessment.data.response_scale) {
+        this.setState({ selectedIndex: null, response_scale: momentary_assessment.data.response_scale });
+      }
+    }
+  };
 
   _handleOnPress = selectedIndex => {
     this.setState({selectedIndex});

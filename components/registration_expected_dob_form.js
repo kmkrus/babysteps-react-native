@@ -10,6 +10,8 @@ import withInputAutoFocus, {
   withNextInputAutoFocusInput,
 } from 'react-native-formik';
 
+import isEmpty from 'lodash/isEmpty';
+
 import moment from 'moment';
 
 import { connect } from 'react-redux';
@@ -40,14 +42,16 @@ const DatePickerInput = compose(
 const Form = withNextInputAutoFocusForm(View, { submitAfterLastInput: false });
 
 class RegistrationExpectedDOB extends Component {
-  state = {
-    isSubmitting: false,
-    dobError: null,
-    apiCreateSubjectSubmitted: false,
-    apiNewMilestoneCalendarSubmitted: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      isSubmitting: false,
+      dobError: null,
+      apiCreateSubjectSubmitted: false,
+      apiMilestoneCalendarSubmitted: false,
+    };
+
     this.props.resetSubject();
     this.props.resetRespondent();
     this.props.fetchRespondent();
@@ -59,53 +63,54 @@ class RegistrationExpectedDOB extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const subject = nextProps.registration.subject;
-    const apiSubject = nextProps.registration.apiSubject;
-    const apiRespondent = nextProps.registration.apiRespondent;
-    const session = nextProps.session;
-    if (!subject.fetching && subject.fetched) {
-      if (!apiSubject.fetching) {
-        if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
-          this.props.apiCreateSubject(session, subject.data);
-          this.setState({ apiCreateSubjectSubmitted: true });
-        }
-        if (apiSubject.fetched && apiSubject.data.id !== undefined) {
-          this.props.updateSubject({ api_id: apiSubject.data.id });
-          if (
-            !session.fetching &&
-            session.registration_state !== States.REGISTERED_AS_IN_STUDY
-          ) {
-            if (!this.state.apiNewMilestoneCalendarSubmitted) {
-              this.props.apiNewMilestoneCalendar({
-                subject_id: apiSubject.data.id,
-              });
-              this.setState({ apiNewMilestoneCalendarSubmitted: true });
-            }
-            this.props.updateSession({
-              registration_state: States.REGISTERED_AS_IN_STUDY,
-            });
-          }
-        } // apiSubject fetched
-      } // apiSubject fetching
-    } // subject fetching
-  }
-
   shouldComponentUpdate(nextProps) {
     const subject = nextProps.registration.subject;
     const apiSubject = nextProps.registration.apiSubject;
     const respondent = nextProps.registration.respondent;
     const session = nextProps.session;
-    if (
-      subject.fetching ||
-      respondent.fetching ||
-      apiSubject.fetching ||
-      session.fetching
-    ) {
-      return false;
-    }
-    return true;
+    return (
+      !subject.fetching &&
+      !respondent.fetching &&
+      !apiSubject.fetching &&
+      !session.fetching
+    );
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    const subject = this.props.registration.subject;
+    const isSubmitting = this.state.isSubmitting;
+    if (subject.fetched && !isEmpty(subject.data) && isSubmitting) {
+      this._saveAPISubject(subject);
+    }
+  }
+
+  _saveAPISubject = subject => {
+    const apiSubject = this.props.registration.apiSubject;
+    const session = this.props.session;
+    if (!apiSubject.fetching) {
+      if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
+        this.props.apiCreateSubject(session, subject.data);
+        this.setState({ apiCreateSubjectSubmitted: true });
+      }
+      if (apiSubject.fetched && apiSubject.data.id !== undefined) {
+        this.props.updateSubject({ api_id: apiSubject.data.id });
+        if (
+          !session.fetching &&
+          session.registration_state !== States.REGISTERED_AS_IN_STUDY
+        ) {
+          if (!this.state.apiMilestoneCalendarSubmitted) {
+            this.props.apiNewMilestoneCalendar({
+              subject_id: apiSubject.data.id,
+            });
+            this.setState({ apiMilestoneCalendarSubmitted: true });
+          }
+          this.props.updateSession({
+            registration_state: States.REGISTERED_AS_IN_STUDY,
+          });
+        }
+      } // apiSubject fetched
+    } // apiSubject fetching
+  };
 
   _handleOnSubmit = values => {
     const respondent = this.props.registration.respondent;

@@ -61,19 +61,18 @@ class BabyBookScreen extends Component {
         <Text style={styles.headerTitle}>BabyBook</Text>
 
         <View style={styles.headerButtonContainer}>
-          {navigation.state.params &&
-            navigation.state.params.babybookEntries && (
-              <TouchableOpacity
-                style={styles.headerButton}
-                onPress={() => navigation.state.params.Share()}
-              >
-                <Ionicons
-                  name={Platform.OS === 'ios' ? 'ios-share' : 'md-share'}
-                  size={26}
-                  color={Colors.white}
-                />
-              </TouchableOpacity>
-            )}
+          {navigation.state.params && navigation.state.params.babybookEntries && (
+            <TouchableOpacity
+              style={styles.headerButton}
+              onPress={() => navigation.state.params.Share()}
+            >
+              <Ionicons
+                name={Platform.OS === 'ios' ? 'ios-share' : 'md-share'}
+                size={26}
+                color={Colors.white}
+              />
+            </TouchableOpacity>
+          )}
 
           {false && (
             <TouchableOpacity
@@ -99,35 +98,35 @@ class BabyBookScreen extends Component {
     ),
   });
 
-  state = {
-    currentIndex: 0,
-    data: [],
-    shareAttributes: {
-      content: {
-        title: '',
-        message: 'none',
-        url: '', // ios only
-      },
-      options: {
-        subject: 'Nothing to Share', // for email
-        dialogTitle: 'Nothing to Share ', // Android only
-      },
-    },
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
-    if (isEmpty(this.props.registration.subject.data)) {
-      this.props.fetchSubject();
-    }
-
-    //this.props.fetchBabyBookEntries();
+    this.state = {
+      currentIndex: 0,
+      data: [],
+      entryDataSaved: false,
+      shareAttributes: {
+        content: {
+          title: '',
+          message: 'none',
+          url: '', // ios only
+        },
+        options: {
+          subject: 'Nothing to Share', // for email
+          dialogTitle: 'Nothing to Share ', // Android only
+        },
+      },
+    };
 
     // bind function to navigation
     this.props.navigation.setParams({
       babybookEntries: false,
       Share: this.shareOpen.bind(this),
     });
+    this.props.fetchSubject();
+  }
 
+  componentDidMount() {
     // set selected item from timeline
     const itemId = this.props.navigation.getParam('itemId', '0');
     if (itemId !== '0') {
@@ -138,9 +137,7 @@ class BabyBookScreen extends Component {
 
       this.setState({ currentIndex: selectedIndex });
     }
-  }
 
-  componentDidMount() {
     if (!isEmpty(this.props.babybook.entries.data)) {
       this.props.navigation.setParams({ babybookEntries: true });
     }
@@ -148,51 +145,54 @@ class BabyBookScreen extends Component {
       'willFocus',
       () => {
         this.props.fetchBabyBookEntries();
+        this.setState({ entryDataSaved: false });
       }
     );
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (
-      !nextProps.babybook.entries.fetching &&
-      nextProps.babybook.entries.fetched
-    ) {
-      if (!isEmpty(nextProps.babybook.entries.data)) {
-        let data = [];
-        forEach(nextProps.babybook.entries.data, item => {
-          if (item.file_name) {
-            const uri = babybookDir + item.file_name;
-            const uriParts = item.file_name.split('.');
-            data.push({ ...item, file_uri: { uri } });
-          }
-        });
-        data = sortBy(data, i => i.created_at);
-
-        // add entry for cover
-        let cover = find(data, ['cover', 1]);
-        if (!cover) cover = coverLogo;
-        data = [{ ...cover, id: '0' }].concat(data);
-
-        this.setState({ data });
-        // update share
-        this.setShareAttributes(this.state.currentIndex);
-      } else {
-        this.setState({ data: [coverLogo] });
-      }
-    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return (
-      !nextProps.registration.subject.fetching &&
-      !nextProps.babybook.entries.fetching
-    );
+    const subject = nextProps.registration.subject;
+    const entries = nextProps.babybook.entries;
+    return !subject.fetching && !entries.fetching;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const entries = this.props.babybook.entries;
+    const entryDataSaved = this.state.entryDataSaved;
+    if (entries.fetched && !entryDataSaved) {
+      this._saveEntryData(entries);
+    }
   }
 
   componentWillUnmount() {
     // Remove nav focus listener
     this.willFocusBabyBook.remove();
   }
+
+  _saveEntryData = entries => {
+    if (!isEmpty(entries.data)) {
+      let data = [];
+      forEach(entries.data, item => {
+        if (item.file_name) {
+          const uri = babybookDir + item.file_name;
+          const uriParts = item.file_name.split('.');
+          data.push({ ...item, file_uri: { uri } });
+        }
+      });
+      data = sortBy(data, i => i.created_at);
+
+      // add entry for cover
+      let cover = find(data, ['cover', 1]);
+      if (!cover) cover = coverLogo;
+      data = [{ ...cover, id: '0' }].concat(data);
+
+      this.setState({ data, entryDataSaved: true, });
+      // update share
+      this.setShareAttributes(this.state.currentIndex);
+    } else {
+      this.setState({ data: [coverLogo], entryDataSaved: true });
+    }
+  };
 
   handleIndexChange = index => {
     this.setState({ currentIndex: index });

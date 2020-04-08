@@ -82,22 +82,20 @@ class MilestoneQuestionsScreen extends Component {
       task_id: null,
       task_name: '',
       section: {},
-      questionsFetched: false,
       answersFetched: false,
       attachmentsFetched: false,
       answers: [],
       attachments: [],
+      data: [],
+      dataReady: false,
       errorMessage: '',
       confirmed: false,
     };
 
-    this.saveResponse = this.saveResponse.bind(this);
-  }
-
-  componentWillMount() {
     this.props.fetchUser();
     this.props.fetchRespondent();
     this.props.fetchSubject();
+    this.saveResponse = this.saveResponse.bind(this);
   }
 
   componentDidMount() {
@@ -107,101 +105,126 @@ class MilestoneQuestionsScreen extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    const task = nextProps.navigation.state.params.task;
+  shouldComponentUpdate(nextProps, nextState) {
+    const sections = nextProps.milestones.sections;
+    const questions = nextProps.milestones.questions;
+    const choices = nextProps.milestones.choices;
+    return !questions.fetching && !choices.fetching;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const task = this.props.navigation.state.params.task;
+    const sections = this.props.milestones.sections;
+    const questions = this.props.milestones.questions;
+    const answers = this.props.milestones.answers;
+    const attachments = this.props.milestones.attachments;
+
     // capture notification links with incorrect task
     if (typeof(task) !== 'object' || task === null) {
       this.props.navigation.navigate('Milestones');
       return;
     }
-    // update the list of questions and choices on change of task.
+    // need to update sections for new task for remaining functions
     if (task.id !== this.state.task_id) {
-      this.props.resetMilestoneQuestions();
-      this.props.resetMilestoneChoices();
-      this.props.resetMilestoneAnswers();
-      this.props.fetchMilestoneSections({ task_id: task.id });
-      this.setState({
-        task_id: task.id,
-        task_name: task.name,
-        section: [],
-        questionsFetched: false,
-        answersFetched: false,
-        attachmentsFetched: false,
-        answers: [],
-        attachments: [],
-        confirmed: false,
-      });
+      this._resetDataForTask(task);
       return;
     }
-    const sections = nextProps.milestones.sections;
+    if (sections.fetched) {
+      this._saveSectionsData(sections);
+    }
+    if (questions.fetched) {
+      this._saveQuestionsData(questions);
+    }
+    if (answers.fetched) {
+      this._saveAnswersData(answers);
+    }
+    if (attachments.fetched) {
+      this._saveAttachmentsData(attachments);
+    }
+  }
 
-    const questions = nextProps.milestones.questions;
-    if (!sections.fetching && sections.fetched) {
-      if (!_.isEmpty(sections.data)) {
-        if (_.isEmpty(this.state.section)) {
-          const section = sections.data[0];
-          this.setState({section: section});
-          this.props.navigation.setParams({ section });
-          this.props.fetchMilestoneQuestions({ section_id: section.id });
-          this.props.resetMilestoneChoices();
-          this.props.fetchMilestoneAnswers({ section_id: section.id });
-          this.props.fetchMilestoneAttachments({ section_id: section.id });
-        } else {
-          if (!questions.fetching) {
-            if (
-              _.isEmpty(questions.data) ||
-              questions.data[0].section_id !== this.state.section.id
-            ) {
-              this.props.fetchMilestoneQuestions({
-                section_id: this.state.section.id,
-              });
-              this.props.resetMilestoneChoices();
-            }
-          }
-          if (!questions.fetching && questions.fetched) {
-            if (!nextProps.milestones.choices.fetching) {
-              if (_.isEmpty(nextProps.milestones.choices.data)) {
-                this.setState({ questionsFetched: true });
-                const question_ids = _.map(questions.data, 'id');
-                this.props.fetchMilestoneChoices({ question_ids });
-              }
-            }
-          } // questions.fetching
-        } // isEmpty state.section
-      } // isEmpty sections.data
-    } // sections.fetching
+  _resetDataForTask = task => {
+    this.setState({
+      task_id: task.id,
+      task_name: task.name,
+      section: {},
+      answersFetched: false,
+      attachmentsFetched: false,
+      answers: [],
+      attachments: [],
+      data: [],
+      dataReady: false,
+      confirmed: false,
+    });
+    this.props.resetMilestoneQuestions();
+    this.props.resetMilestoneChoices();
+    this.props.fetchMilestoneSections({ task_id: task.id });
+  };
 
-    const answers = nextProps.milestones.answers;
-    if (!answers.fetching && answers.fetched) {
-      if (_.isEmpty(this.state.answers) && !this.state.answersFetched) {
-        this.setState({
-          answers: answers.data,
-          answersFetched: true,
-        });
+  _saveSectionsData = sections => {
+    if (!_.isEmpty(sections.data)) {
+      // default to first section
+      // TODO extend UI to allow for multiple sections
+      const section = sections.data[0];
+      const section_id = section.id;
+      if (section_id !== this.state.section.id) {
+        this.setState({ section });
+        this.props.navigation.setParams({ section });
+        this.props.fetchMilestoneQuestions({ section_id });
+        this.props.fetchMilestoneAnswers({ section_id });
+        this.props.fetchMilestoneAttachments({ section_id });
       }
     }
+  };
 
-    const attachments = nextProps.milestones.attachments;
-    if (!attachments.fetching && attachments.fetched) {
+  _saveQuestionsData = questions => {
+    if (!_.isEmpty(questions.data)) {
+      const choices = this.props.milestones.choices;
+      const firstQuestion = this.state.firstQuestion;
+      const dataReady = this.state.dataReady;
+
+      if (_.isEmpty(firstQuestion)) {
+        this.setState({ firstQuestion: questions.data[0] });
+      }
+      if (!choices.fetched) {
+        // question IDs for repeat questions
+        const questionIDs = _.map(questions.data.slice(1), 'id');
+        this.setState({ questionIDs });
+        const question_ids = _.map(questions.data, 'id');
+        this.props.fetchMilestoneChoices({ question_ids });
+      }
+      if (choices.fetched && !dataReady) {
+        const data = _.map(questions.data, question => {
+          return _.extend({}, question, {
+            choices: _.filter(choices.data, ['question_id', question.id]),
+          });
+        });
+        this.setState({ data, dataReady: true });
+      }
+    }
+  };
+
+  _saveAnswersData = answers => {
+    const answersFetched = this.state.answersFetched;
+    if (_.isEmpty(answers) || !answersFetched) {
       this.setState({
-        attachments: this.props.milestones.attachments.data,
+        answers: answers.data,
+        answersFetched: true,
+      });
+    }
+  };
+
+  _saveAttachmentsData = attachments => {
+    const attachmentsFetched = this.state.attachmentsFetched;
+    if (_.isEmpty(attachments.data) && !attachmentsFetched) {
+      this.setState({
+        attachments: attachments.data,
         attachmentsFetched: true,
       });
     }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    if (
-      nextProps.milestones.questions.fetching ||
-      nextProps.milestones.choices.fetching
-    ) {
-      return false;
-    }
-    return true;
-  }
+  };
 
   renderItem = item => {
-
     const question = item.item;
     const question_number = _.isEmpty(question.question_number)
       ? String(question.position)
@@ -485,13 +508,8 @@ class MilestoneQuestionsScreen extends Component {
   };
 
   render() {
-    const milestones = this.props.milestones;
     const section = this.state.section;
-    const data = _.map(milestones.questions.data, question => {
-      return _.extend({}, question, {
-        choices: _.filter(milestones.choices.data, ['question_id', question.id]),
-      });
-    });
+    const data = this.state.data;
     return (
       <View style={{ height }}>
         <KeyboardAwareScrollView
@@ -519,7 +537,7 @@ class MilestoneQuestionsScreen extends Component {
           </View>
         </KeyboardAwareScrollView>
 
-        {this.state.questionsFetched && (
+        {this.state.dataReady && (
           <View
             style={[
               styles.buttonContainer,
@@ -625,15 +643,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     width: '100%',
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderTopWidth: 1,
     borderTopColor: Colors.lightGrey,
     backgroundColor: Colors.background,
     position: 'absolute',
   },
   buttonContainerAndroid: {
-    bottom: 126,
+    bottom: 150,
   },
   buttonContainerIOS: {
     bottom: isIphoneX() ? 172 : 110,

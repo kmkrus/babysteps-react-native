@@ -74,14 +74,49 @@ const conceptionMethods = [
 ];
 
 class RegistrationSubjectForm extends Component {
-  state = {
-    isSubmitting: false,
-    dobError: null,
-    apiCreateSubjectSubmitted: false,
-    apiNewMilestoneCalendarSubmitted: false,
-  };
+  constructor(props) {
+    super(props);
 
-  getInitialValues() {
+    this.state = {
+      isSubmitting: false,
+      dobError: null,
+      apiCreateSubjectSubmitted: false,
+      apiNewMilestoneCalendarSubmitted: false,
+    };
+
+    this.props.resetSubject();
+    this.props.fetchRespondent();
+  }
+
+  componentDidMount() {
+    if (['none', 'unknown'].includes(this.props.session.connectionType)) {
+      this.setState({ isSubmitting: true, dobError: 'The internet is not currently available' });
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const respondent = nextProps.registration.respondent;
+    const subject = nextProps.registration.subject;
+    const apiSubject = nextProps.registration.apiSubject;
+    const session = nextProps.session;
+
+    return (
+      !subject.fetching &&
+      !respondent.fetching &&
+      !apiSubject.fetching &&
+      !session.fetching
+    );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const subject = this.props.registration.subject;
+    const isSubmitting = this.state.isSubmitting;
+    if (subject.fetched && !isEmpty(subject.data) && isSubmitting) {
+      this._saveAPISubject(subject);
+    }
+  }
+
+  _getInitialValues = () => {
     const screening_blood = this.props.session.screening_blood;
     let initialValues = {};
     if (__DEV__) {
@@ -90,7 +125,7 @@ class RegistrationSubjectForm extends Component {
         gender: 'female',
         date_of_birth: moment().subtract(1, 'years').format("YYYY/MM/DD"),
         conception_method: 'natural',
-        screening_blood: screening_blood,
+        screening_blood,
         outcome: 'live_birth',
         first_name: 'Test',
         middle_name: 'Tester',
@@ -102,74 +137,44 @@ class RegistrationSubjectForm extends Component {
         gender: 'female',
         date_of_birth: null,
         conception_method: 'natural',
-        screening_blood: screening_blood,
+        screening_blood,
         outcome: 'live_birth',
         first_name: '',
         last_name: '',
       };
     }
     return initialValues;
-  }
+  };
 
-  componentWillMount() {
-    this.props.resetSubject();
-    this.props.fetchRespondent();
-  }
-
-  componentDidMount() {
-    if (['none', 'unknown'].includes(this.props.session.connectionType)) {
-      this.setState({ isSubmitting: true, dobError: 'The internet is not currently available' });
-    }
-  }
-
-  componentWillReceiveProps(nextProps, nextState) {
-    const subject = nextProps.registration.subject;
-    const apiSubject = nextProps.registration.apiSubject;
-    const session = nextProps.session;
+  _saveAPISubject = subject => {
+    const apiSubject = this.props.registration.apiSubject;
+    const session = this.props.session;
+    const apiCreateSubjectSubmitted = this.state.apiCreateSubjectSubmitted;
     //const auth = nextProps.registration.auth;
 
-    if (!subject.fetching && subject.fetched) {
-      if (!apiSubject.fetching) {
-        if (!apiSubject.fetched && !this.state.apiCreateSubjectSubmitted) {
-          this.props.apiCreateSubject(session, subject.data);
-          this.setState({ apiCreateSubjectSubmitted: true });
-        } else if (apiSubject.data.id !== undefined) {
-          this.props.updateSubject({ api_id: apiSubject.data.id });
-          if (
-            !session.fetching &&
-            session.registration_state !== States.REGISTERED_AS_IN_STUDY
-          ) {
-            if (!this.state.apiNewMilestoneCalendarSubmitted) {
-              this.props.apiNewMilestoneCalendar({
-                subject_id: apiSubject.data.id,
-              });
-              this.setState({ apiNewMilestoneCalendarSubmitted: true });
-            }
-            this.props.updateSession({
-              registration_state: States.REGISTERED_AS_IN_STUDY,
+    if (!apiSubject.fetching) {
+      if (!apiSubject.fetched && !apiCreateSubjectSubmitted) {
+        this.props.apiCreateSubject(session, subject.data);
+        this.setState({ apiCreateSubjectSubmitted: true });
+      } else if (apiSubject.data.id !== undefined) {
+        this.props.updateSubject({ api_id: apiSubject.data.id });
+        if (
+          !session.fetching &&
+          session.registration_state !== States.REGISTERED_AS_IN_STUDY
+        ) {
+          if (!this.state.apiNewMilestoneCalendarSubmitted) {
+            this.props.apiNewMilestoneCalendar({
+              subject_id: apiSubject.data.id,
             });
+            this.setState({ apiNewMilestoneCalendarSubmitted: true });
           }
-        } // apiSubject fetched
-      } // apiSubject fetching
-    } // subject fetching
-  }
-
-  shouldComponentUpdate(nextProps) {
-    const subject = nextProps.registration.subject;
-    const apiSubject = nextProps.registration.apiSubject;
-    const respondent = nextProps.registration.respondent;
-    const session = nextProps.session;
-
-    if (
-      subject.fetching ||
-      respondent.fetching ||
-      apiSubject.fetching ||
-      session.fetching
-    ) {
-      return false;
-    }
-    return true;
-  }
+          this.props.updateSession({
+            registration_state: States.REGISTERED_AS_IN_STUDY,
+          });
+        }
+      } // apiSubject fetched
+    } // apiSubject fetching
+  };
 
   render() {
     const respondent = this.props.registration.respondent;
@@ -192,7 +197,7 @@ class RegistrationSubjectForm extends Component {
           }
         }}
         validationSchema={validationSchema}
-        initialValues={this.getInitialValues()}
+        initialValues={this._getInitialValues()}
         render={props => {
           return (
             <Form>

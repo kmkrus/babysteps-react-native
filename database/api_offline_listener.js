@@ -17,24 +17,31 @@ import CONSTANTS from '../constants';
 class ApiOfflineListener extends PureComponent {
   constructor(props) {
     super(props);
+
     this.state = {
       dispatching_pending_actions: false,
     };
+
     this._getConnectionStatus();
     this._addListeners();
   }
 
-  componentWillUpdate(nextProps) {
-    const session = nextProps.session;
-    const pending_actions = session.pending_actions;
+  componentDidUpdate(prevProps, prevState) {
+    const session = this.props.session;
     // console.log('**** Network Type: ', session.connectionType);
-    // console.log('**** Pending Actions: ', pending_actions.length);
+    this._dispatch_pending_actions(session);
+  }
+
+  _dispatch_pending_actions = (session) => {
+    const dispatching_pending_actions = this.state.dispatching_pending_actions;
     if (
       !['none', 'unknown'].includes(session.connectionType) &&
       !session.dispatching_pending_actions &&
-      !this.state.dispatching_pending_actions
+      !dispatching_pending_actions
     ) {
       // should dispatch in the same order as they were pushed onto the array
+      const pending_actions = session.pending_actions;
+      // console.log('**** Pending Actions: ', pending_actions.length);
       if (Array.isArray(pending_actions) && !isEmpty(pending_actions)) {
         this.props.dispatchPendingActions(pending_actions);
         this.setState({ dispatching_pending_actions: true });
@@ -42,7 +49,7 @@ class ApiOfflineListener extends PureComponent {
         this.setState({ dispatching_pending_actions: false });
       }
     }
-  }
+  };
 
   _getConnectionStatus = async () => {
     const connectionInfo = await NetInfo.fetch();

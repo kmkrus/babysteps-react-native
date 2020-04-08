@@ -14,6 +14,7 @@ import sectionListGetItemLayout from 'react-native-section-list-get-item-layout'
 
 import { showMessage } from 'react-native-flash-message';
 
+import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter';
 import groupBy from 'lodash/groupBy';
 import reduce from 'lodash/reduce';
@@ -43,73 +44,40 @@ class MilestonesScreen extends Component {
     title: 'Milestones',
   };
 
-  state = {
-    tasksForList: [],
-    sectionIndex: 0,
-    sectionID: null,
-    scrollToComplete: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      tasksForList: [],
+      tasksSaved: false,
+      sectionIndex: 0,
+      sectionID: null,
+      scrollToComplete: false,
+    };
+
     this.props.fetchMilestoneGroups();
     this.props.fetchMilestoneTasks();
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    const groups = filter(nextProps.milestones.groups.data, {visible: 1});
+  shouldComponentUpdate(nextProps, nextState) {
+    // trap section header render - don't update view
+    const newSectionID = nextState.sectionID !== this.state.sectionID;
     const tasks = nextProps.milestones.tasks;
-    const session = nextProps.session;
-    let tasksForList = [...this.state.tasksForList];
-
-    if (!tasks.fetching && tasks.fetched) {
-      tasksForList = filter(tasks.data, task => {
-        if (
-          session.registration_state === States.REGISTERED_AS_NO_STUDY &&
-          task.study_only === 1
-        ) {
-          return false;
-        }
-        if (findIndex(groups, ['id', task.milestone_group_id]) === -1) {
-          return false;
-        }
-        // don't show task, linked by notification
-        if (task.milestone_always_visible !== 1) {
-          return false;
-        }
-        return true;
-      });
-
-      tasksForList = groupBy(tasksForList, task => task.milestone_group_id);
-
-      tasksForList = reduce(
-        tasksForList,
-        (acc, data, index) => {
-          const group = find(groups, ['id', data[0].milestone_group_id]);
-          acc.push({ key: index, id: group.id, title: group.title, data });
-          return acc;
-        },
-        [],
-      );
-      this.setState({ tasksForList });
-    }
+    return !newSectionID && !tasks.fetching;
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (!nextState.scrollToComplete && nextState.tasksForList.length !== 0) {
-      const milestone = this.props.navigation.getParam('milestone', null);
-      if (milestone) {
-        const sectionIndex = findIndex(this.state.tasksForList, ['id', milestone.id])
-        if (sectionIndex !== -1) {
-          this.sectionList.scrollToLocation({ sectionIndex, itemIndex: 0 });
-          this.setState({ scrollToComplete: true });
-        }
-      }
+  componentDidUpdate(prevProps, prevState) {
+    const tasks = this.props.milestones.tasks;
+    const scrollToComplete = this.state.scrollToComplete;
+    const tasksForList = this.state.tasksForList;
+    const tasksSaved = this.state.tasksSaved;
+
+    if (!scrollToComplete && tasksForList.length !== 0) {
+      this._handleScrollToComplete();
     }
-    // trap section header render - don't update view
-    if (nextState.sectionID !== this.state.sectionID) {
-      return false;
+    if (tasks.fetched && !isEmpty(tasks.data) && !tasksSaved) {
+      this._saveTasksData(tasks);
     }
-    return true;
   }
 
   getItemLayout = sectionListGetItemLayout({
@@ -121,6 +89,53 @@ class MilestonesScreen extends Component {
     getSectionHeaderHeight: () => 31.7, // The height of your section headers
     getSectionFooterHeight: () => 10, // The height of your section footers
   });
+
+  _handleScrollToComplete = () => {
+    const milestone = this.props.navigation.getParam('milestone', null);
+    if (milestone) {
+      const sectionIndex = findIndex(this.state.tasksForList, ['id', milestone.id])
+      if (sectionIndex !== -1) {
+        this.sectionList.scrollToLocation({ sectionIndex, itemIndex: 0 });
+        this.setState({ scrollToComplete: true });
+      }
+    }
+  };
+
+  _saveTasksData = tasks => {
+    const groups = filter(this.props.milestones.groups.data, {visible: 1});
+    const session = this.props.session;
+    let tasksForList = [...this.state.tasksForList];
+
+    tasksForList = filter(tasks.data, task => {
+      if (
+        session.registration_state === States.REGISTERED_AS_NO_STUDY &&
+        task.study_only === 1
+      ) {
+        return false;
+      }
+      if (findIndex(groups, ['id', task.milestone_group_id]) === -1) {
+        return false;
+      }
+      // don't show task, linked by notification
+      if (task.milestone_always_visible !== 1) {
+        return false;
+      }
+      return true;
+    });
+
+    tasksForList = groupBy(tasksForList, task => task.milestone_group_id);
+
+    tasksForList = reduce(
+      tasksForList,
+      (acc, data, index) => {
+        const group = find(groups, ['id', data[0].milestone_group_id]);
+        acc.push({ key: index, id: group.id, title: group.title, data });
+        return acc;
+      },
+      [],
+    );
+    this.setState({ tasksForList, tasksSaved: true });
+  };
 
   handleOnPress = (task, calendar) => {
     if (!CONSTANTS.TESTING_ENABLE_ALL_TASKS) {

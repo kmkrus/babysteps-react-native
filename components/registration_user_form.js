@@ -45,14 +45,16 @@ const validationSchema = Yup.object().shape({
 });
 
 class RegistrationUserForm extends Component {
-  state = {
-    isSubmitting: false,
-    createUserSubmitted: false,
-    apiErrorMessage: '',
-    user_registration_complete: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      isSubmitting: false,
+      createUserSubmitted: false,
+      apiErrorMessage: '',
+      user_registration_complete: false,
+    };
+
     this.props.apiFetchMilestones();
   }
 
@@ -62,55 +64,6 @@ class RegistrationUserForm extends Component {
         isSubmitting: true,
         apiErrorMessage: 'The internet is not currently available',
       });
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const registration = nextProps.registration;
-    const apiUser = nextProps.registration.apiUser;
-    const user = nextProps.registration.user;
-    if (!apiUser.fetching) {
-      if (apiUser.error) {
-        const apiErrorMessage = get(
-          apiUser.error,
-          'response.data.errors.full_messages',
-          [],
-        ).join('\n');
-        this.setState({ isSubmitting: false, apiErrorMessage });
-      }
-      if (apiUser.fetched) {
-        if (this.props.registration.auth !== registration.auth) {
-          this.props.updateSession({
-            access_token: registration.auth.accessToken,
-            client: registration.auth.client,
-            uid: registration.auth.uid,
-            user_id: registration.auth.user_id,
-            email: registration.apiUser.data.email,
-            password: registration.apiUser.data.password,
-          });
-        }
-        if (
-          !user.fetching &&
-          !user.fetched &&
-          !this.state.createUserSubmitted
-        ) {
-          this.props.createUser({
-            ...registration.apiUser.data,
-            api_id: registration.auth.user_id,
-          });
-          this.setState({ createUserSubmitted: true });
-          return null;
-        }
-        if (
-          !user.fetching &&
-          user.fetched &&
-          !this.state.user_registration_complete
-        ) {
-          this.setState({ user_registration_complete: true });
-          const registration_state = States.REGISTERING_RESPONDENT;
-          this.props.updateSession({ registration_state });
-        }
-      }
     }
   }
 
@@ -131,7 +84,62 @@ class RegistrationUserForm extends Component {
     return true;
   }
 
-  getInitialValues = () => {
+  componentDidUpdate(prevProps, prevState) {
+    const apiUser = this.props.registration.apiUser;
+    const isSubmitting = this.state.isSubmitting;
+    if (!apiUser.fetching && isSubmitting) {
+      this._saveUser(apiUser);
+    }
+  }
+
+  _saveUser = apiUser => {
+    const auth = this.props.registration.auth;
+    const user = this.props.registration.user;
+    if (!apiUser.fetching) {
+      if (apiUser.error) {
+        const apiErrorMessage = get(
+          apiUser.error,
+          'response.data.errors.full_messages',
+          [],
+        ).join('\n');
+        this.setState({ isSubmitting: false, apiErrorMessage });
+      }
+      if (apiUser.fetched) {
+        this.props.updateSession({
+          access_token: auth.accessToken,
+          client: auth.client,
+          uid: auth.uid,
+          user_id: auth.user_id,
+          email: apiUser.data.email,
+          password: apiUser.data.password,
+        });
+
+        if (
+          !user.fetching &&
+          !user.fetched &&
+          !this.state.createUserSubmitted
+        ) {
+          this.props.createUser({
+            ...apiUser.data,
+            api_id: auth.user_id,
+          });
+          this.setState({ createUserSubmitted: true });
+          return null;
+        }
+        if (
+          !user.fetching &&
+          user.fetched &&
+          !this.state.user_registration_complete
+        ) {
+          this.setState({ user_registration_complete: true });
+          const registration_state = States.REGISTERING_RESPONDENT;
+          this.props.updateSession({ registration_state });
+        }
+      }
+    }
+  };
+
+  _getInitialValues = () => {
     //return {};
     let initialValues = {};
     if (__DEV__) {
@@ -173,7 +181,7 @@ class RegistrationUserForm extends Component {
         onSubmit={values => {
           this._onSubmit(values);
         }}
-        initialValues={this.getInitialValues()}
+        initialValues={this._getInitialValues()}
         validationSchema={validationSchema}
         render={props => {
           return (

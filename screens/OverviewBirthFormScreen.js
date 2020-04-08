@@ -77,7 +77,7 @@ const validationSchema = Yup.object().shape({
     then: Yup.string()
       .typeError("Your baby's gender is required")
       .required("Your baby's gender is required"),
-      //.matches(/(male|female)/, "You must select a gender"),
+    //.matches(/(male|female)/, "You must select a gender"),
   }),
   conception_method: Yup.string().when('outcome', {
     is: 'live_birth',
@@ -114,18 +114,20 @@ class OverviewBirthFormScreen extends Component {
     title: "Baby Profile",
   };
 
-  state = {
-    outcomeIsLiveBirth: true,
-    outcome: 'live_birth',
-    dateError: null,
-    values: {},
-    submittedSave: false,
-    submittedApiUpdateSubject: false,
-    submittedFetchMilestoneCalendar: false,
-    submittedApiFetchMilestoneCalendar: false,
-  };
+  constructor(props) {
+    super(props);
 
-  componentWillMount() {
+    this.state = {
+      outcomeIsLiveBirth: true,
+      outcome: 'live_birth',
+      dateError: null,
+      values: {},
+      submittedSave: false,
+      submittedApiUpdateSubject: false,
+      submittedFetchMilestoneCalendar: false,
+      submittedApiFetchMilestoneCalendar: false,
+    };
+
     this.props.resetSubject();
     this.props.resetMilestoneCalendar();
   }
@@ -135,94 +137,100 @@ class OverviewBirthFormScreen extends Component {
     const apiSubject = nextProps.registration.apiSubject;
     const calendar = nextProps.milestones.calendar;
     const apiCalendar = nextProps.milestones.api_calendar;
-    const values = this.state.values;
-    if (
-      subject.fetching ||
-      apiSubject.fetching ||
-      calendar.fetching ||
-      apiCalendar.fetching
-    ) {
-      return false;
-    }
-    return true;
+    return (
+      !subject.fetching &&
+      !apiSubject.fetching &&
+      !calendar.fetching &&
+      !apiCalendar.fetching
+    );
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentDidUpdate(prevProps, prevState) {
     // incrementally save and update environs
-    if (nextState.submittedSave) {
-      const session = nextProps.session;
-      const subject = nextProps.registration.subject;
-      const apiSubject = nextProps.registration.apiSubject;
-      const calendar = nextProps.milestones.calendar;
-      const apiCalendar = nextProps.milestones.api_calendar;
+    const submittedSave = this.state.submittedSave;
+    if (submittedSave) {
+      const session = this.props.session;
+      const subject = this.props.registration.subject;
       const inStudy = session.registration_state === States.REGISTERED_AS_IN_STUDY;
-      const outcomeIsLiveBirth = nextState.outcomeIsLiveBirth;
+      const outcomeIsLiveBirth = this.state.outcomeIsLiveBirth;
       if (!subject.fetching && subject.fetched) {
         if (inStudy && subject.data.api_id) {
-          if (!nextState.submittedApiUpdateSubject) {
-            // update birth date on api
-            const values = nextState.values;
-            const data = {...values, api_id: subject.data.api_id}
-            this.props.apiUpdateSubject(session, data);
-            this.setState({ submittedApiUpdateSubject: true });
-          } else {
-            if (!apiSubject.fetching && apiSubject.fetched){
-              if (!nextState.submittedApiFetchMilestoneCalendar) {
-                // update api calendar
-                const fetchCalendarParams = { subject_id: subject.data.api_id };
-                this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
-                this.setState({ submittedApiFetchMilestoneCalendar: true });
-              } else {
-                if (!apiCalendar.fetching && apiCalendar.fetched) {
-                  if (!nextState.submittedFetchMilestoneCalendar) {
-                    this.props.fetchMilestoneCalendar();
-                    this.setState({ submittedFetchMilestoneCalendar: true });
-                  } else {
-                   
-                  } // submittedFetchMilestoneCalendar
-                } // apiCalendar.fetched
-              } // submittedApiMilestoneCalendar
-            } // apiSubject.fetched
-          } // submittedApiUpdateSubject
-        } else { // inStudy
-          if (outcomeIsLiveBirth) {
-            if (!nextState.submittedApiFetchMilestoneCalendar) {
-                // update api calendar
-                const fetchCalendarParams = { base_date: values.date_of_birth };
-                this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
-                this.setState({ submittedApiFetchMilestoneCalendar: true });
-            } else {
-              if (!apiCalendar.fetching && apiCalendar.fetched) {
-                if (!nextState.submittedFetchMilestoneCalendar) {
-                  this.props.fetchMilestoneCalendar();
-                  this.setState({ submittedFetchMilestoneCalendar: true });
-                } // submittedFetchMilestoneCalendar
-              } // apiCalendar.fetched
-            } // submittedApiMilestoneCalendar
-          } // outcome is live birth
-        } // else inStudy
-        if (outcomeIsLiveBirth) {
-          if (
-            nextState.submittedFetchMilestoneCalendar &&
-            !calendar.fetching &&
-            calendar.fetched
-          ) {
-            // trigger generation of notifications and set period
-            this.props.updateSession({ notifications_updated_at: '', notification_period: 'post_birth' });
-            // reset navigation stack
-            this.props.navigation.dispatch(StackActions.popToTop());
-            // go to birth questionaire
-            const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
-            this.props.navigation.navigate('MilestoneQuestions', { task });
-          } // calandar.fetched
+          this._handleUpdateInStudyCalendar(outcomeIsLiveBirth);
         } else {
-          this.props.deleteAllNotifications();
-          this.props.updateSession({ notification_period: 'no_birth' });
-          this.props.navigation.navigate('Overview');
-        } // outcome is live birth
+          this._handleUpdateNoStudyCalendar(outcomeIsLiveBirth);
+        }
+        this._handleUpdateNotification(outcomeIsLiveBirth);
+        props.navigation.navigate('Overview');
       } // subject.fetching
     } // submittedSave
   }
+
+  _handleUpdateNoStudyCalendar = outcomeIsLiveBirth => {
+    if (outcomeIsLiveBirth) {
+      if (!this.state.submittedApiFetchMilestoneCalendar) {
+        const values = this.state.values;
+        const fetchCalendarParams = { base_date: values.date_of_birth };
+        this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
+        this.setState({ submittedApiFetchMilestoneCalendar: true });
+      } else {
+        const apiCalendar = this.props.milestones.api_calendar;
+        if (!apiCalendar.fetching && apiCalendar.fetched) {
+          if (!this.state.submittedFetchMilestoneCalendar) {
+            this.props.fetchMilestoneCalendar();
+            this.setState({ submittedFetchMilestoneCalendar: true });
+          } // submittedFetchMilestoneCalendar
+        } // apiCalendar.fetched
+      } // submittedApiMilestoneCalendar
+    } // outcome is live birth
+  };
+
+  _handleUpdateInStudyCalendar = outcomeIsLiveBirth => {
+    const session = this.props.session;
+    const subject = this.props.registration.subject;
+    const apiSubject = this.props.registration.apiSubject;
+    const apiCalendar = this.props.milestones.api_calendar;
+    const values = this.state.values;
+    const data = {...values, api_id: subject.data.api_id}
+
+    if (!this.state.submittedApiUpdateSubject) {
+      this.props.apiUpdateSubject(session, data);
+      this.setState({ submittedApiUpdateSubject: true });
+    } else if (!apiSubject.fetching && apiSubject.fetched) {
+      if (!this.state.submittedApiFetchMilestoneCalendar) {
+        // update api calendar
+        const fetchCalendarParams = { subject_id: subject.data.api_id };
+        this.props.apiFetchMilestoneCalendar(fetchCalendarParams);
+        this.setState({ submittedApiFetchMilestoneCalendar: true });
+      } else if (
+        !apiCalendar.fetching && apiCalendar.fetched &&
+        !this.state.submittedFetchMilestoneCalendar
+      ) {
+        this.props.fetchMilestoneCalendar();
+        this.setState({ submittedFetchMilestoneCalendar: true });
+      } // submittedApiMilestoneCalendar
+    }
+  };
+
+  _handleUpdateNotification = outcomeIsLiveBirth => {
+    const calendar = this.this.props.milestones.calendar;
+    if (outcomeIsLiveBirth) {
+      if (
+        this.state.submittedFetchMilestoneCalendar &&
+        !calendar.fetching && calendar.fetched
+      ) {
+        // trigger generation of notifications and set period
+        this.props.updateSession({ notifications_updated_at: '', notification_period: 'post_birth' });
+        // reset navigation stack
+        this.props.navigation.dispatch(StackActions.popToTop());
+        // go to birth questionaire
+        const task = find(this.props.milestones.tasks.data, ['id', CONSTANTS.TASK_BIRTH_QUESTIONAIRE_ID]);
+        this.props.navigation.navigate('MilestoneQuestions', { task });
+      } // calandar.fetched
+    } else {
+      this.props.deleteAllNotifications();
+      this.props.updateSession({ notification_period: 'no_birth' });
+    } // outcome is live birth
+  };
 
   _handleOutcomeChange = value => {
     this.node.setFieldValue('outcome', value);

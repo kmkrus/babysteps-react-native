@@ -5613,9 +5613,9 @@ gud@^1.0.0:
   resolved "https://registry.yarnpkg.com/gud/-/gud-1.0.0.tgz#a489581b17e6a70beca9abe3ae57de7a499852c0"
   integrity sha512-zGEOVKFM5sVPPrYs7J5/hYEw2Pof8KCyOwyhG8sAF26mCAeUFAcYPu1mwB7hhpIP29zOIBaDqwuHdLp0jvZXjw==
 
-"hammerjs@git+https://github.com/naver/hammer.js.git":
+"hammerjs@https://github.com/naver/hammer.js.git":
   version "2.0.17-snapshot"
-  resolved "git+https://github.com/naver/hammer.js.git#54bc698b25edd6e1b76ca975ebaced5ce0467d51"
+  resolved "https://github.com/naver/hammer.js.git#54bc698b25edd6e1b76ca975ebaced5ce0467d51"
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
@@ -5945,6 +5945,11 @@ inquirer@^6.2.2:
     string-width "^2.1.0"
     strip-ansi "^5.1.0"
     through "^2.3.6"
+
+install@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/install/-/install-0.13.0.tgz#6af6e9da9dd0987de2ab420f78e60d9c17260776"
+  integrity sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==
 
 invariant@^2.2.0, invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
