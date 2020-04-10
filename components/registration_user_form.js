@@ -95,30 +95,28 @@ class RegistrationUserForm extends Component {
   _saveUser = apiUser => {
     const auth = this.props.registration.auth;
     const user = this.props.registration.user;
-    if (!apiUser.fetching) {
-      if (apiUser.error) {
-        const apiErrorMessage = get(
-          apiUser.error,
-          'response.data.errors.full_messages',
-          [],
-        ).join('\n');
-        this.setState({ isSubmitting: false, apiErrorMessage });
-      }
-      if (apiUser.fetched) {
-        this.props.updateSession({
-          access_token: auth.accessToken,
-          client: auth.client,
-          uid: auth.uid,
-          user_id: auth.user_id,
-          email: apiUser.data.email,
-          password: apiUser.data.password,
-        });
 
-        if (
-          !user.fetching &&
-          !user.fetched &&
-          !this.state.createUserSubmitted
-        ) {
+    if (apiUser.error) {
+      const apiErrorMessage = apiUser.error;
+      //get(
+      //  apiUser.error,
+      //  'response.data.errors.full_messages',
+      //  [],
+      //).join('\n');
+      this.setState({ isSubmitting: false, apiErrorMessage });
+    }
+    if (apiUser.fetched) {
+      this.props.updateSession({
+        access_token: auth.accessToken,
+        client: auth.client,
+        uid: auth.uid,
+        user_id: auth.user_id,
+        email: apiUser.data.email,
+        password: apiUser.data.password,
+      });
+
+      if (!user.fetching) {
+        if (!user.fetched && !this.state.createUserSubmitted) {
           this.props.createUser({
             ...apiUser.data,
             api_id: auth.user_id,
@@ -126,11 +124,7 @@ class RegistrationUserForm extends Component {
           this.setState({ createUserSubmitted: true });
           return null;
         }
-        if (
-          !user.fetching &&
-          user.fetched &&
-          !this.state.user_registration_complete
-        ) {
+        if (user.fetched && !this.state.user_registration_complete ) {
           this.setState({ user_registration_complete: true });
           const registration_state = States.REGISTERING_RESPONDENT;
           this.props.updateSession({ registration_state });

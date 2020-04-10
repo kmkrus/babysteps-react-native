@@ -127,7 +127,7 @@ const reducer = (state = initialState, action, formData = {}) => {
           ...state.user,
           fetching: true,
           fetched: false,
-           error: null,
+          error: null,
         },
       };
     }
@@ -230,12 +230,13 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
     case API_CREATE_USER_REJECTED: {
+      const error = action.payload.message;
       return {
         ...state,
         apiUser: {
           ...state.apiUser,
           fetching: false,
-          error: action.payload,
+          error,
         },
       };
     }
