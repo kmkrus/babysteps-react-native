@@ -19,8 +19,9 @@ export default store => next => action => {
   const task_attachments = action.payload.data['task_attachments'];
 
   map(task_attachments, att => {
-    Image.prefetch(att.attachment_url);
-    //console.log('prefetching - ', attachment.attachment_url);
+    Image.prefetch(att.attachment_url).catch(error => {
+      console.log('There has been a problem with an image prefetch operation: ' + error.message);
+    });
   });
 
   return next(action);
