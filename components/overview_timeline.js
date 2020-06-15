@@ -53,6 +53,8 @@ class OverviewTimeline extends React.Component {
     // returning from other screen
     this.props.navigation.addListener('willFocus', () => {
       const subject = this.props.registration.subject;
+      
+      this.setState( {overviewTimelinesLoaded: false} );
       this._fetchOverviewTimeline(subject);
     });
   }
@@ -63,6 +65,10 @@ class OverviewTimeline extends React.Component {
     if (subject.fetched && !isEmpty(subject.data) && !overviewTimelinesLoaded) {
       this._fetchOverviewTimeline(subject);
     }
+  }
+
+  componentWillUnmount() {
+    this._unsubscribe();
   }
 
   _fetchOverviewTimeline = subject => {
@@ -280,6 +286,7 @@ class OverviewTimeline extends React.Component {
 
   render() {
     const data = this.state.overviewTimelines;
+    // refresh on update of images 
     return (
       <View style={styles.timeline}>
         {this.state.sliderLoading && (

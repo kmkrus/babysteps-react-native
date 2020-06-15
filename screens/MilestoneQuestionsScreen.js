@@ -398,7 +398,6 @@ class MilestoneQuestionsScreen extends Component {
     // TODO validation
     // TODO move to next section if more than one section in this task
     // TOTO don't mark task complete if any sections are incomplete
-
     this.setState({ confirmed: true });
 
     this.props.updateMilestoneAnswers(section, answers);
