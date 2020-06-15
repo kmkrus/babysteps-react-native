@@ -156,7 +156,7 @@ class MilestonePregnancyHistoryScreen extends Component {
       const firstQuestion = this.state.firstQuestion;
       if (!_.isEmpty(firstQuestion)) {
         const answer = _.find(answers.data, ['question_id', firstQuestion.id]);
-        if (!_.isEmpty(answer)) {
+        if (answer) {
           numberOfPregnancies = Math.trunc(answer.answer_text);
           currentPregnancy = 1;
           showNextPregnancy = true;
@@ -266,14 +266,17 @@ class MilestonePregnancyHistoryScreen extends Component {
     answers.push(answer);
     // first question
     if (choice.question_id === firstQuestion.id) {
-      const numberOfPregnancies = Math.trunc(answer.answer_text);
+      let numberOfPregnancies = 1;
+      if (answer && answer.answer_text) {
+        numberOfPregnancies = Math.trunc(answer.answer_text);
+      }
       const currentPregnancy = 1;
       let showConfirm = false;
       let showNextPregnancy = true;
       if (numberOfPregnancies === 1) {
         showConfirm = true;
         showNextPregnancy = false;
-      };
+      }
       this.setState({
         numberOfPregnancies,
         currentPregnancy,

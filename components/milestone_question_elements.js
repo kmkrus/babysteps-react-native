@@ -245,9 +245,7 @@ export class RenderDate extends React.PureComponent {
     const collection = _.map(this.props.choices, choice => {
       let text = ''; // new Date().toISOString().slice(0, 10);
       const answer = _.find(this.props.answers, {'choice_id': choice.id, pregnancy: this.props.pregnancy });
-      if (answer) {
-        text = answer.answer_text;
-      }
+      if (answer) text = answer.answer_text;
       return (
         <View key={choice.id}>
           <DatePicker
