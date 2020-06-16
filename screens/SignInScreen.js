@@ -35,6 +35,8 @@ import {
   apiSyncSignature,
 } from '../actions/registration_actions';
 
+import { getApiUrl } from '../database/common';
+
 import States from '../actions/states';
 import Colors from '../constants/Colors';
 
@@ -138,7 +140,9 @@ class SignInScreen extends Component {
   };
 
   handlePasswordLink = () => {
-    WebBrowser.openBrowserAsync('http://api.babystepsapp.net/admin/password/new');
+    const baseURL = getApiUrl();
+    const url = baseURL.replace('api', 'admin/password/new');
+    WebBrowser.openBrowserAsync(url);
   };
 
   render() {
