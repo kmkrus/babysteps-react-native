@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  Dimensions,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Animated, Dimensions, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 
 import tour_images from './tour_images';

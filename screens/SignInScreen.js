@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { WebBrowser } from 'expo';
+import * as WebBrowser from 'expo-web-browser';
 
 import isEmpty from 'lodash/isEmpty';
 
@@ -20,12 +20,17 @@ import {
 } from '../actions/session_actions';
 
 import {
+  resetApiMilestones,
   apiFetchMilestones,
+  resetMilestoneCalendar,
   apiFetchMilestoneCalendar,
+  resetMilestoneAnswers,
   apiSyncMilestoneAnswers,
 } from '../actions/milestone_actions';
 
 import {
+  resetRespondent,
+  resetSubject,
   apiSyncRegistration,
   apiSyncSignature,
 } from '../actions/registration_actions';
@@ -72,23 +77,26 @@ class SignInScreen extends Component {
     const syncRegistration = this.state.syncRegistration;
     const syncCalendar = this.state.syncCalendar;
     const syncAnswers = this.state.syncAnswers;
-
     const milestones = this.props.milestones;
     const registration = this.props.registration;
-
     if (session.fetched) {
-      this.setState({ shouldUpdate: false });
+      // slow down cycles to allow API to respond
+      setTimeout(() => {}, 1000);
       if (!syncMilestones) {
         this.setState({ syncMilestones: true });
+        this.props.resetApiMilestones();
         this.props.apiFetchMilestones();
       }
       if (!syncRegistration) {
         this.setState({ syncRegistration: true });
+        this.props.resetRespondent();
+        this.props.resetSubject();
         this.props.apiSyncRegistration(session.api_id);
         this.props.apiSyncSignature(session.api_id);
       }
       if (!syncCalendar && !isEmpty(registration.subject.data)) {
         this.setState({ syncCalendar: true });
+        this.props.resetMilestoneCalendar();
         this.props.apiFetchMilestoneCalendar({ subject_id: registration.subject.data.api_id });
       }
       if (
@@ -98,6 +106,7 @@ class SignInScreen extends Component {
         !isEmpty(registration.subject.data)
       ) {
         this.setState({ syncAnswers: true });
+        this.props.resetMilestoneAnswers();
         this.props.apiSyncMilestoneAnswers(session.api_id);
       }
       if (
@@ -111,12 +120,13 @@ class SignInScreen extends Component {
         syncAnswers &&
         milestones.apiAnswers.fetched
       ) {
+        this.setState({ shouldUpdate: false });
         this.props.updateSession({
           registration_state: States.REGISTERED_AS_IN_STUDY,
         });
       }
     }
-    if (session.errorMessages) {
+    if (session.errorMessages && this.state.isSubmitting) {
       this.setState({ isSubmitting: false, errorMessages: session.errorMessages });
     }
   };
@@ -247,9 +257,14 @@ const mapDispatchToProps = {
   resetSession,
   updateSession,
   apiFetchSignin,
+  resetApiMilestones,
   apiFetchMilestones,
+  resetMilestoneCalendar,
   apiFetchMilestoneCalendar,
+  resetMilestoneAnswers,
   apiSyncMilestoneAnswers,
+  resetRespondent,
+  resetSubject,
   apiSyncRegistration,
   apiSyncSignature,
 };
