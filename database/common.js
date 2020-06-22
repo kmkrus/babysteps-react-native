@@ -1,5 +1,8 @@
 import * as SQLite from 'expo-sqlite';
 import Constants from 'expo-constants';
+
+import forEach from 'lodash/forEach';
+
 import CONSTANTS from '../constants';
 
 const db = SQLite.openDatabase('babysteps.db');
@@ -41,6 +44,10 @@ export function createTable(name, schema) {
 }
 
 export function insertRows(name, schema, data) {
+  if (typeof data !== 'object') {
+    console.log('*** Insert Failed: data is improper format: ', data);
+    return;
+  };
   db.transaction(tx => {
     // Clear table
     tx.executeSql(
@@ -56,7 +63,7 @@ export function insertRows(name, schema, data) {
       prefix += `${column}, `;
     });
     prefix = `${prefix.slice(0, -2)} ) VALUES `;
-    data.forEach(row => {
+    forEach(data, row => {
       const values = [];
       let sql = `${prefix} (`;
       Object.keys(schema.columns).forEach(column => {
