@@ -274,7 +274,7 @@ class OverviewTimeline extends React.Component {
     return (
       <View key={data.itemIndex} style={styles.timelineItemContainer}>
         {this.renderContent(item)}
-        <Text style={styles.timelineSubtitle}>{item.title}</Text>
+        <Text style={styles.timelineSubtitle} numberOfLines={2}>{item.title}</Text>
       </View>
     );
   };

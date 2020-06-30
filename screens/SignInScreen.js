@@ -158,6 +158,7 @@ class SignInScreen extends Component {
           placeholder="email"
           placeholderTextColor={Colors.grey}
           style={styles.input}
+          textContentType="username"
         />
         <TextInput
           value={password}
@@ -166,6 +167,7 @@ class SignInScreen extends Component {
           secureTextEntry
           placeholderTextColor={Colors.grey}
           style={styles.input}
+          textContentType="password"
         />
         <View style={styles.buttonContainer}>
           <Button

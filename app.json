@@ -34,6 +34,10 @@
       "buildNumber": "58",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
+      "associatedDomains": [
+        "webcredentials:babysteps-staging.icts.uiowa.edu", 
+        "webcredentials:babysteps.icts.uiowa.edu",
+      ],
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to capture images of your baby for the study or baby book.",
         "NSLocationAlwaysUsageDescription": "This app uses location to identify where your pictures were taken.",

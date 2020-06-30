@@ -47,7 +47,7 @@ class ConsentEligibilityForm extends Component {
       <View style={styles.container}>
         <View style={styles.elevated}>
           <Text style={styles.text}>
-            Do you have an infant younger than 24 months, are you currently
+            Do you have an infant younger than 42 months, are you currently
             pregnant or are you planning to become pregnant within the next six
             months?
           </Text>

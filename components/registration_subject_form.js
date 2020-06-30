@@ -12,6 +12,8 @@ import withInputAutoFocus, {
 
 import moment from 'moment';
 
+import isEmpty from 'lodash/isEmpty';
+
 import { connect } from 'react-redux';
 import {
   fetchRespondent,
