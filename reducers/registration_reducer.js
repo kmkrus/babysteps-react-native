@@ -230,7 +230,12 @@ const reducer = (state = initialState, action, formData = {}) => {
       };
     }
     case API_CREATE_USER_REJECTED: {
-      const error = action.payload.message;
+      let error = 'unknown';
+      if (action.payload.response) {
+        error = action.payload.response.data.errors.full_messages;
+      } else {
+        error = action.payload.message;
+      }
       return {
         ...state,
         apiUser: {

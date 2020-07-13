@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Text } from 'react-native-elements';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
 
@@ -171,6 +172,7 @@ class MilestonesScreen extends Component {
     let checkboxSource = require('../assets/images/milestones_checkbox.png');
     let color = Colors.grey;
     const calendar = find(this.props.milestones.calendar.data, ['task_id', task.id]);
+    //debugger
     if (calendar) {
       if (calendar.questions_remaining > 0) {
         checkboxSource = require('../assets/images/milestones_checkbox_skipped.png');
@@ -187,12 +189,25 @@ class MilestonesScreen extends Component {
       return null;
     }
 
+    let backgroundColor = 'white';
+    if (task.study_only) {
+      backgroundColor = Colors.lightGreen;
+    }
+
     return (
-      <View style={styles.itemContainer}>
+      <View style={[ styles.itemContainer, { backgroundColor } ]}>
         <TouchableOpacity onPress={() => this.handleOnPress(task, calendar)}>
           <View style={styles.itemLeft}>
             <Image source={checkboxSource} style={styles.itemCheckBox} />
-            <Text style={[styles.item, { color }]}>{task.name}</Text>
+            <Text style={[styles.item, { color }]}>
+              {task.study_only === 1 && (
+                <Text>
+                  <MaterialIcons name="child-care" size={16} color='green' />
+                  &nbsp;
+                </Text>
+              )}
+              {task.name}
+            </Text>
           </View>
         </TouchableOpacity>
         <View style={styles.itemRight}>
