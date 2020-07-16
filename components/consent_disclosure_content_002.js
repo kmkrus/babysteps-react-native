@@ -222,26 +222,24 @@ class ConsentDisclosureContent002 extends Component {
 
           <Text style={styles.subTitle}>Genetic Research</Text>
           <Text style={styles.text}>
-            One purpose of this study is to look at genes (DNA) and how they
+            Another purpose of this study is to look at genes (DNA) and how they
             affect health and disease. Genes are the instruction manual for the
-            body. The genes you get from your parents influences what you look
-            like and how your body behaves. They may also tell us more about a
-            person’s risk for certain conditions such as autism.
+            body. The genes you get from your parents decide what you look
+            like and how your body behaves. They can also tell us more about a
+            person’s risk for certain diseases and how they will respond to treatment.
+            We will study your child's DNA by comparing their blood from two different 
+            points in time to see if chemical ("epigenetic") changes have occured. Blood
+            test results will not be shared with you or your child's doctor. No one else 
+            (like a relative, boss, or insurance company) will be given access to these test 
+             results.
           </Text>
           <Text style={styles.text}>
-            You are being asked to give access to your baby’s newborn blood spot
-            for genetic research. What we learn about your baby from this sample
-            will not be put in your health record. Your test results will not be
-            shared with you or your doctor. No one else (like a relative, boss,
-            or insurance company) will be given your test results.
+            Additionally, with your consent, your child's newborn blood spot may be obtained from 
+            the Iowa Department of Public Health and analyzed at the University of Iowa.
+            What we learn about your child from these samples
+            will not be shared with your or your child's doctor or put in your child's 
+            health record. 
           </Text>
-          <Text style={styles.text}>
-            With your consent, the newborn blood spot may be obtained from Iowa
-            Department of Public Health and analyzed at the University of Iowa.
-            Results of a genetic test will not be provided to you or placed in
-            the medical record.
-          </Text>
-
           <View
             onLayout={(event) => {
               const {x, y, width, height} = event.nativeEvent.layout;
@@ -281,7 +279,7 @@ class ConsentDisclosureContent002 extends Component {
 
           {showItem === 'item_01' && (
             <Text style={styles.text}>
-              A new federal law called the Genetic Information Nondiscrimination
+              A federal law called the Genetic Information Nondiscrimination
               Act (GINA) generally makes it illegal for health insurance
               companies, group health plans, and employers of 15 or more persons
               to discriminate against you based on your genetic information.
@@ -293,8 +291,8 @@ class ConsentDisclosureContent002 extends Component {
               premiums. Be aware that this new federal law will not protect you
               against genetic discrimination by companies that sell life
               insurance, disability insurance, or long-term care insurance. The
-              law also does not prohibit discrimination if you already have a
-              manifest genetic disease or disorder.
+              law also does not prohibit discrimination if you are already known
+              to have a genetic disease or disorder. 
             </Text>
           )}
 
@@ -315,21 +313,20 @@ class ConsentDisclosureContent002 extends Component {
           {showItem === 'item_02' && (
             <View>
               <Text style={styles.text}>
-                One aspect of this study involves obtaining video recordings and
-                photographs of you and your baby, collected on your smart phone.
-                In the longitudinal study, these will be used to observe changes
-                in social behavior and development over the first two years of
-                life. These videos will be stored in a secure location and only
-                shared with those who are directly involved in the study, such
-                as those who are doing the coding of the videos. These videos
-                will be destroyed on study completion.
+                One aspect of this study involves researchers studying the video recordings and
+                photographs of you/your child, which you will collect and upload to the BabySteps application.
+                In this study, these will be used to observe 
+                social behavior and development over the first three years of
+                life. We may use this data and these videos to study things like your child's developmental
+                progress, or their sounds, gestures, movements, or interactions with you.
+                Only researchers from this study or research collaborators will have access to these videos.
               </Text>
               <Text style={styles.text}>
-                We will keep your name and contact information so that we can
-                contact you in the future if we have additional research
-                projects that you may qualify for. If this happens, we will
-                provide you with a consent document and you will have the choice
-                whether or not to participate in these additional studies.
+                However, the photos, recordings, and other study data may be useful in future research studies.
+                You/your child's data may be stripped of identifiers (such as name, date of birth, address, etc.)
+                and placed in a central repository or other national repositories sponsored by the National Insitutes of Health
+                or other Federal agencies. Other qualified researchers who obtain proper permisison may gain access to
+                your data for use in approved research studies that may or may not be related to the purpose of this study. 
               </Text>
             </View>
           )}
@@ -344,7 +341,7 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>What are the Risks of This Study?</Text>
           <Text style={styles.text}>
-            You may experience one or more of the risks indicated below from
+            You or your child may experience one or more of the risks indicated below from
             being in this study. In addition to these, there may be other
             unknown risks, or risks that we did not anticipate, associated with
             being in this study.
@@ -384,13 +381,20 @@ class ConsentDisclosureContent002 extends Component {
             <Text style={styles.text}>
               One risk of giving samples for this research may be the release of
               your name that could link your child to the stored samples and/or
-              the results of the tests run on your samples. To prevent this,
-              these samples will be given a code. Only the study staff will know
-              the code. The name that belongs to the code will be kept in a
-              locked file or in a computer with a password. Only the primary
-              study investigators will have access to your name.
+              the results of the tests run on your child's samples. To prevent this,
+              these samples will be given a code. Only the primary study investigators will have access to your name. 
+              Data will likewise be stores on a secure, password-protected server. If your child's blood samples
+              are saved for future research, sample, information, and/or data may be stripped of identifiers 
+              (such as name, date of birth, address, etc.) and placed in a central repository or other national repositories
+              sponsored by the National Institutes of Health or other Federal agencies. 
+              Only qualified researchers who obtain proper permission may gain access to your child's samples and/or data for use in approved research studies. 
             </Text>
-          )}
+          <Text style={styles.text}>
+            The de-identified data will be used for research at the University of Iowa, and may only be shared with 
+            researchers approved by the University of Iowa who uphold the same standard of confidentiality. If you
+            did not consent to your/your child's data being saved for future studies, your/your child's data will be 
+            destroyed upon study completion.
+          </Text>          )}
         </View>
 
         <View style={styles.elevated}>
@@ -404,11 +408,11 @@ class ConsentDisclosureContent002 extends Component {
             What are the Benefits of this Study?
           </Text>
           <Text style={styles.text}>
-            We don’t know if you will benefit from being in this study.
+            We don’t know if you or your child will benefit from being in this study.
           </Text>
           <Text style={styles.text}>
             However, we hope that, in the future, other people might benefit
-            from this study, by using the smart phone app to collect information
+            from this study, by using the smartphone app and b to collect information
             about possible risk factors for autism and other developmental
             problems in early childhood.
           </Text>
@@ -427,7 +431,7 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             You will not have any additional costs associated with being in this
             research study. There will be no costs to you for the smart phone
-            app, screening questionnaires, or genetic testing of your baby’s
+            app, screening questionnaires, or genetic testing of your child’s
             newborn screening blood spots. Your and/or your health insurance
             company will be billed for any tests or procedures that are part of
             your child’s regular medical care, including the costs associated
@@ -435,10 +439,11 @@ class ConsentDisclosureContent002 extends Component {
             for during the course of the study.
           </Text>
           <Text style={styles.text}>
-            You will be paid up to $40 in an Amazon e-gift card for
-            participating in a one-on-one interview and/or completed app testing
-            ($20 for interview + $20 for app testing). A link will be sent to
-            your email address.
+            You will be paid for being in this research study. If your child gave blood at a clinical appointment that
+            researchers could access, you will recieve $20 after this appointment. If your child's sample is collected 
+            solely for the purposes of this study, you will receive an email with a gift card for $40 after your child's blood sample is collected,
+            since this collection was additionaly to their routine medical care. All participants will receive an additional $20
+            gift card if you meet certain benchmarks in regard to usage of the app over the following months. 
           </Text>
 
           <TouchableOpacity onPress={() => this.setShowItem('item_06')}>
@@ -455,7 +460,7 @@ class ConsentDisclosureContent002 extends Component {
 
           {showItem === 'item_06' && (
             <Text style={styles.text}>
-              The University and the research team are receiving no payments
+              The study will be funded by the University of Iowa. The University and the research team are receiving no payments
               from other agencies, organizations or companies to conduct this
               research study.
             </Text>
@@ -471,12 +476,12 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>What About Confidentiality?</Text>
           <Text style={styles.text}>
-            We will keep your participation in this research study confidential
+            We will keep your/your child's participation in this research study confidential
             to the extent permitted by law. However, it is possible that other
             people such as those indicated below may become aware of your
             participation in this study and may inspect and copy records
             pertaining to this research. Some of these records could contain
-            information that personally identifies you.
+            information that personally identifies you or your child.
           </Text>
           <View style={styles.list}>
             <Text style={styles.bullet}>{'\u2022'}</Text>
@@ -493,7 +498,7 @@ class ConsentDisclosureContent002 extends Component {
           <View style={styles.list}>
             <Text style={styles.bullet}>{'\u2022'}</Text>
             <Text style={styles.listText}>
-              auditing departments of the University of Iowa, and
+              Auditing departments of the University of Iowa, and
             </Text>
           </View>
           <View style={styles.list}>
@@ -517,16 +522,25 @@ class ConsentDisclosureContent002 extends Component {
 
           {showItem === 'item_04' && (
             <Text style={styles.text}>
-              To help protect your confidentiality, we will only ask you to
-              provide information necessary to meet the aims of this study. Any
-              information collected by computer or smart phone will be
-              transmitted in a secure and confidential manner. A confidential
-              number will be assigned to the information you provide, so that
-              confidential information cannot be linked to you personally. If we
-              write a report or article about this study or share the study data
-              set with others, we will do so in such a way that you cannot be
-              directly identified.
+              FullStack, Inc., created and maintains the BabySteps app, and as a result, they may have access to your data. 
+              To protect your/your child's privacy, The University of Iowa Hospitals and Clincs has entered into a strict confidentiality 
+              agreement with FullStack, Inc. Such agreement ensures the company is responsible
+              for meeting the same terms of confidentially as other study researchers or collaborators. 
             </Text>
+          <Text style={styles.text}>
+            We will only ask you to provide information necessary to meet the aims of this study. Any information
+            collected by computer or smartphone will be transmitted securely and confidentially. For any genetic or behavioral
+            information stored, it will be stored on a secure database, and only a limited number of research team members will have access to your name.
+            All other users of the information will not have access to any identifying information. Any paper documents or blood samples will be labeled only with a code
+            and will be kept in secure locations. If we write a report or article about this study or share the study dataset with others, we will do so in such a way that you cannot be directly identified.
+          </Text>          
+          <Text style={styles.text}>
+            The University of Iowa Hospitals and Clinics generally requires that we document your participation in research
+            occurring in a University of Iowa Healthcare facility. This documentation will be in either your medical record or a 
+            database maintained on behalf of the institution reflecting that you are participaitng in this study. The information included will provide
+            contact information for the research team, as well as information about the risks associated with this study. We will keep this Informed Consent 
+            Document in our research files; it will not be placed in your medical record chart. 
+          </Text>     
           )}
         </View>
 
@@ -538,7 +552,7 @@ class ConsentDisclosureContent002 extends Component {
             color={Colors.iconDefault}
           />
           <Text style={styles.header}>
-            Will My Health Information be Used During this Study?
+            Will My Child's Health Information be Used During this Study?
           </Text>
           <Text style={styles.text}>
             The Federal Health Insurance Portability and Accountability Act
@@ -565,31 +579,31 @@ class ConsentDisclosureContent002 extends Component {
           {showItem === 'item_05' && (
             <View>
               <Text style={styles.text}>
-                We may share your health information related to this study with
+                We may share your child's health information related to this study with
                 other parties including federal government regulatory agencies,
                 the University of Iowa Institutional Review Boards and support
-                staff, and research collaborators.
+                staff, and colleagues at other institutions who are involved in this study.
               </Text>
               <Text style={styles.text}>
-                You cannot participate in this study unless you permit us to use
+                Your child cannot participate in this study unless you permit us to use
                 your protected health information. If you choose not to allow us
                 to use your protected health information, we will discuss any
                 non-research alternatives available to you. Your decision will
                 not affect your right to medical care that is not
                 research-related. Your signature on this Consent Document
-                authorizes your healthcare provider to give us permission to use
-                or create health information about you.
+                authorizes your child's healthcare provider to give us permission to use
+                or create health information about you and your child.
               </Text>
               <Text style={styles.text}>
                 Although you may not be allowed to see study information until
-                after this study is over, you may be given access to your health
-                care records by contacting your health care provider. Your
+                after this study is over, you may be given access to your child's health
+                care records by contacting your child's health care provider. Your
                 permission for us to access or create protected health
-                information about you for purposes of this study has no
+                information about your child for purposes of this study has no
                 expiration date. You may withdraw your permission for us to use
                 your health information for this research study by sending a
-                written notice to Dr. Lane Strathearn, 100 Hawkins Dr, CDD, Iowa
-                City IA. However, we may still use your health information that
+                written notice to Dr. Lane Strathearn, 100 Hawkins Dr, 213F CDD, Iowa
+                City IA 52242. However, we may still use your health information that
                 was collected before withdrawing your permission. Also, if we
                 have sent your health information to a third party, such as the
                 study sponsor, or we have removed your identifying information,
@@ -610,9 +624,9 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.header}>Is Being in this Study Voluntary?</Text>
           <Text style={styles.text}>
             Taking part in this research study is completely voluntary. You may
-            choose not to take part at all. If you decide to be in this study,
-            you may stop participating at any time. If you decide not to be in
-            this study, or if you stop participating at any time, you won’t be
+            choose not to take part at all. If you decide for you and your child to be in this study,
+            you may stop participating at any time. If you decide for you and your child not to be in
+            this study, or if you stop participating at any time, you and your child won’t be
             penalized or lose any benefits for which you otherwise qualify.
           </Text>
         </View>
@@ -628,17 +642,17 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             We encourage you to ask questions. If you have any questions about
             the research study itself, please contact: Lane Strathearn (319 356
-            7044).
+            7044). If you or your child experiences a research-related injury, please contact: Lane Strathearn (319-356-7044). 
           </Text>
           <Text style={styles.text}>
-            If you have questions, concerns, or complaints about your rights as
+            If you have questions, concerns, or complaints about your and your child's rights as
             a research subject or about research related injury, please contact
             the Human Subjects Office, 105 Hardin Library for the Health
             Sciences, 600 Newton Rd, The University of Iowa, Iowa City, IA
             52242-1098, (319) 335-6564, or e-mail irb@uiowa.edu. General
             information about being a research subject can be found by clicking
             “Info for Public” on the Human Subjects Office web site,
-            http://hso.research.uiowa.edu/. To offer input about your
+            http://hso.research.uiowa.edu/. To offer input about you or your child's
             experiences as a research subject or to speak to someone other than
             the research staff, call the Human Subjects Office at the number
             above.
