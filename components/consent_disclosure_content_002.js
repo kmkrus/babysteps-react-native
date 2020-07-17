@@ -46,11 +46,11 @@ class ConsentDisclosureContent002 extends Component {
             <Text style={styles.bold}>Research Team Contacts:</Text>
             {'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
-            <Text style={styles.listText}>Guifeng Xu MD (319 356 7044)</Text>
+            <Text style={styles.listText}>Emese Chmielewski BA (216 338 1370)</Text>
             {'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
-              Carol Mertens PhD (319 356 7044)
+              Tessa Meisner BAN RN (319 594 6639)
             </Text>
             {'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
@@ -60,10 +60,10 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             This consent form describes the research study to help you decide if
-            you want to participate. This form provides important information
-            about what you will be asked to do during the study, about the risks
-            and benefits of the study, and about your rights as a research
-            subject.
+            you want you and your child to participate. This form provides important information
+            about what you and your child will be asked to do during the study, about the risks
+            and benefits of the study, and about your and your child's rights as research
+            subjects. 
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bullet}>{'\u2022'} </Text>
@@ -94,18 +94,13 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>What is the Purpose of this Study?</Text>
           <Text style={styles.text}>
-            This is a research study. We are inviting you to participate in this
-            research study because you are either pregnant or the mother of a
-            child under 2 years of age. In this study both you and your child
-            will be considered research participants.
+            This is a research study. We are inviting you and your child to participate in this
+            research study, because your child, who may or may not have behavioral or developmental challenges, is 2 to 3 years old.
+            In this study, both you and your child will be considered research participants.
           </Text>
           <Text style={styles.text}>
-            The purpose of this research study is to test a new smart phone
-            application called “BabySteps”, which is designed to help pregnant
-            women and new mothers preserve the memories of their pregnancy and
-            newborn’s experience, while also collecting information to help us
-            to better understand risk factors for autism and other developmental
-            disorders of early childhood.
+            The purpose of this research study is to better understand how genetics and the social environment influnce the way children develop.
+            Specifically, this study will use a smartphone application and blood samples to study potential risk factors for Autism Spectrum Disorders or other developmental disorders. 
           </Text>
         </View>
 
@@ -118,7 +113,7 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>How Many People Will Participate?</Text>
           <Text style={styles.text}>
-            Approximately 80 mothers and their children will take part in this
+            Approximately 300 mothers and their children will take part in this
             study conducted by investigators at the University of Iowa.
           </Text>
         </View>
@@ -132,13 +127,9 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>How Long Will I Be in this Study?</Text>
           <Text style={styles.text}>
-            If you agree to take part in this study, your involvement will last
-            for up to 3-months, during which time you may be asked to answer
-            simple questions about yourself, your pregnancy or your baby’s
-            development; or to videotape yourself playing with your child. These
-            tasks will appear on your cell phone several times per week. They
-            can be completed at any convenient time for you and should take
-            between 1 and 10 minutes of your time on each occasion.
+            If you agree to take part in this study, you/your child's involvement will last
+            for about 10 months. This may include one or two 15-minute in-person visit(s) to the Center for Disabilities and Development (CDD),
+            and your continued use of the smartphone app, 'BabySteps' from your home. Completing a prompt of task from the app should only take a few minutes of your time on each occasion. 
           </Text>
         </View>
 
@@ -151,25 +142,31 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>What Will Happen During this Study?</Text>
           <Text style={styles.text}>
-            Before beginning any study procedures and/or signing the study
-            consent, you will have participated in a phone or web-based
-            screening interview to determine your eligibility to participate in
-            the study. If you were eligible, a link to download this smart phone
-            app would have been sent to the email address you provided.
+            Once your eligibility is discussed, we will e-mail a link to access the BabySteps smartphone application.
+            After you have reviewed the BabySteps app, you can press the "Agree" button on the application to formally consent to the study,
+            and you can sign electronically. You and your child cannot participate in this study without giving your signed permission. Once the consent form is properly completed,
+            you/your child may complete other app-based tasks and in-person procedures. 
           </Text>
           <Text style={styles.text}>
-            If you are still interested in this study after reading through the
-            study description, you can press the “Agree” button as a form of
-            consent, and then sign electronically.
+            During this study, each mother-child pair may meet with researchers once or twice. If your child has an appointment scheduled at the CDD or another University of Iowa clinic,
+            study researchers may meet with you shortly before this appointment. A blood draw may be part of the standard care for these appointments, and researchers may request access to a small amount
+            of the blood that is drawn at that time. If your child is not scheduled for a clinical evaluation or was scheduled for evaluation but did not have blood drawn at that time, researchers will contact you
+            to explain the procedures for a blood sample collection of your child. This sample can be collected at the CDD by healthcare staff or by you in your home. These blood samples will be compared to a sample of blood that 
+            was taken when your child was born (these samples are obtained from all babies born in the state of Iowa). Analyzing the two samples will reveal whether chemical ("epigenetic") changes occurred over time. 
+          <Text style={styles.text}>
+            Researchers will also orient you to the smartphone application, BabySteps, that you will be asked to use for about 10 months.
+            Within the app, you will be able to take photos and record special milestones. Occasionally, you will be asked to videotape yourself playing with your child. Your will also complete
+            screening tests or questions designed to assess your child's language, motor, and cognitive development. Some of these screening tests will assess for early signs of autism. Certain results may indicate your 
+            child is not eligible to continue in this study. If this occurs, you will be notified. You are free to continue use of the app if you so choose. 
           </Text>
           <Text style={styles.text}>
-            During this study, you will be asked to answer some simple questions
-            about your feelings during your pregnancy (if pregnant) or as a
-            parent. You are free to skip any questions that you would prefer not
-            to answer. These questions will include:
-          </Text>
-
-          <View style={styles.list}>
+            We may ask other questions about your mood, your day-to-day life, or your history. You are free to skip any questions that you would prefer not to answer. Prompts will appear on your cell phone several times 
+            per week, and will usually only require a single button press. You should try to answer these as soon as you see them. Other prompts should take between 1 and 10 minutes to complete 
+            on each occasion. If any of the information gathered through the app, such as information about your well-being or your child's development, indicates a need for intervention, you may be referred to appropriate providers. 
+          <Text style={styles.text}>
+            You are free to share consent stored in the app to your social media accounts. Study researchers and collaborators will only use your data and consent for the purposes of this study
+            unless you give consent for it to be shared with other researchers. If your child was assessed in the CDD, we will also obtain information from your child's medical record about the results of the evaluation by the doctor, psychologist, and/or speech therapist.
+          </Text>          <View style={styles.list}>
             <Text style={styles.bullet}>{'\u2022'}</Text>
             <Text style={styles.listText}>
               feelings that you are experiencing, such as stress or depression
