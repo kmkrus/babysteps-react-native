@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.pink,
     borderWidth: 2,
     borderRadius: 5,
+    alignSelf: 'center',
   },
   buttonNextTitle: {
     fontWeight: '900',
