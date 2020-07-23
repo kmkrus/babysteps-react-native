@@ -11,8 +11,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
 
-import ConsentDisclosureScreeningBlood from './consent_disclosure_screening_blood';
-
 import Colors from '../constants/Colors';
 
 // eslint-disable-next-line react/prefer-stateless-function
@@ -89,8 +87,8 @@ class ConsentDisclosureContent002 extends Component {
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
               Do not agree to participate in this study unless the research team
-              has answered your questions and you decide that you and your child want to be
-              part of this study.
+              has answered your questions and you decide that you and your child
+              want to be part of this study.
             </Text>
           </Text>
         </View>
@@ -105,17 +103,16 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.header}>What is the Purpose of this Study?</Text>
           <Text style={styles.text}>
             This is a research study. We are inviting you and your child to
-            participate, because your child, who may or
-            may not have behavioral or developmental challenges, is 2 to 3 years
-            old. In this study, both you and your child will be considered
-            research participants.
+            participate, because your child, who may or may not have behavioral
+            or developmental challenges, is 2 to 3 years old. In this study,
+            both you and your child will be considered research participants.
           </Text>
           <Text style={styles.text}>
-            The purpose of this research is to better understand how
-            genetics and the social environment influnce the way children
-            develop. Specifically, this study will use a smartphone application
-            and blood samples to study potential risk factors for Autism
-            Spectrum Disorder or other developmental disorders. 
+            The purpose of this research is to better understand how genetics
+            and the social environment influnce the way children develop.
+            Specifically, this study will use a smartphone application and blood
+            samples to study potential risk factors for Autism Spectrum Disorder
+            or other developmental disorders. 
           </Text>
         </View>
 
@@ -147,7 +144,8 @@ class ConsentDisclosureContent002 extends Component {
             two 15-minute in-person visit(s) to the Center for Disabilities and
             Development (CDD), and your continued use of the smartphone app,
             'BabySteps' from your home. Completing a prompt or task from the app
-            should only take a few seconds or minutes of your time on each occasion.
+            should only take a few seconds or minutes of your time on each
+            occasion.
           </Text>
         </View>
 
@@ -165,9 +163,9 @@ class ConsentDisclosureContent002 extends Component {
             Once your eligibility is discussed, we will e-mail a link to access
             the BabySteps smartphone application. After you have reviewed the
             BabySteps app, you can press the "Agree" button on the application
-            to formally consent to the study, and can sign electronically.
-            You and your child cannot participate in this study without giving
-            your signed permission. Once the consent form is properly completed,
+            to formally consent to the study, and can sign electronically. You
+            and your child cannot participate in this study without giving your
+            signed permission. Once the consent form is properly completed,
             you/your child may complete other app-based tasks and in-person
             procedures.
           </Text>
@@ -327,32 +325,41 @@ class ConsentDisclosureContent002 extends Component {
               textStyle={styles.checkboxText}
               checked={screening_blood === true}
               Component={TouchableWithoutFeedback}
-              onPress={() => this.props.handleConsentPermissions('screening_blood', true)}
+              onPress={() =>
+                this.props.handleConsentPermissions('screening_blood', true)
+              }
             />
 
             <CheckBox
               title="No"
               textStyle={styles.checkboxText}
               checked={screening_blood === false}
-              onPress={() => this.props.handleConsentPermissions('screening_blood', false)}
+              onPress={() =>
+                this.props.handleConsentPermissions('screening_blood', false)
+              }
             />
 
             <Text style={styles.text}>
-              My child’s blood samples may be stored/shared for future research for any other purpose.
+              My child’s blood samples may be stored/shared for future research
+              for any other purpose.
             </Text>
 
             <CheckBox
               title="Yes"
               textStyle={styles.checkboxText}
               checked={screening_blood_other === true}
-              onPress={() => this.props.handleConsentPermissions('screening_blood_other', true)}
+              onPress={() =>
+                this.props.handleConsentPermissions('screening_blood_other', true)
+              }
             />
 
             <CheckBox
               title="No"
               textStyle={styles.checkboxText}
               checked={screening_blood_other === false}
-              onPress={() => this.props.handleConsentPermissions('screening_blood_other', false)}
+              onPress={() =>
+                this.props.handleConsentPermissions('screening_blood_other', false)
+              }
             />
           </View>
 
@@ -488,13 +495,13 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             However, the photos, recordings, and other study data may be useful
-            in future research studies. Your/your child's data may be stripped of
-            identifiers (such as name, date of birth, address, etc.) and placed
-            in a central repository or other national repositories sponsored by
-            the National Institutes of Health or other Federal agencies. Other
-            qualified researchers who obtain proper permisison may gain access
-            to your data for use in approved research studies that may or may
-            not be related to the purpose of this study.
+            in future research studies. Your/your child's data may be stripped
+            of identifiers (such as name, date of birth, address, etc.) and
+            placed in a central repository or other national repositories
+            sponsored by the National Institutes of Health or other Federal
+            agencies. Other qualified researchers who obtain proper permisison
+            may gain access to your data for use in approved research studies
+            that may or may not be related to the purpose of this study.
           </Text>
 
           <View style={styles.checkboxView}>
@@ -507,21 +514,27 @@ class ConsentDisclosureContent002 extends Component {
                 who are working with the current Principal Investigator on this study."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'yes_study_presentations'}
-              onPress={() => this.props.handleConsentPermissions('video_presentation', 'yes_study_presentations')}
+              onPress={() =>
+                this.props.handleConsentPermissions('video_presentation', 'yes_study_presentations')
+              }
             />
 
             <CheckBox
               title="Yes, I allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions, who are working with the current Principal Investigator on this study."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'yes_other_presentations'}
-              onPress={() => this.props.handleConsentPermissions('video_presentation', 'yes_other_presentations')}
+              onPress={() =>
+                this.props.handleConsentPermissions('video_presentation', 'yes_other_presentations')
+              }
             />
 
             <CheckBox
               title="No, I don’t allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'no_presentations'}
-              onPress={() => this.props.handleConsentPermissions('video_presentation', 'no_presentations')}
+              onPress={() =>
+                this.props.handleConsentPermissions('video_presentation', 'no_presentations')
+              }
             />
           </View>
 
@@ -555,7 +568,9 @@ class ConsentDisclosureContent002 extends Component {
                 Databrary database."
               textStyle={styles.checkboxText}
               checked={video_sharing === 'yes_other_researchers'}
-              onPress={() => this.props.handleConsentPermissions('video_sharing', 'yes_other_researchers')}
+              onPress={() =>
+                this.props.handleConsentPermissions('video_sharing', 'yes_other_researchers')
+              }
             />
 
             <CheckBox
@@ -564,7 +579,9 @@ class ConsentDisclosureContent002 extends Component {
                 the Databrary database."
               textStyle={styles.checkboxText}
               checked={video_sharing === 'no_other_researchers'}
-              onPress={() => this.props.handleConsentPermissions('video_sharing', 'no_other_researchers')}
+              onPress={() =>
+                this.props.handleConsentPermissions('video_sharing', 'no_other_researchers')
+              }
             />
           </View>
 
@@ -605,54 +622,57 @@ class ConsentDisclosureContent002 extends Component {
 
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
-              You or your child might feel discomfort when you are videotaped, or
-              when you complete some of the questionnaires. You may decline to
-              answer any prompts or questions you wish.
+              You or your child might feel discomfort when you are videotaped,
+              or when you complete some of the questionnaires. You may decline
+              to answer any prompts or questions you wish.
             </Text>
             {'\n'}
 
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
-              Your child may experience some physical pain, bruising or emotional
-              distress from having his/her blood taken. There is a small risk for
-              complications related to this procedure.
+              Your child may experience some physical pain, bruising or
+              emotional distress from having his/her blood taken. There is a
+              small risk for complications related to this procedure.
             </Text>
             {'\n'}
 
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
               There may be information uncovered during this research study
-              indicating physical or sexual abuse of a child under the age of 18.
-              The researcher conducting this study is required to follow the
+              indicating physical or sexual abuse of a child under the age of
+              18. The researcher conducting this study is required to follow the
               University of Iowa policy on Mandatory Reporting of Physical and
               Sexual Abuse of Children. We will be required to report this
-              information to the authorities. 
+              information to the authorities.
             </Text>
             {'\n'}
 
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
-              There is a risk of loss of confidentiality of your/your child’s samples
-              or data. Measures in place to minimize this risk are indicated in
-              the "What About Confidentiality” section later in this document. 
+              There is a risk of loss of confidentiality of your/your child’s
+              samples or data. Measures in place to minimize this risk are
+              indicated in the "What About Confidentiality” section later in
+              this document. 
             </Text>
           </Text>
 
           <Text style={styles.subTitle}>Genetic Research</Text>
           <Text style={styles.text}>
             One risk of giving samples for this research may be the release of
-            your name that could link you or your child to the stored samples and/or
-            the results of the tests run on your child's samples. To prevent
-            this, these samples will be given a code. Only the study
-            staff will know the code. The name associated with the code will be kept in a locked file or in a computer with a password. Only the primary study investigators will have access to your name. Data will likewise be
-            stored on a secure, password-protected server. If your child's blood
-            samples are saved for future research, sample, information, and/or
-            data may be stripped of identifiers (such as name, date of birth,
-            address, etc.) and placed in a central repository or other national
-            repositories sponsored by the National Institutes of Health or other
-            Federal agencies. Only qualified researchers who obtain proper
-            permission may gain access to your child's sample and/or data for
-            use in approved research studies.
+            your name that could link you or your child to the stored samples
+            and/or the results of the tests run on your child's samples. To
+            prevent this, these samples will be given a code. Only the study
+            staff will know the code. The name associated with the code will be
+            kept in a locked file or in a computer with a password. Only the
+            primary study investigators will have access to your name. Data will
+            likewise be stored on a secure, password-protected server. If your
+            child's blood samples are saved for future research, sample,
+            information, and/or data may be stripped of identifiers (such as
+            name, date of birth, address, etc.) and placed in a central
+            repository or other national repositories sponsored by the National
+            Institutes of Health or other Federal agencies. Only qualified
+            researchers who obtain proper permission may gain access to your
+            child's sample and/or data for use in approved research studies.
           </Text>
           <Text style={styles.text}>
             The de-identified data will be used for research at the University
@@ -681,8 +701,8 @@ class ConsentDisclosureContent002 extends Component {
             study.
           </Text>
           <Text style={styles.text}>
-            However, we hope that in the future, other people might benefit
-            from this study by using the smartphone app and blood samples to collect
+            However, we hope that in the future, other people might benefit from
+            this study by using the smartphone app and blood samples to collect
             information about possible risk factors for autism and other
             developmental problems in early childhood.
           </Text>
@@ -704,10 +724,10 @@ class ConsentDisclosureContent002 extends Component {
             You will not have any additional costs associated with being in this
             research study. There will be no costs to you for the smart phone
             app, screening questionnaires, or genetic testing of your child’s
-            blood samples. You and/or your health insurance
-            company will be billed for any tests or procedures that are part of
-            you or your child’s regular medical care, including the costs associated
-            with any in-person diagnostic evaluations you/your child may be referred
+            blood samples. You and/or your health insurance company will be
+            billed for any tests or procedures that are part of you or your
+            child’s regular medical care, including the costs associated with
+            any in-person diagnostic evaluations you/your child may be referred
             for during the study, or other blood tests.
           </Text>
           <Text style={styles.text}>
@@ -719,7 +739,7 @@ class ConsentDisclosureContent002 extends Component {
             collected, since this collection was additional to their routine
             medical care. All participants will receive an additional $20 gift
             card if you meet certain benchmarks in regard to usage of the app
-            over the following months. 
+            over the following months.
           </Text>
 
           <Text style={styles.subTitle}>Who is funding this study?</Text>
@@ -812,7 +832,7 @@ class ConsentDisclosureContent002 extends Component {
             result, they may have access to your data. To protect your/your
             child's privacy, The University of Iowa Hospitals and Clincs has
             entered into a strict confidentiality agreement with FullStack, Inc.
-            Such agreement ensures the company is responsible for meeting the 
+            Such agreement ensures the company is responsible for meeting the
             same terms of confidentially as other study researchers or
             collaborators.
           </Text>
@@ -838,7 +858,7 @@ class ConsentDisclosureContent002 extends Component {
             information included will provide contact information for the
             research team, as well as information about the risks associated
             with this study. We will keep this Informed Consent Document in our
-            research files; it will not be placed in your medical record chart. 
+            research files; it will not be placed in your medical record chart.
           </Text>
         </View>
 
@@ -856,14 +876,18 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             The Federal Health Insurance Portability and Accountability Act
-            (HIPAA) requires your child's healthcare provider to obtain your permission
-            for the research team to access or create “protected health
-            information” about your child for purposes of this research study. Protected health information is information that personally identifies your child and relates to your child's past, present, or future physical or mental health condition or care. 
-            We will access or create health information about your child, as described in this document, for purposes of this research study. Once
-            your child's healthcare provider has disclosed your child's protected health
+            (HIPAA) requires your child's healthcare provider to obtain your
+            permission for the research team to access or create “protected
+            health information” about your child for purposes of this research
+            study. Protected health information is information that personally
+            identifies your child and relates to your child's past, present, or
+            future physical or mental health condition or care. We will access
+            or create health information about your child, as described in this
+            document, for purposes of this research study. Once your child's
+            healthcare provider has disclosed your child's protected health
             information to us, it may no longer be protected by the Federal
-            HIPAA privacy regulations, but we will continue to protect your child's
-            confidentiality as described under “Confidentiality.”
+            HIPAA privacy regulations, but we will continue to protect your
+            child's confidentiality as described under “Confidentiality.”
           </Text>
           <Text style={styles.text}>
             We may share your child's health information related to this study
@@ -874,13 +898,13 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             Your child cannot participate in this study unless you permit us to
-            use your child's protected health information. If you choose not to allow us
-            to use your child's protected health information, we will discuss any
-            non-research alternatives available to your child. Your decision will not
-            affect your child's right to medical care that is not research-related. Your
-            signature on this Consent Document authorizes your child's
-            healthcare provider to give us permission to use or create health
-            information about you and your child.
+            use your child's protected health information. If you choose not to
+            allow us to use your child's protected health information, we will
+            discuss any non-research alternatives available to your child. Your
+            decision will not affect your child's right to medical care that is
+            not research-related. Your signature on this Consent Document
+            authorizes your child's healthcare provider to give us permission to
+            use or create health information about you and your child.
           </Text>
           <Text style={styles.text}>
             Although you may not be allowed to see study information until after
@@ -891,12 +915,12 @@ class ConsentDisclosureContent002 extends Component {
             You may withdraw your permission for us to use your child's health
             information for this research study by sending a written notice to
             Dr. Lane Strathearn, 100 Hawkins Dr., 213F CDD, Iowa City, IA 52242.
-            However, we may still use your child's health information that was collected
-            before withdrawing your permission. Also, if we have sent your child's
-            health information to a third party, such as the study sponsor, or
-            we have removed your child's identifying information, it may not be possible
-            to prevent its future use. You will receive a copy of this signed
-            document.
+            However, we may still use your child's health information that was
+            collected before withdrawing your permission. Also, if we have sent
+            your child's health information to a third party, such as the study
+            sponsor, or we have removed your child's identifying information, it
+            may not be possible to prevent its future use. You will receive a
+            copy of this signed document.
           </Text>
         </View>
 
@@ -932,8 +956,9 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.header}>What if I have Questions</Text>
           <Text style={styles.text}>
             We encourage you to ask questions. If you have any questions about
-            the research study itself or if you or your child experiences a research-related injury, please contact: Lane Strathearn (319 356
-            7044 or lane-strathearn@uiowa.edu). 
+            the research study itself or if you or your child experiences a
+            research-related injury, please contact: Lane Strathearn (319 356
+            7044 or lane-strathearn@uiowa.edu).
           </Text>
           <Text style={styles.text}>
             If you have questions, concerns, or complaints about your and your
@@ -950,12 +975,13 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             This Informed Consent Document is not a contract. It is a written
-            explanation of what will happen during the study if you decide for you and your child to
-            participate. You are not waiving any legal rights by signing this
-            Informed Consent Document. Your signature indicates that this
-            research study has been explained to you, that your questions have
-            been answered, and that you agree for you and your child to take part in this study. You
-            will receive a copy of this form.
+            explanation of what will happen during the study if you decide for
+            you and your child to participate. You are not waiving any legal
+            rights by signing this Informed Consent Document. Your signature
+            indicates that this research study has been explained to you, that
+            your questions have been answered, and that you agree for you and
+            your child to take part in this study. You will receive a copy of
+            this form.
           </Text>
         </View>
       </View>
