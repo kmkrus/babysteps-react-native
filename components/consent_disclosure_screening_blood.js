@@ -1,63 +1,95 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import { Button, CheckBox } from 'react-native-elements';
+import { CheckBox } from 'react-native-elements';
 
 import { connect } from 'react-redux';
 
-import Colors from '../constants/Colors';
-
+// eslint-disable-next-line react/prefer-stateless-function
 class ConsentDisclosureScreeningBlood extends Component {
   render() {
-    const { screeningBlood, errorMessage, formState } = this.props;
-    const error = !!errorMessage;
+    const {
+      screening_blood,
+      screening_blood_other,
+      formState,
+    } = this.props;
 
     if (formState === 'edit') {
       return (
         <View style={styles.checkboxView}>
           <Text style={styles.header}>
-            Please indicate below if you agree to the use of your baby’s newborn 
-            screening blood spots for genetic testing:
+            Please indicate Yes or No for each of the questions below:
+          </Text>
+
+          <Text style={styles.text}>
+            My child’s blood samples may be stored/shared for future gene
+            research in Autism and other developmental disorders.
           </Text>
 
           <CheckBox
-            title="Yes, I will allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
+            title="Yes"
             textStyle={styles.checkboxText}
-            checked={screeningBlood === true}
-            containerStyle={
-              error ? {borderColor: Colors.errorBackground} : {}
-            }
-            onPress={() => this.props.handleScreeningBlood(true, '')}
+            checked={screening_blood === true}
+            onPress={() => this.props.handleScreeningBlood('screening_blood', true)}
           />
 
           <CheckBox
-            title="No, I will not allow the investigators to access my baby’s newborn screening blood spots for genetic testing purpose."
+            title="No"
             textStyle={styles.checkboxText}
-            checked={screeningBlood === false}
-            containerStyle={
-              error ? {borderColor: Colors.errorBackground} : {}
-            }
-            onPress={() => this.props.handleScreeningBlood(false, '')}
+            checked={screening_blood === false}
+            onPress={() => this.props.handleScreeningBlood('screening_blood', false)}
+          />
+
+          <Text style={styles.text}>
+            My child’s blood samples may be stored/shared for future research
+            for any other purpose.
+          </Text>
+
+          <CheckBox
+            title="Yes"
+            textStyle={styles.checkboxText}
+            checked={screening_blood_other === true}
+            onPress={() => this.props.handleScreeningBlood('screening_blood_other', true)}
+          />
+
+          <CheckBox
+            title="No"
+            textStyle={styles.checkboxText}
+            checked={screening_blood_other === false}
+            onPress={() => this.props.handleScreeningBlood('screening_blood_other', false)}
           />
         </View>
       );
     }
-    const subjectScreeningBlood = this.props.registration.subject.data.screeningBlood;
-    if (subjectScreeningBlood) {
-      return (
-        <View>
-          <Text style={styles.header}>
-            You have agreed to the use of your baby’s newborn screening blood
-            spots for genetic testing
-          </Text>
-        </View>
-      );
-    }
+
+    const subject_screening_blood = this.props.registration.subject.data.screening_blood;
+    const subject_screening_blood_other = this.props.registration.subject.data.screening_blood_other;
     return (
       <View>
-        <Text style={styles.header}>
-          You have not agreed to the use of your baby’s newborn screening blood
-          spots for genetic testing
-        </Text>
+        {subject_screening_blood && (
+          <Text style={styles.header}>
+            You have agreed that your child’s blood samples may be stored/shared
+            for future gene research in Autism and other developmental disorders.
+          </Text>
+        )}
+        {!subject_screening_blood && (
+          <Text style={styles.header}>
+            You have not agreed that your child’s blood samples may be
+            stored/shared for future gene research in Autism and other
+            developmental disorders.
+          </Text>
+        )}
+        {subject_screening_blood_other && (
+          <Text style={styles.header}>
+            You have agreed that your child’s blood samples may be stored/shared
+            for future research for any other purpose.
+          </Text>
+        )}
+        {!subject_screening_blood_other && (
+          <Text style={styles.header}>
+            You have not agreed that your child’s blood samples may be
+            stored/shared for future research for any other purpose.
+          </Text>
+        )}
       </View>
     );
   }
@@ -68,6 +100,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '900',
     textAlign: 'center',
+  },
+  text: {
+    //textAlign: 'center',
+    fontSize: 12,
+    padding: 5,
   },
   checkboxView: {
     marginBottom: 0,

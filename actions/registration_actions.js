@@ -438,8 +438,12 @@ export const createSubject = subject => {
         expected_date_of_birth, \
         date_of_birth, \
         days_premature, \
-        screening_blood \
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
+        screening_blood, \
+        screening_blood_notification, \
+        screening_blood_other, \
+        video_presentation, \
+        video_sharing, \
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
     const values = [
       subject.first_name,
@@ -451,6 +455,10 @@ export const createSubject = subject => {
       subject.date_of_birth,
       subject.days_premature,
       subject.screening_blood,
+      subject.screening_blood_notification,
+      subject.screening_blood_other,
+      subject.video_presentation,
+      subject.video_sharing,
     ];
 
     return db.transaction(tx => {

@@ -38,38 +38,39 @@ const components = {
 
 class ConsentDisclosureContent extends Component {
   state = {
-    screeningBlood: null,
-    errorMessage: '',
-    errorMessageLocation: 0,
+    screening_blood: null,
+    screening_blood_other: null,
+    screening_blood_notification: null,
+    video_sharing: null,
+    video_presentation: null,
     scrollOffset: 800,
   };
 
-  componentDidUpdate() {
-    if (this.state.errorMessage) {
-      this._scrollView.scrollTo({ y: this.state.errorMessageLocation + this.state.scrollOffset });
-    }
-  }
-
   handleSubmit = action => {
-    const screening_blood = this.state.screeningBlood;
-    if (screening_blood === null && action === 'agree') {
-      const errorMessage =
-        "You must select whether or not you will allow collection of your baby's bloodspot.";
-      this.setState({ errorMessage });
-      return;
-    }
+    const {
+      screening_blood,
+      screening_blood_notification,
+      screening_blood_other,
+      video_sharing,
+      video_presentation,
+    } = this.state;
+
     const registration_state =
       action === 'agree'
         ? States.REGISTERING_SIGNATURE
         : States.REGISTERING_AS_NO_STUDY;
     this.props.updateSession({
       screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_sharing,
+      video_presentation,
       registration_state,
     });
   };
 
-  handleScreeningBlood = (screeningBlood, errorMessage) => {
-    this.setState({ screeningBlood, errorMessage });
+  handleConsentPermissions = (attribute, response) => {
+    this.setState({ [attribute]: response });
   };
 
   renderButton = () => {
@@ -146,13 +147,15 @@ class ConsentDisclosureContent extends Component {
     return null;
   };
 
-  setErrorMessageLocation = y => {
-    this.setState({ errorMessageLocation: y });
-  };
-
   render() {
     const { formState, tosID } = this.props;
-    const { screeningBlood, errorMessage } = this.state;
+    const { 
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_sharing,
+      video_presentation,
+    } = this.state;
     let ConsentDisclosureVersion = components[tosID];
 
     return (
@@ -161,12 +164,14 @@ class ConsentDisclosureContent extends Component {
         ref={ref => (this._scrollView = ref)}
       >
         <ConsentDisclosureVersion
-          screeningBlood={screeningBlood}
-          errorMessage={errorMessage}
+          screening_blood={screening_blood}
+          screening_blood_other={screening_blood_other}
+          screening_blood_notification={screening_blood_notification}
+          video_presentation={video_presentation}
+          video_sharing={video_sharing}
           formState={formState}
-          setErrorMessageLocation={y => this.setErrorMessageLocation(y)}
-          handleScreeningBlood={(screeningBlood, errorMessage) =>
-            this.handleScreeningBlood(screeningBlood, errorMessage)
+          handleConsentPermissions={(attribute, response) =>
+            this.handleConsentPermissions(attribute, response)
           }
         />
         {this.renderSignature()}
@@ -207,6 +212,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.pink,
     borderWidth: 2,
     borderRadius: 5,
+    alignSelf: 'center',
   },
   buttonNextTitle: {
     fontWeight: '900',
