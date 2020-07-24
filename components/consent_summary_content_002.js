@@ -27,7 +27,7 @@ class ConsentSummaryContent002 extends Component {
               cross-sectional study
             </Text>
           </View>
-           <View style={styles.text}>
+          <View style={styles.text}>
             <Text style={styles.bold}>Principal Investigator:</Text>
             <Text style={[styles.listText, {paddingLeft: 10}]}>
               Lane Strathearn MD PhD
@@ -58,12 +58,11 @@ class ConsentSummaryContent002 extends Component {
             development may be influenced by genetic and environmental factors.
             We hope to use information uncovered by this study to identify
             possible risk factors for autism and other early-childhood
-            developmental concerns. 
+            developmental concerns.
           </Text>
         </View>
 
         <View style={styles.elevated}>
-
           <Ionicons
             name="md-clipboard"
             size={28}
@@ -210,29 +209,13 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     textAlign: 'center',
   },
-  subTitle: {
-    fontWeight: '600',
-    padding: 5,
-  },
   text: {
     //textAlign: 'center',
     fontSize: 12,
     padding: 5,
   },
-  underline: {
-    textDecorationLine: 'underline',
-  },
   bold: {
     fontWeight: '600',
-  },
-  list: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingLeft: 20,
-  },
-  bullet: {
-    fontSize: 18,
-    marginTop: -3,
   },
   listText: {
     fontSize: 12,

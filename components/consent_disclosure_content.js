@@ -10,8 +10,6 @@ import {
 import { Button } from 'react-native-elements';
 import * as FileSystem from 'expo-file-system';
 
-import isEmpty from 'lodash/isEmpty';
-
 import moment from 'moment';
 
 import { connect } from 'react-redux';
@@ -49,13 +47,13 @@ class ConsentDisclosureContent extends Component {
   };
 
   handleSubmit = action => {
-    const [
+    const {
       screening_blood,
       screening_blood_notification,
       screening_blood_other,
       video_sharing,
       video_presentation,
-    ] = this.state;
+    } = this.state;
 
     const registration_state =
       action === 'agree'
@@ -72,7 +70,6 @@ class ConsentDisclosureContent extends Component {
   };
 
   handleConsentPermissions = (attribute, response) => {
-    //debugger
     this.setState({ [attribute]: response });
   };
 

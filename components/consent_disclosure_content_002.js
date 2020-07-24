@@ -324,7 +324,7 @@ class ConsentDisclosureContent002 extends Component {
               title="Yes"
               textStyle={styles.checkboxText}
               checked={screening_blood === true}
-              Component={TouchableWithoutFeedback}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood', true)
               }
@@ -334,6 +334,7 @@ class ConsentDisclosureContent002 extends Component {
               title="No"
               textStyle={styles.checkboxText}
               checked={screening_blood === false}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood', false)
               }
@@ -348,6 +349,7 @@ class ConsentDisclosureContent002 extends Component {
               title="Yes"
               textStyle={styles.checkboxText}
               checked={screening_blood_other === true}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood_other', true)
               }
@@ -357,6 +359,7 @@ class ConsentDisclosureContent002 extends Component {
               title="No"
               textStyle={styles.checkboxText}
               checked={screening_blood_other === false}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood_other', false)
               }
@@ -424,6 +427,7 @@ class ConsentDisclosureContent002 extends Component {
               title="Yes, I want to be provided with this information."
               textStyle={styles.checkboxText}
               checked={screening_blood_notification === true}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood_notification', true)
               }
@@ -433,6 +437,7 @@ class ConsentDisclosureContent002 extends Component {
               title="No, I do NOT want to be provided with this information."
               textStyle={styles.checkboxText}
               checked={screening_blood_notification === false}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('screening_blood_notification', false)
               }
@@ -491,7 +496,8 @@ class ConsentDisclosureContent002 extends Component {
             three years of life. We may use this data and these videos to study
             things like your child's developmental progress, or their sounds,
             gestures, movements, or interactions with you. Only researchers from
-            this study or research collaborators will have access to these videos.
+            this study or research collaborators will have access to these
+            videos.
           </Text>
           <Text style={styles.text}>
             However, the photos, recordings, and other study data may be useful
@@ -514,6 +520,7 @@ class ConsentDisclosureContent002 extends Component {
                 who are working with the current Principal Investigator on this study."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'yes_study_presentations'}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('video_presentation', 'yes_study_presentations')
               }
@@ -523,6 +530,7 @@ class ConsentDisclosureContent002 extends Component {
               title="Yes, I allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions, who are working with the current Principal Investigator on this study."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'yes_other_presentations'}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('video_presentation', 'yes_other_presentations')
               }
@@ -532,6 +540,7 @@ class ConsentDisclosureContent002 extends Component {
               title="No, I don’t allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'no_presentations'}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('video_presentation', 'no_presentations')
               }
@@ -568,6 +577,7 @@ class ConsentDisclosureContent002 extends Component {
                 Databrary database."
               textStyle={styles.checkboxText}
               checked={video_sharing === 'yes_other_researchers'}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('video_sharing', 'yes_other_researchers')
               }
@@ -579,6 +589,7 @@ class ConsentDisclosureContent002 extends Component {
                 the Databrary database."
               textStyle={styles.checkboxText}
               checked={video_sharing === 'no_other_researchers'}
+              disabled={formState !== 'edit'}
               onPress={() =>
                 this.props.handleConsentPermissions('video_sharing', 'no_other_researchers')
               }
@@ -652,7 +663,7 @@ class ConsentDisclosureContent002 extends Component {
               There is a risk of loss of confidentiality of your/your child’s
               samples or data. Measures in place to minimize this risk are
               indicated in the "What About Confidentiality” section later in
-              this document. 
+              this document.
             </Text>
           </Text>
 
@@ -925,7 +936,24 @@ class ConsentDisclosureContent002 extends Component {
         </View>
 
         <View style={styles.elevated}>
+          <Ionicons
+            name="md-paper-plane"
+            size={28}
+            style={styles.icon}
+            color={Colors.iconDefault}
+          />
 
+          <Text style={styles.header}>
+            Will I Receive New Information About the Study While Participating?
+          </Text>
+          <Text style={styles.text}>
+            If we obtain any new information during this study that might affect
+            your willingness for you and your child to continue participating in
+            the study, we will promptly provide you with that information.
+          </Text>
+        </View>
+
+        <View style={styles.elevated}>
           <Ionicons
             name="md-thumbs-up"
             size={28}
