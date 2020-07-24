@@ -52,7 +52,7 @@ class ConsentSummaryContent002 extends Component {
             style={styles.icon}
             color={Colors.iconDefault}
           />
-          <Text style={styles.header}>What is the Purpose of this Study?</Text>
+          <Text style={styles.header}>The purpose of the research study:</Text>
           <Text style={styles.text}>
             This study was designed to examine ways in which a child’s
             development may be influenced by genetic and environmental factors.
@@ -72,8 +72,8 @@ class ConsentSummaryContent002 extends Component {
           />
 
           <Text style={styles.header}>
-            Main procedures I will undergo if I take part in this research
-            study.
+            Main procedures you will undergo if you take part in this research
+            study:
           </Text>
           <Text style={styles.text}>
             As a participant in this study, you will be asked to use this
@@ -99,7 +99,7 @@ class ConsentSummaryContent002 extends Component {
             color={Colors.iconDefault}
           />
           <Text style={styles.header}>
-            Number of study visits and how long study visits will be.
+            Number of study visits and how long study visits will be:
           </Text>
           <Text style={styles.text}>
             You may or may not need to visit with researchers in-person during
@@ -120,7 +120,7 @@ class ConsentSummaryContent002 extends Component {
             style={styles.icon}
             color={Colors.iconDefault}
           />
-          <Text style={styles.header}>How Long Will I Be in this Study?</Text>
+          <Text style={styles.header}>How long you will be in the study:</Text>
           <Text style={styles.text}>
             Your involvement in this study will last about 10 months.
           </Text>
@@ -163,7 +163,7 @@ class ConsentSummaryContent002 extends Component {
           />
 
           <Text style={styles.header}>
-            Main risks of taking part in this research study.
+            Main risks of taking part in this research study:
           </Text>
           <Text style={styles.text}>
             There are a few risks for taking part in this study, such as loss of
@@ -186,7 +186,7 @@ class ConsentSummaryContent002 extends Component {
           />
 
           <Text style={styles.header}>
-            What are the Benefits of this Study?
+            Possible benefits of taking part in this research study:
           </Text>
           <Text style={styles.text}>
             While we do not know if you will benefit from this study, we hope
