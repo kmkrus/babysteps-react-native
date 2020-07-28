@@ -40,13 +40,12 @@ class ConsentDisclosureContent002 extends Component {
             color={Colors.iconDefault}
           />
           <Text style={styles.header}>
-            Assessment of Social Environment: A Pilot Study using Smart Phone
-            Technology
+            Epigenetics and the social environment in autism: A cross sectional study
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Principal Investigator:</Text>{'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
-            <Text style={styles.listText}>Lane Strathearn MD PhD</Text>
+            <Text style={styles.listText}>Lane Strathearn MD PhD (lane-strathearn@uiowa.edu)</Text>
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Research Team Contacts:</Text>
@@ -104,7 +103,7 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             This is a research study. We are inviting you and your child to
             participate, because your child, who may or may not have behavioral
-            or developmental challenges, is 2 to 3 years old. In this study,
+            or developmental challenges, is 18 months to 3 years old. In this study,
             both you and your child will be considered research participants.
           </Text>
           <Text style={styles.text}>
@@ -420,7 +419,7 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <View style={styles.checkboxView}>
             <Text style={styles.header}>
-              Please select one of the following options:
+              In the event of unexpected findings, data will be reviewed by a physician who normally reads such results. We can provide you with this information so that you may discuss it with your/your child's primary care physician. Please select one of the following options:
             </Text>
 
             <CheckBox
@@ -511,7 +510,9 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
 
           <View style={styles.checkboxView}>
-            <Text style={styles.header}>Please select one option below:</Text>
+            <Text style={styles.header}>One aspect of this study involves researchers studying the video recordings and photographs
+            of you/your child. Only researchers from this study or research collaborators will have access to these videos. 
+            However, the photos, recordings, and other study data may be useful in future research studies. Please select one option below:</Text>
 
             <CheckBox
               title="Yes, I allow the investigators to show digital video clips 
@@ -569,7 +570,7 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
 
           <View style={styles.checkboxView}>
-            <Text style={styles.header}>Please select one option below:</Text>
+            <Text style={styles.header}>Video data, including the video of you and your child playing together, may also be uploaded to a web-based research library called Databrary. Please select one option below:</Text>
 
             <CheckBox
               title="Yes, I allow the investigators to share video clips of me
@@ -651,7 +652,7 @@ class ConsentDisclosureContent002 extends Component {
             <Text style={styles.listText}>
               There may be information uncovered during this research study
               indicating physical or sexual abuse of a child under the age of
-              18. The researcher conducting this study is required to follow the
+              18 years. The researcher conducting this study is required to follow the
               University of Iowa policy on Mandatory Reporting of Physical and
               Sexual Abuse of Children. We will be required to report this
               information to the authorities.
