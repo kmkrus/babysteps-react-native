@@ -37,14 +37,29 @@ const components = {
 };
 
 class ConsentDisclosureContent extends Component {
-  state = {
-    screening_blood: null,
-    screening_blood_other: null,
-    screening_blood_notification: null,
-    video_sharing: null,
-    video_presentation: null,
-    scrollOffset: 800,
-  };
+
+  constructor(props) {
+    super(props);
+ 
+    const screening_blood =
+      ['null', null, undefined].includes(this.props.screening_blood) ? null : !!this.props.screening_blood;
+    const screening_blood_other =
+      ['null', null, undefined].includes(this.props.screening_blood_other) ? null : !!this.props.screening_blood_other;
+    const screening_blood_notification =
+      ['null', null, undefined].includes(this.props.screening_blood_notification) ? null : !!this.props.screening_blood_notification;
+    const video_sharing =
+      ['null', null, undefined].includes(this.props.video_sharing) ? null : this.props.video_sharing;
+      const video_presentation =
+      ['null', null, undefined].includes(this.props.video_presentation) ? null : this.props.video_presentation;
+    this.state = {
+      screening_blood: screening_blood,
+      screening_blood_other: screening_blood_other,
+      screening_blood_notification: screening_blood_notification,
+      video_sharing: video_sharing,
+      video_presentation: video_presentation,
+      scrollOffset: 800,
+    };
+  }
 
   handleSubmit = action => {
     const {

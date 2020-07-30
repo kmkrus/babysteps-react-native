@@ -26,7 +26,7 @@ import {
   apiUpdateRespondent,
 } from '../actions/registration_actions';
 import { apiNewMilestoneCalendar } from '../actions/milestone_actions';
-import { updateSession } from '../actions/session_actions';
+import { fetchSession, updateSession } from '../actions/session_actions';
 
 import DatePicker from './datePickerInput';
 
@@ -55,6 +55,7 @@ class RegistrationExpectedDOB extends Component {
     this.props.resetSubject();
     this.props.resetRespondent();
     this.props.fetchRespondent();
+    this.props.fetchSession();
   }
 
   componentDidMount() {
@@ -104,6 +105,7 @@ class RegistrationExpectedDOB extends Component {
             });
             this.setState({ apiMilestoneCalendarSubmitted: true });
           }
+          
           this.props.updateSession({
             registration_state: States.REGISTERED_AS_IN_STUDY,
           });
@@ -114,12 +116,22 @@ class RegistrationExpectedDOB extends Component {
 
   _handleOnSubmit = values => {
     const respondent = this.props.registration.respondent;
-    const screening_blood = this.props.session.screening_blood;
+    const {
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_presentation,
+      video_sharing,
+    } = this.props.session;
     if (values.expected_date_of_birth) {
       const newSubject = {
         ...values,
         respondent_ids: [respondent.data.api_id],
         screening_blood,
+        screening_blood_other,
+        screening_blood_notification,
+        video_presentation,
+        video_sharing,
       };
       this.setState({ isSubmitting: true });
       this.props.createSubject(newSubject);
@@ -130,7 +142,6 @@ class RegistrationExpectedDOB extends Component {
 
   render() {
     const dobError = this.state.dobError;
-    const screening_blood = this.props.session.screening_blood;
     return (
       <Formik
         onSubmit={this._handleOnSubmit}
@@ -140,7 +151,6 @@ class RegistrationExpectedDOB extends Component {
           gender: 'unknown',
           expected_date_of_birth: null,
           conception_method: 'natural',
-          screening_blood: screening_blood,
         }}
         render={props => {
           return (
@@ -211,6 +221,7 @@ const mapDispatchToProps = {
   updateRespondent,
   apiUpdateRespondent,
   apiNewMilestoneCalendar,
+  fetchSession,
   updateSession,
 };
 

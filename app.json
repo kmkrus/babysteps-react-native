@@ -29,14 +29,14 @@
     "assetBundlePatterns": [
       "./assets/**/*"
     ],
-    "version": "0.13.0",
+    "version": "0.13.1",
     "ios": {
-      "buildNumber": "61",
+      "buildNumber": "62",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "associatedDomains": [
         "webcredentials:babysteps-staging.icts.uiowa.edu", 
-        "webcredentials:babysteps.icts.uiowa.edu",
+        "webcredentials:babysteps.icts.uiowa.edu"
       ],
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to capture images of your baby for the study or baby book.",
@@ -45,7 +45,7 @@
       }
     },
     "android": {
-      "versionCode": 61,
+      "versionCode": 62,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",

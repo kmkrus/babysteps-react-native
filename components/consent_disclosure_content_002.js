@@ -103,15 +103,16 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             This is a research study. We are inviting you and your child to
             participate, because your child, who may or may not have behavioral
-            or developmental challenges, is 18 months to 3 years old. In this study,
-            both you and your child will be considered research participants.
+            or developmental challenges, is 18 months to 3 years old. In this
+            study, both you and your child will be considered research
+            participants.
           </Text>
           <Text style={styles.text}>
             The purpose of this research is to better understand how genetics
             and the social environment influnce the way children develop.
             Specifically, this study will use a smartphone application and blood
             samples to study potential risk factors for Autism Spectrum Disorder
-            or other developmental disorders. 
+            or other developmental disorders.
           </Text>
         </View>
 
@@ -315,12 +316,15 @@ class ConsentDisclosureContent002 extends Component {
             </Text>
 
             <Text style={styles.text}>
-              My child’s blood samples may be stored/shared for future gene
-              research in Autism and other developmental disorders.
+              The tests we might want to use to study your child’s blood samples
+              may not even exist at this time. Therefore, we are asking for your
+              permission to store your child’s blood samples so that we can
+              study them in the future. Please indicate Yes or No below
             </Text>
 
             <CheckBox
-              title="Yes"
+              title="Yes, my child’s blood samples may be stored/shared for future
+                gene research in Autism and other developmental disorders."
               textStyle={styles.checkboxText}
               checked={screening_blood === true}
               disabled={formState !== 'edit'}
@@ -330,7 +334,8 @@ class ConsentDisclosureContent002 extends Component {
             />
 
             <CheckBox
-              title="No"
+              title="No, my child’s blood samples may NOT be stored/shared for
+                future gene research in Autism and other developmental disorders"
               textStyle={styles.checkboxText}
               checked={screening_blood === false}
               disabled={formState !== 'edit'}
@@ -340,12 +345,15 @@ class ConsentDisclosureContent002 extends Component {
             />
 
             <Text style={styles.text}>
-              My child’s blood samples may be stored/shared for future research
-              for any other purpose.
+              We might want to use your child’s blood samples for other
+              research. Therefore, we are asking for your permission to store
+              you child’s blood samples so that we might use them in the future.
+              Please indicate Yes or No below:
             </Text>
 
             <CheckBox
-              title="Yes"
+              title="Yes, my child’s blood samples may be stored/shared for future
+                research for any other purpose."
               textStyle={styles.checkboxText}
               checked={screening_blood_other === true}
               disabled={formState !== 'edit'}
@@ -355,7 +363,8 @@ class ConsentDisclosureContent002 extends Component {
             />
 
             <CheckBox
-              title="No"
+              title="No, my child’s blood samples my NOT be stored/shared for future
+                research for any other purpose."
               textStyle={styles.checkboxText}
               checked={screening_blood_other === false}
               disabled={formState !== 'edit'}
@@ -419,7 +428,11 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <View style={styles.checkboxView}>
             <Text style={styles.header}>
-              In the event of unexpected findings, data will be reviewed by a physician who normally reads such results. We can provide you with this information so that you may discuss it with your/your child's primary care physician. Please select one of the following options:
+              In the event of unexpected findings, data will be reviewed by a
+              physician who normally reads such results. We can provide you with
+              this information so that you may discuss it with your/your child's
+              primary care physician. Please select one of the following
+              options:
             </Text>
 
             <CheckBox
@@ -510,9 +523,14 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
 
           <View style={styles.checkboxView}>
-            <Text style={styles.header}>One aspect of this study involves researchers studying the video recordings and photographs
-            of you/your child. Only researchers from this study or research collaborators will have access to these videos. 
-            However, the photos, recordings, and other study data may be useful in future research studies. Please select one option below:</Text>
+            <Text style={styles.header}>
+              One aspect of this study involves researchers studying the video
+              recordings and photographs of you/your child. Only researchers
+              from this study or research collaborators will have access to
+              these videos. However, the photos, recordings, and other study
+              data may be useful in future research studies. Please select one
+              option below:
+            </Text>
 
             <CheckBox
               title="Yes, I allow the investigators to show digital video clips 
@@ -528,7 +546,10 @@ class ConsentDisclosureContent002 extends Component {
             />
 
             <CheckBox
-              title="Yes, I allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions, who are working with the current Principal Investigator on this study."
+              title="Yes, I allow the investigators to show digital video clips of 
+                the interaction with my child during research presentations. These
+                videos may NOT be used by researchers at other institutions, who
+                are working with the current Principal Investigator on this study."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'yes_other_presentations'}
               disabled={formState !== 'edit'}
@@ -538,7 +559,9 @@ class ConsentDisclosureContent002 extends Component {
             />
 
             <CheckBox
-              title="No, I don’t allow the investigators to show digital video clips of the interaction with my child during research presentations. These videos may NOT be used by researchers at other institutions."
+              title="No, I don’t allow the investigators to show digital video clips
+                of the interaction with my child during research presentations. These
+                videos may NOT be used by researchers at other institutions."
               textStyle={styles.checkboxText}
               checked={video_presentation === 'no_presentations'}
               disabled={formState !== 'edit'}
@@ -570,7 +593,11 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
 
           <View style={styles.checkboxView}>
-            <Text style={styles.header}>Video data, including the video of you and your child playing together, may also be uploaded to a web-based research library called Databrary. Please select one option below:</Text>
+            <Text style={styles.header}>
+              Video data, including the video of you and your child playing
+              together, may also be uploaded to a web-based research library
+              called Databrary. Please select one option below:
+            </Text>
 
             <CheckBox
               title="Yes, I allow the investigators to share video clips of me
@@ -651,10 +678,10 @@ class ConsentDisclosureContent002 extends Component {
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>
               There may be information uncovered during this research study
-              indicating physical or sexual abuse of a child under the age of
-              18 years. The researcher conducting this study is required to follow the
-              University of Iowa policy on Mandatory Reporting of Physical and
-              Sexual Abuse of Children. We will be required to report this
+              indicating physical or sexual abuse of a child under the age of 18
+              years. The researcher conducting this study is required to follow
+              the University of Iowa policy on Mandatory Reporting of Physical
+              and Sexual Abuse of Children. We will be required to report this
               information to the authorities.
             </Text>
             {'\n'}

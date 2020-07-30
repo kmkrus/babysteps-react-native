@@ -56,13 +56,13 @@ export class TourItemFour extends Component {
 
         <View style={styles.textBlock}>
           <Text style={styles.title}>
-            Assessment of Social Environment: A Pilot Study using Smart Phone
-            Technology
+            Epigenetics and the social environment in autism: A cross-sectional
+            study
           </Text>
           <Text style={styles.body}>
             Powered by University of Iowa physicians and researchers use of this
             app will also help us to better understand factors leading to
-            premature birth or developmental disorders such as autism.
+            developmental disorders such as autism.
           </Text>
         </View>
 
@@ -97,22 +97,24 @@ export class TourItemFour extends Component {
             </Text>
           </View>
 
-          <View style={styles.nestedView}>
-            <Image
-              style={styles.nestedImage}
-              source={require('../assets/images/tour_slide_four_face.png')}
-            />
-            <Text style={styles.nestedBody}>
-              You will receive a video that shows your baby's face morphing over
-              the first 2 years of life
-              <Text
-                style={[styles.nestedBody, styles.nestedLink]}
-                onPress={this.handleLinkToFaceMorph}
-              >
-                {' '}(see demonstration video here).
+          { false && (
+            <View style={styles.nestedView}>
+              <Image
+                style={styles.nestedImage}
+                source={require('../assets/images/tour_slide_four_face.png')}
+              />
+              <Text style={styles.nestedBody}>
+                You will receive a video that shows your baby's face morphing over
+                the first 2 years of life
+                <Text
+                  style={[styles.nestedBody, styles.nestedLink]}
+                  onPress={this.handleLinkToFaceMorph}
+                >
+                  {' '}(see demonstration video here).
+                </Text>
               </Text>
-            </Text>
-          </View>
+            </View>
+          )}
 
           <View style={styles.nestedView}>
             <Image

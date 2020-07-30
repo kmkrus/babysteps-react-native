@@ -68,7 +68,7 @@ class SettingsScreen extends React.Component {
     const notify_at = moment(notification.notify_at).format('YYYY-MM-DD h:mm a Z');
     return (
       <ListItem
-        key={notification.id}
+        key={notification.id.toString()}
         title={notify_at}
         subtitle={notification.body}
       />
@@ -98,6 +98,8 @@ class SettingsScreen extends React.Component {
 
   renderConsentModal = () => {
     const respondent = this.props.registration.respondent.data;
+    const subject = this.props.registration.subject.data;
+    
     return (
       <View style={{ marginTop: 22 }}>
         <Modal
@@ -113,12 +115,16 @@ class SettingsScreen extends React.Component {
                 this.setModalVisible(!this.state.consentModalVisible);
               }}
             >
-              <Ionicons name = "md-close" size = {28} />
+              <Ionicons name = "md-close" size = {36} />
             </TouchableOpacity>
             <ConsentDisclosureContent
               formState="view"
               tosID={respondent.tos_id}
-              screeningBlood={this.state.screeningBlood}
+              screening_blood={subject.screening_blood}
+              screening_blood_other={subject.screening_blood_other}
+              screening_blood_notification={subject.screening_blood_notification}
+              video_sharing={subject.video_sharing}
+              video_presentation={subject.video_presentation}
               setModalVisible={this.setModalVisible}
             />
           </View>

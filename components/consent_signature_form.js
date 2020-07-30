@@ -20,41 +20,64 @@ class ConsentSignatureForm extends Component {
   constructor(props) {
     super(props);
     const session = this.props.session;
+    const screening_blood =
+      ['null', null].includes(session.screening_blood) ? null : !!session.screening_blood;
+    const screening_blood_other =
+      ['null', null].includes(session.screening_blood_other) ? null : !!session.screening_blood_other;
+    const screening_blood_notification =
+      ['null', null].includes(session.screening_blood_notification) ? null : !!session.screening_blood_notification;
+
+    const remoteDebug = (typeof DedicatedWorkerGlobalScope) !== 'undefined';
+
     this.state = {
-      screening_blood: !!session.screening_blood,
-      screening_blood_other: !!session.screening_blood_other,
-      screening_blood_notification: !!session.screening_blood_notification,
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
       video_sharing: session.video_sharing,
       video_presentation: session.video_presentation,
       errorMessage: null,
+      remoteDebug,
+      scrollEnabled: true,
     };
   }
 
   handleReset = () => {
-    this.sketch.undo();
+    console.log('signature clear');
+    this.signature.clear();
   };
 
   handleConsentPermissions = (attribute, response) => {
     this.setState({ [attribute]: response });
   };
 
-  handleSubmit = async () => {
+  handleNestedScrollEvent = scrollEnabled => {
+    this.setState({ scrollEnabled });
+  };
 
-    if (!__DEV__) {
-      const image = await this.sketch.glView.takeSnapshotAsync({format: 'png'});
+  handleSubmit = async () => {
+    const remoteDebug = this.state.remoteDebug;
+    let image = null;
+    if (!remoteDebug) {
+      image = await this.signature.takeSnapshotAsync({
+        format: 'png',
+        quality: 0.8,
+        result: 'file',
+      });
     }
-    const signatureDir = FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
+    const signatureDir =
+      FileSystem.documentDirectory + CONSTANTS.SIGNATURE_DIRECTORY;
     const resultDir = await FileSystem.getInfoAsync(signatureDir);
 
     if (resultDir.exists) {
       const fileName = signatureDir + '/signature.png';
       await FileSystem.deleteAsync(fileName, { idempotent: true });
-      if (!__DEV__) {
+
+      if (!this.state.remoteDebug) {
         await FileSystem.copyAsync({ from: image.uri, to: fileName });
       }
       const resultFile = await FileSystem.getInfoAsync(fileName);
 
-      if (__DEV__ || resultFile.exists) {
+      if (remoteDebug || resultFile.exists) {
         const {
           screening_blood,
           screening_blood_notification,
@@ -85,16 +108,16 @@ class ConsentSignatureForm extends Component {
         });
       } else {
         const errorMessage = 'Error: file not saved - ' + resultFile;
-        this.setState({ errorMessage })
+        this.setState({ errorMessage });
       }
     } else {
       const errorMessage = 'Error: no directory - ' + resultDir;
-      this.setState({ errorMessage })
+      this.setState({ errorMessage });
     }
   };
 
   render() {
-    //GLView won't run with remote debugging running.  Shut off remote debugging or you will get a Can't Find Property 0 error message.
+    // GLView won't run with remote debugging running.  Shut off remote debugging or you will get a Can't Find Property 0 error message.
 
     const {
       screening_blood,
@@ -102,11 +125,15 @@ class ConsentSignatureForm extends Component {
       screening_blood_other,
       video_presentation,
       video_sharing,
+      remoteDebug,
+      scrollEnabled,
     } = this.state;
 
     return (
-      <ScrollView contentContainerStyle={styles.scrollView}>
-
+      <ScrollView
+        scrollEnabled={scrollEnabled}
+        contentContainerStyle={styles.scrollView}
+      >
         <View>
           <Text style={styles.explanation}>Please confirm your answers and sign below.</Text>
         </View>
@@ -264,14 +291,27 @@ class ConsentSignatureForm extends Component {
           />
         </View>
 
+        <View style={styles.checkboxView}>
+          <Text style={styles.header}>
+            If you have any questions or concerns about the consent, please
+            email: lane-strathern@uiowa.edu or call 319-356-7044.
+          </Text>
+        </View>
+
         <View style={styles.sketchContainer}>
-          <Text style={styles.header}>Your Signature</Text>
-          {!(__DEV__) && (
-            <ExpoPixi.Sketch
-              ref={ref => (this.sketch = ref)}
+          <Text style={styles.signatureHeader}>
+            Signature of parent for their own participation and the
+            participation of the child.
+          </Text>
+          {!remoteDebug && (
+            <ExpoPixi.Signature
+              ref={ref => (this.signature = ref)}
               style={styles.signature}
+              onTouchStart={() => this.handleNestedScrollEvent(false)}
+              onTouchEnd={() => this.handleNestedScrollEvent(true)}
               strokeColor={Colors.black}
               strokeWidth={8}
+              strokeAlpha={0.5}
               transparent={false}
             />
           )}
@@ -321,6 +361,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sketchContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: Colors.grey,
@@ -329,10 +370,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   signature: {
+    flex: 1,
     height: 150,
     width: '100%',
     backgroundColor: Colors.white,
     borderRadius: 5,
+  },
+  signatureHeader: {
+    fontSize: 14,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginLeft: 5,
+    marginRight: 5,
   },
   buttonContainer: {
     justifyContent: 'center',

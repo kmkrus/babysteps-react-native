@@ -442,7 +442,7 @@ export const createSubject = subject => {
         screening_blood_notification, \
         screening_blood_other, \
         video_presentation, \
-        video_sharing, \
+        video_sharing \
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
     const values = [

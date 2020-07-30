@@ -528,9 +528,13 @@ export class RenderExternalLink extends React.PureComponent {
       const completed = answer && answer.answer_boolean;
       return (
         <View key={choice.id}>
-          <TouchableOpacity onPress={() => this.handleLinkPress(choice)}>
-            <Text style={styles.externalLink}>{choice.body}</Text>
-          </TouchableOpacity>
+          <Button
+            title="Link to Task"
+            buttonStyle={styles.libraryButton}
+            titleStyle={styles.buttonTitleStyle}
+            color={Colors.green}
+            onPress={() => this.handleLinkPress(choice)}
+          />
           <Text style={styles.externalLinkHelper}>
             Press Confirm when completed.
           </Text>

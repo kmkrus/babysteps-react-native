@@ -23,7 +23,7 @@ import {
   apiCreateSubject,
 } from '../actions/registration_actions';
 import { apiNewMilestoneCalendar } from '../actions/milestone_actions';
-import { updateSession } from '../actions/session_actions';
+import { fetchSession, updateSession } from '../actions/session_actions';
 
 import TextFieldWithLabel from './textFieldWithLabel';
 import DatePicker from './datePickerInput';
@@ -88,6 +88,7 @@ class RegistrationSubjectForm extends Component {
 
     this.props.resetSubject();
     this.props.fetchRespondent();
+    this.props.fetchSession();
   }
 
   componentDidMount() {
@@ -119,32 +120,41 @@ class RegistrationSubjectForm extends Component {
   }
 
   _getInitialValues = () => {
-    const screening_blood = this.props.session.screening_blood;
-    let initialValues = {};
+    const {
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_presentation,
+      video_sharing,
+    } = this.props.session;
+    let defValues = {}
     if (__DEV__) {
-      initialValues = {
-        respondent_ids: null,
-        gender: 'female',
+      defValues = {
         date_of_birth: moment().subtract(1, 'years').format("YYYY/MM/DD"),
-        conception_method: 'natural',
-        screening_blood,
-        outcome: 'live_birth',
         first_name: 'Test',
         middle_name: 'Tester',
         last_name: 'Child',
       };
     } else {
-      initialValues = {
-        respondent_ids: null,
-        gender: 'female',
+      defValues = {
         date_of_birth: null,
-        conception_method: 'natural',
-        screening_blood,
-        outcome: 'live_birth',
         first_name: '',
+        middle_name: '',
         last_name: '',
       };
     }
+    const initialValues = {
+      ...defValues,
+      respondent_ids: null,
+      gender: 'female',
+      conception_method: 'natural',
+      outcome: 'live_birth',
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_presentation,
+      video_sharing,
+    };
     return initialValues;
   };
 
@@ -180,7 +190,13 @@ class RegistrationSubjectForm extends Component {
 
   render() {
     const respondent = this.props.registration.respondent;
-    const screening_blood = this.props.session.screening_blood;
+    const {
+      screening_blood,
+      screening_blood_other,
+      screening_blood_notification,
+      video_presentation,
+      video_sharing,
+    } = this.props.session;
     const dobError = this.state.dobError;
 
     return (
@@ -191,6 +207,10 @@ class RegistrationSubjectForm extends Component {
               ...values,
               respondent_ids: [respondent.data.api_id],
               screening_blood,
+              screening_blood_other,
+              screening_blood_notification,
+              video_presentation,
+              video_sharing,
             };
             this.setState({ isSubmitting: true });
             this.props.createSubject(newSubject);
@@ -306,6 +326,7 @@ const mapDispatchToProps = {
   updateSubject,
   apiCreateSubject,
   apiNewMilestoneCalendar,
+  fetchSession,
   updateSession,
 };
 

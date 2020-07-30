@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { connect } from 'react-redux';
 import { updateSession } from '../actions/session_actions';
@@ -10,10 +11,53 @@ import ConsentDisclosureForm from '../components/consent_disclosure_form';
 import ConsentSignatureForm from '../components/consent_signature_form';
 
 import States from '../actions/states';
+import Colors from '../constants/Colors';
 
 class ConsentScreen extends Component {
-  static navigationOptions = {
-    title: 'Eligibility & Consent',
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+    return {
+      headerTitle: 'Consent',
+      headerTitleStyle: {
+        textAlign: "center",
+        flex: 1,
+        marginLeft: -30,
+      },
+      headerLeft: (
+        <TouchableOpacity
+          style={{ marginLeft: 15 }}
+          onPress={ () => {params.resetForm()} }
+        >
+          <Ionicons
+            name={Platform.OS === 'ios' ? 'ios-arrow-back' : 'md-arrow-back'}
+            size={26}
+            color={Colors.white}
+          />
+        </TouchableOpacity>
+      ),
+    };
+  };
+
+  componentDidMount() {
+    this.props.navigation.setParams({ resetForm: this.resetForm });
+  }
+
+  resetForm = () => {
+    const registration_state = this.props.session.registration_state;
+    switch (registration_state) {
+      case States.REGISTERING_SIGNATURE: {
+        this.props.updateSession({ registration_state: States.REGISTERING_FULL_CONSENT });
+        break;
+      }
+      case States.REGISTERING_FULL_CONSENT: {
+        this.props.updateSession({ registration_state: States.REGISTERING_AS_ELIGIBLE });
+        break;
+      }
+      case States.REGISTERING_AS_ELIGIBLE: {
+        this.props.updateSession({ registration_state: 'none' });
+        break;
+      }
+    };
   };
 
   selectForm = () => {

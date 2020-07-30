@@ -47,7 +47,9 @@ class TourButtons extends Component {
           titleStyle={styles.buttonTitleStyle}
           onPress={() => {
             this.props.updateSession({
-              registration_state: States.REGISTERING_ELIGIBILITY,
+              // 20200730 skip eligibility
+              //registration_state: States.REGISTERING_ELIGIBILITY,
+              registration_state: States.REGISTERING_AS_ELIGIBLE,
             });
           }}
           title="Join Study"
