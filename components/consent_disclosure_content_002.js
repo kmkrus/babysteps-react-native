@@ -402,9 +402,9 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             If your child screens positive for a developmental concern, your
-            child may be referred for further assessment. Similarly, if you
+            child will be referred for further assessment. Similarly, if you
             indicate on screening forms that you are experiencing high levels of
-            anxiety, depression, and/or suicidal thoughts, you may be referred
+            anxiety, depression, and/or suicidal thoughts, you will be referred
             to appropriate healthcare providers.
           </Text>
           <Text style={styles.text}>
