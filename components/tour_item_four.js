@@ -56,8 +56,7 @@ export class TourItemFour extends Component {
 
         <View style={styles.textBlock}>
           <Text style={styles.title}>
-            Epigenetics and the social environment in autism: A cross-sectional
-            study
+            Epigenetics, polygenic risk and the social environment in autism
           </Text>
           <Text style={styles.body}>
             Powered by University of Iowa physicians and researchers use of this

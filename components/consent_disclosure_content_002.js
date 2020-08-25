@@ -27,9 +27,6 @@ class ConsentDisclosureContent002 extends Component {
       formState,
     } = this.props;
 
-    const checkboxComponent =
-      formState === 'edit' ? TouchableOpacity : TouchableWithoutFeedback;
-
     return (
       <View>
         <View style={styles.elevated}>
@@ -40,7 +37,7 @@ class ConsentDisclosureContent002 extends Component {
             color={Colors.iconDefault}
           />
           <Text style={styles.header}>
-            Epigenetics and the social environment in autism: A cross sectional study
+            Epigenetics, polygenic risk and the social environment in autism
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Principal Investigator:</Text>{'\n'}

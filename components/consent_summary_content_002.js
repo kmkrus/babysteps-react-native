@@ -23,8 +23,7 @@ class ConsentSummaryContent002 extends Component {
           <View style={styles.text}>
             <Text style={styles.bold}>Project Title:</Text>
             <Text style={[styles.listText, {paddingLeft: 10}]}>
-              Epigenetics and the social environment in autism: A
-              cross-sectional study
+              Epigenetics, polygenic risk and the social environment in autism
             </Text>
           </View>
           <View style={styles.text}>

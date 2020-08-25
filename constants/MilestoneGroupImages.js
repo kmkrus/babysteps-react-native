@@ -12,5 +12,7 @@ export default [
   require('../assets/images/milestone_group/img8.png'),
   require('../assets/images/milestone_group/img9.png'),
   require('../assets/images/milestone_group/img10.png'),
-  require('../assets/images/milestone_group/img11.png')
+  require('../assets/images/milestone_group/img11.png'),
+  require('../assets/images/milestone_group/img12.png'),
+  require('../assets/images/milestone_group/img13.png'),
 ];

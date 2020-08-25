@@ -87,7 +87,7 @@ class SettingsScreen extends React.Component {
     const release = this.getRelease();
 
     const version = `${Constants.manifest.version}:${build}`;
-    const body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${release}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}\n________________________\n\n`;
+    const body = `\n\n\n________________________\n\nPlatform: ${Platform.OS}\nVersion: ${version}\nRelease: ${release}\nNotifications Updated At: ${moment(this.props.session.notifications_updated_at).format('MMMM Do YYYY, h:mm a Z')}\nNotification Permissions: ${this.state.notificationPermissions}\n\n________________________\n\n`;
 
     Linking.openURL(`mailto:feedback@babystepsapp.net?subject=BabySteps App Feedback (v${version})&body=${body}`);
   };
@@ -99,7 +99,7 @@ class SettingsScreen extends React.Component {
   renderConsentModal = () => {
     const respondent = this.props.registration.respondent.data;
     const subject = this.props.registration.subject.data;
-    
+
     return (
       <View style={{ marginTop: 22 }}>
         <Modal
@@ -221,7 +221,7 @@ class SettingsScreen extends React.Component {
             style={styles.linkContainer}
             onPress={this._handleFeedbackPress}
           >
-            <Text style={styles.linkText}>Provide Feedback</Text>
+            <Text style={styles.linkText}>Ask Questions or Provide Feedback</Text>
             <Ionicons
               name="ios-arrow-forward"
               size={28}
