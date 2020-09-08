@@ -42,7 +42,6 @@ export default class App extends Component {
   };
 
   componentWillUnmount() {
-    NetInfo.removeEventListener(() => {});
     AppState.removeEventListener('change', () => {});
   }
 

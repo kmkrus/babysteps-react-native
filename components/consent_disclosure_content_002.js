@@ -46,7 +46,6 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Research Team Contacts:</Text>
-            </Text>
             {'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
             <Text style={styles.listText}>

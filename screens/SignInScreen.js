@@ -187,7 +187,7 @@ class SignInScreen extends Component {
           </View>
         )}
         <View styles={styles.errorContainer}>
-          <Text style={styles.errorMessage}>{errorMessages.join('\r\n')}</Text>
+          <Text style={styles.errorMessage}>{errorMessages}</Text>
         </View>
         {isSubmitting && (
           <View>

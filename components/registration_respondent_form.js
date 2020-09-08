@@ -79,14 +79,14 @@ const validationSchema = Yup.object().shape({
     //.required("Driver's license number is required"),
   marital_status: Yup.string()
     .required('Marital status is required'),
-  weight: Yup.number('Weight must be a number')
-    .typeError('Weight must be a number')
-    .required('Weight is required')
-    .positive('Weight must be greater than 0'),
-  height: Yup.number()
-    .typeError('Height must be a number')
-    .required('Height is required')
-    .positive('Height must be greater than 0'),
+  //weight: Yup.number('Weight must be a number')
+    //.typeError('Weight must be a number')
+    //.required('Weight is required')
+    //.positive('Weight must be greater than 0'),
+  //height: Yup.number()
+    //.typeError('Height must be a number')
+    //.required('Height is required')
+    //.positive('Height must be greater than 0'),
 });
 
 const respondentTypes = [
