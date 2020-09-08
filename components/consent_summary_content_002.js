@@ -75,7 +75,7 @@ class ConsentSummaryContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             As a participant in this study, you will be asked to use this
-            smartphone application, called “BabySteps,” for about 10 months.
+            smartphone application, called “BabySteps,” for about 6 months.
             During this time, you will complete prompts, questionnaires, and
             surveys about you and your child. You will occasionally be asked to
             videotape yourself playing with your child. Researchers will also
@@ -120,7 +120,7 @@ class ConsentSummaryContent002 extends Component {
           />
           <Text style={styles.header}>How long you will be in the study:</Text>
           <Text style={styles.text}>
-            Your involvement in this study will last about 10 months.
+            Your involvement in this study will last about 6 months.
           </Text>
         </View>
 

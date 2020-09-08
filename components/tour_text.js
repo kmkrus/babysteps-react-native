@@ -5,7 +5,7 @@ export default {
   },
   1: {
     title: 'Baby Book',
-    body: "Create a virtual baby book of your baby's development.  Capture the sound of your unborn baby's heartbeat, baby photos, video footage of important milestones and your thoughts and feelings along the way."
+    body: "Create a virtual baby book of your baby's development.  Capture baby photos, video footage of important milestones, and your thoughts and feelings along the way."
   },
   2: {
     title: 'Share with Friends and Family',

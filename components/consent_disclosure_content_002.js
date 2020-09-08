@@ -46,13 +46,6 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             <Text style={styles.bold}>Research Team Contacts:</Text>
-            {'\n'}
-            <Text style={styles.bullet}>{'\u2022'} </Text>
-            <Text style={styles.listText}>Emese Chmielewski BA (216 338 1370)</Text>
-            {'\n'}
-            <Text style={styles.bullet}>{'\u2022'} </Text>
-            <Text style={styles.listText}>
-              Tessa Meisner BAN RN (319 594 6639)
             </Text>
             {'\n'}
             <Text style={styles.bullet}>{'\u2022'} </Text>
@@ -137,7 +130,7 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.header}>How Long Will I Be in this Study?</Text>
           <Text style={styles.text}>
             If you agree to take part in this study, your/your child's
-            involvement will last for about 10 months. This may include one or
+            involvement will last for about 6 months. This may include one or
             two 15-minute in-person visit(s) to the Center for Disabilities and
             Development (CDD), and your continued use of the smartphone app,
             'BabySteps' from your home. Completing a prompt or task from the app
@@ -185,7 +178,7 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             Researchers will also orient you to the smartphone application,
-            BabySteps, that you will be asked to use for about 10 months. Within
+            BabySteps, that you will be asked to use for about 6 months. Within
             the app, you will be able to take photos and record special
             milestones. Occasionally, you will be asked to videotape yourself
             playing with your child. You will also complete screening tests or
