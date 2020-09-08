@@ -139,7 +139,7 @@ export const setMomentaryAssessments = (entries, studyEndDate) => {
 
 export const setNotifications = entries => {
   forEach(entries, entry => {
-    // notifications requires a task id and title or body
+    // notifications requires a task id, title and body
     if (entry.task_id && (entry.title || entry.body)) {
       const localNotification = localNotificationMessage(entry);
       const scheduleTime = moment(entry.notify_at);

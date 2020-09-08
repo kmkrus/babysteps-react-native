@@ -354,26 +354,30 @@ class RegistrationRespondentForm extends Component {
                   selectedValue={props.values.marital_status}
                 />
 
-                <TextField
-                  inputStyle={AppStyles.registrationTextInput}
-                  inputContainerStyle={AppStyles.registrationTextInputContainer}
-                  label="Weight"
-                  name="weight"
-                  type="text"
-                  returnKeyType="done"
-                  keyboardType="numeric"
-                  helper="In pounds"
-                />
-                <TextField
-                  inputStyle={AppStyles.registrationTextInput}
-                  inputContainerStyle={AppStyles.registrationTextInputContainer}
-                  label="Height"
-                  name="height"
-                  type="text"
-                  returnKeyType="done"
-                  keyboardType="numeric"
-                  helper="In inches"
-                />
+                { false && (
+                  <TextField
+                    inputStyle={AppStyles.registrationTextInput}
+                    inputContainerStyle={AppStyles.registrationTextInputContainer}
+                    label="Weight"
+                    name="weight"
+                    type="text"
+                    returnKeyType="done"
+                    keyboardType="numeric"
+                    helper="In pounds"
+                  />
+                )}
+                { false && (
+                  <TextField
+                    inputStyle={AppStyles.registrationTextInput}
+                    inputContainerStyle={AppStyles.registrationTextInputContainer}
+                    label="Height"
+                    name="height"
+                    type="text"
+                    returnKeyType="done"
+                    keyboardType="numeric"
+                    helper="In inches"
+                  />
+                )}
 
                 <View style={AppStyles.registrationCheckBoxes}>
                   <Text

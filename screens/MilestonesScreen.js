@@ -236,6 +236,10 @@ class MilestonesScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text style={styles.legend}>
+          <MaterialIcons name="child-care" size={16} color='green' />
+          &nbsp; on a light green background indicates that the item is a research related task.
+        </Text>
         <SectionList
           //debug={true}
           ref={ref => this.sectionList = ref}
@@ -257,6 +261,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  legend: {
+    color: Colors.darkGreen,
+    fontSize: 13,
+    padding: 15,
+    paddingLeft: 20,
   },
   section: {
     fontSize: 16,

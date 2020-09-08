@@ -4,7 +4,6 @@
     "description": "Pregnancy and Baby Milestones",
     "slug": "babysteps-react-native",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android"
@@ -29,13 +28,13 @@
     "assetBundlePatterns": [
       "./assets/**/*"
     ],
-    "version": "0.13.3",
+    "version": "0.13.5",
     "ios": {
-      "buildNumber": "64",
+      "buildNumber": "66",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "associatedDomains": [
-        "webcredentials:babysteps-staging.icts.uiowa.edu", 
+        "webcredentials:babysteps-staging.icts.uiowa.edu",
         "webcredentials:babysteps.icts.uiowa.edu"
       ],
       "infoPlist": {
@@ -45,7 +44,7 @@
       }
     },
     "android": {
-      "versionCode": 64,
+      "versionCode": 66,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",
