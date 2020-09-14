@@ -137,16 +137,12 @@ class BabyBookScreen extends Component {
 
       this.setState({ currentIndex: selectedIndex });
     }
-
-    if (!isEmpty(this.props.babybook.entries.data)) {
-      this.props.navigation.setParams({ babybookEntries: true });
-    }
     this.willFocusBabyBook = this.props.navigation.addListener(
       'willFocus',
       () => {
         this.props.fetchBabyBookEntries();
         this.setState({ entryDataSaved: false });
-      }
+      },
     );
   }
 
@@ -161,6 +157,9 @@ class BabyBookScreen extends Component {
     const entryDataSaved = this.state.entryDataSaved;
     if (entries.fetched && !entryDataSaved) {
       this._saveEntryData(entries);
+      if (!isEmpty(entries.data)) {
+        this.props.navigation.setParams({ babybookEntries: true });
+      }
     }
   }
 

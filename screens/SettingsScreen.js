@@ -23,6 +23,7 @@ import { fetchNotifications } from '../actions/notification_actions';
 import { fetchRespondent } from '../actions/registration_actions';
 
 import ConsentDisclosureContent from '../components/consent_disclosure_content';
+import SettingsFAQContent from '../components/settings_faq_content';
 
 import IRBInformation from '../constants/IRB';
 
@@ -38,6 +39,7 @@ class SettingsScreen extends React.Component {
 
     this.state = {
       notificationPermissions: '',
+      faqModalVisible: false,
       consentModalVisible: false,
     };
 
@@ -82,6 +84,10 @@ class SettingsScreen extends React.Component {
     return Constants.manifest.extra.release;
   };
 
+  _handleFAQPress = () => {
+    this.setState({ faqModalVisible: true });
+  };
+
   _handleFeedbackPress = () => {
     const build = this.getAppVersion();
     const release = this.getRelease();
@@ -94,6 +100,33 @@ class SettingsScreen extends React.Component {
 
   _handleConsentAgreementPress = () => {
     this.setState({ consentModalVisible: true });
+  };
+
+  renderFAQModal = () => {
+    return (
+      <View style={{ marginTop: 22 }}>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.faqModalVisible}
+          onRequestClose={() => {}}
+        >
+          <View>
+            <TouchableOpacity
+              style={{alignSelf: 'flex-end', marginTop: 24, marginRight: 20}}
+              onPress={() => {
+                this.setFAQModalVisible(!this.state.faqModalVisible );
+              }}
+            >
+              <Ionicons name = "md-close" size = {36} />
+            </TouchableOpacity>
+            <SettingsFAQContent
+              setModalVisible={this.setFAQModalVisible}
+            />
+          </View>
+        </Modal>
+      </View>
+    );
   };
 
   renderConsentModal = () => {
@@ -112,7 +145,7 @@ class SettingsScreen extends React.Component {
             <TouchableOpacity
               style={{alignSelf: 'flex-end', marginTop: 24, marginRight: 20}}
               onPress={() => {
-                this.setModalVisible(!this.state.consentModalVisible);
+                this.setConsentModalVisible(!this.state.consentModalVisible);
               }}
             >
               <Ionicons name = "md-close" size = {36} />
@@ -125,7 +158,7 @@ class SettingsScreen extends React.Component {
               screening_blood_notification={subject.screening_blood_notification}
               video_sharing={subject.video_sharing}
               video_presentation={subject.video_presentation}
-              setModalVisible={this.setModalVisible}
+              setModalVisible={this.setConsentModalVisible}
             />
           </View>
         </Modal>
@@ -133,9 +166,13 @@ class SettingsScreen extends React.Component {
     );
   };
 
-  setModalVisible = (visible) => {
+  setConsentModalVisible = (visible) => {
     this.setState({consentModalVisible: visible});
   };
+
+  setFAQModalVisible = (visible) => {
+    this.setState({faqModalVisible: visible});
+  }
 
   getAppVersion = () => {
     const manifest = Constants.manifest;
@@ -219,6 +256,19 @@ class SettingsScreen extends React.Component {
 
           <TouchableOpacity
             style={styles.linkContainer}
+            onPress={this._handleFAQPress}
+          >
+            <Text style={styles.linkText}>Frequently Asked Questions</Text>
+            <Ionicons
+              name="ios-arrow-forward"
+              size={28}
+              color="#bdc6cf"
+              style={styles.linkIcon}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkContainer}
             onPress={this._handleFeedbackPress}
           >
             <Text style={styles.linkText}>Ask Questions or Provide Feedback</Text>
@@ -236,6 +286,7 @@ class SettingsScreen extends React.Component {
 
         {this.renderNotificationList(release)}
 
+        {this.renderFAQModal()}
         {this.renderConsentModal()}
       </ScrollView>
     );
