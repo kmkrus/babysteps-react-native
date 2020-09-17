@@ -98,7 +98,7 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             The purpose of this research is to better understand how genetics
-            and the social environment influnce the way children develop.
+            and the social environment influence the way children develop.
             Specifically, this study will use a smartphone application and blood
             samples to study potential risk factors for Autism Spectrum Disorder
             or other developmental disorders.
