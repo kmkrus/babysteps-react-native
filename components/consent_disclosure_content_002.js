@@ -98,7 +98,7 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             The purpose of this research is to better understand how genetics
-            and the social environment influnce the way children develop.
+            and the social environment influence the way children develop.
             Specifically, this study will use a smartphone application and blood
             samples to study potential risk factors for Autism Spectrum Disorder
             or other developmental disorders.
@@ -114,7 +114,7 @@ class ConsentDisclosureContent002 extends Component {
           />
           <Text style={styles.header}>How Many People Will Participate?</Text>
           <Text style={styles.text}>
-            Approximately 300 mothers and their children will take part in this
+            Approximately 320 mothers and their children will take part in this
             study conducted by investigators at the University of Iowa.
           </Text>
         </View>
@@ -149,7 +149,7 @@ class ConsentDisclosureContent002 extends Component {
 
           <Text style={styles.header}>What Will Happen During this Study?</Text>
           <Text style={styles.text}>
-            Once your eligibility is discussed, we will e-mail a link to access
+            Researchers will determine your eligibility and will provide you with a link to access
             the BabySteps smartphone application. After you have reviewed the
             BabySteps app, you can press the "Agree" button on the application
             to formally consent to the study, and can sign electronically. You
@@ -759,15 +759,10 @@ class ConsentDisclosureContent002 extends Component {
             for during the study, or other blood tests.
           </Text>
           <Text style={styles.text}>
-            You will be paid for being in this research study. If your child
-            gave blood at a clinical appointment that researchers could access,
-            you will recieve $20 after this appointment. If your child's sample
-            is collected solely for the purposes of this study, you will receive
-            an email with a gift card for $40 after your child's blood sample is
-            collected, since this collection was additional to their routine
-            medical care. All participants will receive an additional $20 gift
-            card if you meet certain benchmarks in regard to usage of the app
-            over the following months.
+            You will be paid for being in this research study. You will receive a $20 gift card after your child's blood sample 
+            is collected and received by research staff. You will receive
+            an additional $40 gift card near the conclusion of the study, after 
+            all the questionnaires and video recordings have been completed. 
           </Text>
 
           <Text style={styles.subTitle}>Who is funding this study?</Text>
