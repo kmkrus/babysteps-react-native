@@ -20,8 +20,8 @@ class SettingsFAQContent extends Component {
           <Text style={styles.text}>
             If you are able to get into the app, you can go to the “Support”
             page and send an email. The support team will try to respond to your
-            concern. You can also call the research staff at (319) 467-5053 for
-            assistance.
+            concern. You can also call the research staff at 319-353-6838
+            (855-994-4692 toll-free) for assistance.
           </Text>
 
           <Text style={styles.header}>
@@ -57,7 +57,7 @@ class SettingsFAQContent extends Component {
             Sometimes you will get a notification on your phone asking for you
             to complete a question. Other research tasks from your baby’s age
             group will appear in the “Research Activities” list in the app.
-            Research related tasks are highlighted in green and denoted with a
+            Research-related tasks are highlighted in green and denoted with a
             small baby face.
             <MaterialIcons name="child-care" size={16} color='green' />
           </Text>
@@ -89,27 +89,20 @@ class SettingsFAQContent extends Component {
             settings.
           </Text>
           <Text style={[styles.text, {marginTop: 5}]}>
-            For Android: Go to Settings, select Apps & notifications, and click
-            on “BabySteps” to edit these settings.
+            For android: Go to Settings, then General to click on Apps &
+            notifications. Under app permissions, you can select "Microphone"
+            and "Camera" then select BabySteps to enable these.
           </Text>
-
           <Text style={styles.header}>
-             When/how much will I be compensated?
+            When/how much will I be compensated?
           </Text>
           <Text style={styles.text}>
-            Generally, all participants will be compensated after the completion
-            of the two major tasks--the video recordings and the blood draw. All
-            participants will be awarded a $20 online Amazon gift card following
-            your completion of the two 5-minute videos. You will be instructed
-            when to record and submit these videos.
-
-          </Text>
-          <Text style={[styles.text, {marginTop: 5}]}>
-            There will also be compensation for the finger prick blood test
-            needed for the study. If the test is done as a routine part of your
-            medical visit, you will be compensated $20. If your child has to do
-            the test just for the purpose of this study, you will be compensated
-            $40.
+            All participants will be compensated after the completion of major
+            research tasks. You will be compensated with a gift card for $20
+            after your child’s blood sample is received by researchers. You will
+            receive an additional $40 gift card near the conclusion of the
+            study, after you have submitted all the research-required
+            questionnaires and video recordings.
           </Text>
 
         </ScrollView>

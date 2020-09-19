@@ -28,9 +28,9 @@
     "assetBundlePatterns": [
       "./assets/**/*"
     ],
-    "version": "0.13.7",
+    "version": "0.13.8",
     "ios": {
-      "buildNumber": "68",
+      "buildNumber": "69",
       "supportsTablet": true,
       "bundleIdentifier": "com.gofullstack.babysteps",
       "associatedDomains": [
@@ -44,7 +44,7 @@
       }
     },
     "android": {
-      "versionCode": 68,
+      "versionCode": 69,
       "package": "com.gofullstack.babysteps.prod",
       "permissions": [
         "AUDIO_RECORDING",
