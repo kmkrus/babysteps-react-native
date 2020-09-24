@@ -470,14 +470,14 @@ class MilestoneQuestionsScreen extends Component {
     this.props.fetchMilestoneCalendar();
     this.props.fetchBabyBookEntries();
 
-    this.props.navigation.navigate('MilestoneQuestionConfirm', {message});
+    this.props.navigation.navigate('MilestoneQuestionConfirm', { message });
   };
 
-  renderImageAttachement = url => {
+  renderImageAttachement = uri => {
     return (
       <Image
         style={styles.image}
-        source={{ url }}
+        source={{ uri }}
         resizeMethod="scale"
         resizeMode="contain"
       />

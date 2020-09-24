@@ -19,6 +19,8 @@ import moment from 'moment';
 
 import { connect } from 'react-redux';
 
+import memoize from "memoize-one";
+
 import { apiNewMilestoneCalendar } from '../actions/milestone_actions';
 import { updateSession } from '../actions/session_actions';
 
@@ -42,76 +44,72 @@ class OverviewScreen extends React.Component {
     header: null,
   };
 
+  memoizedScreeningEvents = memoize( ( moment, calendar, api_calendar ) => {
+    //const calendar = milestones.calendar;
+
+    let screeningEvents = filter(calendar.data, s => {
+      if (s.momentary_assessment) {
+        return false;
+      }
+      if (s.study_only !== 1) {
+        return false;
+      }
+      if (s.completed_at) {
+        return false;
+      }
+      return ( moment.isAfter(s.available_start_at) && moment.isBefore(s.available_end_at) );
+    });
+    screeningEvents = sortBy(screeningEvents, s => {
+      const notify_at = new Date(s.notify_at);
+      return notify_at.toISOString();
+    });
+    return screeningEvents;
+  });
+
   constructor(props) {
     super(props);
 
     this.state = {
       currentIndexScreening: 0,
       sliderLoading: true,
-      screeningEvents: [],
-      screeningEventsLoaded: false,
       apiCreateCalendarSubmitted: false,
     };
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const subject = this.props.registration.subject;
-    const screeningEventsLoaded = this.state.screeningEventsLoaded;
-    if (subject.fetched && !isEmpty(subject.data) && !screeningEventsLoaded) {
-      this._fetchScreeningEvents(subject);
-    }
-  }
-
-  _fetchScreeningEvents = subject => {
-    let fetchCalendarParams = {};
     const session = this.props.session;
-    if (session.registration_state === States.REGISTERED_AS_IN_STUDY) {
-      fetchCalendarParams = { subject_id: subject.data.api_id };
-    } else {
-      fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
-      if (subject.data.date_of_birth) {
-        fetchCalendarParams = { base_date: subject.data.date_of_birth };
-      }
-    }
-    const calendar = this.props.milestones.calendar;
-    if (!calendar.fetching && calendar.fetched) {
-      if (isEmpty(calendar.data)) {
-        if (
-          !this.props.milestones.api_calendar.fetching &&
-          subject.data !== undefined &&
-          !this.state.apiCreateCalendarSubmitted
-        ) {
-          // creates calendar on server, but only returns visible tasks
-          // no notifications generated
-          this.props.apiNewMilestoneCalendar(fetchCalendarParams);
-          this.setState({ apiCreateCalendarSubmitted: true });
-          // reset last updated date to rebuild notifications
-          this.props.updateSession({ notifications_updated_at: null });
-        }
-      } else {
-        let screeningEvents = filter(calendar.data, s => {
-          if (s.momentary_assessment) {
-            return false;
-          }
-          if (s.study_only !== 1) {
-            return false;
-          }
-          if (s.completed_at) {
-            return false;
-          }
-          return moment().isAfter(s.available_start_at) && moment().isBefore(s.available_end_at);
-        });
-        screeningEvents = sortBy(screeningEvents, s => {
-          return moment(s.notify_at);
-        });
-        this.setState({
-          screeningEvents,
-          screeningEventsLoaded: true,
-          sliderLoading: false,
-        });
-      } // isEmpty calendar data
-    } // calendar fetcbhing
-  };
+    const subject = this.props.registration.subject;
+    const { calendar, api_calendar } = this.props.milestones;
+    const { apiCreateCalendarSubmitted, sliderLoading } = this.state;
+
+    if (!subject.fetching && subject.fetched && !isEmpty(subject.data)) {
+      if (!calendar.fetching && calendar.fetched) {
+
+        if (isEmpty(calendar.data)) {
+          // populate from API
+          if (!api_calendar.fetching && !api_calendar.fetched && !apiCreateCalendarSubmitted) {
+            // creates calendar on server, but only returns visible tasks
+            let fetchCalendarParams = {};
+            if (session.registration_state === States.REGISTERED_AS_IN_STUDY) {
+              fetchCalendarParams = { subject_id: subject.data.api_id };
+            } else {
+              fetchCalendarParams = { base_date: subject.data.expected_date_of_birth };
+              if (subject.data.date_of_birth) {
+                fetchCalendarParams = { base_date: subject.data.date_of_birth };
+              }
+            }
+            this.props.apiNewMilestoneCalendar(fetchCalendarParams);
+            this.setState({ apiCreateCalendarSubmitted: true });
+            // reset last updated date to rebuild notifications
+            this.props.updateSession({ notifications_updated_at: null });
+          } // !api_calendar.fetched
+        } else if (sliderLoading) {
+          this.setState({ sliderLoading: false });
+        } // isEmpty(calendar.data
+
+      } // calendar.fetched
+    } // subject.fetched
+  }
 
   handleOnPress = task => {
     const navigate = this.props.navigation.navigate;
@@ -148,6 +146,10 @@ class OverviewScreen extends React.Component {
   };
 
   render() {
+    const {calendar, api_calendar} = this.props.milestones;
+    const today = moment();
+    const screeningEvents = this.memoizedScreeningEvents( today, calendar, api_calendar);
+
     return (
       <View style={styles.container}>
         <View style={styles.slider_header}>
@@ -165,19 +167,18 @@ class OverviewScreen extends React.Component {
           {this.state.sliderLoading && (
             <ActivityIndicator size="large" color={Colors.tint} />
           )}
-          {!this.state.sliderLoading &&
-            isEmpty(this.state.screeningEvents) && (
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>
-                  You do not currently have any research activities due. We&#39;ll
-                  notify you when there are new tasks for you to complete.
-                </Text>
-              </View>
-            )}
-          {!isEmpty(this.state.screeningEvents) && (
+          {!this.state.sliderLoading && isEmpty(screeningEvents) && (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                You do not currently have any research activities due. We&#39;ll
+                notify you when there are new tasks for you to complete.
+              </Text>
+            </View>
+          )}
+          {!isEmpty(screeningEvents) && (
             <SideSwipe
               index={this.state.currentIndexScreening}
-              data={this.state.screeningEvents}
+              data={screeningEvents}
               renderItem={item => this.renderScreeningItem(item)}
               itemWidth={width - scCardMargin}
               contentOffset={scCardMargin - 2}

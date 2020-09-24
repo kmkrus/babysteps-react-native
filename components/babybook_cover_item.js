@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     flex: 1,
-    paddingTop: widthOffset / 2,
+    paddingTop: heightOffset / 2,
     alignItems: 'center',
     height: height - heightOffset,
     width: width - widthOffset,
