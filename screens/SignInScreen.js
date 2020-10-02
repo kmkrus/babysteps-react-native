@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  View,
-  Button,
-  TextInput,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+
+import { Button, Text } from 'react-native-elements';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as WebBrowser from 'expo-web-browser';
 
@@ -39,6 +36,7 @@ import { getApiUrl } from '../database/common';
 
 import States from '../actions/states';
 import Colors from '../constants/Colors';
+import AppStyles from '../constants/Styles';
 
 class SignInScreen extends Component {
   static navigationOptions = {
@@ -149,52 +147,65 @@ class SignInScreen extends Component {
     const { email, password, isSubmitting, errorMessages } = this.state;
 
     return (
-      <View style={styles.container}>
-        <Text style={styles.titleText}>Sign In</Text>
-        <TextInput
-          value={email}
-          keyboardType="email-address"
-          onChangeText={email => this.setState({ email })}
-          placeholder="email"
-          placeholderTextColor={Colors.grey}
-          style={styles.input}
-          textContentType="username"
-        />
-        <TextInput
-          value={password}
-          onChangeText={password => this.setState({ password })}
-          placeholder="password"
-          secureTextEntry
-          placeholderTextColor={Colors.grey}
-          style={styles.input}
-          textContentType="password"
-        />
-        <View style={styles.buttonContainer}>
-          <Button
-            title="SIGN IN"
-            onPress={this.handlePress}
-            buttonStyle={styles.button}
-            titleStyle={{ fontWeight: 900 }}
-            color={Colors.darkGreen}
-            disabled={isSubmitting}
+      <KeyboardAwareScrollView
+        enableResetScrollToCoords={false}
+        enableAutomaticScroll={false}
+        enableOnAndroid={true}
+      >
+        <View style={styles.container}>
+          <Text style={AppStyles.registrationHeader}>
+            Enter your email and password.
+          </Text>
+
+          <TextInput
+            value={email}
+            keyboardType="email-address"
+            onChangeText={email => this.setState({ email })}
+            placeholder="email"
+            placeholderTextColor={Colors.grey}
+            style={styles.input}
+            textContentType="username"
           />
-        </View>
-        {!isSubmitting && (
-          <View styles={styles.passwordContainer}>
-            <Text style={styles.passwordLink} onPress={this.handlePasswordLink}>
-              Reset My Password
-            </Text>
+          <TextInput
+            value={password}
+            onChangeText={password => this.setState({ password })}
+            placeholder="password"
+            secureTextEntry
+            placeholderTextColor={Colors.grey}
+            style={styles.input}
+            textContentType="password"
+          />
+          <View style={AppStyles.registrationButtonContainer}>
+            <Button
+              title="SIGN IN"
+              onPress={this.handlePress}
+              buttonStyle={AppStyles.buttonSubmit}
+              titleStyle={{ fontWeight: 900 }}
+              color={Colors.darkGreen}
+              disabled={isSubmitting}
+            />
           </View>
-        )}
-        <View styles={styles.errorContainer}>
-          <Text style={styles.errorMessage}>{errorMessages}</Text>
-        </View>
-        {isSubmitting && (
-          <View>
-            <ActivityIndicator size="large" color={Colors.tint} />
+
+          {!isSubmitting && (
+            <View styles={styles.passwordContainer}>
+              <Text style={styles.passwordLink} onPress={this.handlePasswordLink}>
+                Reset My Password
+              </Text>
+            </View>
+          )}
+
+          <View styles={styles.errorContainer}>
+            <Text style={styles.errorMessage}>{errorMessages}</Text>
           </View>
-        )}
-      </View>
+
+          {isSubmitting && (
+            <View>
+              <ActivityIndicator size="large" color={Colors.tint} />
+            </View>
+          )}
+
+        </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -205,25 +216,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.backgroundColor,
-  },
-  titleText: {
-    fontSize: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonContainer: {
-    justifyContent: 'center',
-    width: 200,
-    height: 40,
-    marginBottom: 40,
-    marginTop: 20,
-  },
-  button: {
-    width: 200,
-    backgroundColor: Colors.lightGreen,
-    borderColor: Colors.green,
-    borderWidth: 2,
-    borderRadius: 5,
   },
   input: {
     width: 300,

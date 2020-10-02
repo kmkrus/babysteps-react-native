@@ -3,7 +3,8 @@
     "columns": {
       "id": "INTEGER PRIMARY KEY", 
       "name": "TEXT", 
-      "description": "TEXT"
+      "description": "TEXT",
+      "duration_days": "INTEGER",
     },
     "indexes": [],
   },

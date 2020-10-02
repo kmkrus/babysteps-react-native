@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  ScrollView,
   View,
   Image,
   StyleSheet,
@@ -64,7 +63,8 @@ class MilestonesScreen extends Component {
     // trap section header render - don't update view
     const newSectionID = nextState.sectionID !== this.state.sectionID;
     const tasks = nextProps.milestones.tasks;
-    return !newSectionID && !tasks.fetching;
+    debugger
+    return !newSectionID && tasks.fetched && !tasks.fetching;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -92,13 +92,10 @@ class MilestonesScreen extends Component {
   });
 
   _handleScrollToComplete = () => {
-    const milestone = this.props.navigation.getParam('milestone', null);
-    if (milestone) {
-      const sectionIndex = findIndex(this.state.tasksForList, ['id', milestone.id])
-      if (sectionIndex !== -1) {
-        this.sectionList.scrollToLocation({ sectionIndex, itemIndex: 0 });
-        this.setState({ scrollToComplete: true });
-      }
+    const sectionIndex = this.props.navigation.getParam('sectionIndex', null);
+    if (sectionIndex && sectionIndex !== -1) {
+      this.sectionList.scrollToLocation({ sectionIndex, itemIndex: 0, viewPosition: 0 });
+      this.setState({ scrollToComplete: true });
     }
   };
 
@@ -238,12 +235,13 @@ class MilestonesScreen extends Component {
       <View style={styles.container}>
         <Text style={styles.legend}>
           <MaterialIcons name="child-care" size={16} color='green' />
-          &nbsp; on a light green background indicates that the item is a research related task.
+          &nbsp; on a light green background indicates that the item is a
+          research related task.
         </Text>
         <SectionList
           //debug={true}
           ref={ref => this.sectionList = ref}
-          //initialNumToRender={this.state.tasksForList.length}
+          initialNumToRender={this.state.tasksForList.length}
           initialScrollIndex={this.state.sectionIndex}
           onScrollToIndexFailed={info => console.log(info)}
           getItemLayout={this.getItemLayout}

@@ -83,6 +83,7 @@
       "irb_id": "TEXT",
       "accepted_tos_at": "TEXT",
       "pregnant": "INTEGER",
+      "push_token": "TEXT",
     },
     "indexes": [],
   },

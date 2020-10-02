@@ -19,7 +19,7 @@
       "available_start_at": "TEXT",
       "available_end_at": "TEXT",
       "questions_remaining": "INTEGER",
-      "completed_at": "TEXT"
+      "completed_at": "TEXT",
     },
     "indexes": [
       "milestone_triggers_milestone_id ON milestone_triggers (milestone_id);",

@@ -110,7 +110,7 @@ class OverviewScreen extends React.Component {
     return (
       <View key={data.itemIndex} style={styles.mgSlideContainer}>
         <TouchableOpacity
-          onPress={() => navigate('MilestonesStack', { milestone: group })}
+          onPress={() => navigate('MilestonesStack', { sectionIndex: data.currentIndex })}
         >
           <Image source={group.uri} style={styles.mgItemImage} />
           <View style={styles.mgItemFooter}>
@@ -131,8 +131,8 @@ class OverviewScreen extends React.Component {
           data={milestoneGroups}
           renderItem={this.renderMilestoneItem}
           itemWidth={width}
-          //threshold={mgImageWidth / 4}
-          useVelocityForIndex
+          threshold={width / 6}
+          //useVelocityForIndex
           style={styles.mgSlider}
           onIndexChange={currentIndexMilestones =>
             this.setState({ currentIndexMilestones })
