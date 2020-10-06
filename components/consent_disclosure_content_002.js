@@ -746,7 +746,7 @@ class ConsentDisclosureContent002 extends Component {
           />
 
           <Text style={styles.header}>
-            Will it Cost Me Anything or Will I be Paid to be in this Study?
+            Will it Cost Me Anything to be in this Study?
           </Text>
           <Text style={styles.text}>
             You will not have any additional costs associated with being in this
@@ -758,11 +758,17 @@ class ConsentDisclosureContent002 extends Component {
             any in-person diagnostic evaluations you/your child may be referred
             for during the study, or other blood tests.
           </Text>
+
+          <Text style={styles.header}>
+            Will My Child and I be Paid for Participating?
+          </Text>
           <Text style={styles.text}>
-            You will be paid for being in this research study. You will receive a $20 gift card after your child's blood sample 
-            is collected and received by research staff. You will receive
-            an additional $40 gift card near the conclusion of the study, after 
-            all the questionnaires and video recordings have been completed. 
+            All families will receive a $20 Amazon.com gift card after their
+            child's blood sample collection is received. All families will
+            receive an additional $40 Amazon.com giftcard at the conclusion of
+            the study after all their surveys and videos have been collected and
+            received by the research team. Therefore, the total compensation for
+            this project is $60 
           </Text>
 
           <Text style={styles.subTitle}>Who is funding this study?</Text>
