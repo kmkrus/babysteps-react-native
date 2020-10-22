@@ -52,6 +52,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-page-control": "^1.1.1",
     "react-native-reanimated": "~1.9.0",
+    "react-native-safe-area-view": "^1.1.1",
     "react-native-section-list-get-item-layout": "^2.2.3",
     "react-native-sentry": "^0.39.0",
     "react-native-sideswipe": "^1.4.1",
