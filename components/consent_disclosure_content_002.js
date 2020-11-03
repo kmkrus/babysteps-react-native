@@ -92,7 +92,7 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             This is a research study. We are inviting you and your child to
             participate, because your child, who may or may not have behavioral
-            or developmental challenges, is 18 months to 3 years old. In this
+            or developmental challenges, is 14 months to 3 years old. In this
             study, both you and your child will be considered research
             participants.
           </Text>
@@ -162,15 +162,16 @@ class ConsentDisclosureContent002 extends Component {
             During this study, each mother-child pair may meet with researchers
             once or twice. If your child has an appointment scheduled at the CDD
             or another University of Iowa clinic, study researchers may meet
-            with you shortly before this appointment. A blood draw may be part
-            of the standard care for these appointments, and researchers may
+            with you shortly before or after this appointment. A blood draw may be part
+            of these appointments, and researchers may
             request access to a small amount of the blood that is drawn at that
             time. If your child is not scheduled for a clinical evaluation or
             was scheduled for evaluation but did not have blood drawn at that
             time, researchers will contact you to explain the procedures for a
             blood sample collection for your child. This sample can be collected
-            at the CDD by healthcare staff or by you in your home. These blood
-            samples will be compared to a sample of blood that was taken when
+            at the CDD or the University of Iowa by trained staff or by you in your home. At the time of the blood sample collection,
+            you will also fill out a brief questionnaire about your chid's current health status. The collected 
+            sample will be compared to a sample of blood that was taken when
             your child was born (these samples are obtained from all babies born
             in the state of Iowa). Analyzing the two samples will reveal whether
             chemical ("epigenetic") changes occurred over time.
@@ -180,8 +181,13 @@ class ConsentDisclosureContent002 extends Component {
             BabySteps, that you will be asked to use for about 6 months. Within
             the app, you will be able to take photos and record special
             milestones. Occasionally, you will be asked to videotape yourself
-            playing with your child. You will also complete screening tests or
-            questions designed to assess your child's language, motor, and
+            playing with your child. In these videos, you will also be asked 
+            to briefly "frustrate" your child. This might be simply achieved, for example, 
+            by taking away your child's toy. 
+           </Text>
+          <Text style={styles.text}>            
+            You will also complete screening tests or
+            questions designed to assess your child's behavior and language, motor, and
             cognitive development. Some of these screening tests will assess for
             early signs of autism. Certain results may indicate your child is
             not eligible to continue in this study. If this occurs, you will be
@@ -190,14 +196,15 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             We may ask other questions about your mood, your day-to-day life, or
             your history. You are free to skip any questions that you would
-            prefer not to answer. Prompts will appear on your cell phone several
-            times per week, and will usually only require a single button press.
+            prefer not to answer. Prompts will also appear on your cell phone several
+            times per week and these will usually only require a single button press.
             You should try to answer these as soon as you see them. Other
-            prompts should take between 1 and 10 minutes to complete on each
-            occasion. If any of the information gathered through the app, such
+            questionnaires should take between 1 and 15 minutes to complete on each
+            occasion and may be sent to your email via a secure platform. If any of the information gathered, such
             as information about your well-being or your child's development,
-            indicates a need for intervention, you will be referred to
-            appropriate providers.
+            indicates a need for intervention, you may be contacted and referred to
+            appropriate providers. During this study, you may also be contacted by phone (call or text)
+            or email to pose or answer questions, remind you of your study deadlines, or to follow up about study progression or incomplete procedures. 
           </Text>
           <Text style={styles.text}>
             You are free to share consent stored in the app to your social media
@@ -400,20 +407,10 @@ class ConsentDisclosureContent002 extends Component {
           </Text>
           <Text style={styles.text}>
             If your child screens positive for a developmental concern, your
-            child will be referred for further assessment. Similarly, if you
+            child may be referred for further assessment. Similarly, if you
             indicate on screening forms that you are experiencing high levels of
             anxiety, depression, and/or suicidal thoughts, you will be referred
             to appropriate healthcare providers.
-          </Text>
-          <Text style={styles.text}>
-            In the event of unexpected findings, data will be reviewed by a
-            physician who normally reads such results. We will provide you with
-            this information so that you may discuss it with your/your child’s
-            primary care physician. However, if you believe you/your child are
-            having symptoms that may require care prior to receiving any
-            information from this study, you should contact your/your child’s
-            primary care physician. The study team/study will not cover the
-            costs of any follow-up consultations or actions.
           </Text>
           <View style={styles.checkboxView}>
             <Text style={styles.header}>
@@ -444,8 +441,15 @@ class ConsentDisclosureContent002 extends Component {
               }
             />
           </View>
-
-          <Text style={styles.subTitle}>Genetic Research</Text>
+              </Text>
+          <Text style={styles.text}>
+            However, if you believe you/your child are having symptoms that may require care prior 
+            to receiving any information from this study, you should contact your/your chid's primary 
+            care physician. The study team/study will not cover the costs of any follow-up consultations 
+            or actions.
+          </Text>
+          
+    <Text style={styles.subTitle}>Genetic Research</Text>
           <Text style={styles.text}>
             Another purpose of this study is to look at genes (DNA) and how they
             affect health and disease. Genes are the instruction manual for the
@@ -943,7 +947,7 @@ class ConsentDisclosureContent002 extends Component {
             about your child for purposes of this study has no expiration date.
             You may withdraw your permission for us to use your child's health
             information for this research study by sending a written notice to
-            Dr. Lane Strathearn, 100 Hawkins Dr., 213F CDD, Iowa City, IA 52242.
+            Attachment and Neurodevelopment Lab, 100 Hawkins Dr., 363 CDD, Iowa City, IA 52242.
             However, we may still use your child's health information that was
             collected before withdrawing your permission. Also, if we have sent
             your child's health information to a third party, such as the study
@@ -1003,8 +1007,7 @@ class ConsentDisclosureContent002 extends Component {
           <Text style={styles.text}>
             We encourage you to ask questions. If you have any questions about
             the research study itself or if you or your child experiences a
-            research-related injury, please contact: Lane Strathearn (319 356
-            7044 or lane-strathearn@uiowa.edu).
+            research-related injury, please contact: (319) 353-6838 or babysteps@uiowa.edu.
           </Text>
           <Text style={styles.text}>
             If you have questions, concerns, or complaints about your and your
