@@ -263,7 +263,7 @@ const reducer = (state = initialState, action, formData = {}) => {
     case API_FETCH_SIGNIN_REJECTED: {
       let error = 'unknown';
       if (action.payload.response) {
-        error = action.payload.response.data.errors.full_messages;
+        error = action.payload.response.data.errors[0];
       } else {
         error = action.payload.message;
       }
