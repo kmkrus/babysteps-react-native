@@ -1004,7 +1004,7 @@ class ConsentDisclosureContent002 extends Component {
             We encourage you to ask questions. If you have any questions about
             the research study itself or if you or your child experiences a
             research-related injury, please contact: Lane Strathearn (319 356
-            7044 or lane-strathearn@uiowa.edu).
+            7044 or babysteps@healthcare.uiowa.edu).
           </Text>
           <Text style={styles.text}>
             If you have questions, concerns, or complaints about your and your
